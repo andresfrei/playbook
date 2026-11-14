@@ -1,0 +1,65 @@
+# Working skills
+
+Stage 3 of the method (D8): the skills the agent needs to build this product with the technology chosen in stage 2 (TD1–TD4). These are not the product's own skills, which are listed in [../01-product/skill-set.md](../01-product/skill-set.md) and written in stage 6. The owner accepted the list (Decided: D43).
+
+## The list
+
+Nothing new is installed. Every entry is already on the owner's machine.
+
+| Job in this repository | What the agent uses | Note |
+|------------------------|---------------------|------|
+| Write and audit a skill file | `skill-creator` and `skill-improver`, for their style guide only | Their style guide sets the format and the size limits. The parts of `skill-creator` about the Gentle AI repository (its paths, `AGENTS.md` registration) are ignored. The style guide exists as two copies, one in each skill |
+| Write the plugin files: manifests, the hook, evaluation cases | No skill. The current Claude Code documentation, read through the `claude-code-guide` agent, and `claude plugin validate` | No installed skill covers the plugin format. A new skill is Deferred: it is written only if the same documentation lookups repeat during stage 6 |
+| Write shell scripts | No skill. `shellcheck`, already installed on this machine, checks them | It is a tool for whoever maintains the product. Installing the plugin does not need it (TD2) |
+| Write the wiki and other documentation | `cognitive-doc-design` | |
+| Keep each change minimal | `minimal-correct-implementation` | |
+| Execute, commit, review | gentle-ai's ODD, `work-unit-commits`, and its review lifecycle | Unchanged in phase 1 (D16, D33) |
+
+## Order that follows from this list
+
+The product's own skill for writing and auditing skills is one of the five of D33. Writing it first lets the other four be written with it, instead of with the installed `skill-creator`. Whether to do so is a matter for the plan (stage 5).
+
+## Measured
+
+On 2026-11-13: `skill-creator` 574 words, `skill-improver` 434, `cognitive-doc-design` 372, `minimal-correct-implementation` 724. `shellcheck` is present on the owner's machine.
+
+## Phase 2
+
+Stage 3 of phase 2: the skills the agent needs to build what [../03-technology/architecture.md](../03-technology/architecture.md) adds, with the technology of TD6 to TD11. The owner accepted the list (D73).
+
+Nothing is installed or written for this stage. The product's own skills, built in phase 1, replace the installed ones of the list above.
+
+| Job in this repository | Technology | What the agent uses | Where it lives | When |
+|------------------------|------------|---------------------|----------------|------|
+| Write the review skill, and change `prepare-project` (Q37) | Skill files | `playbook:write-skill`, with its style guide and the two evaluation cases it asks for | `plugin/skills/write-skill/` | Each time a skill file is written or changed |
+| Write the eight rules | The rules file | No skill. The format and the limits of [../01-product/style-guide.md](../01-product/style-guide.md), enforced by `scripts/verify.sh` | This repository | Each change to `plugin/rules.md` |
+| Write the three agent files | Subagent definitions (TD7, TD8) | No skill. The current Claude Code documentation, read through the `claude-code-guide` agent, and `claude plugin validate` | Claude Code | When the agents are written. A skill for the plugin format stays Deferred, as in phase 1 |
+| Write the model configuration and its script | Plain shell (TD2, TD11) | No skill. `shellcheck` checks the script | The owner's machine: `shellcheck` 0.11.0, seen with `command -v shellcheck` on 2026-11-13 | Each change to a script |
+| Make the trial environment, rehearse the uninstall | `CLAUDE_CONFIG_DIR` (TD6), `gentle-ai uninstall` (TD9) | No skill. The documentation quoted in [../03-technology/phase-2.md](../03-technology/phase-2.md) and each command's own help | Claude Code, gentle-ai | Once each |
+| Write the wiki and other documentation | Markdown | `playbook:write-docs` | `plugin/skills/write-docs/` | Each page written or changed |
+| Keep each change minimal | Any | `playbook:keep-minimal` | `plugin/skills/keep-minimal/` | Each change to code |
+| Prepare and track the work | The six stages | `playbook:prepare-project` | `plugin/skills/prepare-project/` | Each stage and each unit |
+| Execute and commit | The session's instructions | gentle-ai's workflow, still loaded in the main installation until the switch (D69). Inside the trial environment, the product's own rules | `~/.claude/CLAUDE.md` | Until the switch |
+
+Seen while doing stages 1 and 2 of phase 2 with these skills, on 2026-11-13:
+
+- `prepare-project` writes wiki pages by itself and does not say to use `write-docs` for them. The pages of stage 1 were written without it; the architecture page with it. Since 2026-11-13 the skill says to write them with `write-docs` (D87).
+- `prepare-project` has no rule for a new phase (Q37).
+
+## Phase 3
+
+Stage 3 of phase 3: the skills the agent needs to build what [../03-technology/architecture-phase-3.md](../03-technology/architecture-phase-3.md) adds, with the technology of TD13 to TD20. The owner accepted the list (D115).
+
+Nothing is installed or written for this stage. Every skill named is the product's own and is already loaded in the owner's Claude Code, seen in the skill list of the session of 2026-11-13.
+
+| Job in this repository | Technology | What the agent uses | Where it lives | When |
+|------------------------|------------|---------------------|----------------|------|
+| Add one rule to `review-change` (TD17) | Skill files | `playbook:write-skill`, with its style guide | `plugin/skills/write-skill/` | When the skill file is changed |
+| Extend `scripts/set-models.sh` and `scripts/verify.sh`, and write `scripts/install-opencode.sh` (TD15, TD18, TD19) | Plain shell (TD2) | No skill needed. `shellcheck` checks each script, and `scripts/verify_test.sh` holds the tests | The owner's machine: `shellcheck` 0.11.0, seen with `shellcheck --version` on 2026-11-13 | Each change to a script |
+| Produce the agent files of opencode, write its configuration entries, and connect the three servers (TD13 to TD16, TD20) | opencode 2.x | No skill needed: three small generated files and a few configuration lines, written once. The documentation quoted in [../03-technology/phase-3.md](../03-technology/phase-3.md), and opencode's own `opencode debug agents` and `opencode api` to read what it resolved | opencode 2.3.0 on the owner's machine | When each is built |
+| Write the installation steps in the README, and the wiki | Markdown | `playbook:write-docs` | `plugin/skills/write-docs/` | Each page written or changed |
+| Keep each change minimal | Any | `playbook:keep-minimal` | `plugin/skills/keep-minimal/` | Each change to code |
+| Read a risky change before delivery, such as the installer, which writes on a person's machine | Any | `playbook:review-change`, on the `review` agent (R20) | `plugin/skills/review-change/` | Before a risky change is delivered |
+| Prepare and track the work | The six stages | `playbook:prepare-project` | `plugin/skills/prepare-project/` | Each stage and each unit |
+| Execute and commit | The session's instructions | The product's own rules | `plugin/rules.md` | Always |
+

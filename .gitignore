@@ -1,0 +1,5 @@
+# Skill registry that gentle-ai generates on each machine
+.atl/
+
+# Results of evaluation runs
+plugin/evals/results/

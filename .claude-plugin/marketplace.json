@@ -1,0 +1,14 @@
+{
+  "name": "playbook",
+  "description": "General working rules and skills for building software with an AI coding agent.",
+  "owner": {
+    "name": "Andres Frei"
+  },
+  "plugins": [
+    {
+      "name": "playbook",
+      "description": "Always-loaded working rules and a small set of general skills.",
+      "source": "./plugin"
+    }
+  ]
+}

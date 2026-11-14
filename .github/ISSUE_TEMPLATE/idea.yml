@@ -1,0 +1,17 @@
+name: Idea
+description: Propose a change to a rule, a skill, or an agent.
+labels: [idea]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem it solves
+      description: The situation where the current rules or skills fall short.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you propose
+    validations:
+      required: false

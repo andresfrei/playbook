@@ -1,0 +1,7 @@
+{
+  "name": "playbook",
+  "description": "Always-loaded working rules and a small set of general skills.",
+  "author": {
+    "name": "Andres Frei"
+  }
+}
