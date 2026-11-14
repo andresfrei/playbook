@@ -10,7 +10,7 @@ Every statement is one of:
 
 ## Where work stands
 
-Updated 2026-11-14, after D153 and TD22.
+Updated 2026-11-14, after D154 and TD22.
 
 No phase and no stage is open. A new phase starts when the owner asks for it, with a new stage table above the three below.
 

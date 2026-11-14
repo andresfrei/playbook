@@ -37,7 +37,55 @@ opencode starts each server by its command name, so `engram`, `codegraph`, and `
 
 ## Install
 
-From a local clone, with Claude Code's own commands:
+### With an agent
+
+Paste one of these prompts into a session of the tool you want to install the product in. The agent runs the commands below and asks before changing a file of yours.
+
+For Claude Code:
+
+```text
+Install the playbook plugin for Claude Code from https://github.com/andresfrei/playbook.
+Run `claude plugin marketplace add andresfrei/playbook`, then
+`claude plugin install playbook@playbook --scope user`, then `claude plugin list`,
+and confirm that playbook@playbook is enabled and show its version.
+Change no other setting. Then read the "Needs" section of the repository's README.md
+and tell me which of Engram, CodeGraph, and context7 I am missing. Do not install
+them unless I ask.
+```
+
+For opencode 2.x:
+
+```text
+Install the playbook rules, skills, and agents for opencode 2.x from
+https://github.com/andresfrei/playbook. Clone it to ~/dev/playbook; if that folder
+exists, or before choosing another one, ask me. From the clone, run
+`sh scripts/install-opencode.sh` and show me its output. If it printed entries for an
+opencode.json I already have, show me the exact change and ask before editing the file.
+Then run `opencode reload` and `sh scripts/verify.sh --opencode`, and report the
+result; if the only failure is that the `claude` command is not installed, say so and
+treat the rest as passed. Change nothing else. Then read the "Needs" section of the
+README.md and tell me which of Engram, CodeGraph, and context7 I am missing. Do not
+install them unless I ask.
+```
+
+### From GitHub, in Claude Code
+
+```sh
+claude plugin marketplace add andresfrei/playbook
+claude plugin install playbook@playbook --scope user
+```
+
+Claude Code installs a copy of the latest release. Automatic updates are off by default for this marketplace, so update by hand when a new release is out:
+
+```sh
+claude plugin update playbook@playbook
+```
+
+Inside a session, `/plugin marketplace update playbook` does the same. A release reaches you only when its version changes; the releases and their tags are on GitHub. How versions are made is in [CONTRIBUTING.md](CONTRIBUTING.md#releases).
+
+### From a local clone, in Claude Code
+
+To change the plugin, or to load every commit as it is made:
 
 ```sh
 claude plugin marketplace add /path/to/this/clone
@@ -46,7 +94,7 @@ claude plugin install playbook@playbook --scope user
 
 The plugin is read in place from the clone: a change to the files under `plugin/` applies to the next session, or to an open one after `/reload-plugins`, with no reinstall. Whatever is checked out in the clone is what every session loads. The source for this behaviour is in [docs/wiki/03-technology/installation.md](docs/wiki/03-technology/installation.md).
 
-To remove it:
+### Remove it from Claude Code
 
 ```sh
 claude plugin uninstall playbook@playbook
