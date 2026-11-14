@@ -28,4 +28,14 @@ Do not report a security problem in an issue. See [SECURITY.md](SECURITY.md).
 
 What is decided about the product is in [docs/wiki/decisions.md](docs/wiki/decisions.md). A change that contradicts a decision is discussed in an issue first.
 
+## Releases
+
+The plugin declares its version in `plugin/.claude-plugin/plugin.json`, with [Semantic Versioning](https://semver.org/). Only the owner changes it, when a release is made, and tags that commit `v<version>`:
+
+- **MAJOR**: a change that breaks an existing installation, such as removing or renaming a skill, a command, or an agent.
+- **MINOR**: something new that breaks nothing, such as a new skill or a new rule.
+- **PATCH**: a fix to text or behaviour.
+
+An installation from this repository's git address updates only when the version changes, so a commit merged between releases reaches users with the next release. Do not change the version in a pull request.
+
 By contributing, you agree that your contribution is licensed under the [MIT License](LICENSE).

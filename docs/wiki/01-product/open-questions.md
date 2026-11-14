@@ -4,11 +4,7 @@ Each has a recommendation and says what it blocks. Answered questions move to [.
 
 ## About the product
 
-Each says which stage or step it blocks.
-
-| # | Question | Recommendation | Blocks |
-|---|----------|----------------|--------|
-| Q30 | Which version scheme does the plugin declare? Until then each commit is a version (TD3) | Decide before anyone other than the owner installs it | Sharing the product |
+None open. The last two, Q24 and Q30, were answered by D153 and TD22.
 
 ## About the owner's machine
 
