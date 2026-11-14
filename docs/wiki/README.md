@@ -10,16 +10,17 @@ Every statement is one of:
 
 ## Where work stands
 
-Updated 2026-11-14, after D151 and TD21.
+Updated 2026-11-14, after D152 and TD21.
 
 No phase and no stage is open. A new phase starts when the owner asks for it, with a new stage table above the three below.
 
 Wiki maintenance and the doctor (D133 to D142) are built, merged into `main`, and pushed (D144): [01-product/wiki-maintenance.md](01-product/wiki-maintenance.md).
 
+The repository is public since 2026-11-14 (D145 to D152): https://github.com/andresfrei/playbook. Every pull request needs the owner's approval. The full earlier history, with the pages about the owner's installation, is in the private `andresfrei/playbook-archive`.
+
 Waiting for the owner:
 
 - Six proposals to spend fewer tokens, P1 to P6: 02-current-state/token-economy.md (kept in the private archive).
-- Making the repository public (D145), from a new history (D146); the current repository is now the private `andresfrei/playbook-archive` (D147). What the first public commit holds is D148; its licence is MIT (D149); the files of step 3 are D150; where each clone lives is D151. Step 1 found no secret (D146). Proposed steps, each reviewed by the owner before the next: (1) review the whole git history for secrets and personal data, and move the personal pages of Q20 out of the product; (2) choose a licence; (3) add `CODEOWNERS`, `CONTRIBUTING.md`, `SECURITY.md`, and issue and pull request templates, and rewrite the opening of the root `README.md` for an outside reader (what the product is and for whom, that it is one person's set shared as it is, the licence, and a link to `CONTRIBUTING.md`); (4) protect `main` with a ruleset (pull request required, one approval, no force push, bypass for the owner only) and turn on secret scanning; (5) change the visibility to public.
 
 Next steps, in order (D135):
 
