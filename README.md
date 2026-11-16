@@ -8,7 +8,7 @@ It is a Claude Code plugin. Every session loads:
 
 | Part | Content |
 |------|---------|
-| Rules | `plugins/playbook-agents/rules.md`, 24 short rules. A hook prints them at session start |
+| Rules | `plugins/playbook-agents/rules.md`, 18 short rules. A hook prints them at session start. The other six rules of the set are in `plugins/playbook-wiki/contract.md`, which `playbook-wiki` prints at session start |
 | Skills | Six, loaded on demand: `prepare-project`, `write-skill`, `write-docs`, `keep-minimal`, `avoid-generic-design`, `review-change`. The `SKILL.md` of each, under `plugins/playbook-wiki/skills/` and `plugins/playbook-agents/skills/`, says which requests load it and what it does. A seventh, `doctor`, runs only when the owner starts it (`/playbook-wiki:doctor` in Claude Code): it repairs a project's wiki after the format of a wiki changed. At session start a hook says so in one line when a project's wiki has no file `docs/wiki/.format` or the file is behind |
 | Agents | Three, for delegated work: `explore`, `write`, `review`. The model and the effort of each are in `plugins/playbook-agents/models.conf` |
 

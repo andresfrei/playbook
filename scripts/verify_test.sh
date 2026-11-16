@@ -72,12 +72,25 @@ add_skill at-limits "$(chars 250)" 700
 expect "skill at the limits passes" pass
 
 fresh
-words 501 > "$tmp/repo/plugins/playbook-agents/rules.md"
-expect "L1: rules file over 500 words fails" fail "L1"
+words 401 > "$tmp/repo/plugins/playbook-agents/rules.md"
+expect "L1: rules file over 400 words fails" fail "L1 rules.md has 401 words"
 
 fresh
 rm "$tmp/repo/plugins/playbook-agents/rules.md"
 expect "L1: missing rules file fails" fail "L1"
+
+fresh
+words 251 > "$tmp/repo/plugins/playbook-wiki/contract.md"
+expect "L1: contract over 250 words fails" fail "L1 contract.md has 251 words"
+
+fresh
+words 250 > "$tmp/repo/plugins/playbook-wiki/contract.md"
+words 400 > "$tmp/repo/plugins/playbook-agents/rules.md"
+expect "L1: contract and rules at their limits pass" pass
+
+fresh
+rm "$tmp/repo/plugins/playbook-wiki/contract.md"
+expect "L1: missing contract fails" fail "L1 contract.md is missing"
 
 fresh
 add_skill long-body "Short description." 701
@@ -88,11 +101,55 @@ add_skill long-description "$(chars 251)" 10
 expect "L3: description over 250 characters fails" fail "L3"
 
 fresh
-words 500 > "$tmp/repo/plugins/playbook-agents/rules.md"
+words 400 > "$tmp/repo/plugins/playbook-agents/rules.md"
 for i in 1 2 3 4 5 6 7 8; do
   add_skill "skill-$i" "$(words 40 | cut -c1-200)" 10
 done
-expect "L4: session start load over 800 words fails" fail "L4"
+expect "L4: playbook-agents over 620 words at session start fails" fail "L4 playbook-agents loads"
+
+fresh
+skill_plugin=playbook-wiki add_skill wiki-skill "$(words 40 | cut -c1-200)" 10
+expect "L4: playbook-wiki over 350 words at session start fails" fail "L4 playbook-wiki loads"
+
+fresh
+skill_plugin=playbook-wiki add_skill wiki-skill "$(words 40 | cut -c1-200)" 10 "disable-model-invocation: true"
+expect "L4: a skill of playbook-wiki that only the owner starts is not counted" pass
+
+fresh
+sed 's/contract\.md/other.md/' "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json" > "$tmp/hooks.json"
+cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json"
+expect "hooks: hooks.json without the contract under SessionStart fails" fail "does not print contract.md under SessionStart"
+
+fresh
+sed 's/contract-for-subagent\.sh/other.sh/' "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json" > "$tmp/hooks.json"
+cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json"
+expect "hooks: hooks.json without the subagent script under SubagentStart fails" fail "does not run contract-for-subagent.sh under SubagentStart"
+
+fresh
+rm "$tmp/repo/plugins/playbook-wiki/hooks/contract-for-subagent.sh"
+expect "hooks: a missing subagent script fails" fail "contract-for-subagent.sh of playbook-wiki is missing"
+
+fresh
+sed 's|/contract\.md|/hooks/contract.md|' "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json" > "$tmp/hooks.json"
+cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json"
+expect "hooks: the contract named at a path where it is not fails" fail "does not print contract.md under SessionStart"
+
+fresh
+sed 's|/hooks/contract-for-subagent\.sh|/contract-for-subagent.sh|' "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json" > "$tmp/hooks.json"
+cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json"
+expect "hooks: the subagent script named at a path where it is not fails" fail "does not run contract-for-subagent.sh under SubagentStart"
+
+fresh
+printf 'A form feed: \014\n' >> "$tmp/repo/plugins/playbook-wiki/contract.md"
+expect "L1: a contract with a control character fails" fail "contract.md holds 1 control character"
+
+fresh
+skill_plugin=playbook add_skill starter-skill "Short description." 10
+expect "L4: a skill the model can load in the start plugin fails" fail "only playbook-wiki and playbook-agents may load one"
+
+fresh
+skill_plugin=playbook add_skill starter-skill "Short description." 10 "disable-model-invocation: true"
+expect "L4: a skill only the person starts in the start plugin passes" pass
 
 fresh
 add_skill extra-key "Short description." 10 "license: MIT"
@@ -118,7 +175,7 @@ add_skill owner-only "Short description." 10 "disable-model-invocation: false"
 expect "front matter with disable-model-invocation other than true fails" fail "disable-model-invocation of"
 
 fresh
-words 500 > "$tmp/repo/plugins/playbook-agents/rules.md"
+words 400 > "$tmp/repo/plugins/playbook-agents/rules.md"
 for i in 1 2 3 4 5 6 7 8; do
   add_skill "skill-$i" "$(words 40 | cut -c1-200)" 10 "disable-model-invocation: true"
 done
@@ -702,6 +759,65 @@ expect "plugins: an agent outside playbook-agents fails" fail "playbook-wiki/age
 
 fresh
 expect "agents and skills together still pass" pass
+
+# The subagent script: prints the contract as one line of JSON.
+subagent_script="$root/plugins/playbook-wiki/hooks/contract-for-subagent.sh"
+frame_start='{"hookSpecificOutput":{"hookEventName":"SubagentStart","additionalContext":"'
+frame_end='"}}'
+
+# Gives back the text inside the frame of one line of output, with the escapes decoded.
+decode() {
+  awk 'BEGIN { start = "{\"hookSpecificOutput\":{\"hookEventName\":\"SubagentStart\",\"additionalContext\":\"" }
+       { line = substr($0, length(start) + 1); line = substr(line, 1, length(line) - 3)
+         for (i = 1; i <= length(line); i++) {
+           c = substr(line, i, 1)
+           if (c == "\\") {
+             i++; d = substr(line, i, 1)
+             if (d == "n") c = "\n"; else if (d == "t") c = "\t"; else if (d == "r") c = "\r"; else c = d
+           }
+           printf "%s", c
+         } }'
+}
+
+# no_bare_quote <file>: once the frame and the escaped backslashes and quotes
+# are taken out, no double quote is left.
+no_bare_quote() {
+  awk -v start="$frame_start" '{ line = substr($0, length(start) + 1); line = substr(line, 1, length(line) - 3)
+         gsub(/\\\\/, "", line); gsub(/\\"/, "", line)
+         if (index(line, "\"") > 0) exit 1 }' "$1"
+}
+
+# starts_with and ends_with <file> <text>: the first characters of a file and the last of its last line.
+starts_with() { [ "$(head -c "${#2}" "$1")" = "$2" ]; }
+ends_with() { awk -v e="$2" '{ line = $0 } END { exit substr(line, length(line) - length(e) + 1) != e }' "$1"; }
+
+# subagent_run <contract file>: runs the script on a copy of the plugin
+# that holds that contract, and keeps its output in $tmp/subagent.out.
+subagent_run() {
+  rm -rf "$tmp/sub"
+  mkdir -p "$tmp/sub/hooks"
+  cp "$subagent_script" "$tmp/sub/hooks/"
+  cp "$1" "$tmp/sub/contract.md"
+  sh "$tmp/sub/hooks/contract-for-subagent.sh" > "$tmp/subagent.out"
+}
+
+subagent_run "$root/plugins/playbook-wiki/contract.md"
+check "subagent: the output is one line" test "$(wc -l < "$tmp/subagent.out" | tr -d ' ')" -eq 1
+check "subagent: the output starts with the frame" starts_with "$tmp/subagent.out" "$frame_start"
+check "subagent: the output ends with the frame" ends_with "$tmp/subagent.out" "$frame_end"
+decode < "$tmp/subagent.out" > "$tmp/subagent.text"
+check "subagent: decoding the output gives back the contract" cmp -s "$tmp/subagent.text" "$root/plugins/playbook-wiki/contract.md"
+
+printf 'He said "stop".\nA path C:\\dir\\file and a\ttab.\r\nEnd.\n' > "$tmp/odd.md"
+subagent_run "$tmp/odd.md"
+check "subagent: a contract with a quote, a backslash, a tab, and a carriage return is one line" test "$(wc -l < "$tmp/subagent.out" | tr -d ' ')" -eq 1
+decode < "$tmp/subagent.out" > "$tmp/subagent.text"
+check "subagent: a contract with a quote, a backslash, a tab, and a carriage return decodes back" cmp -s "$tmp/subagent.text" "$tmp/odd.md"
+check "subagent: no quote is left unescaped inside the frame" no_bare_quote "$tmp/subagent.out"
+
+rm "$tmp/sub/contract.md"
+out=$(sh "$tmp/sub/hooks/contract-for-subagent.sh" 2>&1); code=$?
+check "subagent: a missing contract prints nothing and exits 0" test -z "$out" -a "$code" -eq 0
 
 if [ "$failed" -eq 0 ]; then
   printf 'all cases passed\n'

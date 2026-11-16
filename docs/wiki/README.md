@@ -90,7 +90,7 @@ Phase 1, kept as a record:
 | [decisions.md](decisions.md) | Numbered decisions with the owner's words | |
 | [01-product/overview.md](01-product/overview.md) | What the playbook is and is not | |
 | [01-product/form.md](01-product/form.md) | Proposed principles for structure and storage, from the agent's side | |
-| [01-product/rules.md](01-product/rules.md) | Where each working rule comes from and which decision accepted it; the text is in `plugins/playbook-agents/rules.md` | `plugins/playbook-agents/rules.md` |
+| [01-product/rules.md](01-product/rules.md) | Where each working rule comes from and which decision accepted it; the text is in `plugins/playbook-agents/rules.md` and, for six of them, in the contract of `playbook-wiki` | `plugins/playbook-agents/rules.md`, `plugins/playbook-wiki/contract.md` |
 | [01-product/skill-set.md](01-product/skill-set.md) | Which job each skill does, and who owns it | `plugins/playbook-wiki/skills/`, `plugins/playbook-agents/skills/` |
 | [01-product/style-guide.md](01-product/style-guide.md) | Format of the rules file and the skills, and the size limits | `plugins/playbook-agents/skills/write-skill/references/style-guide.md`, `scripts/verify.sh` |
 | [01-product/phase-2.md](01-product/phase-2.md) | The product definition for phase 2: what is decided, what each topic still lacks | |

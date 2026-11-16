@@ -2,6 +2,8 @@
 
 How the product is built today and what phase 2 changes in it. Phase 2 replaces gentle-ai in the owner's Claude Code ([../01-product/phase-2.md](../01-product/phase-2.md)). The owner accepted this page when stage 2 of phase 2 was closed (D72); each statement names the decision it rests on.
 
+Since phase 4 the product is three plugins, the hooks are in two of them, and the size limits are counted for each plugin (D199): [architecture-phase-4.md](architecture-phase-4.md). This page still describes the one plugin of phases 1 and 2, with its paths under `plugin/` and its limits of 500 and 800 words; unit U39 of [../05-plan/plan-phase-4.md](../05-plan/plan-phase-4.md) rewrites it.
+
 ## The problem
 
 The owner's Claude Code loads two layers of instructions at once: the product, and gentle-ai with the overlay. gentle-ai's layer is 13,512 words in every session, belongs to someone else, never chooses a model by job, and brings a workflow that collides with the product's (D64, measured in ../02-current-state/gentle-ai-layer.md (kept in the private archive)). Phase 2 makes the product do those jobs so that the other layer can be removed.

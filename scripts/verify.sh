@@ -8,11 +8,14 @@ set -u
 root=${1:-$(cd "$(dirname "$0")/.." && pwd)}
 plugins="$root/plugins"
 agents_plugin="$plugins/playbook-agents"
+wiki_plugin="$plugins/playbook-wiki"
 
-max_rules_words=500        # L1
+max_contract_words=250     # L1, the contract of playbook-wiki
+max_rules_words=400        # L1, the rules of playbook-agents
 max_skill_body_words=700   # L2
 max_description_chars=250  # L3
-max_startup_words=800      # L4
+max_wiki_startup_words=350    # L4, playbook-wiki
+max_agents_startup_words=620  # L4, playbook-agents
 
 failures=0
 fail() {
@@ -47,17 +50,66 @@ else
   fail "the claude command is not installed, so the manifests were not validated"
 fi
 
-# L1: the rules file.
-startup_words=0
+# L1: the contract of playbook-wiki and the rules of playbook-agents.
+wiki_words=0
+if [ -f "$wiki_plugin/contract.md" ]; then
+  contract_words=$(count_words < "$wiki_plugin/contract.md")
+  wiki_words=$contract_words
+  if [ "$contract_words" -gt "$max_contract_words" ]; then
+    fail "L1 contract.md has $contract_words words, limit $max_contract_words"
+  fi
+  # The hook for a subagent passes the contract as a JSON string, and it
+  # escapes no control character but the end of a line.
+  controls=$(LC_ALL=C tr -d '\n' < "$wiki_plugin/contract.md" | LC_ALL=C tr -cd '[:cntrl:]' | wc -c | tr -d ' ')
+  if [ "$controls" -gt 0 ]; then
+    fail "contract.md holds $controls control character(s), which the hook for a subagent cannot pass on"
+  fi
+else
+  fail "L1 contract.md is missing"
+fi
+agents_words=0
 if [ -f "$agents_plugin/rules.md" ]; then
   rules_words=$(count_words < "$agents_plugin/rules.md")
-  startup_words=$rules_words
+  agents_words=$rules_words
   if [ "$rules_words" -gt "$max_rules_words" ]; then
     fail "L1 rules.md has $rules_words words, limit $max_rules_words"
   fi
 else
   fail "L1 rules.md is missing"
 fi
+
+# Adds the words of a description to the load of the plugin that holds it.
+# add_startup <path relative to plugins/> <words>
+add_startup() {
+  case $1 in
+    playbook-wiki/*) wiki_words=$((wiki_words + $2)) ;;
+    playbook-agents/*) agents_words=$((agents_words + $2)) ;;
+    # The start plugin loads nothing until the person starts it (D184).
+    *) fail "the description of $1 loads at session start; only playbook-wiki and playbook-agents may load one" ;;
+  esac
+}
+
+# The hooks of playbook-wiki: the contract at session start and for each subagent.
+hooks_json="$wiki_plugin/hooks/hooks.json"
+hooks_start=$(awk '/"SessionStart"/ { inside = 1 }
+                   /"SubagentStart"/ { inside = 0 }
+                   inside' "$hooks_json" 2>/dev/null)
+hooks_subagent=$(awk '/"SubagentStart"/ { inside = 1 }
+                      /"SessionStart"/ { inside = 0 }
+                      inside' "$hooks_json" 2>/dev/null)
+# The text in single quotes is what hooks.json holds; Claude Code expands it.
+# shellcheck disable=SC2016
+case $hooks_start in
+  *'${CLAUDE_PLUGIN_ROOT}/contract.md'*) ;;
+  *) fail "hooks.json of playbook-wiki does not print contract.md under SessionStart" ;;
+esac
+# shellcheck disable=SC2016
+case $hooks_subagent in
+  *'${CLAUDE_PLUGIN_ROOT}/hooks/contract-for-subagent.sh'*) ;;
+  *) fail "hooks.json of playbook-wiki does not run contract-for-subagent.sh under SubagentStart" ;;
+esac
+[ -f "$wiki_plugin/hooks/contract-for-subagent.sh" ] ||
+  fail "hooks/contract-for-subagent.sh of playbook-wiki is missing"
 
 # L2 and L3: each skill of each plugin.
 for skill in "$plugins"/*/skills/*/SKILL.md; do
@@ -87,7 +139,7 @@ for skill in "$plugins"/*/skills/*/SKILL.md; do
   # out of the session, so it does not count toward L4.
   case "$keys" in
     *disable-model-invocation*) ;;
-    *) startup_words=$((startup_words + $(printf '%s' "$description" | count_words))) ;;
+    *) add_startup "$name" "$(printf '%s' "$description" | count_words)" ;;
   esac
 
   body_words=$(body "$skill" | count_words)
@@ -139,17 +191,20 @@ for agent in "$plugins"/*/agents/*.md; do
   if [ "$description_chars" -gt "$max_description_chars" ]; then
     fail "L3 description of $name has $description_chars characters, limit $max_description_chars"
   fi
-  startup_words=$((startup_words + $(printf '%s' "$description" | count_words)))
+  add_startup "$name" "$(printf '%s' "$description" | count_words)"
 done
 
-# L4: everything loaded at session start.
-if [ "$startup_words" -gt "$max_startup_words" ]; then
-  fail "L4 rules.md plus all descriptions have $startup_words words, limit $max_startup_words"
+# L4: everything each plugin loads at session start.
+if [ "$wiki_words" -gt "$max_wiki_startup_words" ]; then
+  fail "L4 playbook-wiki loads $wiki_words words at session start, limit $max_wiki_startup_words"
+fi
+if [ "$agents_words" -gt "$max_agents_startup_words" ]; then
+  fail "L4 playbook-agents loads $agents_words words at session start, limit $max_agents_startup_words"
 fi
 
 if [ "$failures" -gt 0 ]; then
   printf '%s check(s) failed\n' "$failures"
   exit 1
 fi
-printf 'verify passed: %s words loaded at session start, limit %s\n' \
-  "$startup_words" "$max_startup_words"
+printf 'verify passed: playbook-wiki loads %s words at session start, limit %s; playbook-agents loads %s, limit %s\n' \
+  "$wiki_words" "$max_wiki_startup_words" "$agents_words" "$max_agents_startup_words"

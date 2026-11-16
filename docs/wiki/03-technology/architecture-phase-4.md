@@ -99,7 +99,7 @@ Engram and CodeGraph stay as they are, with the owner's agent system.
 | The agent misses two skills that do the same job, or names a pair that does not | The person decides each pair, and the start command can be run again (D193) |
 | A merge made outside Claude Code skips the hook | The rule of the contract (D173, TD28) |
 | The script changes settings on a person's machine | It runs only Claude Code's own plugin commands, and prints each one first |
-| The size limits of a session (D48) are checked for one plugin | `scripts/verify.sh` checks each plugin, and the sum for a person who uses the whole product |
+| The size limits of a session (D48) are checked for one plugin | `scripts/verify.sh` checks each plugin against its own limits (D199). A person with the whole product loads at most the two limits together, 970 words; no separate limit is set for the sum |
 
 ## Trade-offs
 
