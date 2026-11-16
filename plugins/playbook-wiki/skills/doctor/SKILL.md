@@ -17,7 +17,7 @@ Do not use it to write, extend, or reorganize a wiki for any other reason.
 - Move text. Do not rewrite it, shorten it, or delete it, except a copy of something that another page of the wiki already holds.
 - Never change, renumber, or delete a row of `docs/wiki/decisions.md`.
 - Do one format at a time, in order, from the wiki's format to the playbook's.
-- Never write `docs/wiki/.format` or `docs/wiki/.unchecked-decisions` by hand. Only `scripts/wiki-format.sh mark` writes them, and only when the check passes.
+- Never write `docs/wiki/.format` by hand. Only `scripts/wiki-format.sh mark` writes it, and only when the check passes.
 - When the project is not a git repository, copy `docs/wiki/` to a folder next to it before the first change, and tell the owner where the copy is.
 
 ## Steps

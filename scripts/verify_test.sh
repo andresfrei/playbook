@@ -1,6 +1,6 @@
 #!/bin/sh
 # Tests for scripts/verify.sh, scripts/set-models.sh, and the check of a
-# project's wiki, plugins/playbook-wiki/skills/prepare-project/scripts/check-wiki.sh. Each case builds a copy
+# project's wiki, plugins/playbook-wiki/check-wiki.sh. Each case builds a copy
 # of the three plugins, or a small wiki, in a temporary directory, changes one thing,
 # and checks the exit code and message.
 # Usage: sh scripts/verify_test.sh
@@ -272,7 +272,7 @@ check() {
 absent() { [ ! -e "$1" ] && [ ! -L "$1" ]; }
 
 # The check of a project's wiki.
-check_wiki="$root/plugins/playbook-wiki/skills/prepare-project/scripts/check-wiki.sh"
+check_wiki="$root/plugins/playbook-wiki/check-wiki.sh"
 
 # fresh_wiki <words under "Where work stands">: an entry point and one page,
 # each linking to the other. The table of pages names no code.
@@ -501,78 +501,273 @@ decisions() {
 
 fresh_wiki 10
 decisions
-decision D1 200 >> "$tmp/wiki/decisions.md"
-expect_wiki "decisions: a wiki without the count of unchecked rows has no row checked" pass
-
-fresh_wiki 10
-decisions
-{ decision D1 200; decision D2 60 300; decision TD1 60; } >> "$tmp/wiki/decisions.md"
-printf '1\n' > "$tmp/wiki/.unchecked-decisions"
-expect_wiki "decisions: rows at the limit pass, and the owner's words are not counted" pass
-
-fresh_wiki 10
-decisions
-{ decision D1 200; decision D2 61; } >> "$tmp/wiki/decisions.md"
-printf '1\n' > "$tmp/wiki/.unchecked-decisions"
-expect_wiki "decisions: a row over 60 words fails and names it" fail "the decision of D2 has 61 words, limit 60"
-
-fresh_wiki 10
-decisions
-{ decision D1 10; decision TD1 90; decision D2 90; } >> "$tmp/wiki/decisions.md"
-printf '1\n' > "$tmp/wiki/.unchecked-decisions"
-expect_wiki "decisions: a technical decision is a row, and each long row is one failure" fail "2 check(s) failed"
-
-fresh_wiki 10
-decisions
-decision D1 90 >> "$tmp/wiki/decisions.md"
-printf '0\n' > "$tmp/wiki/.unchecked-decisions"
-expect_wiki "decisions: with a count of zero the first row is checked" fail "the decision of D1 has 90 words"
-
-fresh_wiki 10
-decisions
-decision D1 90 >> "$tmp/wiki/decisions.md"
-printf 'all\n' > "$tmp/wiki/.unchecked-decisions"
-expect_wiki "decisions: a count that is not a number fails" fail ".unchecked-decisions does not hold a number"
-
-fresh_wiki 10
-decisions
-{ decision D1 10; decision TD1 10; decision D2 10; } >> "$tmp/wiki/decisions.md"
-check "decisions: --rows counts the rows and not the heading of the table" test "$(sh "$check_wiki" --rows "$tmp/wiki")" = 3
-
-fresh_wiki 10
-check "decisions: --rows prints 0 for a wiki without decisions.md" test "$(sh "$check_wiki" --rows "$tmp/wiki")" = 0
-
-fresh_wiki 10
-decisions
-{ decision D1 10; decision D2 90; } >> "$tmp/wiki/decisions.md"
-printf '1 1\n' > "$tmp/wiki/.unchecked-decisions"
-expect_wiki "decisions: a count with a space inside is not read as a number" fail ".unchecked-decisions does not hold a number"
-
-fresh_wiki 10
-decisions
-decision D1 90 >> "$tmp/wiki/decisions.md"
-awk '{ printf "%s\r\n", $0 }' "$tmp/wiki/decisions.md" > "$tmp/x" && mv "$tmp/x" "$tmp/wiki/decisions.md"
-printf '0\r\n' > "$tmp/wiki/.unchecked-decisions"
-expect_wiki "decisions: rows and a count that end in a carriage return are read" fail "the decision of D1 has 90 words"
-
-fresh_wiki 10
-decisions
-{ decision D1 10; printf '\n```text\n'; decision D2 90; printf '```\n'; } >> "$tmp/wiki/decisions.md"
-printf '0\n' > "$tmp/wiki/.unchecked-decisions"
-expect_wiki "decisions: a row inside a code block is not a row" pass
-check "decisions: --rows does not count a row inside a code block" test "$(sh "$check_wiki" --rows "$tmp/wiki")" = 1
-
-fresh_wiki 10
-decisions
-decision D1 90 >> "$tmp/wiki/decisions.md"
+{ decision D1 200; decision TD1 90; } >> "$tmp/wiki/decisions.md"
 printf '3\n' > "$tmp/wiki/.format"
-expect_wiki "decisions: a wiki at format 3 without the count of unchecked rows fails" fail ".unchecked-decisions is missing in a wiki at format 3"
+expect_wiki "decisions: the rows of the top-level decisions.md are history and are not read" pass
 
-fresh_wiki 10
-decisions
-decision D1 90 >> "$tmp/wiki/decisions.md"
-printf '2\n' > "$tmp/wiki/.format"
-expect_wiki "decisions: a wiki at format 2 has no row checked" pass
+# The works of a wiki: a folder for each work, with identifiers that carry the
+# work's name.
+# mkwork <name> <date of <name>-1> <date of <name>-2>: a work in $project_wiki
+# that passes the check, and the shared page that cites its first decision.
+mkwork() {
+  d=$project_wiki/works/$1
+  mkdir -p "$d"
+  printf '# %s\n\n## Where work stands\n\nNothing open.\n\n## Pages\n\n| Page | Content | Code it governs |\n|---|---|---|\n| [Decisions](decisions.md) | What was decided | `src/filters/` |\n' "$1" > "$d/README.md"
+  {
+    printf '# Decisions\n\n| ID | Date | Decision | Who decided | Their words | Shared page |\n|---|---|---|---|---|---|\n'
+    printf '| %s-1 | %s | Rule one of %s | Ana | "yes" | `01-product/%s.md` |\n' "$1" "$2" "$1" "$1"
+    printf '| %s-2 | %s | Rule two of %s | Ana | "go" | None |\n' "$1" "$3" "$1"
+  } > "$d/decisions.md"
+  printf '# Questions\n\n| ID | Question | Recommendation | Blocks |\n|---|---|---|---|\n| %s-Q1 | Which one? | The first | Unit 1 |\n' "$1" > "$d/questions.md"
+  printf '# Plan\n\n| Unit | Status |\n|---|---|\n| %s-U1 | Built |\n| %s-U2 | Not started |\n\n## Units\n\n| Unit | Ending condition |\n|---|---|\n| %s-U1 | It runs |\n| %s-U2 | It ships |\n' "$1" "$1" "$1" "$1" > "$d/plan.md"
+  printf '# %s\n\nThe rule of the work (%s-1).\n' "$1" "$1" > "$project_wiki/01-product/$1.md"
+}
+# fresh_works: two works, with decisions in an order that is not the order of their dates.
+fresh_works() {
+  fresh_project
+  mkwork auth 2026-03-05 2026-01-10
+  mkwork billing 2026-02-01 2026-03-05
+}
+# edit <file> <sed script>
+edit() {
+  sed "$2" "$1" > "$tmp/x" && mv "$tmp/x" "$1"
+}
+
+fresh_works
+expect_wiki "works: two works that follow the format pass" pass "" "$project_wiki"
+
+fresh_works
+mv "$project_wiki/works/auth" "$project_wiki/works/Auth_x"
+expect_wiki "works: a folder with a name that is not lowercase letters, digits, and hyphens fails" fail "FAIL works/Auth_x: the name of the folder" "$project_wiki"
+
+fresh_works
+mv "$project_wiki/works/auth" "$project_wiki/works/auth--x"
+expect_wiki "works: a name with two hyphens in a row fails" fail "FAIL works/auth--x: the name of the folder" "$project_wiki"
+
+fresh_works
+rm "$project_wiki/works/auth/README.md"
+expect_wiki "works: a work without README.md fails" fail "FAIL works/auth has no README.md" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/decisions.md" 's/^| auth-2 /| billing-3 /'
+expect_wiki "works: a decision of another work fails and names both" fail "FAIL works/auth/decisions.md: billing-3 carries the work billing, but the folder is auth" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/decisions.md" 's/^| auth-2 /| auth-Q1 /'
+expect_wiki "works: a question identifier in decisions.md fails" fail "FAIL works/auth/decisions.md: auth-Q1 has the wrong letter" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/questions.md" 's/^| auth-Q1 /| auth-2 /'
+expect_wiki "works: a decision identifier in questions.md fails" fail "FAIL works/auth/questions.md: auth-2 has the wrong letter" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/plan.md" 's/^| auth-U2 | Not started/| auth-U02 | Not started/'
+expect_wiki "works: a unit with a leading zero in plan.md fails" fail "FAIL works/auth/plan.md: auth-U02 is not an identifier" "$project_wiki"
+
+fresh_works
+printf '\n| Date | What |\n|---|---|\n| 2026-01-10 | started |\n| node-18 | runtime |\n| auth-3 | a decision named in a note |\n' >> "$project_wiki/works/auth/plan.md"
+expect_wiki "works: a table of dates and names in plan.md passes" pass "" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/plan.md" 's/^| auth-U2 | Not started/| billing-U2 | Not started/'
+expect_wiki "works: a unit of another work in plan.md fails" fail "FAIL works/auth/plan.md: billing-U2 carries the work billing, but the folder is auth" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/plan.md" 's/^| auth-U2 | Not started/| Unit 2 | Not started/'
+expect_wiki "works: a plan row whose first cell is not an identifier is not checked" pass "" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/decisions.md" 's/^| auth-2 /| Two /'
+expect_wiki "works: a cell in decisions.md that is not an identifier fails" fail "FAIL works/auth/decisions.md: Two is not an identifier" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/decisions.md" 's/^| auth-2 /| auth-02 /'
+expect_wiki "works: a counter with a leading zero fails" fail "FAIL works/auth/decisions.md: auth-02 is not an identifier" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/decisions.md" 's/^| auth-2 /| auth-0 /'
+expect_wiki "works: a counter of zero fails" fail "FAIL works/auth/decisions.md: auth-0 is not an identifier" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/decisions.md" 's/^| auth-2 /| auth-1 /'
+expect_wiki "works: an identifier repeated in a table fails" fail "FAIL works/auth/decisions.md: auth-1 is repeated" "$project_wiki"
+
+fresh_works
+expect_wiki "works: the same unit in two tables of plan.md is not a repeat" pass "" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/plan.md" 's/^| auth-U2 | Not started/| auth-U1 | Not started/'
+expect_wiki "works: a unit repeated in one table of plan.md fails" fail "FAIL works/auth/plan.md: auth-U1 is repeated" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/decisions.md" 's|`01-product/auth.md`|`01-product/gone.md`|'
+expect_wiki "works: a shared page that does not exist fails" fail "FAIL works/auth/decisions.md: the shared page 01-product/gone.md of auth-1 is not a file" "$project_wiki"
+
+fresh_works
+printf '# auth\n\nA rule with no citation.\n' > "$project_wiki/01-product/auth.md"
+expect_wiki "works: a shared page that does not cite the identifier fails" fail "FAIL works/auth/decisions.md: the shared page 01-product/auth.md does not cite auth-1" "$project_wiki"
+
+fresh_works
+printf '# auth\n\nA rule (auth-10) and one (xauth-1) and one (auth-1-b).\n' > "$project_wiki/01-product/auth.md"
+expect_wiki "works: a page that cites auth-10, xauth-1, and auth-1-b does not cite auth-1" fail "does not cite auth-1" "$project_wiki"
+
+fresh_works
+printf '# auth\n\nA rule, auth-1, and another.\n' > "$project_wiki/01-product/auth.md"
+expect_wiki "works: an identifier between a comma and a comma is a whole word" pass "" "$project_wiki"
+
+fresh_works
+printf '# auth\n\nauth-1\n' > "$project_wiki/01-product/auth.md"
+expect_wiki "works: an identifier that is the whole line is a whole word" pass "" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/decisions.md" 's|`01-product/auth.md`|`works/auth/README.md`|'
+expect_wiki "works: a shared page under works/ fails" fail "FAIL works/auth/decisions.md: the shared page works/auth/README.md of auth-1 is under works/" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/decisions.md" 's|`01-product/auth.md`|`01-product/auth.md`, `01-product/billing.md`|'
+expect_wiki "works: of two shared pages, the one that does not cite the identifier fails" fail "the shared page 01-product/billing.md does not cite auth-1" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/decisions.md" 's/| None |$/| NONE  |/'
+expect_wiki "works: none is read without regard to case" pass "" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/decisions.md" 's/| None |$/| nothing |/'
+expect_wiki "works: a shared page that is neither none nor a code span fails" fail "FAIL works/auth/decisions.md: the shared page of auth-2 is neither none nor a path" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/decisions.md" 's/| None |$/| |/'
+expect_wiki "works: an empty shared page fails" fail "the shared page of auth-2 is neither none" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/decisions.md" 's/| "go" | None |$/| "go" |/'
+expect_wiki "works: a decision without the sixth column fails" fail "FAIL works/auth/decisions.md: the row of auth-2 has 5 columns and no shared-page column" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/decisions.md" "s/^| auth-2 | 2026-01-10 | Rule two of auth/| auth-2 | 2026-01-10 | $(words 61)/"
+expect_wiki "works: a decision over 60 words fails" fail "FAIL works/auth/decisions.md: the decision of auth-2 has 61 words, limit 60" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/decisions.md" "s/^| auth-2 | 2026-01-10 | Rule two of auth/| auth-2 | 2026-01-10 | $(words 60)/"
+expect_wiki "works: a decision of 60 words passes" pass "" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/README.md" "s/Nothing open\./$(words 251)/"
+expect_wiki "works: a work's state section over 250 words fails" fail "FAIL works/auth/README.md: \"Where work stands\" has 251 words, limit 250" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/README.md" "s/Nothing open\./$(words 250)/"
+expect_wiki "works: a work's state section of 250 words passes" pass "" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/README.md" '/Where work stands/,/^$/d'
+edit "$project_wiki/works/auth/README.md" '/^Nothing open\.$/d'
+expect_wiki "works: a work without a state section passes" pass "" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/README.md" 's|src/filters/|src/gone/|'
+expect_wiki "works: a path that a work's README names and that is gone fails" fail "works/auth/README.md names the path src/gone/" "$project_wiki"
+
+# BSD find, as on macOS, prints "<dir>//<file>" for "find <dir>/".
+mkdir -p "$tmp/bsd-find"
+printf '#!/bin/sh\nroot=${1%%/}/\n%s "$@" | awk -v r="$root" '"'"'index($0, r) == 1 { $0 = r "/" substr($0, length(r) + 1) } { print }'"'"'\n' "$(command -v find)" > "$tmp/bsd-find/find"
+chmod +x "$tmp/bsd-find/find"
+out=$(PATH="$tmp/bsd-find:$PATH" sh "$check_wiki" "$project_wiki" 2>&1)
+check "works: with the paths of BSD find, a gone path in a work's README still fails" sh -c 'printf "%s" "$1" | grep -q "names the path src/gone/"' sh "$out"
+
+fresh_works
+printf '# Notes\n\n| Page | Code it governs |\n|---|---|\n| An example | `src/gone/` |\n' > "$project_wiki/works/auth/notes.md"
+expect_wiki "works: the column of code is read in the README of a work only" pass "" "$project_wiki"
+
+fresh_works
+mkdir "$project_wiki/works/auth/notes"
+printf '\n| Page | Code it governs |\n|---|---|\n| An example | `src/gone/` |\n' > "$project_wiki/works/auth/notes/README.md"
+expect_wiki "works: a README deeper in a work is not the work's README" pass "" "$project_wiki"
+
+fresh_works
+printf '\n## Code on the old definition\n\n| Path | Decision | What was chosen |\n|---|---|---|\n| `src/old.ts` | auth-1 | Debt |\n' >> "$project_wiki/works/auth/README.md"
+expect_wiki "works: old code that is gone, listed in a page of a work, fails" fail "works/auth/README.md names the path src/old.ts" "$project_wiki"
+
+fresh_works
+printf 'See [the plan](gone.md).\n' >> "$project_wiki/works/auth/README.md"
+expect_wiki "works: a broken link in a page of a work fails" fail "works/auth/README.md links to gone.md" "$project_wiki"
+
+fresh_works
+printf '# Notes\n\nSee [the plan](gone.md).\n' > "$project_wiki/works/auth/notes.md"
+expect_wiki "works: a broken link in a page of a work that is not its README fails" fail "works/auth/notes.md links to gone.md" "$project_wiki"
+
+fresh_works
+printf '\n| Name | Value |\n|---|---|\n| auth-1 | again |\n```text\n| auth-1 | again |\n```\n' >> "$project_wiki/works/auth/questions.md"
+expect_wiki "works: a table of questions.md with a row of the wrong letter fails" fail "FAIL works/auth/questions.md: auth-1 has the wrong letter" "$project_wiki"
+check "works: a row inside a code block right after a table is not read" test "$(sh "$check_wiki" "$project_wiki" | grep -c 'auth-1 has the wrong letter')" = 1
+
+fresh_works
+printf '| <work>-<n> | <date> | A template in a code block | <who> | <words> | none |\n' > "$tmp/template-row"
+awk -v row="$(cat "$tmp/template-row")" '{ print } /^\|---/ && !done { print "```text"; print "| ID | Date | Decision | Who | Words | Page |"; print "|---|---|---|---|---|---|"; print row; print "```"; done = 1 }' "$project_wiki/works/auth/decisions.md" > "$tmp/x" && mv "$tmp/x" "$project_wiki/works/auth/decisions.md"
+expect_wiki "works: a template table inside a code block in decisions.md is not read" pass "" "$project_wiki"
+
+fresh_works
+printf '\nA table of another kind:\n\n| ID | Question | Recommendation | Blocks |\n|---|---|---|---|\n| auth-Q1 | Again | No | None |\n' >> "$project_wiki/works/auth/questions.md"
+expect_wiki "works: an identifier repeated in a second table is not a repeat" pass "" "$project_wiki"
+
+fresh_works
+printf '\n| ID | Question | Recommendation | Blocks |\n| auth-Q1 | Again | No | None |\n' >> "$project_wiki/works/auth/questions.md"
+expect_wiki "works: a table line that follows no separator line is not a row" pass "" "$project_wiki"
+
+fresh_works
+rm -rf "$project_wiki/works/auth/questions.md" "$project_wiki/works/auth/plan.md"
+expect_wiki "works: a work without questions.md and plan.md passes" pass "" "$project_wiki"
+
+fresh_project
+printf '3\n' > "$project_wiki/.format"
+expect_wiki "works: a wiki at format 3 without works/ passes" pass "" "$project_wiki"
+
+fresh_works
+printf '3\n' > "$project_wiki/.format"
+expect_wiki "works: the works of a wiki at format 3 are checked too" pass "" "$project_wiki"
+
+fresh_works
+printf '3\n' > "$project_wiki/.format"
+rm "$project_wiki/works/billing/README.md"
+expect_wiki "works: the works of a wiki at format 3 fail when they break a rule" fail "FAIL works/billing has no README.md" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/decisions.md" 's/^| auth-2 /| auth-1 /'
+edit "$project_wiki/works/billing/decisions.md" 's/^| billing-2 /| billing-1 /'
+out=$(sh "$check_wiki" "$project_wiki" 2>&1)
+check "works: each failure is counted" sh -c 'printf "%s\n" "$1" | grep -q -F "2 check(s) failed"' sh "$out"
+
+# --decisions: the decisions of every work, by date, then work, then number.
+fresh_works
+printf '| auth-10 | 2026-01-10 | Rule ten of auth | Ana | "ok" | none |\n' >> "$project_wiki/works/auth/decisions.md"
+printf '2026-01-10 auth-2 Rule two of auth\n2026-01-10 auth-10 Rule ten of auth\n2026-02-01 billing-1 Rule one of billing\n2026-03-05 auth-1 Rule one of auth\n2026-03-05 billing-2 Rule two of billing\n' > "$tmp/expected"
+sh "$check_wiki" --decisions "$project_wiki" > "$tmp/actual" 2>&1
+check "works: --decisions prints the decisions of both works by date, work, and number" cmp -s "$tmp/expected" "$tmp/actual"
+check "works: --decisions exits 0" sh -c 'sh "$1" --decisions "$2" >/dev/null' sh "$check_wiki" "$project_wiki"
+
+fresh_works
+edit "$project_wiki/works/auth/README.md" "s/Nothing open\./$(words 400)/"
+rm "$project_wiki/01-product/auth.md"
+check "works: --decisions checks nothing and exits 0" sh -c 'sh "$1" --decisions "$2" >/dev/null' sh "$check_wiki" "$project_wiki"
+
+fresh_project
+check "works: --decisions prints nothing for a wiki without works" test -z "$(sh "$check_wiki" --decisions "$project_wiki")"
+
+fresh_works
+printf '\n```text\n| auth-5 | 2026-01-01 | In a code block | Ana | "x" | none |\n```\n' >> "$project_wiki/works/auth/decisions.md"
+check "works: --decisions skips a row inside a code block" test "$(sh "$check_wiki" --decisions "$project_wiki" | wc -l | tr -d ' ')" = 4
+
+fresh_works
+awk '{ print } /^\| auth-1 / { print "```text"; print "| auth-6 | 2026-01-01 | In a code block | Ana | x | none |"; print "```" }' "$project_wiki/works/auth/decisions.md" > "$tmp/x" && mv "$tmp/x" "$project_wiki/works/auth/decisions.md"
+check "works: --decisions skips a code block right after a row" test "$(sh "$check_wiki" --decisions "$project_wiki" | grep -c auth-6)" = 0
+
+check "works: --decisions on a missing directory fails" sh -c '! sh "$1" --decisions "$2" >/dev/null 2>&1' sh "$check_wiki" "$tmp/no-such-wiki"
+
+fresh_works
+rm "$project_wiki/README.md"
+check "works: --decisions needs no README.md" test "$(sh "$check_wiki" --decisions "$project_wiki" | wc -l | tr -d ' ')" = 4
+
+fresh_works
 
 # The marker of a wiki's format.
 wiki_format="$root/plugins/playbook-wiki/skills/doctor/scripts/wiki-format.sh"
@@ -665,32 +860,8 @@ check "format: a wiki without the column is left without a marker" absent "$tmp/
 fresh_wiki 10
 decisions
 { decision D1 200; decision D2 200; } >> "$tmp/wiki/decisions.md"
-expect_format "format: the first mark says how many rows are not checked" mark 0 "the 2 rows already in"
-check "format: the first mark writes the count of rows" test "$(cat "$tmp/wiki/.unchecked-decisions")" = 2
-decision D3 61 >> "$tmp/wiki/decisions.md"
-expect_format "format: after mark, a new long row fails the check" mark 1 "the decision of D3 has 61 words"
-
-fresh_wiki 10
-decisions
-{ decision D1 10; decision D2 10; } >> "$tmp/wiki/decisions.md"
-printf '1\n' > "$tmp/wiki/.unchecked-decisions"
-expect_format "format: a later mark succeeds" mark 0 "as wiki format $product_format"
-check "format: a later mark leaves the count of rows as it was" test "$(cat "$tmp/wiki/.unchecked-decisions")" = 1
-
-fresh_wiki 10
-expect_format "format: mark on a wiki without decisions.md succeeds" mark 0 "the 0 rows already in"
-
-fresh_wiki 10
-mkdir "$tmp/wiki/.unchecked-decisions"
-expect_format "format: mark fails when the count of rows cannot be written" mark 1 "could not write"
-check "format: no marker exists when the count of rows could not be written" absent "$tmp/wiki/.format"
-
-fresh_wiki 10
-decisions
-{ decision D1 10; decision D2 90; } >> "$tmp/wiki/decisions.md"
-printf '%s\n' "$product_format" > "$tmp/wiki/.format"
-expect_format "format: mark does not count the rows again for a wiki already at the format" mark 1 ".unchecked-decisions is missing"
-check "format: the count of rows is not written for a wiki already at the format" absent "$tmp/wiki/.unchecked-decisions"
+expect_format "format: mark succeeds on a wiki with long rows in decisions.md" mark 0 "as wiki format $product_format"
+check "format: mark writes no count of rows" absent "$tmp/wiki/.unchecked-decisions"
 
 fresh_wiki 10
 printf '# Wiki\n\n## Where work stands\n\nNothing open.\n\n```text\n| Page | Content | Code it governs |\n```\n' > "$tmp/wiki/README.md"

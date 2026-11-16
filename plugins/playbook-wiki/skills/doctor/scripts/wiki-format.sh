@@ -11,10 +11,7 @@
 # CLAUDE_PROJECT_DIR. It prints nothing when that variable is not set.
 # mark writes the marker only when the wiki has a "Where work stands" section
 # and a column "Code it governs" in a table of its README.md, and the check of
-# the wiki passes. For a wiki below format 3 it also writes
-# .unchecked-decisions: how many rows decisions.md holds, which the check of
-# the wiki does not read. A wiki at format 3 that lost that file fails the
-# check, so mark never counts its rows again.
+# the wiki passes.
 set -u
 
 # The format of a wiki the playbook is at. Raise it only together with a new
@@ -30,8 +27,7 @@ fi
 wiki=${2:-docs/wiki}
 wiki=${wiki%/}
 marker="$wiki/.format"
-unchecked="$wiki/.unchecked-decisions"
-check_wiki="$(dirname "$0")/../../prepare-project/scripts/check-wiki.sh"
+check_wiki="$(dirname "$0")/../../../check-wiki.sh"
 
 # Prints the number in the marker, or nothing when the marker is missing or
 # does not hold a number of at most nine digits.
@@ -72,14 +68,6 @@ case $command in
     if ! sh "$check_wiki" "$wiki"; then
       printf 'The marker was not written.\n'
       exit 1
-    fi
-    if [ ! -f "$unchecked" ]; then
-      rows=$(sh "$check_wiki" --rows "$wiki")
-      if ! printf '%s\n' "$rows" 2>/dev/null > "$unchecked"; then
-        printf 'FAIL could not write %s. The marker was not written.\n' "$unchecked"
-        exit 1
-      fi
-      printf 'the %s rows already in %s/decisions.md are not checked\n' "$rows" "$wiki"
     fi
     if ! printf '%s\n' "$format" 2>/dev/null > "$marker"; then
       printf 'FAIL could not write %s. The marker was not written.\n' "$marker"

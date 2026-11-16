@@ -32,7 +32,7 @@ docs/wiki/
 
 Create a folder or a page only when it has content. One topic per page.
 
-A wiki written before format 4 also holds `decisions.md`, `.unchecked-decisions`, and the pages of its earlier phases. They stay as they are, and nothing is added to that `decisions.md`. Its identifiers, `D#`, `TD#`, `Q#`, and `U#`, are never renumbered.
+A wiki written before format 4 also holds `decisions.md` and the pages of its earlier phases. They are history: they stay as they are, nothing is added to that `decisions.md`, and the check does not read it. Its identifiers, `D#`, `TD#`, `Q#`, and `U#`, are never renumbered.
 
 ## The project's `README.md`
 
@@ -107,7 +107,7 @@ One table: ID, date, decision, who decided, their words, shared page.
 
 - Who decided: the person who leads the work, or the project's owner for a decision that changes a definition other works share.
 - Their words are verbatim. When that person chose one of the options offered, write the option chosen.
-- Shared page: the path of the shared page the decision changed, or "none". That page cites the decision.
+- Shared page: the path of the shared page the decision changed, from `docs/wiki/` and as code, such as `01-product/rbac.md`; or "none". That page cites the decision.
 - A decision that replaces an earlier one names it, in this work or in another.
 - A decision is a choice made between alternatives, or a rule set. That includes an authorization given before an action, the closing of a stage, and the acceptance of a plan.
 - Not a row: the acceptance of a unit, which goes in the plan's progress table, and something done after a decision, such as a push or a cleanup.

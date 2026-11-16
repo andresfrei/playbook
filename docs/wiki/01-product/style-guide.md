@@ -27,7 +27,7 @@ Two limits apply to the wiki that `prepare-project` creates in a project, not to
 
 | What | Limit | Enforced by |
 |------|-------|-------------|
-| The section "Where work stands" of the wiki's `README.md` | 250 words | `plugin/skills/prepare-project/scripts/check-wiki.sh`, which also fails on a relative link that does not resolve and on a path the wiki names as code that does not exist (D160) |
+| The section "Where work stands" of the wiki's `README.md` | 250 words | `plugins/playbook-wiki/check-wiki.sh`, which also fails on a relative link that does not resolve and on a path the wiki names as code that does not exist (D160) |
 | The text of a decision in `decisions.md` | 60 words | The same script, for the rows written after the wiki reached format 3 (D161). Earlier rows are not checked or changed |
 
 ## Format of a skill

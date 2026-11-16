@@ -34,7 +34,7 @@ Do not use it for a small change in an existing repository that has no wiki. Do 
 3. When there is no stage table, the current stage is stage 1. Look at whether the repository already holds code: if it does, this is a project already started.
 4. Read the reference file of the current stage and do its steps.
 5. Write each result in the wiki when it is produced, with the `write-docs` skill. Then rewrite "Where work stands" in `docs/wiki/README.md`.
-6. When the closing condition of the stage holds and this skill's `scripts/check-wiki.sh docs/wiki` passes, list what the stage leaves Decided, Proposed, and Open, and ask the owner to close it.
+6. When the closing condition of the stage holds and `sh <this skill's folder>/../../check-wiki.sh docs/wiki` passes, list what it leaves Decided, Proposed, and Open, and ask the owner to close it.
 7. When the owner closes it, record that as a decision. In the stage table, set the stage to Closed with the date and the next stage to Open.
 
 ## Output

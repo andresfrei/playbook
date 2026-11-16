@@ -10,9 +10,9 @@ Every statement is one of:
 
 ## Where work stands
 
-Updated 2026-11-16, after D201.
+Updated 2026-11-16, after D202.
 
-Phase 4 is open at stage 6, Execution (D167). Stages 1 to 5 are closed (D197), and U28 to U32 are done: [05-plan/plan-phase-4.md](05-plan/plan-phase-4.md). It is version 2 of the product and removes the support for opencode (TD32, D191). It splits the product into a shared core, `playbook-wiki`, and the owner's agent system, `playbook-agents`: [01-product/phase-4.md](01-product/phase-4.md).
+Phase 4 is open at stage 6, Execution (D167). Stages 1 to 5 are closed (D197), and U28 to U33 are done: [05-plan/plan-phase-4.md](05-plan/plan-phase-4.md). It is version 2 of the product and removes the support for opencode (TD32, D191). It splits the product into a shared core, `playbook-wiki`, and the owner's agent system, `playbook-agents`: [01-product/phase-4.md](01-product/phase-4.md).
 
 Wiki maintenance and the doctor (D133 to D142) are built, merged into `main`, and pushed (D144): [01-product/wiki-maintenance.md](01-product/wiki-maintenance.md).
 
@@ -27,7 +27,7 @@ Waiting for the owner:
 
 Next steps:
 
-1. U33 to U41 in the order of the plan, one at a time.
+1. U34 to U41 in the order of the plan, one at a time.
 2. The owner reviews each unit when it ends.
 
 Finished:
@@ -96,7 +96,7 @@ Phase 1, kept as a record:
 | [01-product/phase-2.md](01-product/phase-2.md) | The product definition for phase 2: what is decided, what each topic still lacks | |
 | [01-product/phase-3.md](01-product/phase-3.md) | The product definition for phase 3, support for opencode 2.x: what is decided, proposed, and open | |
 | [01-product/phase-4.md](01-product/phase-4.md) | The product definition for phase 4, a shared core separate from each person's agent system: what is decided, proposed, and open | |
-| [01-product/wiki-maintenance.md](01-product/wiki-maintenance.md) | How a project's wiki stays small and current, and how a changed definition reaches the next session: what was measured, the changes proposed, and the order of the work | `plugins/playbook-wiki/skills/doctor/`, `plugins/playbook-wiki/skills/prepare-project/scripts/check-wiki.sh`, `plugins/playbook-wiki/skills/prepare-project/references/1-wiki.md` |
+| [01-product/wiki-maintenance.md](01-product/wiki-maintenance.md) | How a project's wiki stays small and current, and how a changed definition reaches the next session: what was measured, the changes proposed, and the order of the work | `plugins/playbook-wiki/skills/doctor/`, `plugins/playbook-wiki/check-wiki.sh`, `plugins/playbook-wiki/skills/prepare-project/references/1-wiki.md` |
 | [01-product/wiki-format-3.md](01-product/wiki-format-3.md) | A proposal for the next format of a project's wiki: the page table says which code each page governs, the page is read before the code is changed, the code left on an old definition is listed, and the check enforces it | `plugins/playbook-wiki/skills/doctor/references/format-3.md` |
 | [01-product/glossary.md](01-product/glossary.md) | Vocabulary, with Spanish | |
 | [01-product/open-questions.md](01-product/open-questions.md) | Questions that block closing this stage | |
