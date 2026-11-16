@@ -298,17 +298,16 @@ absent() { [ ! -e "$1" ] && [ ! -L "$1" ]; }
 # The check of a project's wiki.
 check_wiki="$root/plugins/playbook-wiki/check-wiki.sh"
 
-# fresh_wiki <words under "Where work stands">: an entry point and one page,
-# each linking to the other. The table of pages names no code.
+# fresh_wiki: a wiki at format 4 with an entry point and one page, each
+# linking to the other. The table of pages names no code.
 fresh_wiki() {
   rm -rf "$tmp/wiki"
   mkdir -p "$tmp/wiki/01-product"
   {
-    printf '# Wiki\n\n## Where work stands\n\n'
-    words "$1"
-    printf '\n## Pages\n\n| Page | Content | Code it governs |\n|---|---|---|\n'
+    printf '# Wiki\n\nProject owner: Ana.\n\n## Pages\n\n| Page | Content | Code it governs |\n|---|---|---|\n'
     printf '| [Overview](01-product/overview.md) | The product | |\n'
   } > "$tmp/wiki/README.md"
+  printf '4\n' > "$tmp/wiki/.format"
   printf '# Overview\n\nBack to the [entry point](../README.md).\n' > "$tmp/wiki/01-product/overview.md"
 }
 
@@ -328,88 +327,42 @@ expect_wiki() {
   fi
 }
 
-fresh_wiki 250
-expect_wiki "wiki: a state section at the limit passes" pass "has 250 words"
-
-fresh_wiki 251
-expect_wiki "wiki: a state section over 250 words fails" fail "has 251 words, limit 250"
-
-fresh_wiki 250
-{ printf '\n## History\n\n'; words 400; } >> "$tmp/wiki/README.md"
-expect_wiki "wiki: words under another heading are not counted" pass "has 250 words"
-
-fresh_wiki 100
-{ printf '\n### A smaller heading\n\n'; words 200; } > "$tmp/part"
-awk -v part="$tmp/part" '/^## Pages/ { while ((getline line < part) > 0) print line } { print }' \
-  "$tmp/wiki/README.md" > "$tmp/readme" && mv "$tmp/readme" "$tmp/wiki/README.md"
-expect_wiki "wiki: a smaller heading inside the state section is counted with it" fail "limit 250"
-
-fresh_wiki 10
+fresh_wiki
 printf 'See the [plan](../06-plan/plan.md).\n' >> "$tmp/wiki/01-product/overview.md"
 expect_wiki "wiki: a link to a missing page fails and names both" fail "01-product/overview.md links to ../06-plan/plan.md"
 
-fresh_wiki 10
+fresh_wiki
 printf 'See [the top](../README.md#where-work-stands), [here](#overview), [a site](https://example.com/a.md), and [mail](mailto:a@example.com).\n' >> "$tmp/wiki/01-product/overview.md"
 expect_wiki "wiki: anchors and addresses with a scheme are not checked as files" pass
 
-fresh_wiki 10
+fresh_wiki
 printf 'Write a link as `[text](missing.md)`.\n\n```text\n[text](also-missing.md)\n```\n' >> "$tmp/wiki/01-product/overview.md"
 expect_wiki "wiki: a link inside code is not checked" pass
 
-fresh_wiki 10
+fresh_wiki
 printf 'Two on one line: [a](../README.md) and [b](gone.md).\n' >> "$tmp/wiki/01-product/overview.md"
 expect_wiki "wiki: the second link of a line is checked too" fail "links to gone.md"
 
-fresh_wiki 10
-printf '# Wiki\n\n## Pages\n\n[Overview](01-product/overview.md)\n' > "$tmp/wiki/README.md"
-expect_wiki "wiki: a wiki without the state section passes with a note" pass "has no \"Where work stands\" section"
-
-fresh_wiki 10
+fresh_wiki
 rm "$tmp/wiki/README.md"
 expect_wiki "wiki: a wiki without an entry point fails" fail "has no README.md"
 
-fresh_wiki 10
+fresh_wiki
 rm -rf "$tmp/my wiki"
 mv "$tmp/wiki" "$tmp/my wiki"
-expect_wiki "wiki: a path with a space is read whole" pass "has 10 words" "$tmp/my wiki"
+expect_wiki "wiki: a path with a space is read whole" pass "check-wiki passed" "$tmp/my wiki"
 printf 'See [b](gone.md).\n' >> "$tmp/my wiki/01-product/overview.md"
 expect_wiki "wiki: a broken link under a path with a space is found" fail "links to gone.md" "$tmp/my wiki"
 
-# state_section <heading line> <words>: replaces the entry point with one
-# whose state section has that heading.
-state_section() {
-  { printf '# Wiki\n\n%s\n\n' "$1"; words "$2"; printf '\n## Pages\n\n[Overview](01-product/overview.md)\n'; } > "$tmp/wiki/README.md"
-}
-
-fresh_wiki 10
-state_section '## Where work stands (2026-11-14)' 300
-expect_wiki "wiki: a heading with text after the title is still the state section" fail "has 300 words"
-
-fresh_wiki 10
-state_section '### Where work stands' 300
-expect_wiki "wiki: a state section under a smaller heading is still counted" fail "has 300 words"
-
-fresh_wiki 300
-awk '{ printf "%s\r\n", $0 }' "$tmp/wiki/README.md" > "$tmp/readme" && mv "$tmp/readme" "$tmp/wiki/README.md"
-expect_wiki "wiki: lines that end in a carriage return are counted" fail "has 300 words"
-
-fresh_wiki 10
-{ printf '# Wiki\n\n## Where work stands\n\n```sh\n## a comment\n```\n\n'; words 300; printf '\n## Pages\n\n[Overview](01-product/overview.md)\n'; } > "$tmp/wiki/README.md"
-expect_wiki "wiki: a heading inside a code block does not end the state section" fail "limit 250"
-
-fresh_wiki 10
-{ printf '\n# Appendix\n\n'; words 400; } >> "$tmp/wiki/README.md"
-expect_wiki "wiki: a larger heading ends the state section" pass "has 10 words"
-
-fresh_wiki 10
+fresh_wiki
 printf '~~~text\n```\n~~~\n\nSee [b](gone.md).\n' >> "$tmp/wiki/01-product/overview.md"
 expect_wiki "wiki: a code block ends only at the marker that opened it" fail "links to gone.md"
 
-fresh_wiki 10
+fresh_wiki
 printf 'See [a](gone.md) and [b](lost.md).\n' >> "$tmp/wiki/01-product/overview.md"
 expect_wiki "wiki: each broken link counts as one failure" fail "2 check(s) failed"
 
-fresh_wiki 10
+fresh_wiki
 printf 'See [b](gone.md).\n' >> "$tmp/wiki/01-product/overview.md"
 rm -f "$tmp/linked"
 ln -s "$tmp/wiki" "$tmp/linked"
@@ -422,7 +375,7 @@ fresh_project() {
   rm -rf "$tmp/project"
   mkdir -p "$tmp/project/docs" "$tmp/project/src/filters"
   printf 'code\n' > "$tmp/project/src/filters/list.ts"
-  fresh_wiki 10
+  fresh_wiki
   mv "$tmp/wiki" "$tmp/project/docs/wiki"
   project_wiki="$tmp/project/docs/wiki"
 }
@@ -504,7 +457,7 @@ expect_wiki "paths: a table whose lines end in a carriage return is read" pass "
 
 fresh_project
 state_readme=$project_wiki/README.md
-printf '# Wiki\n\n## Where work stands\n\nNothing open.\n\n## Pages\n\n| Page | Content |\n|---|---|\n| [Overview](01-product/overview.md) | Built with `no-such-tool` |\n' > "$state_readme"
+printf '# Wiki\n\nProject owner: Ana.\n\n## Pages\n\n| Page | Content |\n|---|---|\n| [Overview](01-product/overview.md) | Built with `no-such-tool` |\n' > "$state_readme"
 expect_wiki "paths: a wiki whose table of pages has no such column passes as before" pass "" "$project_wiki"
 check "column: a table of pages without the column is reported" sh -c '! sh "$1" --column "$2"' sh "$check_wiki" "$project_wiki"
 
@@ -523,10 +476,10 @@ decisions() {
   printf '# Decisions\n\n| ID | Date | Decision | Owner'"'"'s words |\n|---|---|---|---|\n' > "$tmp/wiki/decisions.md"
 }
 
-fresh_wiki 10
+fresh_wiki
 decisions
 { decision D1 200; decision TD1 90; } >> "$tmp/wiki/decisions.md"
-printf '3\n' > "$tmp/wiki/.format"
+printf '4\n' > "$tmp/wiki/.format"
 expect_wiki "decisions: the rows of the top-level decisions.md are history and are not read" pass
 
 # The works of a wiki: a folder for each work, with identifiers that carry the
@@ -742,19 +695,6 @@ fresh_works
 rm -rf "$project_wiki/works/auth/questions.md" "$project_wiki/works/auth/plan.md"
 expect_wiki "works: a work without questions.md and plan.md passes" pass "" "$project_wiki"
 
-fresh_project
-printf '3\n' > "$project_wiki/.format"
-expect_wiki "works: a wiki at format 3 without works/ passes" pass "" "$project_wiki"
-
-fresh_works
-printf '3\n' > "$project_wiki/.format"
-expect_wiki "works: the works of a wiki at format 3 are checked too" pass "" "$project_wiki"
-
-fresh_works
-printf '3\n' > "$project_wiki/.format"
-rm "$project_wiki/works/billing/README.md"
-expect_wiki "works: the works of a wiki at format 3 fail when they break a rule" fail "FAIL works/billing has no README.md" "$project_wiki"
-
 fresh_works
 edit "$project_wiki/works/auth/decisions.md" 's/^| auth-2 /| auth-1 /'
 edit "$project_wiki/works/billing/decisions.md" 's/^| billing-2 /| billing-1 /'
@@ -793,9 +733,80 @@ check "works: --decisions needs no README.md" test "$(sh "$check_wiki" --decisio
 
 fresh_works
 
+# The gate of the check, the format the playbook is at, and the passed message.
+present=$(sh "$check_wiki" --format)
+check "gate: --format prints 4" test "$present" = 4
+check "gate: --format exits 0 and takes no wiki" sh -c 'sh "$1" --format >/dev/null' sh "$check_wiki"
+
+# expect_gate <case name> <marker content as printf format, or NONE> <expected found>
+# The output must be exactly the one line of the gate, even with a broken link.
+expect_gate() {
+  fresh_wiki
+  printf 'See [b](gone.md).\n' >> "$tmp/wiki/01-product/overview.md"
+  # shellcheck disable=SC2059
+  if [ "$2" = NONE ]; then rm -f "$tmp/wiki/.format"; else printf "$2" > "$tmp/wiki/.format"; fi
+  out=$(sh "$check_wiki" "$tmp/wiki" 2>&1)
+  code=$?
+  want="FAIL $tmp/wiki is at wiki format $3, and the playbook is at 4. Bring it there with the doctor (/playbook-wiki:doctor)."
+  if [ "$code" -eq 1 ] && [ "$out" = "$want" ]; then
+    printf 'ok    %s\n' "$1"
+  else
+    printf 'FAIL  %s (exit %s)\n%s\n' "$1" "$code" "$out"
+    failed=$((failed + 1))
+  fi
+}
+expect_gate "gate: a wiki without a marker fails with the one line that names the doctor" NONE none
+expect_gate "gate: a marker at 3 fails with the one line" '3\n' 3
+expect_gate "gate: a marker that is not a number reads as none" 'x\n' none
+expect_gate "gate: an empty marker reads as none" '' none
+expect_gate "gate: a marker that ends in a carriage return is read" '3\r\n' 3
+
+fresh_wiki
+printf '5\n' > "$tmp/wiki/.format"
+expect_wiki "gate: a marker above the playbook's format passes the gate" pass "check-wiki passed"
+
+fresh_wiki
+printf 'See [b](gone.md).\n' >> "$tmp/wiki/01-product/overview.md"
+printf '5\n' > "$tmp/wiki/.format"
+expect_wiki "gate: past the gate the other checks run" fail "links to gone.md"
+
+fresh_wiki
+rm "$tmp/wiki/.format"
+check "gate: --column does not read the marker" sh "$check_wiki" --column "$tmp/wiki"
+check "gate: --decisions does not read the marker" sh "$check_wiki" --decisions "$tmp/wiki"
+
+fresh_project
+expect_wiki "passed: a wiki without works says 0 works" pass "check-wiki passed: wiki format 4, 0 works" "$project_wiki"
+fresh_works
+expect_wiki "passed: a wiki with two works says 2 works" pass "check-wiki passed: wiki format 4, 2 works" "$project_wiki"
+
+# The README.md of the project at format 4: an owner, no state, no stage table.
+readme_case() {
+  fresh_wiki
+  printf '%b' "$2" > "$tmp/wiki/README.md"
+  expect_wiki "readme: $1" "$3" "$4"
+}
+pages='## Pages\n\n| Page | Content | Code it governs |\n|---|---|---|\n| [Overview](01-product/overview.md) | The product | |\n'
+readme_case "a README with an owner and no state passes" "# Wiki\n\nProject owner: Ana.\n\n$pages" pass "check-wiki passed"
+readme_case "a README without the owner line fails" "# Wiki\n\n$pages" fail "README.md has no line \"Project owner: <name>\""
+readme_case "an owner line without a name fails" "# Wiki\n\nProject owner: \n\n$pages" fail "has no line \"Project owner"
+readme_case "an owner line inside a code block does not count" "# Wiki\n\n\`\`\`text\nProject owner: Ana.\n\`\`\`\n\n$pages" fail "has no line \"Project owner"
+readme_case "a Where work stands heading outside the history fails" "# Wiki\n\nProject owner: Ana.\n\n## Where work stands\n\nNothing.\n\n$pages" fail "has the heading \"Where work stands\" outside"
+readme_case "a Where work stands heading at a smaller level fails too" "# Wiki\n\nProject owner: Ana.\n\n### Where work stands (2026-11-14)\n\n$pages" fail "has the heading \"Where work stands\" outside"
+readme_case "a Where work stands heading inside a code block is not read" "# Wiki\n\nProject owner: Ana.\n\n\`\`\`text\n## Where work stands\n\`\`\`\n\n$pages" pass "check-wiki passed"
+readme_case "a stage table outside the history fails" "# Wiki\n\nProject owner: Ana.\n\n| Stage | Status | Closed on |\n|---|---|---|\n| 1 Wiki | Closed | 2026-01-01 |\n\n$pages" fail "has a stage table outside"
+readme_case "a stage table inside a code block is not read" "# Wiki\n\nProject owner: Ana.\n\n\`\`\`text\n| Stage | Status |\n|---|---|\n\`\`\`\n\n$pages" pass "check-wiki passed"
+readme_case "a table of pages whose first cell is another word is not a stage table" "# Wiki\n\nProject owner: Ana.\n\n$pages" pass "check-wiki passed"
+history='\n## Phases before format 4\n\n### Where work stands\n\nOld.\n\n| Stage | Status | Closed on |\n|---|---|---|\n| 1 Wiki | Closed | 2026-01-01 |\n'
+readme_case "the section Phases before format 4 may hold a state heading and a stage table" "# Wiki\n\nProject owner: Ana.\n\n$pages$history" pass "check-wiki passed"
+readme_case "the history section ends at the next heading of level 2" "# Wiki\n\nProject owner: Ana.\n\n$pages$history\n## Later\n\n| Stage | Status |\n|---|---|\n| 3 | Open |\n" fail "has a stage table outside"
+readme_case "the history section does not end at a smaller heading" "# Wiki\n\nProject owner: Ana.\n\n$pages$history\n### Sub\n\n| Stage | Status |\n|---|---|\n| 3 | Open |\n" pass "check-wiki passed"
+fresh_works
+printf '\n| Stage | Status | Closed on |\n|---|---|---|\n| 1 Wiki | Open | |\n' >> "$project_wiki/works/auth/README.md"
+expect_wiki "readme: a stage table and a state section in a work's README pass" pass "check-wiki passed" "$project_wiki"
 # The marker of a wiki's format.
 wiki_format="$root/plugins/playbook-wiki/skills/doctor/scripts/wiki-format.sh"
-product_format=$(sed -n 's/^format=//p' "$wiki_format")
+product_format=$present
 
 # expect_format <case name> <command> <expected exit code> <text the output must contain, or "" for no output>
 expect_format() {
@@ -816,46 +827,79 @@ expect_format() {
   fi
 }
 
+check "format: wiki-format.sh holds no format of its own" sh -c '! grep -q "^format=[0-9]" "$1"' sh "$wiki_format"
+
 rm -rf "$tmp/wiki"
 expect_format "format: a project without a wiki gets no notice" status 0 ""
 
-fresh_wiki 10
+fresh_wiki
+rm "$tmp/wiki/.format"
 expect_format "format: a wiki without a marker gets a notice that names the doctor" status 0 "has no format marker"
 expect_format "format: the notice says not to repair unasked" status 0 "Do not repair the wiki unasked"
 
-fresh_wiki 10
-printf '1\n' > "$tmp/wiki/.format"
-expect_format "format: a marker behind the playbook gets a notice with both numbers" status 0 "is at wiki format 1, and the playbook is at $product_format"
+fresh_wiki
+printf '3\n' > "$tmp/wiki/.format"
+expect_format "format: a marker at 3 gets the behind line with both numbers" status 0 "is at wiki format 3, and the playbook is at 4"
+expect_format "format: the behind line names the doctor" status 0 "/playbook-wiki:doctor"
 
-fresh_wiki 10
-printf '%s\n' "$product_format" > "$tmp/wiki/.format"
-expect_format "format: a marker at the playbook's format gets no notice" status 0 ""
+fresh_wiki
+expect_format "format: a marker at 4 gets no notice" status 0 ""
 
-fresh_wiki 10
+fresh_wiki
 printf '%s\n' "$((product_format + 1))" > "$tmp/wiki/.format"
 expect_format "format: a marker ahead of the playbook gets no notice" status 0 ""
 
-fresh_wiki 10
+fresh_wiki
 printf 'valid\n' > "$tmp/wiki/.format"
 expect_format "format: a marker that is not a number counts as missing" status 0 "has no format marker"
 
-fresh_wiki 10
+fresh_wiki
 printf '%s\r\n' "$product_format" > "$tmp/wiki/.format"
 expect_format "format: a marker that ends in a carriage return is read" status 0 ""
 
-fresh_wiki 251
+# A wiki that fails the check: the marker it had comes back as it was.
+fresh_wiki
+printf 'See [b](gone.md).\n' >> "$tmp/wiki/01-product/overview.md"
+rm "$tmp/wiki/.format"
 expect_format "format: mark writes nothing when the check fails" mark 1 "The marker was not written"
 check "format: no marker exists after a failed mark" absent "$tmp/wiki/.format"
 
-fresh_wiki 251
-printf '1\n' > "$tmp/wiki/.format"
-expect_format "format: a failed mark leaves an older marker as it was" mark 1 "limit 250"
-check "format: the older marker still says 1" test "$(cat "$tmp/wiki/.format")" = 1
+fresh_wiki
+printf 'See [b](gone.md).\n' >> "$tmp/wiki/01-product/overview.md"
+printf '3\r\n' > "$tmp/wiki/.format"
+cp "$tmp/wiki/.format" "$tmp/marker-before"
+expect_format "format: a failed mark reports the failure" mark 1 "links to gone.md"
+check "format: a failed mark puts the older marker back byte for byte" cmp -s "$tmp/marker-before" "$tmp/wiki/.format"
 
-fresh_wiki 10
-expect_format "format: mark writes the marker when the check passes" mark 0 "as wiki format $product_format"
+fresh_wiki
+printf '3\n' > "$tmp/wiki/.format"
+expect_format "format: mark brings a wiki at 3 that passes to 4" mark 0 "marked $tmp/wiki as wiki format $product_format"
 check "format: the marker holds the playbook's format" test "$(cat "$tmp/wiki/.format")" = "$product_format"
 expect_format "format: after mark there is no notice" status 0 ""
+
+# A wiki of format 3: a top-level decisions.md and a count of rows.
+fresh_wiki
+printf '3\n' > "$tmp/wiki/.format"
+decisions
+{ decision D1 200; decision D2 200; } >> "$tmp/wiki/decisions.md"
+printf '2\n' > "$tmp/wiki/.unchecked-decisions"
+cp "$tmp/wiki/decisions.md" "$tmp/decisions-before"
+expect_format "format: mark succeeds on a wiki of format 3 with long rows in decisions.md" mark 0 "as wiki format $product_format"
+check "format: mark deletes .unchecked-decisions" absent "$tmp/wiki/.unchecked-decisions"
+check "format: the marker is 4 after mark" test "$(cat "$tmp/wiki/.format")" = 4
+check "format: decisions.md is byte-identical after mark" cmp -s "$tmp/decisions-before" "$tmp/wiki/decisions.md"
+
+fresh_wiki
+printf '3\n' > "$tmp/wiki/.format"
+printf '2\n' > "$tmp/wiki/.unchecked-decisions"
+printf 'See [b](gone.md).\n' >> "$tmp/wiki/01-product/overview.md"
+expect_format "format: a failed mark fails for the broken link" mark 1 "The marker was not written"
+check "format: a failed mark keeps .unchecked-decisions" test -f "$tmp/wiki/.unchecked-decisions"
+
+fresh_wiki
+rm "$tmp/wiki/.format"
+check "format: the README of the sample has no Where work stands section" sh -c '! grep -q "Where work stands" "$1"' sh "$tmp/wiki/README.md"
+expect_format "format: mark succeeds on a README without a Where work stands section" mark 0 "as wiki format $product_format"
 
 rm -rf "$tmp/wiki"
 expect_format "format: mark fails when there is no wiki" mark 1 "has no README.md"
@@ -863,33 +907,120 @@ expect_format "format: mark fails when there is no wiki" mark 1 "has no README.m
 out=$(sh "$wiki_format" 2>&1); code=$?
 check "format: without a command it prints the usage and exits 2" test "$code" -eq 2
 
-fresh_wiki 10
-printf '# Old notes\n\nSome design notes.\n' > "$tmp/wiki/README.md"
-expect_format "format: mark refuses a wiki that has no state section" mark 1 "is not in the format of the playbook"
-check "format: a wiki that is not in the format is left without a marker" absent "$tmp/wiki/.format"
-
-fresh_wiki 10
+fresh_wiki
+rm "$tmp/wiki/.format"
 mkdir "$tmp/wiki/.format"
 expect_format "format: mark fails when the marker cannot be written" mark 1 "could not write"
 
-fresh_wiki 10
+fresh_wiki
 printf '99999999999999999999\n' > "$tmp/wiki/.format"
 expect_format "format: a number too long to compare counts as missing" status 0 "has no format marker"
 
-fresh_wiki 10
+fresh_wiki
+rm "$tmp/wiki/.format"
 awk '{ gsub(/ \| Code it governs/, ""); print }' "$tmp/wiki/README.md" > "$tmp/readme" && mv "$tmp/readme" "$tmp/wiki/README.md"
 expect_format "format: mark refuses a wiki whose table of pages names no code column" mark 1 "has no column \"Code it governs\""
 check "format: a wiki without the column is left without a marker" absent "$tmp/wiki/.format"
 
-fresh_wiki 10
-decisions
-{ decision D1 200; decision D2 200; } >> "$tmp/wiki/decisions.md"
-expect_format "format: mark succeeds on a wiki with long rows in decisions.md" mark 0 "as wiki format $product_format"
-check "format: mark writes no count of rows" absent "$tmp/wiki/.unchecked-decisions"
-
-fresh_wiki 10
-printf '# Wiki\n\n## Where work stands\n\nNothing open.\n\n```text\n| Page | Content | Code it governs |\n```\n' > "$tmp/wiki/README.md"
+fresh_wiki
+rm "$tmp/wiki/.format"
+printf '# Wiki\n\nProject owner: Ana.\n\n```text\n| Page | Content | Code it governs |\n```\n' > "$tmp/wiki/README.md"
 expect_format "format: mark refuses a wiki whose only code column is inside a code block" mark 1 "has no column"
+
+# The ending condition of the doctor: a wiki of format 3 is brought to 4 by
+# the steps of the doctor, and its decisions.md is not touched.
+fresh_wiki
+printf '3\n' > "$tmp/wiki/.format"
+{
+  printf '# Wiki\n\nWhat the project is.\n\n## Where work stands\n\nLast decision D12. Stage 3 is open. Next: the plan.\n\n'
+  printf '## Stages\n\n| Stage | Status | Closed on |\n|---|---|---|\n| 1 Wiki | Closed | 2026-01-01 |\n| 2 Technology | Closed | 2026-02-01 |\n| 3 Skills | Open | |\n\n'
+  printf '## Pages\n\n| Page | Content | Code it governs |\n|---|---|---|\n| [Overview](01-product/overview.md) | The product | |\n'
+} > "$tmp/wiki/README.md"
+decisions
+{ decision D11 200; decision D12 30; } >> "$tmp/wiki/decisions.md"
+printf '2\n' > "$tmp/wiki/.unchecked-decisions"
+cp "$tmp/wiki/decisions.md" "$tmp/decisions-before"
+expect_format "doctor: a copy of a wiki at format 3 gets the behind line" status 0 "is at wiki format 3, and the playbook is at $product_format"
+out=$(sh "$check_wiki" "$tmp/wiki" 2>&1)
+check "doctor: the check refuses it until it is brought up" sh -c 'printf "%s" "$1" | grep -q -F "is at wiki format 3"' sh "$out"
+
+# Left out, the steps leave the wiki in format 3 in the README: mark refuses it.
+expect_format "doctor: mark refuses the wiki when the steps are left out" mark 1 "The marker was not written"
+out=$(sh "$wiki_format" mark "$tmp/wiki" 2>&1)
+check "doctor: it names the missing owner, the state, and the stage table" sh -c 'printf "%s" "$1" | grep -q "no line \"Project owner" && printf "%s" "$1" | grep -q "heading \"Where work stands\"" && printf "%s" "$1" | grep -q "stage table outside"' sh "$out"
+check "doctor: the marker is still 3 after the refused mark" test "$(cat "$tmp/wiki/.format")" = 3
+check "doctor: .unchecked-decisions is kept after the refused mark" test -f "$tmp/wiki/.unchecked-decisions"
+check "doctor: decisions.md is untouched by the refused mark" cmp -s "$tmp/decisions-before" "$tmp/wiki/decisions.md"
+
+# The steps: an owner in the README, a work with the state and the stage table
+# of the phase that is open, the closed stages kept under a heading of history.
+readme=$tmp/wiki/README.md
+mkdir -p "$tmp/wiki/works/skills"
+{
+  printf '# skills\n\nThe skills phase, led by Ana.\n\nStatus: Open\n\n'
+  awk '/^## Where work stands/ { p = 1 } /^## Stages/ { p = 0 } p' "$readme"
+  printf '## Stage table\n\n| Stage | Status | Closed on |\n|---|---|---|\n| 3 Skills | Open | |\n'
+} > "$tmp/wiki/works/skills/README.md"
+{
+  printf '# Wiki\n\nWhat the project is.\n\nProject owner: Ana.\n\n'
+  printf '## Pages\n\n| Page | Content | Code it governs |\n|---|---|---|\n| [Overview](01-product/overview.md) | The product | |\n\n'
+  printf '## Phases before format 4\n\n| Stage | Status | Closed on |\n|---|---|---|\n| 1 Wiki | Closed | 2026-01-01 |\n| 2 Technology | Closed | 2026-02-01 |\n'
+} > "$readme"
+expect_format "doctor: mark succeeds once the steps are applied" mark 0 "as wiki format $product_format"
+expect_format "doctor: the wiki has no notice after mark" status 0 ""
+check "doctor: the marker is 4" test "$(cat "$tmp/wiki/.format")" = 4
+check "doctor: .unchecked-decisions is gone" absent "$tmp/wiki/.unchecked-decisions"
+check "doctor: decisions.md is byte-identical" cmp -s "$tmp/decisions-before" "$tmp/wiki/decisions.md"
+check "doctor: the state moved to the work" grep -q 'Stage 3 is open' "$tmp/wiki/works/skills/README.md"
+check "doctor: the project README no longer holds the state" sh -c '! grep -q "Where work stands" "$1"' sh "$readme"
+expect_wiki "doctor: the brought-up wiki passes the check with one work" pass "wiki format 4, 1 works"
+
+
+# An interrupted mark puts the old marker back. The check is a stand-in, in a
+# copy of the plugin, that sends TERM to the script that runs it.
+standin=$tmp/standin
+rm -rf "$standin"
+mkdir -p "$standin/skills/doctor/scripts" "$standin/tmpdir"
+cp "$wiki_format" "$standin/skills/doctor/scripts/wiki-format.sh"
+cat > "$standin/check-wiki.sh" <<'STANDIN'
+case ${1:-} in
+  --format) echo 4 ;;
+  --column) exit 0 ;;
+  *) kill -TERM "$PPID"; sleep 1; exit 0 ;;
+esac
+STANDIN
+interrupted="$standin/skills/doctor/scripts/wiki-format.sh"
+
+fresh_wiki
+printf '3\r\n' > "$tmp/wiki/.format"
+cp "$tmp/wiki/.format" "$tmp/marker-before"
+TMPDIR="$standin/tmpdir" sh "$interrupted" mark "$tmp/wiki" >/dev/null 2>&1
+code=$?
+check "interrupt: a TERM during the check makes mark fail" test "$code" -ne 0
+check "interrupt: the old marker is back byte for byte" cmp -s "$tmp/marker-before" "$tmp/wiki/.format"
+check "interrupt: the saved copy is deleted" test -z "$(ls -A "$standin/tmpdir")"
+
+fresh_wiki
+rm "$tmp/wiki/.format"
+TMPDIR="$standin/tmpdir" sh "$interrupted" mark "$tmp/wiki" >/dev/null 2>&1
+check "interrupt: when there was no marker, the new one is removed" absent "$tmp/wiki/.format"
+check "interrupt: the stand-in alone writes a marker when it is not interrupted" sh -c 'sed "s/kill -TERM \"\$PPID\"; //" "$1/check-wiki.sh" > "$1/ok.sh" && cp "$1/ok.sh" "$1/check-wiki.sh" && sh "$2" mark "$3" >/dev/null && test "$(cat "$3/.format")" = 4' sh "$standin" "$interrupted" "$tmp/wiki"
+
+# A marker that is a symbolic link is not written through.
+fresh_wiki
+rm "$tmp/wiki/.format"
+ln -s "$tmp/no-such-target" "$tmp/wiki/.format"
+expect_format "link: mark refuses a dangling link and names it" mark 1 "FAIL $tmp/wiki/.format is a symbolic link; replace it with a file. The marker was not written."
+check "link: the dangling link is untouched" sh -c 'test -L "$1" && test ! -e "$2"' sh "$tmp/wiki/.format" "$tmp/no-such-target"
+expect_format "link: status reads through a dangling link as a missing marker" status 0 "has no format marker"
+
+fresh_wiki
+rm "$tmp/wiki/.format"
+printf '3\n' > "$tmp/target"
+ln -s "$tmp/target" "$tmp/wiki/.format"
+expect_format "link: mark refuses a link to a file" mark 1 "is a symbolic link"
+check "link: the file behind the link is untouched" test "$(cat "$tmp/target")" = 3
+expect_format "link: status reads through a link to a file" status 0 "is at wiki format 3"
 
 # The hook: the command the plugin runs at session start, for the project of
 # the session.
@@ -899,7 +1030,8 @@ hook=$(awk '/"SessionStart"/ { inside = 1 }
   sed -n 's/.*"command": "\(sh .*wiki-format.sh.*\)".*/\1/p' | sed 's/\\"/"/g')
 check "format: the plugin runs the notice at session start" test -n "$hook"
 
-fresh_wiki 10
+fresh_wiki
+rm "$tmp/wiki/.format"
 rm -rf "$tmp/my project"
 mkdir -p "$tmp/my project/docs"
 mv "$tmp/wiki" "$tmp/my project/docs/wiki"

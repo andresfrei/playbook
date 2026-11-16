@@ -19,4 +19,4 @@ Nothing in `decisions.md` changes, and no text moves.
 2. Show the owner the table with the new column. Write what the owner accepts: the column "Code it governs", each path as code, between backticks, from the project's root.
 3. Ask the owner whether a definition that changed in the past left code on the old one. For each case the owner names, add the section "Code on the old definition" to the page that states the definition. Do not search the code for such cases.
 4. Ask the owner whether to write the two sentences of `../../../format.md`, under "The project's instruction file", in the project's `CLAUDE.md`. Those files are outside `docs/wiki/`, and they are the only ones this repair changes there.
-5. Continue with the last step of the skill.
+5. Continue with the next format, when the playbook is above format 3, or with the last step of the skill.

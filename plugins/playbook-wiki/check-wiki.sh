@@ -3,8 +3,10 @@
 # Usage: sh check-wiki.sh [wiki directory]    (default: docs/wiki)
 #        sh check-wiki.sh --column [wiki directory]
 #        sh check-wiki.sh --decisions [wiki directory]
-# It fails when:
-# - "Where work stands" in README.md has more than 250 words;
+#        sh check-wiki.sh --format
+# It fails at once, with one line and without running the other rules, when
+# the marker $wiki/.format is missing, is not a number, or is below the format
+# the playbook is at. A marker above it passes. It then fails when:
 # - a relative link in a page does not resolve to a file or a directory;
 # - a path that the wiki names as code does not exist in the project: a path
 #   in the column "Code it governs" of a table of README.md or of the README.md
@@ -27,6 +29,10 @@
 #   six columns, or has a sixth column (the shared page) that is neither
 #   "none" nor code spans of paths, relative to the wiki, of pages that exist,
 #   are not under works/, and cite the identifier as a whole word.
+# The README.md of the project keeps no state: it fails when it has no line
+# "Project owner: <name>", or a heading "Where work stands" or a table whose
+# first header cell is "Stage" outside its section "## Phases before format 4".
+# With --format it prints the format the playbook is at, and exits 0.
 # With --column it prints nothing, and exits 0 when a table of README.md has
 # the column "Code it governs" and 1 when none has.
 # With --decisions it prints each decision of each work, one per line, as
@@ -38,10 +44,16 @@
 # Exits 0 when every rule holds, 1 otherwise.
 set -u
 
+# The format of a wiki the playbook is at, held here and nowhere else. Raise it
+# only together with a new skills/doctor/references/format-<number>.md that
+# says how a wiki reaches it.
+present_format=4
+
 mode=check
 case ${1:-} in
   --column) mode=column; shift ;;
   --decisions) mode=decisions; shift ;;
+  --format) printf '%s\n' "$present_format"; exit 0 ;;
 esac
 wiki=${1:-docs/wiki}
 wiki=${wiki%/}
@@ -52,6 +64,23 @@ tab=$(printf '\t')
 if [ "$mode" != decisions ] && [ ! -f "$wiki/README.md" ]; then
   printf 'FAIL %s has no README.md\n' "$wiki"
   exit 1
+fi
+
+# The gate: the marker must be a number, and not below the playbook's format.
+# A value that is empty, not digits, or longer than nine digits is no number.
+if [ "$mode" = check ]; then
+  marker_value=
+  if [ -f "$wiki/.format" ]; then
+    marker_value=$(head -n 1 "$wiki/.format" | tr -d ' \t\r')
+    case $marker_value in
+      ''|*[!0-9]*|??????????*) marker_value= ;;
+    esac
+  fi
+  if [ -z "$marker_value" ] || [ "$marker_value" -lt "$present_format" ]; then
+    printf 'FAIL %s is at wiki format %s, and the playbook is at %s. Bring it there with the doctor (/playbook-wiki:doctor).\n' \
+      "$wiki" "${marker_value:-none}" "$present_format"
+    exit 1
+  fi
 fi
 
 # The project's root. The cd follows the path as it was given, so a wiki
@@ -221,12 +250,47 @@ state_count() {
     END { if (found) print words + 0; else print "none" }' "$1"
 }
 
-state_words=$(state_count "$wiki/README.md")
-if [ "$state_words" = none ]; then
-  printf 'note: %s/README.md has no "Where work stands" section\n' "$wiki"
-elif [ "$state_words" -gt "$max_state_words" ]; then
-  printf 'FAIL "Where work stands" has %s words, limit %s\n' "$state_words" "$max_state_words"
-  failures=$((failures + 1))
+# The project's README.md at format 4. It prints a line that starts with FAIL
+# for each rule that it breaks: no line "Project owner: <name>"; a heading
+# "Where work stands" or a table whose first header cell is "Stage" outside the
+# section "## Phases before format 4", which runs to the next heading of level
+# 2 or above. It skips fenced code blocks.
+readme_checks() {
+  awk -v label="$wiki/README.md" "$fences"'
+    function fail(msg) { printf "FAIL %s %s\n", label, msg }
+    fenced { next }
+    /^#+[ \t]/ {
+      table = 0
+      match($0, /^#+/)
+      if (RLENGTH <= 2) history = ($0 ~ /^##[ \t]+Phases before format 4[ \t]*$/)
+      if ($0 ~ /^#+[ \t]+Where work stands/ && !history)
+        fail("has the heading \"Where work stands\" outside \"## Phases before format 4\"; the state belongs to a work")
+      next
+    }
+    /^Project owner:[ \t]+[^ \t]/ { owner = 1 }
+    /^[ \t]*\|/ {
+      line = $0
+      sub(/^[ \t]*\|/, "", line)
+      if (!table) {
+        table = 1
+        split(line, c, "|")
+        first = c[1]
+        gsub(/^[ \t]+|[ \t]+$/, "", first)
+      } else if (table == 1) {
+        table = 2
+        if (first == "Stage" && !history && line ~ /^[ \t]*:?-+:?[ \t]*(\||$)/)
+          fail("has a stage table outside \"## Phases before format 4\"; a stage table belongs to a work")
+      }
+      next
+    }
+    { table = 0 }
+    END { if (!owner) fail("has no line \"Project owner: <name>\"") }' "$wiki/README.md"
+}
+
+readme_bad=$(readme_checks)
+if [ -n "$readme_bad" ]; then
+  printf '%s\n' "$readme_bad"
+  failures=$((failures + $(printf '%s\n' "$readme_bad" | wc -l | tr -d ' ')))
 fi
 
 # Prints the target of each relative link of a page, one per line. It skips
@@ -346,9 +410,5 @@ if [ "$failures" -gt 0 ]; then
   printf '%s check(s) failed\n' "$failures"
   exit 1
 fi
-if [ "$state_words" = none ]; then
-  printf 'check-wiki passed: every relative link resolves\n'
-else
-  printf 'check-wiki passed: "Where work stands" has %s words, limit %s\n' \
-    "$state_words" "$max_state_words"
-fi
+works=$(work_dirs | wc -l | tr -d ' ')
+printf 'check-wiki passed: wiki format %s, %s works\n' "$present_format" "$works"

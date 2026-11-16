@@ -39,13 +39,13 @@ A wiki written before format 4 also holds `decisions.md` and the pages of its ea
 In this order:
 
 1. What the project is, in one or two sentences, and which document wins: the wiki over any other document, and inside the wiki a decision over the rest.
-2. The project's owner, by name. The owner decides what more than one work shares.
+2. The project's owner, on a line of its own: `Project owner: <name>.` The owner decides what more than one work shares.
 3. The three statuses of a statement: Decided, Proposed, Open.
 4. A table of the shared pages: each page, what it contains, and the code it governs: the paths, from the project's root, whose behaviour the page defines. Leave the cell empty for a page that defines no code. Prefer a folder to a list of files.
 
 Title the third column "Code it governs" and write each path as code, between backticks. The check fails on a path that does not exist.
 
-The project's `README.md` holds no state and no list of works: the folders under `works/` are that list.
+The project's `README.md` holds no state and no list of works: the folders under `works/` are that list. A wiki brought from an earlier format keeps, at the end of its `README.md`, the stage tables of its earlier phases under the heading `## Phases before format 4`.
 
 ## A work
 

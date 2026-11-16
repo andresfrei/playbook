@@ -9,14 +9,21 @@
 # behind. It always exits 0.
 # hook is status for the project of a Claude Code session, which it reads from
 # CLAUDE_PROJECT_DIR. It prints nothing when that variable is not set.
-# mark writes the marker only when the wiki has a "Where work stands" section
-# and a column "Code it governs" in a table of its README.md, and the check of
-# the wiki passes.
+# mark writes the marker when the wiki has a column "Code it governs" in a
+# table of its README.md and the check of the wiki passes. It writes the marker
+# first, because the check refuses a wiki whose marker is below the playbook's
+# format; when the check fails it puts the old marker back exactly, or deletes
+# the marker when there was none, also when the script is interrupted (INT,
+# TERM, HUP). It refuses a marker that is a symbolic link. When it succeeds it deletes
+# $wiki/.unchecked-decisions, which format 4 does not use.
 set -u
 
-# The format of a wiki the playbook is at. Raise it only together with a new
-# references/format-<number>.md that says how a wiki reaches it.
-format=3
+check_wiki="$(dirname "$0")/../../../check-wiki.sh"
+
+# The format of a wiki the playbook is at, read from the one place that holds
+# it. Raise it there only together with a new references/format-<number>.md
+# that says how a wiki reaches it.
+format=$(sh "$check_wiki" --format)
 
 command=${1:-}
 if [ "$command" = hook ]; then
@@ -27,7 +34,6 @@ fi
 wiki=${2:-docs/wiki}
 wiki=${wiki%/}
 marker="$wiki/.format"
-check_wiki="$(dirname "$0")/../../../check-wiki.sh"
 
 # Prints the number in the marker, or nothing when the marker is missing or
 # does not hold a number of at most nine digits.
@@ -57,22 +63,53 @@ case $command in
       printf 'FAIL %s has no README.md\n' "$wiki"
       exit 1
     fi
-    if ! grep -q '^##*[[:space:]][[:space:]]*Where work stands' "$wiki/README.md"; then
-      printf 'FAIL %s/README.md has no "Where work stands" section, so the wiki is not in the format of the playbook. The marker was not written.\n' "$wiki"
+    if [ -L "$marker" ]; then
+      printf 'FAIL %s is a symbolic link; replace it with a file. The marker was not written.\n' "$marker"
       exit 1
     fi
     if ! sh "$check_wiki" --column "$wiki"; then
       printf 'FAIL %s/README.md has no column "Code it governs" in its table of pages, so the wiki is not at wiki format %s. The marker was not written.\n' "$wiki" "$format"
       exit 1
     fi
-    if ! sh "$check_wiki" "$wiki"; then
-      printf 'The marker was not written.\n'
-      exit 1
+    # Keep the old marker, byte for byte, so a failed or interrupted check can
+    # put it back.
+    saved=
+    if [ -f "$marker" ]; then
+      saved=$(mktemp)
+      if [ -z "$saved" ] || ! cp "$marker" "$saved"; then
+        [ -z "$saved" ] || rm -f "$saved"
+        printf 'FAIL could not keep a copy of %s. The marker was not written.\n' "$marker"
+        exit 1
+      fi
     fi
+    # From the first write to the end of the check, any exit that is not a
+    # success puts the old marker back, or removes the new one, and deletes the
+    # copy. An interrupt is handled when the running check ends.
+    armed=0
+    undo() {
+      if [ "$armed" = 1 ]; then
+        armed=0
+        if [ -n "$saved" ]; then cp "$saved" "$marker"; else rm -f "$marker"; fi
+      fi
+      [ -z "$saved" ] || rm -f "$saved"
+    }
+    trap undo EXIT
+    trap 'exit 1' INT TERM HUP
+    armed=1
     if ! printf '%s\n' "$format" 2>/dev/null > "$marker"; then
+      armed=0
       printf 'FAIL could not write %s. The marker was not written.\n' "$marker"
       exit 1
     fi
+    if ! sh "$check_wiki" "$wiki"; then
+      undo
+      printf 'The marker was not written.\n'
+      exit 1
+    fi
+    armed=0
+    undo
+    trap - EXIT INT TERM HUP
+    rm -f "$wiki/.unchecked-decisions"
     printf 'marked %s as wiki format %s\n' "$wiki" "$format" ;;
   *)
     printf 'Usage: sh wiki-format.sh status|mark [wiki directory], or sh wiki-format.sh hook\n'
