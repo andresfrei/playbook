@@ -265,6 +265,10 @@ What follows from it:
   - `claude plugin disable <plugin> --scope local` works in a repository where the plugin is on only through the user scope, and writes `false` in that repository's `.claude/settings.local.json`.
   - `claude plugin configure <plugin> --values-stdin` accepts `{"language":""}` and saves the empty value.
   - So the wizard's script turns a plugin on with `install`, and reads `claude plugin list --json` only to know whether `playbook-agents` is on: in the repository for the scope `local`, and in `/`, where no project's settings apply, for the scope `user`.
+- Tried on 2026-11-16 with Claude Code 2.1.326, in the same trial folder (U38):
+  - `claude plugin marketplace list --json` gives each marketplace's `installLocation`, the folder that holds its plugins. The wizard's script reads the product's skills there before any of them is installed.
+  - `readFromFolder` appears only for a plugin of a marketplace that is a folder on the machine. The `review` agent read, on the owner's machine, a plugin of a marketplace from GitHub, `engram@engram`, with `installPath` only. The script reads that one.
+  - `"skillOverrides": {"<name>": "off"}` in the `settings.json` of the folder `CLAUDE_CONFIG_DIR` names hid the person's skill in two repositories, one with the product and one with nothing of it.
 - Claude Code has a command of its own named `init`. The product's is `/playbook:init`, so the two do not collide, and a person may confuse them.
 - `claude plugin validate` also prints what Anthropic's directory refuses: a plugin with no `README.md` of at least 40 words, and one with no license. It matters for Q61, not for this phase.
 

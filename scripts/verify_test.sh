@@ -1470,7 +1470,7 @@ init_fresh() {
 #!/bin/sh
 sub=$2
 [ "$sub" = list ] && printf 'list in %s\n' "$PWD" >> "$FAKE_LOG.list"
-[ "$sub" = list ] || printf '%s\n' "$*" >> "$FAKE_LOG"
+case "$2 $3" in "list "* | "marketplace list") ;; *) printf '%s\n' "$*" >> "$FAKE_LOG" ;; esac
 if [ "${FAKE_FAIL:-}" = "$sub" ]; then
   echo "error: boom in $sub" >&2
   exit 3
@@ -1493,6 +1493,9 @@ set_record() {
   mv "$FAKE_STATE.new" "$FAKE_STATE"
 }
 case $sub in
+  marketplace)
+    [ -n "${FAKE_MARKET:-}" ] || { echo "[]"; exit 0; }
+    printf '[\n  {\n    "name": "other",\n    "installLocation": "/elsewhere"\n  },\n  {\n    "name": "playbook",\n    "source": "directory",\n    "installLocation": "%s"\n  }\n]\n' "$FAKE_MARKET" ;;
   list)
     awk -F '|' -v here="$PWD" '
       { line[NR] = $0
@@ -1505,6 +1508,8 @@ case $sub in
           print "  {"
           printf "    \"id\": \"%s\",\n    \"scope\": \"%s\",\n", f[1], f[2]
           if (f[4] != "") printf "    \"projectPath\": \"%s\",\n", f[4]
+          if (f[5] != "") printf "    \"readFromFolder\": \"%s\",\n", f[5]
+          if (f[6] != "") printf "    \"installPath\": \"%s\",\n", f[6]
           printf "    \"enabled\": %s\n", (f[1] in effective) ? effective[f[1]] : "false" }
         if (NR) print "  }"
         print "]" }' "$FAKE_STATE" ;;
@@ -1734,6 +1739,111 @@ init_fresh
 init_run apply all local es
 init_ok "init: apply creates no CLAUDE.md and no file in the repository or home" \
   "$([ -z "$(find "$tmp/init/repo" "$tmp/init/home" -type f)" ] && echo true || echo false)"
+
+# skills: the skills the choice turns on, read from the marketplace's folder,
+# and the skills that are not the product's.
+# init_skill <folder> <front matter lines>: a SKILL.md with that front matter.
+init_skill() {
+  mkdir -p "$1"
+  printf -- '---\n%s\n---\n\nBody.\n' "$2" > "$1/SKILL.md"
+}
+init_fresh_skills() {
+  init_fresh
+  m=$tmp/init/market
+  init_skill "$m/plugins/playbook-wiki/skills/write-docs" 'name: write-docs
+description: Write a README or a wiki page.'
+  init_skill "$m/plugins/playbook-agents/skills/review-change" 'name: review-change
+description: Review a change for defects.'
+  init_skill "$tmp/init/repo/.claude/skills/docs-lite" 'name: docs-lite
+description: >
+  Write the docs
+  of this project.'
+  init_skill "$tmp/init/home/.claude/skills/my-review" "name: 'my-review'
+description: \"Review my diff.\""
+  mkdir -p "$tmp/init/home/.claude/skills/no-skill-file"
+  init_skill "$tmp/init/home/.claude/skills/bare" 'license: MIT'
+  init_skill "$tmp/init/other/skills/lint-it" 'name: lint-it
+description: Lint the code.'
+  init_skill "$tmp/init/off/skills/hidden" 'name: hidden
+description: Never listed.'
+  init_skill "$tmp/init/copy/skills/from-copy" 'name: from-copy
+description: Read from the copy.'
+  mkdir -p "$tmp/init/repo/.claude/skills/crlf"
+  printf -- '---\r\nname: crlf\r\ndescription: Ends lines with CR.\r\n---\r\n' > "$tmp/init/repo/.claude/skills/crlf/SKILL.md"
+  mkdir -p "$tmp/init/repo/.claude/skills/open"
+  printf -- '---\nname: open\n\nbody\ndescription: From the body.\n' > "$tmp/init/repo/.claude/skills/open/SKILL.md"
+  {
+    printf 'tools@else|user|true||%s\n' "$tmp/init/other"
+    printf 'offtool@else|user|false||%s\n' "$tmp/init/off"
+    printf 'copytool@else|user|true|||%s\n' "$tmp/init/copy"
+    printf '%s|user|true||%s\n' "$w" "$m/plugins/playbook-wiki"
+  } > "$tmp/init/state"
+}
+init_has() {
+  init_ok "$1" "$(printf '%s\n' "$init_out" | grep -qxF -- "$2" && echo true || echo false)"
+}
+
+init_fresh_skills
+FAKE_MARKET=$m init_run skills wiki
+init_ok "init: skills exits 0" "$([ "$init_code" -eq 0 ] && echo true || echo false)"
+init_has "init: skills lists the wiki's skills from the marketplace's folder" "  playbook-wiki:write-docs — Write a README or a wiki page."
+init_ok "init: skills for the wiki alone does not list the agents' skills" \
+  "$(printf '%s\n' "$init_out" | grep -q 'review-change' && echo false || echo true)"
+init_has "init: skills joins a description written over several lines" "  docs-lite — Write the docs of this project."
+init_has "init: skills takes the quotes off a name and a description" "  my-review — Review my diff."
+init_has "init: skills names a skill with no name by its folder" "  bare — "
+init_ok "init: skills skips a folder with no SKILL.md" \
+  "$(printf '%s\n' "$init_out" | grep -q 'no-skill-file' && echo false || echo true)"
+init_has "init: skills lists the skills of another plugin that is on, with its name" "  tools:lint-it — Lint the code."
+init_ok "init: skills does not list a plugin that is off" \
+  "$(printf '%s\n' "$init_out" | grep -q 'hidden' && echo false || echo true)"
+init_ok "init: skills does not list the product's plugin among the others" \
+  "$(printf '%s\n' "$init_out" | grep -c 'write-docs' | grep -qx 1 && echo true || echo false)"
+init_has "init: skills prints where the format of a wiki is" "The format of a wiki: $m/plugins/playbook-wiki/format.md"
+init_log_is "init: skills runs no command that changes anything" ""
+
+init_has "init: skills reads a plugin with no readFromFolder from its installPath" "  copytool:from-copy — Read from the copy."
+init_has "init: skills reads a SKILL.md with CRLF line ends" "  crlf — Ends lines with CR."
+init_has "init: skills takes nothing from front matter with no closing line" "  open — "
+
+init_fresh_skills
+mkdir -p "$tmp/init/repo/.claude"
+printf '{\n  "skillOverrides": {\n    "docs-lite": "off"\n  }\n}\n' > "$tmp/init/repo/.claude/settings.local.json"
+printf '{\n  "skillOverrides": {\n    "my-review": "off"\n  }\n}\n' > "$tmp/init/home/.claude/settings.json"
+FAKE_MARKET=$m init_run skills wiki
+init_has "init: skills marks a skill this repository sets off" "  docs-lite (off) — Write the docs of this project."
+init_has "init: skills marks a skill the person sets off" "  my-review (off) — Review my diff."
+
+init_fresh_skills
+FAKE_MARKET=$m init_run skills all
+init_has "init: skills for the whole product lists the agents' skills" "  playbook-agents:review-change — Review a change for defects."
+
+init_fresh_skills
+mkdir -p "$tmp/init/config/skills"
+init_skill "$tmp/init/config/skills/configured" 'name: configured
+description: In the configured folder.'
+FAKE_MARKET=$m CLAUDE_CONFIG_DIR="$tmp/init/config" init_run skills wiki
+init_has "init: skills reads the person's skills from CLAUDE_CONFIG_DIR" "  configured — In the configured folder."
+
+init_fresh
+rm -rf "$tmp/init/repo/.claude"
+FAKE_MARKET=$tmp/init/empty init_run skills wiki
+init_ok "init: skills prints none for each empty group" \
+  "$(printf '%s\n' "$init_out" | grep -c '^  none$' | grep -qx 4 && echo true || echo false)"
+
+init_fresh
+init_run skills wiki
+init_ok "init: skills exits 1 when the marketplace is not added" \
+  "$([ "$init_code" -eq 1 ] && echo true || echo false)"
+
+init_fresh
+FAKE_MARKET=$tmp/init/market FAKE_FAIL=marketplace init_run skills wiki
+init_ok "init: skills exits 1 when the marketplaces cannot be read" \
+  "$([ "$init_code" -eq 1 ] && echo true || echo false)"
+
+init_bad "skills alone" skills
+init_bad "skills of an unknown product" skills some
+init_bad "skills with too many arguments" skills wiki extra
 
 # The hook of playbook-agents: the rules, and the language line when it is set.
 hook_command=$(sed -n 's/^ *"command": "\(.*\)"$/\1/p' "$root/plugins/playbook-agents/hooks/hooks.json" |
