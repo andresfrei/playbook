@@ -10,22 +10,26 @@ Every statement is one of:
 
 ## Where work stands
 
-Updated 2026-11-14, after D154 and TD22.
+Updated 2026-11-15, after D165.
 
 No phase and no stage is open. A new phase starts when the owner asks for it, with a new stage table above the three below.
 
 Wiki maintenance and the doctor (D133 to D142) are built, merged into `main`, and pushed (D144): [01-product/wiki-maintenance.md](01-product/wiki-maintenance.md).
+
+Wiki format 3 (D155 to D165) is built and merged into `main`: [01-product/wiki-format-3.md](01-product/wiki-format-3.md). No wiki is at format 3 yet, and this one is the pilot.
 
 The repository is public since 2026-11-14 (D145 to D152): https://github.com/andresfrei/playbook. Every pull request needs the owner's approval. The full earlier history, with the pages about the owner's installation, is in the private `andresfrei/playbook-archive`.
 
 Waiting for the owner:
 
 - Six proposals to spend fewer tokens, P1 to P6: 02-current-state/token-economy.md (kept in the private archive).
+- The plugin's version: an installation from GitHub gets wiki format 3 only when the owner raises it (TD22).
 
-Next steps, in order (D135):
+Next steps, in order (D135, D163):
 
-1. The doctor is run on the wiki of radar, in that project.
-2. The same in torneo-pro and huellitas-id, when work on each resumes.
+1. The doctor is run on this wiki, the pilot of format 3, in a new session that loads the merged plugin.
+2. The doctor is run on the wiki of radar, in that project.
+3. The same in torneo-pro and huellitas-id, when work on each resumes.
 
 Finished:
 
@@ -82,6 +86,7 @@ Phase 1, kept as a record:
 | [01-product/phase-2.md](01-product/phase-2.md) | The product definition for phase 2: what is decided, what each topic still lacks |
 | [01-product/phase-3.md](01-product/phase-3.md) | The product definition for phase 3, support for opencode 2.x: what is decided, proposed, and open |
 | [01-product/wiki-maintenance.md](01-product/wiki-maintenance.md) | How a project's wiki stays small and current, and how a changed definition reaches the next session: what was measured, the changes proposed, and the order of the work |
+| [01-product/wiki-format-3.md](01-product/wiki-format-3.md) | A proposal for the next format of a project's wiki: the page table says which code each page governs, the page is read before the code is changed, the code left on an old definition is listed, and the check enforces it |
 | [01-product/glossary.md](01-product/glossary.md) | Vocabulary, with Spanish |
 | [01-product/open-questions.md](01-product/open-questions.md) | Questions that block closing this stage |
 | [03-technology/installation.md](03-technology/installation.md) | How the product is installed in Claude Code: the routes evaluated and the one chosen |

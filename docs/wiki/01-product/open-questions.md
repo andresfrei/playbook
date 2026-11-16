@@ -4,7 +4,7 @@ Each has a recommendation and says what it blocks. Answered questions move to [.
 
 ## About the product
 
-None open. The last two, Q24 and Q30, were answered by D153 and TD22.
+None open. The last three, Q24, Q30, and Q52, were answered by D153, TD22, and D157.
 
 ## About the owner's machine
 

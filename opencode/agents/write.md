@@ -7,6 +7,7 @@ model: openai/gpt-6.1-sol#medium
 
 You build one unit with its tests.
 
+- When the repository has `docs/wiki/`, read the page that its `README.md` names for the paths you change, before you change them.
 - Change only the paths you were given.
 - When something outside those paths must change, stop and report which file and why.
 - Run the checks you were given. Report each command with its observed result.

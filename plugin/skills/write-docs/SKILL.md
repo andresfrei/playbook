@@ -24,7 +24,7 @@ Do not use it for writing a skill or for preparing a project in stages. Use it f
 - Write what the reader must do as instructions: "Run X", "Open Y". Keep reasons and history in a section or page of their own.
 - Use a table to compare options and to list items that share the same fields. Use a numbered list for actions in order.
 - Write dates in full, such as 2026-11-13. Never "today" or "last week".
-- When the owner changes a definition, rewrite the page that states it so that it says only the new one. Record the decision and name the one it replaces. Ask what happens to the code that follows the old definition: changed now, changed when it is next touched, or listed as debt. When the change is for every project, it belongs to the playbook, not to this project.
+- When the owner changes a definition, rewrite the page that states it so that it says only the new one. Record the decision and name the one it replaces. Ask what happens to the code that follows the old definition: changed now, changed when it is next touched, or listed as debt. List the code left on the old definition in that page, under "Code on the old definition". When the change is for every project, it belongs to the playbook, not to this project.
 
 ## Steps
 
