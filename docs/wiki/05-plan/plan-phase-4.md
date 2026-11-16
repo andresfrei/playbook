@@ -2,7 +2,7 @@
 
 The work of phase 4, the shared core, as an ordered list of units. Stage 5 of phase 4. It builds what [../03-technology/architecture-phase-4.md](../03-technology/architecture-phase-4.md) describes, with the technology of TD24 and TD26 to TD33. The plans of phases 1 to 3, U1 to U27, are in [plan.md](plan.md), [plan-phase-2.md](plan-phase-2.md), and [plan-phase-3.md](plan-phase-3.md); the numbers continue from them.
 
-Status on 2026-11-16: not accepted by the owner yet. How a unit is delivered is decided (D196).
+The owner accepted it (D197). How a unit is delivered is D196.
 
 ## Progress
 
@@ -59,6 +59,20 @@ The status of a unit is one of: Not started, Built (waiting for the owner's revi
 | U41 | The owner's machine | With the owner's authorization: the installed plugin updated to `2.0.0`; `/playbook:init` run once, choosing the whole product for every project; the two entries of `~/.config/opencode/opencode.json` and the link `~/.config/opencode/agents` removed (D191) | A new session of the owner shows the contract and the rules, and lists the skills of `playbook-wiki` and `playbook-agents`. Nothing under `~/.config/opencode/` points into this repository | U40 |
 
 U29 depends on no other unit. U31, U32, and U37 each need only U30.
+
+## After the plan
+
+The owner wants to submit the product to Anthropic's plugin directory in the release after version 2 (D198). It is not a unit of this plan, and nothing is prepared for it in this phase.
+
+What is known comes from the page "Submit your plugin" of Anthropic's documentation, as the owner pasted it on 2026-11-16; the paste did not hold the page's address. Three points touch what this phase builds, and none was checked beyond that page:
+
+- "Each plugin folder is its own submission in the developer portal", "so a repository that holds several plugins needs one submission for each." The product is three plugins (TD26).
+- A listed plugin is added "from claude.ai" and used "in chat, Cowork, and Claude Code". The product is built for Claude Code only (D181), and it works through hooks and shell scripts.
+- The start command turns the other two plugins on by the name of this repository's marketplace (TD27). Whether a plugin listed in the directory keeps that name, and whether one listed plugin can depend on another, is not said in the page.
+
+The page also says: the repository must be public before a listing goes live, which it is (D152); the directory follows a branch or a tag for new versions; and "If your `plugin.json` sets `version`, raise it with every release", which TD22 already does.
+
+Open as Q61 in [../01-product/open-questions.md](../01-product/open-questions.md).
 
 ## Left out of the plan
 
