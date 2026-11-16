@@ -21,7 +21,7 @@ The repository is public since 2026-11-14 (D145 to D152): https://github.com/and
 Waiting for the owner:
 
 - Six proposals to spend fewer tokens, P1 to P6: 02-current-state/token-economy.md (kept in the private archive).
-- Wiki format 3 is decided (D155 to D163) and is being built on the branch `feat/wiki-format-3`; the owner reviews it when it is built: [01-product/wiki-format-3.md](01-product/wiki-format-3.md).
+- Wiki format 3 is decided (D155 to D163) and built on the branch `feat/wiki-format-3`, not merged. It waits for the owner's review, and for the owner's answer on three sentences added to `1-wiki.md`: [01-product/wiki-format-3.md](01-product/wiki-format-3.md).
 
 Next steps, in order (D135):
 

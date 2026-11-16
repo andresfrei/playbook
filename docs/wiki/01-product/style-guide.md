@@ -23,8 +23,8 @@ Two limits apply to the wiki that `prepare-project` creates in a project, not to
 
 | What | Limit | Enforced by |
 |------|-------|-------------|
-| The section "Where work stands" of the wiki's `README.md` | 250 words | `plugin/skills/prepare-project/scripts/check-wiki.sh`, which also fails on a relative link that does not resolve |
-| The text of a decision in `decisions.md` | 60 words | Nothing: rows written before the limit are not changed |
+| The section "Where work stands" of the wiki's `README.md` | 250 words | `plugin/skills/prepare-project/scripts/check-wiki.sh`, which also fails on a relative link that does not resolve and on a path the wiki names as code that does not exist (D160) |
+| The text of a decision in `decisions.md` | 60 words | The same script, for the rows written after the wiki reached format 3 (D161). Earlier rows are not checked or changed |
 
 ## Format of a skill
 
@@ -34,7 +34,7 @@ That file repeats the numbers of L2 and L3, and `scripts/verify.sh` holds all fo
 
 ## Format of an agent file and the model configuration
 
-An agent file is `plugin/agents/<name>.md` (TD7, TD8, TD11). Its front matter holds `name`, `description` (one line, within L3), `tools` (comma-separated, optional), `model`, and `effort`. The body is the agent's system prompt: plain imperative rules, under about 150 words. Claude Code lists every agent with its description at session start, so agent descriptions count toward L4.
+An agent file is `plugin/agents/<name>.md` (TD7, TD8, TD11). Its front matter holds `name`, `description` (one line, within L3), `tools` (comma-separated, optional), `skills` (optional: the skills of the plugin that the agent preloads, on one line, separated by commas; D159), `model`, and `effort`. The body is the agent's system prompt: plain imperative rules, under about 150 words. Claude Code lists every agent with its description at session start, so agent descriptions count toward L4.
 
 The `model` and `effort` lines are written from `plugin/models.conf` by `scripts/set-models.sh` and never edited by hand. The file has one line per agent: name, model, effort, with `#` for comments. A model is `haiku`, `sonnet`, `opus`, `fable`, `inherit`, or a full id starting with `claude-`. An effort is `low`, `medium`, `high`, `xhigh`, or `max`. `scripts/verify.sh` runs `set-models.sh --check` and fails when an agent file differs from the configuration, when a configured agent has no file, or when an agent file has no line.
 

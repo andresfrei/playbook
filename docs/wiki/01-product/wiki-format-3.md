@@ -1,6 +1,6 @@
 # Wiki format 3
 
-A proposal for the next format of a project's wiki: four changes to the format, C1 to C4, and one to the product's `review` agent, C5, that make a changed definition reach the next session through the structure of the wiki and a check, and not only through instructions. C1, C2, C3, C4a, C4b, C5, and who writes the project's instruction file are Decided, and C4c is not taken (D155 to D162). Nothing is built. The owner asked on 2026-11-15 to have it recorded as Proposed, to decide it point by point.
+A proposal for the next format of a project's wiki: four changes to the format, C1 to C4, and one to the product's `review` agent, C5, that make a changed definition reach the next session through the structure of the wiki and a check, and not only through instructions. C1, C2, C3, C4a, C4b, C5, and who writes the project's instruction file are Decided, and C4c is not taken (D155 to D162). They are built on the branch `feat/wiki-format-3`, which is not merged; see "Built". The owner asked on 2026-11-15 to have it recorded as Proposed, to decide it point by point.
 
 It continues [wiki-maintenance.md](wiki-maintenance.md), which holds the six links a changed definition needs, the rules G1 to G3, and the doctor. Read that page first for those terms.
 
@@ -69,7 +69,7 @@ Five changes. Each can be accepted, changed, or declined on its own, except that
 
 ### C1 — The page table says which code each page governs
 
-Decided: the owner accepted it as written on 2026-11-15 (D155). Not built.
+Decided: the owner accepted it as written on 2026-11-15 (D155).
 
 The page table of a wiki's `README.md` gains a third column, "Code it governs".
 
@@ -88,7 +88,7 @@ It answers "The review has no way to find the page", and it is what C2 reads.
 
 ### C2 — The page is read before the code is changed
 
-Decided: the owner accepted the three texts as written on 2026-11-15 (D156). Not built.
+Decided: the owner accepted the three texts as written on 2026-11-15 (D156).
 
 Three texts.
 
@@ -108,7 +108,7 @@ It answers link 5. Who writes the first text is decided under "The project's ins
 
 ### C3 — The code left on the old definition is listed in the page
 
-Decided: the owner accepted the three texts as written on 2026-11-15 (D158). Not built.
+Decided: the owner accepted the three texts as written on 2026-11-15 (D158).
 
 A new section of `1-wiki.md`, "A page that states a definition":
 
@@ -126,7 +126,7 @@ It answers "The answer about the old code has no place". The reason it matters: 
 
 ### C4 — The check fails on two more things
 
-C4a and C4b are Decided (D160, D161). C4c is not taken (D162). Not built.
+C4a and C4b are Decided (D160, D161). C4c is not taken (D162).
 
 `check-wiki.sh` today fails on two things: a "Where work stands" of more than 250 words, and a relative link that does not resolve. Three more were proposed. C4a and C4b are taken, and C4c is not:
 
@@ -144,7 +144,7 @@ C4a and C4b are Decided (D160, D161). C4c is not taken (D162). Not built.
 
 ### C5 — The `review` agent loads the review skill
 
-Decided for Claude Code only (D159). Not built. It changes the product's `review` agent, not the format of a wiki; it is here because it is what makes C2 and C3 reach every review.
+Decided for Claude Code only (D159). It changes the product's `review` agent, not the format of a wiki; it is here because it is what makes C2 and C3 reach every review.
 
 The problem: rule R20 says "Have the `review` agent read it before delivery", and the agent can be called directly. The rules of a review, with the texts of C2 and C3, are in the skill `review-change`. The agent receives them only when the skill is what starts it.
 
@@ -229,13 +229,13 @@ It does not reduce usage. Reading the wiki is about 1.7% of the usage, and every
 Decided (D163): the same order as D135.
 
 1. The owner decides the changes and Q52. Done (D155 to D162).
-2. They are built in the product, on the branch `feat/wiki-format-3`, with tests. The `review` agent reads the build before the owner does, and nothing is pushed until the owner asks.
+2. They are built in the product, on the branch `feat/wiki-format-3`, with tests. The `review` agent reads the build before the owner does, and nothing is pushed until the owner asks. Built on 2026-11-15; the owner's review waits.
 3. This wiki is the pilot, repaired with the doctor.
 4. radar, then torneo-pro and huellitas-id when work on each resumes.
 
 ## The project's instruction file
 
-Decided: D157, which answers Q52. Not built.
+Decided: D157, which answers Q52.
 
 - `prepare-project` writes the two sentences of the first text of C2, in stage 1 and after asking the owner, because the file is outside `docs/wiki/`.
 - It writes them in `CLAUDE.md`. It writes them in `AGENTS.md` too only when the owner says the project is used with opencode, which reads `AGENTS.md` only ([03-technology/phase-3.md](../03-technology/phase-3.md)).
@@ -245,8 +245,67 @@ Decided: D157, which answers Q52. Not built.
 
 Not taken: the owner writing the sentences by hand in each project, which depends on remembering it.
 
+## Built
+
+Built on 2026-11-15 on the branch `feat/wiki-format-3`, in the worktree `~/dev/playbook-worktrees/wiki-format-3` (D163). It is not merged and not pushed. The plugin's version is not changed: only the owner changes it (TD22).
+
+### What differs from what was accepted
+
+| File | Difference | Why |
+|---|---|---|
+| `1-wiki.md`, after item 5 of `README.md` | Two sentences more: "Title the third column "Code it governs" and write each path as code, between backticks. The check fails on a path that does not exist." | The check must tell a path from the other text of a cell. The owner has not accepted them |
+| `1-wiki.md`, "A page that states a definition" | Two sentences more: "Write the path in the first column, as code. The check fails on a path that does not exist." | The same. The owner has not accepted them |
+| `1-wiki.md`, "`decisions.md`" | One sentence more: "The check fails on a row over the limit that was written after the wiki reached format 3; the owner's words are not counted." | It says what D161 decided where the rule is read. The owner has not accepted it |
+| `1-wiki.md`, "Files" and "Steps" | The file `.unchecked-decisions` is listed. The step of D157 is step 2, and the later steps are renumbered | The check reads that file |
+| `check-wiki.sh` | Two more ways to run it: `--rows` prints how many rows `decisions.md` holds, and `--column` says whether `README.md` has the column | `wiki-format.sh` uses them, so that both scripts read a row and the column in one way |
+| `check-wiki.sh` | It also fails when a wiki at format 3 has no `.unchecked-decisions` | Without it, deleting the file turns the limit of 60 words off with no notice (finding 2 of the review) |
+| `wiki-format.sh mark` | It refuses a wiki whose `README.md` has no column "Code it governs" | Otherwise a wiki is marked format 3 without the map. The review of the doctor found the same for format 2 |
+| `plugin/skills/doctor/SKILL.md` | Two rules: a file outside `docs/wiki/` may be changed when a reference file names it, and `.unchecked-decisions` is never written by hand. The body has 401 words | Format 3 writes in the project's instruction file |
+| `scripts/verify.sh` | It also fails on a `skills` line with no name on it, which is how a list written under the line looks | Such a list passed with a name that does not exist (finding 4 of the review) |
+| `plugin/skills/review-change/SKILL.md` | The body has 524 words, not 523 | A count |
+
+The file that holds the count is `docs/wiki/.unchecked-decisions`.
+
+### What was run
+
+In the worktree, after the corrections.
+
+| Command | Result |
+|---|---|
+| `sh scripts/verify.sh` | "verify passed: 790 words loaded at session start, limit 800" |
+| `sh scripts/verify_test.sh` | 172 cases, "all cases passed". There were 116 before |
+| The same, with `sh` and `awk` being busybox | "all cases passed" |
+| The same, with `awk` being mawk under dash | "all cases passed" |
+| The new tests against the scripts as they were before the corrections | Ten cases fail, one or more for each finding corrected in a script |
+| `check-wiki.sh docs/wiki` on this wiki | Passes. This wiki is at format 2: no column, no row checked |
+| `check-wiki.sh --rows docs/wiki` | 185 |
+| `sh scripts/set-models.sh` | `opencode/agents/write.md` gains the sentence of C2. `opencode/agents/review.md` does not change: the `skills` line is not copied |
+
+### The review
+
+The `review` agent read the two commits of the build and reported nine findings. It ran as it is installed, without the preload of C5.
+
+Corrected:
+
+1. The project's root was wrong for a wiki directory that is a link: a path that exists was reported as missing.
+2. A wiki at format 3 whose `.unchecked-decisions` was deleted had no row checked, and the next `mark` counted every row as written before the limit.
+3. `mark` and the check did not agree on what the column is: a header that does not end in a bar, or the text inside a code block, satisfied `mark` and was not read by the check.
+4. `verify.sh` did not see a skill named in a list under the `skills` line.
+5. The column was read in every page, not only in `README.md`.
+6. A count such as "1 1" was read as 11.
+7. `format-3.md` said the repair changes one file outside `docs/wiki/`; with opencode it changes two.
+9. [style-guide.md](style-guide.md) still said that nothing enforces the limit of 60 words.
+
+Finding 8 is the owner's to decide: the sentences in `1-wiki.md` that are not in any accepted text, the first three rows of the table above.
+
+The review also named cases with no test. They have one now: a path under a linked wiki, a table whose rows do not end in a bar, lines that end in a carriage return, a row inside a code block, a smaller heading inside the list of old code, and a wiki at format 3 without the count.
+
 ## Not verified
 
+- No session was run with the build. The doctor was not run with `format-3.md`, and `prepare-project` was not run to create a wiki at format 3: both need a session that loads the plugin from this branch.
+- Whether Claude Code accepts a list written under the `skills` line. `verify.sh` refuses it either way.
+- The paid evaluation of the skills, after the texts of `write-docs` and `review-change` changed. Their descriptions did not change.
+- `sh scripts/verify.sh --opencode`.
 - No session was run with any of this. That a session told to read the page does read it, and builds the new way, is not shown.
 - No project of the owner was searched for a real case of a changed definition built the old way. This is still as [wiki-maintenance.md](wiki-maintenance.md) left it.
 - That an agent follows nearby code over a page it did not read is the argument for C3. It was not measured.
