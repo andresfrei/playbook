@@ -10,7 +10,7 @@ Every statement is one of:
 
 ## Where work stands
 
-Updated 2026-11-14, after D154 and TD22.
+Updated 2026-11-15, after D163.
 
 No phase and no stage is open. A new phase starts when the owner asks for it, with a new stage table above the three below.
 
@@ -21,6 +21,7 @@ The repository is public since 2026-11-14 (D145 to D152): https://github.com/and
 Waiting for the owner:
 
 - Six proposals to spend fewer tokens, P1 to P6: 02-current-state/token-economy.md (kept in the private archive).
+- Wiki format 3 is decided (D155 to D163) and is being built on the branch `feat/wiki-format-3`; the owner reviews it when it is built: [01-product/wiki-format-3.md](01-product/wiki-format-3.md).
 
 Next steps, in order (D135):
 
@@ -82,6 +83,7 @@ Phase 1, kept as a record:
 | [01-product/phase-2.md](01-product/phase-2.md) | The product definition for phase 2: what is decided, what each topic still lacks |
 | [01-product/phase-3.md](01-product/phase-3.md) | The product definition for phase 3, support for opencode 2.x: what is decided, proposed, and open |
 | [01-product/wiki-maintenance.md](01-product/wiki-maintenance.md) | How a project's wiki stays small and current, and how a changed definition reaches the next session: what was measured, the changes proposed, and the order of the work |
+| [01-product/wiki-format-3.md](01-product/wiki-format-3.md) | A proposal for the next format of a project's wiki: the page table says which code each page governs, the page is read before the code is changed, the code left on an old definition is listed, and the check enforces it |
 | [01-product/glossary.md](01-product/glossary.md) | Vocabulary, with Spanish |
 | [01-product/open-questions.md](01-product/open-questions.md) | Questions that block closing this stage |
 | [03-technology/installation.md](03-technology/installation.md) | How the product is installed in Claude Code: the routes evaluated and the one chosen |
