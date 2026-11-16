@@ -12,7 +12,7 @@ Every statement is one of:
 
 Updated 2026-11-16, after D208.
 
-Phase 4 is open at stage 6, Execution (D167). Stages 1 to 5 are closed (D197), and U28 to U36 are done: [05-plan/plan-phase-4.md](05-plan/plan-phase-4.md). It is version 2 of the product and removes the support for opencode (TD32, D191). It splits the product into a shared core, `playbook-wiki`, and the owner's agent system, `playbook-agents`: [01-product/phase-4.md](01-product/phase-4.md).
+Phase 4 is open at stage 6, Execution (D167). Stages 1 to 5 are closed (D197), and U28 to U37 are done: [05-plan/plan-phase-4.md](05-plan/plan-phase-4.md). It is version 2 of the product and removes the support for opencode (TD32, D191). It splits the product into a shared core, `playbook-wiki`, and the owner's agent system, `playbook-agents`: [01-product/phase-4.md](01-product/phase-4.md).
 
 Wiki maintenance and the doctor (D133 to D142) are built, merged into `main`, and pushed (D144): [01-product/wiki-maintenance.md](01-product/wiki-maintenance.md).
 
@@ -27,7 +27,7 @@ Waiting for the owner:
 
 Next steps:
 
-1. U37 to U41 in the order of the plan, one at a time.
+1. U38 to U41 in the order of the plan, one at a time.
 2. The owner reviews each unit when it ends.
 
 Finished:

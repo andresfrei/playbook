@@ -5,5 +5,14 @@
   "author": {
     "name": "Andres Frei"
   },
-  "dependencies": ["playbook-wiki"]
+  "dependencies": ["playbook-wiki"],
+  "userConfig": {
+    "language": {
+      "type": "string",
+      "title": "Language",
+      "description": "The language the agent talks to you in. Leave it empty to let the agent follow the language you write in.",
+      "required": false,
+      "sensitive": false
+    }
+  }
 }

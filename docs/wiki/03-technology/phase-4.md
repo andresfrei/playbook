@@ -259,6 +259,12 @@ What follows from it:
 - The contract must be given to a subagent by the hook for a new subagent. The hook at the start of the session does not reach it (TD29 holds).
 - A person's skill is turned off for one repository with `"off"` in that repository's local settings (TD33 holds). `"name-only"` keeps the name and drops the description.
 - A plugin that came as a dependency is kept apart from one the person installed. After `ta` was uninstalled, Claude Code printed "1 auto-installed dependency no longer needed: tw. Run `claude plugin prune --scope local` to remove." So the wizard's script installs `playbook-wiki` by name in every case, and a person who goes from the whole product to the wiki alone keeps it.
+- Tried on 2026-11-16 with Claude Code 2.1.326, in the same trial folder, with this repository's plugins (U37):
+  - `claude plugin install` of a plugin already installed at the scope exits 0. It turns the plugin on when it was off, and it removes the mark `"auto": true` that `installed_plugins.json` keeps for a dependency, printing "marked as manually installed".
+  - `claude plugin enable` of a plugin already on, and `disable` of one already off, fail: "is already enabled at user scope".
+  - `claude plugin disable <plugin> --scope local` works in a repository where the plugin is on only through the user scope, and writes `false` in that repository's `.claude/settings.local.json`.
+  - `claude plugin configure <plugin> --values-stdin` accepts `{"language":""}` and saves the empty value.
+  - So the wizard's script turns a plugin on with `install`, and reads `claude plugin list --json` only to know whether `playbook-agents` is on: in the repository for the scope `local`, and in `/`, where no project's settings apply, for the scope `user`.
 - Claude Code has a command of its own named `init`. The product's is `/playbook:init`, so the two do not collide, and a person may confuse them.
 - `claude plugin validate` also prints what Anthropic's directory refuses: a plugin with no `README.md` of at least 40 words, and one with no license. It matters for Q61, not for this phase.
 

@@ -1454,6 +1454,306 @@ hook_run "$tmp/mr_odd" 'git merge feat/rbac'
 check "merge hook: a decision with a quote, a backslash, a tab, and a control character gives valid JSON" hook_json
 check "merge hook: that decision decodes back, without the control character" hook_lists 'Say "hi" to C:\dir	andstop.'
 
+# /playbook:init: plugins/playbook/skills/init/scripts/init.sh, with a stand-in
+# for the claude command first on PATH. It logs its arguments and keeps the
+# plugins in a state file, one line per plugin and scope: id|scope|enabled|path.
+# Like the real command, `list` reports in each record whether the plugin is on
+# in the folder it runs in: the local value for that folder, else the user one.
+init_script="$root/plugins/playbook/skills/init/scripts/init.sh"
+
+init_fresh() {
+  rm -rf "$tmp/init"
+  mkdir -p "$tmp/init/bin" "$tmp/init/home/.claude" "$tmp/init/repo"
+  : > "$tmp/init/state"
+  : > "$tmp/init/log"
+  cat > "$tmp/init/bin/claude" <<'FAKE'
+#!/bin/sh
+sub=$2
+[ "$sub" = list ] && printf 'list in %s\n' "$PWD" >> "$FAKE_LOG.list"
+[ "$sub" = list ] || printf '%s\n' "$*" >> "$FAKE_LOG"
+if [ "${FAKE_FAIL:-}" = "$sub" ]; then
+  echo "error: boom in $sub" >&2
+  exit 3
+fi
+scope=
+prev=
+for arg in "$@"; do
+  [ "$prev" = --scope ] && scope=$arg
+  prev=$arg
+done
+path=
+[ "$scope" = local ] && path=$PWD
+# set_record <value> <arguments>: the record of the plugin at the scope, added
+# when missing.
+set_record() {
+  awk -F '|' -v OFS='|' -v id="$4" -v scope="$scope" -v path="$path" -v value="$1" '
+    $1 == id && $2 == scope && $4 == path { $3 = value; seen = 1 }
+    { print }
+    END { if (!seen) print id, scope, value, path }' "$FAKE_STATE" > "$FAKE_STATE.new"
+  mv "$FAKE_STATE.new" "$FAKE_STATE"
+}
+case $sub in
+  list)
+    awk -F '|' -v here="$PWD" '
+      { line[NR] = $0
+        if ($2 == "user" && !($1 in localv)) effective[$1] = $3
+        if ($2 == "local" && $4 == here) { localv[$1] = 1; effective[$1] = $3 } }
+      END { print "["
+        for (i = 1; i <= NR; i++) {
+          split(line[i], f, "|")
+          if (i > 1) print "  },"
+          print "  {"
+          printf "    \"id\": \"%s\",\n    \"scope\": \"%s\",\n", f[1], f[2]
+          if (f[4] != "") printf "    \"projectPath\": \"%s\",\n", f[4]
+          printf "    \"enabled\": %s\n", (f[1] in effective) ? effective[f[1]] : "false" }
+        if (NR) print "  }"
+        print "]" }' "$FAKE_STATE" ;;
+  install | enable) set_record true "$@" ;;
+  disable) set_record false "$@" ;;
+  configure) printf 'stdin: %s\n' "$(cat)" >> "$FAKE_LOG" ;;
+esac
+echo "done $sub"
+FAKE
+  chmod +x "$tmp/init/bin/claude"
+}
+
+# init_run <arguments of init.sh>: runs it in the repository with the stand-in.
+# Sets init_out and init_code.
+init_run() {
+  init_out=$(cd "$tmp/init/repo" && HOME="$tmp/init/home" FAKE_LOG="$tmp/init/log" \
+    FAKE_STATE="$tmp/init/state" PATH="$tmp/init/bin:$PATH" sh "$init_script" "$@" 2>&1)
+  init_code=$?
+}
+
+# init_log_is <case name> <expected log, one command per line>
+init_log_is() {
+  if [ "$(cat "$tmp/init/log")" = "$2" ]; then
+    printf 'ok    %s\n' "$1"
+  else
+    printf 'FAIL  %s\nexpected:\n%s\nlogged:\n%s\n' "$1" "$2" "$(cat "$tmp/init/log")"
+    failed=$((failed + 1))
+  fi
+}
+
+# init_printed <case name>: every logged command is printed with "+ " before.
+init_printed() {
+  if [ "$(printf '%s\n' "$init_out" | grep '^+ ' | sed 's/^+ //; s/^printf .* | //')" = \
+       "$(grep -v '^stdin: ' "$tmp/init/log" | sed 's/^/claude /')" ]; then
+    printf 'ok    %s\n' "$1"
+  else
+    printf 'FAIL  %s\n%s\n' "$1" "$init_out"
+    failed=$((failed + 1))
+  fi
+}
+
+# init_ok <case name> <condition: true|false>
+init_ok() {
+  if [ "$2" = true ]; then
+    printf 'ok    %s\n' "$1"
+  else
+    printf 'FAIL  %s (exit %s)\n%s\n' "$1" "$init_code" "$init_out"
+    failed=$((failed + 1))
+  fi
+}
+
+# init_state_has <case name> <line of the state file>
+init_state_has() {
+  init_ok "$1" "$(grep -qxF "$2" "$tmp/init/state" && echo true || echo false)"
+}
+
+w=playbook-wiki@playbook
+a=playbook-agents@playbook
+r=$tmp/init/repo
+
+init_fresh
+init_run apply wiki local
+init_log_is "init: wiki at local installs the wiki" "plugin install $w --scope local"
+init_printed "init: wiki at local prints the command with + before it ran"
+init_ok "init: wiki at local exits 0" "$([ "$init_code" -eq 0 ] && echo true || echo false)"
+
+init_fresh
+init_run apply wiki user
+init_log_is "init: wiki at user installs the wiki" "plugin install $w --scope user"
+init_ok "init: wiki at user reads the list in /, where no project's settings apply" \
+  "$([ "$(cat "$tmp/init/log.list")" = "list in /" ] && echo true || echo false)"
+
+init_fresh
+init_run apply all local
+init_log_is "init: all at local installs the wiki by name, then the agents, and clears the language" "plugin install $w --scope local
+plugin install $a --scope local
+plugin configure $a --values-stdin
+stdin: {\"language\":\"\"}"
+init_printed "init: all at local prints each command with + before it ran"
+init_ok "init: all reads no list" "$([ ! -f "$tmp/init/log.list" ] && echo true || echo false)"
+
+init_fresh
+init_run apply all user es
+init_log_is "init: all with a language saves it from stdin" "plugin install $w --scope user
+plugin install $a --scope user
+plugin configure $a --values-stdin
+stdin: {\"language\":\"es\"}"
+init_printed "init: all with a language prints each command with + before it ran"
+
+# Installed already, on or off: install again by name, which turns it on.
+init_fresh
+printf '%s|user|false|\n%s|user|true|\n' "$w" "$a" > "$tmp/init/state"
+init_run apply all user
+init_log_is "init: plugins already installed are installed again by name" "plugin install $w --scope user
+plugin install $a --scope user
+plugin configure $a --values-stdin
+stdin: {\"language\":\"\"}"
+init_state_has "init: the wiki is on after installing it again" "$w|user|true|"
+
+# On here through this repository, off at user: all at user still installs.
+init_fresh
+printf '%s|user|false|\n%s|local|true|%s\n' "$a" "$a" "$r" > "$tmp/init/state"
+init_run apply all user
+init_state_has "init: all at user turns agents on at user when only this repository had it on" "$a|user|true|"
+
+# From the whole product to the wiki alone.
+init_fresh
+printf '%s|local|true|%s\n%s|local|true|%s\n' "$w" "$r" "$a" "$r" > "$tmp/init/state"
+init_run apply wiki local
+init_log_is "init: wiki where agents is on disables agents at that scope" "plugin install $w --scope local
+plugin disable $a --scope local"
+init_printed "init: the disable is printed with + before it ran"
+init_state_has "init: the wiki stays on after going to the wiki alone" "$w|local|true|$r"
+init_state_has "init: agents is off after going to the wiki alone" "$a|local|false|$r"
+
+init_fresh
+printf '%s|user|true|\n' "$a" > "$tmp/init/state"
+init_run apply wiki local
+init_log_is "init: wiki at local turns off agents that are on here through user" "plugin install $w --scope local
+plugin disable $a --scope local"
+init_state_has "init: agents stays on at user" "$a|user|true|"
+
+init_fresh
+printf '%s|user|true|\n%s|local|false|%s\n' "$a" "$a" "$r" > "$tmp/init/state"
+init_run apply wiki user
+init_log_is "init: wiki at user turns agents off at user when this repository has it off" "plugin install $w --scope user
+plugin disable $a --scope user"
+
+init_fresh
+printf '%s|user|false|\n%s|local|true|%s\n' "$a" "$a" "$r" > "$tmp/init/state"
+init_run apply wiki user
+init_log_is "init: wiki at user leaves agents alone when it is off at user" "plugin install $w --scope user"
+
+init_fresh
+printf '%s|local|true|/somewhere/else\n' "$a" > "$tmp/init/state"
+init_run apply wiki local
+init_log_is "init: agents on in another repository is left alone" "plugin install $w --scope local"
+
+# A failing command stops with its output and exit 1.
+init_fresh
+FAKE_FAIL=install init_run apply all user es
+init_ok "init: a failing claude command makes apply exit 1" \
+  "$([ "$init_code" -eq 1 ] && echo true || echo false)"
+init_ok "init: the output of the failing command is printed" \
+  "$(printf '%s\n' "$init_out" | grep -q 'error: boom in install' && echo true || echo false)"
+init_log_is "init: apply stops at the failing command" "plugin install $w --scope user"
+
+init_fresh
+FAKE_FAIL=configure init_run apply all user es
+init_ok "init: a failing configure makes apply exit 1" \
+  "$([ "$init_code" -eq 1 ] && echo true || echo false)"
+
+init_fresh
+FAKE_FAIL=list init_run apply wiki user
+init_ok "init: apply exits 1 when the list cannot be read" \
+  "$([ "$init_code" -eq 1 ] && echo true || echo false)"
+init_log_is "init: apply runs no command when the list cannot be read" ""
+
+# Bad arguments.
+# init_bad <label> <arguments of init.sh>: exit 2, the usage, and no command.
+init_bad() {
+  label=$1
+  shift
+  init_fresh
+  init_run "$@"
+  init_ok "init: bad arguments exit 2 with the usage ($label)" \
+    "$([ "$init_code" -eq 2 ] && printf '%s\n' "$init_out" | grep -q '^Usage:' && echo true || echo false)"
+  init_log_is "init: bad arguments run no claude command ($label)" ""
+}
+init_bad "no argument"
+init_bad "apply alone" apply
+init_bad "apply with one argument" apply wiki
+init_bad "an unknown product" apply some local
+init_bad "an unknown scope" apply wiki project
+init_bad "too many arguments" apply wiki local es extra
+init_bad "scan with an argument" scan extra
+init_bad "an unknown command" other
+init_bad "a quote in the language" apply all user 'a"b'
+init_bad "a backslash in the language" apply all user 'a\b'
+
+# scan.
+init_fresh
+{
+  printf '%s|user|true|\n' "$w"
+  printf '%s|user|true|\n' "$a"
+  printf '%s|local|false|%s\n' "$a" "$r"
+  printf 'engram@engram|user|true|\n'
+  printf 'figma@official|user|false|\n'
+} > "$tmp/init/state"
+printf 'rules\n' > "$tmp/init/home/.claude/CLAUDE.md"
+init_run scan
+init_ok "init: scan reports the wiki as on here" \
+  "$(printf '%s\n' "$init_out" | grep -q "$w: on here" && echo true || echo false)"
+init_ok "init: scan reports agents as off here when this repository has it off" \
+  "$(printf '%s\n' "$init_out" | grep -q "$a: off here" && echo true || echo false)"
+init_ok "init: scan lists each scope agents is installed at" \
+  "$(printf '%s\n' "$init_out" | grep -q '    installed at scope user$' &&
+     printf '%s\n' "$init_out" | grep -q "    installed at scope local for $r" && echo true || echo false)"
+init_ok "init: scan lists another plugin that is on" \
+  "$(printf '%s\n' "$init_out" | grep -q '^  engram@engram$' && echo true || echo false)"
+init_ok "init: scan does not list a plugin that is off" \
+  "$(printf '%s\n' "$init_out" | grep -q 'figma' && echo false || echo true)"
+init_ok "init: scan reports a global CLAUDE.md" \
+  "$(printf '%s\n' "$init_out" | grep -q "exists: $tmp/init/home/.claude/CLAUDE.md" && echo true || echo false)"
+
+init_fresh
+init_run scan
+init_ok "init: scan reports no plugin, no other plugin, and no CLAUDE.md on a clean machine" \
+  "$(printf '%s\n' "$init_out" | grep -c 'not installed\|  none' | grep -q '^4$' && echo true || echo false)"
+
+init_fresh
+FAKE_FAIL=list init_run scan
+init_ok "init: scan exits 1 when the list cannot be read" \
+  "$([ "$init_code" -eq 1 ] && echo true || echo false)"
+
+init_fresh
+mkdir "$tmp/init/config"
+printf 'rules\n' > "$tmp/init/config/CLAUDE.md"
+printf 'rules\n' > "$tmp/init/home/.claude/CLAUDE.md"
+CLAUDE_CONFIG_DIR="$tmp/init/config" init_run scan
+init_ok "init: scan with CLAUDE_CONFIG_DIR reports both global CLAUDE.md files" \
+  "$(printf '%s\n' "$init_out" | grep -q "exists: $tmp/init/config/CLAUDE.md" &&
+     printf '%s\n' "$init_out" | grep -q "exists: $tmp/init/home/.claude/CLAUDE.md" && echo true || echo false)"
+
+# apply writes no file of its own and no CLAUDE.md.
+init_fresh
+init_run apply all local es
+init_ok "init: apply creates no CLAUDE.md and no file in the repository or home" \
+  "$([ -z "$(find "$tmp/init/repo" "$tmp/init/home" -type f)" ] && echo true || echo false)"
+
+# The hook of playbook-agents: the rules, and the language line when it is set.
+hook_command=$(sed -n 's/^ *"command": "\(.*\)"$/\1/p' "$root/plugins/playbook-agents/hooks/hooks.json" |
+  sed 's/\\"/"/g')
+hook_text() {
+  # shellcheck disable=SC2016
+  CLAUDE_PLUGIN_ROOT="$root/plugins/playbook-agents" sh -c "$hook_command"
+}
+rules_text=$(cat "$root/plugins/playbook-agents/rules.md")
+init_out=$(CLAUDE_PLUGIN_OPTION_LANGUAGE=es hook_text)
+init_ok "init: the hook prints the rules and the language line when a language is set" \
+  "$([ "$init_out" = "$rules_text
+Talk to the person in es." ] && echo true || echo false)"
+init_out=$(CLAUDE_PLUGIN_OPTION_LANGUAGE="" hook_text)
+init_ok "init: the hook prints only the rules when the language is empty" \
+  "$([ "$init_out" = "$rules_text" ] && echo true || echo false)"
+init_out=$(env -u CLAUDE_PLUGIN_OPTION_LANGUAGE sh -c "CLAUDE_PLUGIN_ROOT='$root/plugins/playbook-agents' sh -c '$hook_command'")
+init_ok "init: the hook prints only the rules when no language is set" \
+  "$([ "$init_out" = "$rules_text" ] && echo true || echo false)"
+
 if [ "$failed" -eq 0 ]; then
   printf 'all cases passed\n'
 else
