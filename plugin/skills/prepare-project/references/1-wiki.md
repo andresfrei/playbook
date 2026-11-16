@@ -82,7 +82,7 @@ One table: ID, date, decision, owner's words.
 - A decision that replaces an earlier one names it.
 - A decision is a choice the owner made between alternatives, or a rule the owner set. That includes an authorization given before an action, the closing of a stage or a phase, and the acceptance of a plan.
 - Not a row: the acceptance of a unit, which goes in the plan's progress table, and something done after a decision, such as a push or a cleanup.
-- State the choice in at most 60 words and link to the page that holds the detail. Evidence and reasons live in that page. The check fails on a row over the limit; the owner's words are not counted.
+- State the choice in at most 60 words and link to the page that holds the detail. Evidence and reasons live in that page. The check fails on a row over the limit that was written after the wiki reached format 3; the owner's words are not counted.
 
 ### `01-product/open-questions.md`
 

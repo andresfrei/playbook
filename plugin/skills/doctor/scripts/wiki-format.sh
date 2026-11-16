@@ -11,8 +11,10 @@
 # CLAUDE_PROJECT_DIR. It prints nothing when that variable is not set.
 # mark writes the marker only when the wiki has a "Where work stands" section
 # and a column "Code it governs" in a table of its README.md, and the check of
-# the wiki passes. The first time, it also writes .unchecked-decisions: how
-# many rows decisions.md holds, which the check of the wiki does not read.
+# the wiki passes. For a wiki below format 3 it also writes
+# .unchecked-decisions: how many rows decisions.md holds, which the check of
+# the wiki does not read. A wiki at format 3 that lost that file fails the
+# check, so mark never counts its rows again.
 set -u
 
 # The format of a wiki the playbook is at. Raise it only together with a new
@@ -63,7 +65,7 @@ case $command in
       printf 'FAIL %s/README.md has no "Where work stands" section, so the wiki is not in the format of the playbook. The marker was not written.\n' "$wiki"
       exit 1
     fi
-    if ! grep -q '^[[:space:]]*|.*Code it governs' "$wiki/README.md"; then
+    if ! sh "$check_wiki" --column "$wiki"; then
       printf 'FAIL %s/README.md has no column "Code it governs" in its table of pages, so the wiki is not at wiki format %s. The marker was not written.\n' "$wiki" "$format"
       exit 1
     fi

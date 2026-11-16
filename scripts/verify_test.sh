@@ -686,6 +686,44 @@ fresh_project
 printf '\n## Code on the old definition\n\nNone.\n\n## Notes\n\n| Tool | Use |\n|---|---|\n| `no-such-tool` | None |\n' >> "$project_wiki/01-product/overview.md"
 expect_wiki "paths: the next heading ends the list of old code" pass "" "$project_wiki"
 
+fresh_project
+rm -rf "$tmp/store"
+mkdir "$tmp/store"
+mv "$project_wiki" "$tmp/store/wiki"
+ln -s "$tmp/store/wiki" "$project_wiki"
+governs '`src/filters/`'
+expect_wiki "paths: under a wiki directory that is a link, a path is read from the project that links to it" pass "" "$project_wiki"
+governs '`src/gone/`'
+expect_wiki "paths: under a wiki directory that is a link, a missing path fails" fail "names the path src/gone/" "$project_wiki"
+
+fresh_project
+printf '\n| Page | Content | Code it governs\n|---|---|---\n| x | y | `src/gone/`\n' >> "$project_wiki/README.md"
+expect_wiki "paths: the column is found in a table whose rows do not end in a bar" fail "names the path src/gone/" "$project_wiki"
+
+fresh_project
+printf '\n| Page | Code it governs |\n|---|---|\n| An example | `src/gone/` |\n' >> "$project_wiki/01-product/overview.md"
+expect_wiki "paths: the column is read in the entry point only" pass "" "$project_wiki"
+
+fresh_project
+printf '\n## Code on the old definition\n\n### Filters\n\n| Path | Decision |\n|---|---|\n| `src/old.ts` | D41 |\n' >> "$project_wiki/01-product/overview.md"
+expect_wiki "paths: a smaller heading does not end the list of old code" fail "names the path src/old.ts" "$project_wiki"
+
+fresh_project
+governs '`src/filters/`'
+awk '{ printf "%s\r\n", $0 }' "$project_wiki/README.md" > "$tmp/readme" && mv "$tmp/readme" "$project_wiki/README.md"
+expect_wiki "paths: a table whose lines end in a carriage return is read" pass "" "$project_wiki"
+
+fresh_project
+state_readme=$project_wiki/README.md
+printf '# Wiki\n\n## Where work stands\n\nNothing open.\n\n## Pages\n\n| Page | Content |\n|---|---|\n| [Overview](01-product/overview.md) | Built with `no-such-tool` |\n' > "$state_readme"
+expect_wiki "paths: a wiki whose table of pages has no such column passes as before" pass "" "$project_wiki"
+check "column: a table of pages without the column is reported" sh -c '! sh "$1" --column "$2"' sh "$check_wiki" "$project_wiki"
+
+fresh_project
+check "column: a table of pages with the column is found" sh "$check_wiki" --column "$project_wiki"
+printf '# Wiki\n\n## Where work stands\n\nNothing open.\n\n```text\n| Page | Content | Code it governs |\n```\n' > "$project_wiki/README.md"
+check "column: a column inside a code block is not one" sh -c '! sh "$1" --column "$2"' sh "$check_wiki" "$project_wiki"
+
 # The rows of decisions.md.
 # decision <id> <words of the decision> [words of the owner]: prints one row.
 decision() {
@@ -738,6 +776,38 @@ check "decisions: --rows counts the rows and not the heading of the table" test 
 
 fresh_wiki 10
 check "decisions: --rows prints 0 for a wiki without decisions.md" test "$(sh "$check_wiki" --rows "$tmp/wiki")" = 0
+
+fresh_wiki 10
+decisions
+{ decision D1 10; decision D2 90; } >> "$tmp/wiki/decisions.md"
+printf '1 1\n' > "$tmp/wiki/.unchecked-decisions"
+expect_wiki "decisions: a count with a space inside is not read as a number" fail ".unchecked-decisions does not hold a number"
+
+fresh_wiki 10
+decisions
+decision D1 90 >> "$tmp/wiki/decisions.md"
+awk '{ printf "%s\r\n", $0 }' "$tmp/wiki/decisions.md" > "$tmp/x" && mv "$tmp/x" "$tmp/wiki/decisions.md"
+printf '0\r\n' > "$tmp/wiki/.unchecked-decisions"
+expect_wiki "decisions: rows and a count that end in a carriage return are read" fail "the decision of D1 has 90 words"
+
+fresh_wiki 10
+decisions
+{ decision D1 10; printf '\n```text\n'; decision D2 90; printf '```\n'; } >> "$tmp/wiki/decisions.md"
+printf '0\n' > "$tmp/wiki/.unchecked-decisions"
+expect_wiki "decisions: a row inside a code block is not a row" pass
+check "decisions: --rows does not count a row inside a code block" test "$(sh "$check_wiki" --rows "$tmp/wiki")" = 1
+
+fresh_wiki 10
+decisions
+decision D1 90 >> "$tmp/wiki/decisions.md"
+printf '3\n' > "$tmp/wiki/.format"
+expect_wiki "decisions: a wiki at format 3 without the count of unchecked rows fails" fail ".unchecked-decisions is missing in a wiki at format 3"
+
+fresh_wiki 10
+decisions
+decision D1 90 >> "$tmp/wiki/decisions.md"
+printf '2\n' > "$tmp/wiki/.format"
+expect_wiki "decisions: a wiki at format 2 has no row checked" pass
 
 # The marker of a wiki's format.
 wiki_format="$root/plugin/skills/doctor/scripts/wiki-format.sh"
@@ -850,6 +920,17 @@ mkdir "$tmp/wiki/.unchecked-decisions"
 expect_format "format: mark fails when the count of rows cannot be written" mark 1 "could not write"
 check "format: no marker exists when the count of rows could not be written" absent "$tmp/wiki/.format"
 
+fresh_wiki 10
+decisions
+{ decision D1 10; decision D2 90; } >> "$tmp/wiki/decisions.md"
+printf '%s\n' "$product_format" > "$tmp/wiki/.format"
+expect_format "format: mark does not count the rows again for a wiki already at the format" mark 1 ".unchecked-decisions is missing"
+check "format: the count of rows is not written for a wiki already at the format" absent "$tmp/wiki/.unchecked-decisions"
+
+fresh_wiki 10
+printf '# Wiki\n\n## Where work stands\n\nNothing open.\n\n```text\n| Page | Content | Code it governs |\n```\n' > "$tmp/wiki/README.md"
+expect_format "format: mark refuses a wiki whose only code column is inside a code block" mark 1 "has no column"
+
 # The hook: the command the plugin runs at session start, for the project of
 # the session.
 hook=$(awk '/"SessionStart"/ { inside = 1 }
@@ -890,6 +971,11 @@ expect "skills: a name that is not a skill of the plugin fails" fail "agents/rev
 fresh
 mv "$tmp/repo/plugin/skills/review-change" "$tmp/repo/plugin/skills/review-diff"
 expect "skills: renaming a skill that an agent preloads fails" fail "preloads the skill 'review-change'"
+
+fresh
+awk '/^skills: / { print "skills:"; print "  - no-such-skill"; next } { print }' "$tmp/repo/plugin/agents/review.md" > "$tmp/x" &&
+  mv "$tmp/x" "$tmp/repo/plugin/agents/review.md"
+expect "skills: names written as a list under the line fail" fail "has a skills line with no name on it"
 
 fresh
 expect_models "skills: the opencode agent is generated without the skills line" pass ""
