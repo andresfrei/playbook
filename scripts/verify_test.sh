@@ -4,6 +4,10 @@
 # of the plugin, or a small wiki, in a temporary directory, changes one thing,
 # and checks the exit code and message.
 # Usage: sh scripts/verify_test.sh
+#
+# Many cases pass a script in single quotes to sed or awk, where a $ must not
+# be expanded by the shell.
+# shellcheck disable=SC2016
 set -u
 
 root=$(cd "$(dirname "$0")/.." && pwd)
