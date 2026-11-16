@@ -4,60 +4,9 @@ Every definition of the product is written down and decided before any technolog
 
 ## Files
 
-```text
-docs/wiki/
-├── README.md           # the single entry point
-├── .format             # the format of the wiki; a script writes it, never by hand
-├── .unchecked-decisions  # how many rows of decisions.md the check does not read; the same script writes it
-├── decisions.md        # the numbered decisions
-├── 01-product/         # overview, glossary, open-questions, one page per topic
-├── 02-current-state/   # a project already started only
-├── 03-technology/      # written in stage 2
-├── 04-skills/          # written in stage 3
-├── 05-design-system/   # written in stage 4
-└── 06-plan/            # written in stage 5
-```
+The files of a wiki and what each one holds are in `../../../format.md`, the format of a wiki. Read it before you write the wiki.
 
-Create a folder or a page only when it has content. One topic per page.
-
-### `README.md`
-
-In this order:
-
-1. What the project is, in one or two sentences, and which document wins: the wiki over any other document, and `decisions.md` over the rest of the wiki.
-2. The three statuses of a statement: Decided, Proposed, Open.
-3. "Where work stands": the current state only, as described below.
-4. The stage table.
-5. A table of the pages: each page, what it contains, and the code it governs: the paths, from the project's root, whose behaviour the page defines. Leave the cell empty for a page that defines no code. Prefer a folder to a list of files.
-
-Title the third column "Code it governs" and write each path as code, between backticks. The check fails on a path that does not exist.
-
-### "Where work stands"
-
-Its heading is `## Where work stands`. The section holds, in at most 250 words:
-
-- the date and the number of the last decision;
-- the phase and the stage that are open, or that none is;
-- what waits for the owner, as links to the pages;
-- the next steps, in order;
-- one line for each finished phase, with a link to the page that holds what it left.
-
-It never holds the text of a decision, what a finished unit did, or a measurement: link to them. Rewrite the section each time; do not add to it.
-
-### Stage table
-
-| Stage | Status | Closed on |
-|-------|--------|-----------|
-| 1 Wiki | Open | |
-| 2 Technology | Not started | |
-| 3 Skills | Not started | |
-| 4 Design system | Not started | |
-| 5 Plan | Not started | |
-| 6 Execution | Not started | |
-
-A status is one of: Not started, Open, Closed, Closed (not applicable).
-
-### A new phase
+## A new phase
 
 A phase is a second round of the six stages for a project whose six stages are closed. It starts only when the owner asks for it.
 
@@ -66,31 +15,6 @@ A phase is a second round of the six stages for a project whose six stages are c
 3. Do the six stages for the new phase as for a project already started.
 4. Write the new phase in pages of its own, next to the existing ones. Do not rewrite the pages of the earlier phase.
 5. Continue the numbers of decisions, questions, and units. None starts again at 1.
-
-### A page that states a definition
-
-The page says only the current definition. When the owner changes it and code stays on the old one, the page lists that code under the heading `## Code on the old definition`: one table with the path, the decision that changed the definition, and what the owner chose, "changed when next touched" or "debt". Remove a row when its code is changed, and the heading when the table is empty.
-
-Write the path in the first column, as code. The check fails on a path that does not exist.
-
-### `decisions.md`
-
-One table: ID, date, decision, owner's words.
-
-- `D#` numbers a product decision, `TD#` a technical one.
-- The owner's words are verbatim. When the owner chose one of the options offered, write the option chosen.
-- A decision that replaces an earlier one names it.
-- A decision is a choice the owner made between alternatives, or a rule the owner set. That includes an authorization given before an action, the closing of a stage or a phase, and the acceptance of a plan.
-- Not a row: the acceptance of a unit, which goes in the plan's progress table, and something done after a decision, such as a push or a cleanup.
-- State the choice in at most 60 words and link to the page that holds the detail. Evidence and reasons live in that page. The check fails on a row over the limit that was written after the wiki reached format 3; the owner's words are not counted.
-
-### `01-product/open-questions.md`
-
-One table: number, question, recommendation, what it blocks. An answered question leaves this page and becomes a decision. A number is never reused.
-
-### `01-product/glossary.md`
-
-Each term and its one meaning. Use the same word for the same thing in every page.
 
 ## Topics a product definition covers
 
@@ -108,11 +32,8 @@ Each term and its one meaning. Use the same word for the same thing in every pag
 
 ## Steps
 
-1. Create `README.md` and `decisions.md` as described under Files. Then, from the project's root, run `sh <this skill's folder>/../doctor/scripts/wiki-format.sh mark docs/wiki`: it writes `docs/wiki/.format`, which says that the wiki is in the playbook's present format.
-2. Ask the owner whether to write the two sentences below in the project's instruction file: `CLAUDE.md`. Create it when it is missing. In a file that exists, add the two sentences and change nothing else.
-
-   > Read `docs/wiki/README.md` first. Before you change code, read the page that its page table names for the paths you change.
-
+1. Create the project's `README.md` as the format says. Then, from the project's root, run `sh <this skill's folder>/../doctor/scripts/wiki-format.sh mark docs/wiki`: it writes `docs/wiki/.format`, which says that the wiki is in the playbook's present format.
+2. Ask the owner whether to write the two sentences of the format, under "The project's instruction file", in the project's `CLAUDE.md`. Create it when it is missing.
 3. Compare the owner's brief with the topics before asking anything. Mark each topic covered, partly covered, or missing.
 4. Write the product pages from what the brief covers. Mark each statement Decided, Proposed, or Open.
 5. Write each missing or contradictory point as an open question, with a recommendation and what it blocks. Do not ask about a topic the brief already covers.

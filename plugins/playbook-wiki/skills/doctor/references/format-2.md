@@ -4,7 +4,7 @@ What changed in the format of a wiki, and how a wiki written before the change r
 
 ## What changed
 
-- "Where work stands", in `docs/wiki/README.md`, holds only the current state, in at most 250 words. What it holds is defined in `../../prepare-project/references/1-wiki.md`, under "Where work stands". Read that section before step 3.
+- "Where work stands", in `docs/wiki/README.md`, holds only the current state, in at most 250 words. What it holds is defined in `../../../format.md`, the format of a wiki, under "Where work stands". Read that section before step 3.
 - A decision is a choice or a rule of the owner, stated in at most 60 words with a link to the page that holds the detail. The acceptance of a unit is written in the plan's progress table.
 
 The second point applies to what is written from now on. Nothing already in `decisions.md` or in a plan changes.

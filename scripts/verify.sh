@@ -148,6 +148,23 @@ for skill in "$plugins"/*/skills/*/SKILL.md; do
   fi
 done
 
+# A skill reads no Markdown file inside another skill: what two skills share
+# lives at the plugin's own level, such as playbook-wiki/format.md.
+shared_reads=$(find "$plugins" -path '*/skills/*' -name '*.md' -not -path '*/evals/*' | sort |
+  while IFS= read -r file; do
+    rest=${file#"$plugins"/*/skills/}
+    own=${rest%%/*}
+    grep -o '\.\./[a-z0-9-]*/[^ `"]*\.md' "$file" | sed 's|^\(\.\./\)*||; s|/.*||' | sort -u |
+      while IFS= read -r other; do
+        [ "$other" != "$own" ] && [ -d "${file%/skills/*}/skills/$other" ] &&
+          printf '%s reads a file inside the skill %s; move what they share to the plugin'"'"'s own level\n' "${file#"$plugins"/}" "$other"
+      done
+  done)
+if [ -n "$shared_reads" ]; then
+  printf '%s\n' "$shared_reads" | while IFS= read -r line; do printf 'FAIL %s\n' "$line"; done
+  failures=$((failures + $(printf '%s\n' "$shared_reads" | wc -l)))
+fi
+
 # Models: each agent file matches plugins/playbook-agents/models.conf.
 if ! output=$(sh "$root/scripts/set-models.sh" --check "$root" 2>&1); then
   fail "agent files differ from plugins/playbook-agents/models.conf"

@@ -152,6 +152,14 @@ skill_plugin=playbook add_skill starter-skill "Short description." 10 "disable-m
 expect "L4: a skill only the person starts in the start plugin passes" pass
 
 fresh
+printf 'Read `../../prepare-project/references/1-wiki.md`.\n' >> "$tmp/repo/plugins/playbook-wiki/skills/doctor/references/format-3.md"
+expect "skills: a reference file that reads a file of another skill fails" fail "reads a file inside the skill prepare-project"
+
+fresh
+printf 'Read `../../../format.md`.\n' >> "$tmp/repo/plugins/playbook-wiki/skills/doctor/references/format-3.md"
+expect "skills: a reference file that reads the plugin's format passes" pass
+
+fresh
 add_skill extra-key "Short description." 10 "license: MIT"
 expect "front matter with a third key fails" fail "front matter"
 
