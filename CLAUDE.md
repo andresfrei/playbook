@@ -8,3 +8,5 @@ Read `docs/wiki/README.md` before anything else. It is the single entry point: i
 - "Phase" means one of the product phases (D30, D104). "Stage" means one of the six method stages (D8). Do not mix them.
 - Do not copy or rewrite any part of gentle-ai before phase 2 (D30, D31).
 - Do not install, move, or delete skills on the owner's machine until the owner asks for that step.
+
+Read `docs/wiki/README.md` first. Before you change code, read the page that its page table names for the paths you change.
