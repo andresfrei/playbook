@@ -107,11 +107,11 @@ Evaluation cases call the model and are billed to your account, so run them by h
 # one skill
 claude plugin eval plugins/playbook-agents --tag write-skill --ablation none --max-cost-usd 1 --no-publish
 # the whole suite, one plugin at a time
-claude plugin eval plugins/playbook-wiki --ablation none --max-cost-usd 2 --no-publish -j 3
+claude plugin eval plugins/playbook-wiki --scaffold --ablation none --max-cost-usd 2 --no-publish -j 3
 claude plugin eval plugins/playbook-agents --ablation none --max-cost-usd 3 --no-publish -j 3
 ```
 
-`--no-publish` keeps the report on this machine. Each skill has two cases under `plugins/playbook-wiki/evals/` or `plugins/playbook-agents/evals/`: one request that must load it and one that must not. `prepare-project` has a third, for a request that starts a new phase.
+`--no-publish` keeps the report on this machine. Each skill has two cases under `plugins/playbook-wiki/evals/` or `plugins/playbook-agents/evals/`: one request that must load it and one that must not. `prepare-project` has two more: a request that starts a new phase, and one that starts a work in a repository with a wiki. That last case builds its repository with a script, `fixture.sh`, which runs only with `--scaffold`.
 
 `verify.sh` needs the `claude` command. The limits it enforces are in [docs/wiki/01-product/style-guide.md](docs/wiki/01-product/style-guide.md).
 

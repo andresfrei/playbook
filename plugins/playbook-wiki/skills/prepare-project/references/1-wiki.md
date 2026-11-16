@@ -2,19 +2,16 @@
 
 Every definition of the product is written down and decided before any technology is chosen.
 
-## Files
+## A new project
 
-The files of a wiki and what each one holds are in `../../../format.md`, the format of a wiki. Read it before you write the wiki.
+A repository is one project with one wiki. A project with a wiki gets a new work, not a second wiki.
 
-## A new phase
+1. Ask the owner who the project's owner is, and the name of the first work and what it is for.
+2. Create the project's `README.md` and the folder of the first work, with its stage table, as the format says.
+3. From the project's root, run `sh <this skill's folder>/../doctor/scripts/wiki-format.sh mark docs/wiki`: it writes `docs/wiki/.format`, which says that the wiki is in the playbook's present format.
+4. Ask the owner whether to write the two sentences of the format, under "The project's instruction file", in the project's `CLAUDE.md`. Create it when it is missing.
 
-A phase is a second round of the six stages for a project whose six stages are closed. It starts only when the owner asks for it.
-
-1. Record the new phase as a decision, with the owner's words.
-2. Add a stage table for the new phase above the existing one, with stage 1 Open and the others Not started. Title each table with its phase. Keep the earlier table as a record, and never reopen one of its stages.
-3. Do the six stages for the new phase as for a project already started.
-4. Write the new phase in pages of its own, next to the existing ones. Do not rewrite the pages of the earlier phase.
-5. Continue the numbers of decisions, questions, and units. None starts again at 1.
+Then do the steps below.
 
 ## Topics a product definition covers
 
@@ -32,24 +29,22 @@ A phase is a second round of the six stages for a project whose six stages are c
 
 ## Steps
 
-1. Create the project's `README.md` as the format says. Then, from the project's root, run `sh <this skill's folder>/../doctor/scripts/wiki-format.sh mark docs/wiki`: it writes `docs/wiki/.format`, which says that the wiki is in the playbook's present format.
-2. Ask the owner whether to write the two sentences of the format, under "The project's instruction file", in the project's `CLAUDE.md`. Create it when it is missing.
-3. Compare the owner's brief with the topics before asking anything. Mark each topic covered, partly covered, or missing.
-4. Write the product pages from what the brief covers. Mark each statement Decided, Proposed, or Open.
-5. Write each missing or contradictory point as an open question, with a recommendation and what it blocks. Do not ask about a topic the brief already covers.
-6. Ask the open questions one at a time, starting with the one that blocks the most. Record each answer as a decision and update the pages it affects.
+1. Compare the owner's brief with the topics before asking anything. Mark each topic covered, partly covered, or missing.
+2. Write the product pages, in the work's folder, from what the brief covers. Mark each statement Decided, Proposed, or Open.
+3. Write each missing or contradictory point as a question in the work's `questions.md`, with a recommendation and what it blocks. Do not ask about a topic the brief already covers.
+4. Ask the questions one at a time, starting with the one that blocks the most. Record each answer as a decision and update the pages it affects.
 
 ## Project already started
 
 Write the wiki in this order:
 
 1. The definitions, with the steps above.
-2. What exists today, in `02-current-state/`: the code and what it does, the technology in use, and the debt. Read the repository to write it, and say what was checked by reading or running and what was not.
+2. What exists today, in a page of the work that becomes `02-current-state/` when the work closes: the code and what it does, the technology in use, and the debt. Read the repository to write it, and say what was checked by reading or running and what was not.
 3. How to do what is missing: what separates the definitions from what exists today.
 
 For the definitions:
 
-- Read the documents the repository already holds, such as a README or design notes, next to the owner's brief. They are a source for steps 3 and 4 above.
+- Read the documents the repository already holds, such as a README or design notes, next to the owner's brief. They are a source for steps 1 and 2 above.
 - What a document says is Proposed until the owner confirms it. Never write it as Decided.
 - Write a point that is ambiguous, or where a document and the code differ, as an open question with its possible readings. Do not choose a reading.
 

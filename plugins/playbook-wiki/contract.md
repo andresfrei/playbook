@@ -1,11 +1,12 @@
 # Contract
 
-Every agent that works on this project follows these rules. "The owner" is the project's owner, named in `docs/wiki/README.md`; inside a work, the person who leads it.
+Every agent here follows these rules. "The owner" is the project's owner; inside a work, the person who leads it.
 
 ## Reading
 
-- Read `docs/wiki/README.md` first. Before you change code, read the page that its page table names for the paths you change.
-- The shared pages say how the project is now. A work's folder, under `docs/wiki/works/`, holds its decisions and their reasons.
+- Read `docs/wiki/README.md` first. Before you change code, read the page its page table names for those paths.
+- Know the project's owner and the work's leader, named in the two `README.md` files, and who you work with (git's `user.name`). When one is missing or differs, ask to update the roles first.
+- Open a work's folder only for a decision's reason.
 
 ## Deciding
 
@@ -16,9 +17,9 @@ Every agent that works on this project follows these rules. "The owner" is the p
 
 ## Building
 
-- R10. Deliver in stages and wait for the owner's review at the end of each.
-- R12. Write documentation so that any agent can understand it without the conversation that produced it. Write the wiki in English.
+- R10. Deliver in stages and wait for the owner's review of each.
+- R12. Write documentation any agent understands without the conversation that produced it. Write the wiki in English.
 
 ## Merging
 
-- Before a work is merged, write what it defined in the shared pages, and read its decisions against those that reached the main branch since it started. Settle a contradiction with a new decision that names both.
+- Before a work is merged, write what it defined in the shared pages, and compare its decisions with those merged since it started. Settle a contradiction with a decision naming both.

@@ -11,9 +11,9 @@ The work is an ordered list of units that the owner reviews one by one.
    - whether each unit is built on its own branch or on the main branch;
    - whether a unit reaches the main branch by a pull request or by a local merge;
    - whether units that do not depend on each other may be built in parallel.
-5. Write `06-plan/plan.md` with:
+5. Write the work's `plan.md` with:
    - a progress table: unit, status, evidence, and, once the owner accepts the unit, the date and the owner's words;
-   - a units table: number (`U1`, `U2`, …), unit, what it delivers, and when it ends;
+   - a units table: identifier (`<work>-U1`, `<work>-U2`, …), unit, what it delivers, and when it ends;
    - how a unit is delivered, naming the decisions of step 4;
    - when parallel units are allowed, which units may be built together;
    - what is left out of the plan.

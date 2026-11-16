@@ -1,6 +1,6 @@
 # Stage 2 — Technology
 
-Every technology the project uses is a decision of the owner, numbered `TD#`.
+Every technology the project uses is a decision of the owner, a row of the work's `decisions.md`.
 
 ## Steps
 
@@ -9,8 +9,8 @@ Every technology the project uses is a decision of the owner, numbered `TD#`.
 3. Choose the simplest solution that solves the current problem and can evolve. Propose a dependency, a service, or a pattern only when a requirement written in the wiki needs it.
 4. Check each candidate in its current documentation: version, limits, price, and whether it meets the requirement. Write the link and the date checked. Say when something is recalled and not checked.
 5. When a candidate cannot meet a requirement, say so and propose alternatives, each with what it gains and what it gives up. Never replace it silently.
-6. Ask for one decision at a time, with a recommendation. Each answer is a `TD#`.
-7. Write `03-technology/`: the technology chosen for each need, with its version and source, and the architecture page.
+6. Ask for one decision at a time, with a recommendation. Each answer is a decision.
+7. Write, in the work's folder, the technology chosen for each need, with its version and source, and the architecture page. They become pages of `03-technology/` when the work closes.
 
 ## The architecture page
 
@@ -35,6 +35,6 @@ Leave out a section that does not apply, and say why.
 
 ## Closing condition
 
-- Every need has a `TD#`, or a technology the project already uses.
+- Every need has a decision, or a technology the project already uses.
 - The architecture page is written.
 - The owner accepts the technology.
