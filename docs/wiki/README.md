@@ -10,23 +10,26 @@ Every statement is one of:
 
 ## Where work stands
 
-Updated 2026-11-15, after D163.
+Updated 2026-11-15, after D165.
 
 No phase and no stage is open. A new phase starts when the owner asks for it, with a new stage table above the three below.
 
 Wiki maintenance and the doctor (D133 to D142) are built, merged into `main`, and pushed (D144): [01-product/wiki-maintenance.md](01-product/wiki-maintenance.md).
+
+Wiki format 3 (D155 to D165) is built and merged into `main`: [01-product/wiki-format-3.md](01-product/wiki-format-3.md). No wiki is at format 3 yet, and this one is the pilot.
 
 The repository is public since 2026-11-14 (D145 to D152): https://github.com/andresfrei/playbook. Every pull request needs the owner's approval. The full earlier history, with the pages about the owner's installation, is in the private `andresfrei/playbook-archive`.
 
 Waiting for the owner:
 
 - Six proposals to spend fewer tokens, P1 to P6: 02-current-state/token-economy.md (kept in the private archive).
-- Wiki format 3 is decided (D155 to D163) and built on the branch `feat/wiki-format-3`, not merged. It waits for the owner's review, and for the owner's answer on three sentences added to `1-wiki.md`: [01-product/wiki-format-3.md](01-product/wiki-format-3.md).
+- The plugin's version: an installation from GitHub gets wiki format 3 only when the owner raises it (TD22).
 
-Next steps, in order (D135):
+Next steps, in order (D135, D163):
 
-1. The doctor is run on the wiki of radar, in that project.
-2. The same in torneo-pro and huellitas-id, when work on each resumes.
+1. The doctor is run on this wiki, the pilot of format 3, in a new session that loads the merged plugin.
+2. The doctor is run on the wiki of radar, in that project.
+3. The same in torneo-pro and huellitas-id, when work on each resumes.
 
 Finished:
 

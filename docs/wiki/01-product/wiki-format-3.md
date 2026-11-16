@@ -1,6 +1,6 @@
 # Wiki format 3
 
-A proposal for the next format of a project's wiki: four changes to the format, C1 to C4, and one to the product's `review` agent, C5, that make a changed definition reach the next session through the structure of the wiki and a check, and not only through instructions. C1, C2, C3, C4a, C4b, C5, and who writes the project's instruction file are Decided, and C4c is not taken (D155 to D162). They are built on the branch `feat/wiki-format-3`, which is not merged; see "Built". The owner asked on 2026-11-15 to have it recorded as Proposed, to decide it point by point.
+A proposal for the next format of a project's wiki: four changes to the format, C1 to C4, and one to the product's `review` agent, C5, that make a changed definition reach the next session through the structure of the wiki and a check, and not only through instructions. C1, C2, C3, C4a, C4b, C5, and who writes the project's instruction file are Decided, and C4c is not taken (D155 to D162). They are built and merged into `main` (D165); see "Built". No wiki is at format 3 yet. The owner asked on 2026-11-15 to have it recorded as Proposed, to decide it point by point.
 
 It continues [wiki-maintenance.md](wiki-maintenance.md), which holds the six links a changed definition needs, the rules G1 to G3, and the doctor. Read that page first for those terms.
 
@@ -229,7 +229,7 @@ It does not reduce usage. Reading the wiki is about 1.7% of the usage, and every
 Decided (D163): the same order as D135.
 
 1. The owner decides the changes and Q52. Done (D155 to D162).
-2. They are built in the product, on the branch `feat/wiki-format-3`, with tests. The `review` agent reads the build before the owner does, and nothing is pushed until the owner asks. Built on 2026-11-15; the owner's review waits.
+2. They are built in the product, on the branch `feat/wiki-format-3`, with tests. The `review` agent reads the build before the owner does, and nothing is pushed until the owner asks. Built on 2026-11-15 and merged into `main` (D165).
 3. This wiki is the pilot, repaired with the doctor.
 4. radar, then torneo-pro and huellitas-id when work on each resumes.
 
@@ -247,15 +247,15 @@ Not taken: the owner writing the sentences by hand in each project, which depend
 
 ## Built
 
-Built on 2026-11-15 on the branch `feat/wiki-format-3`, in the worktree `~/dev/playbook-worktrees/wiki-format-3` (D163). It is not merged and not pushed. The plugin's version is not changed: only the owner changes it (TD22).
+Built on 2026-11-15 on the branch `feat/wiki-format-3`, in the worktree `~/dev/playbook-worktrees/wiki-format-3` (D163). The owner asked for a pull request and the merge (D165): [pull request #1](https://github.com/andresfrei/playbook/pull/1), merged into `main` on 2026-11-15. The plugin's version is not changed: only the owner changes it (TD22), and an installation from GitHub updates only when it changes.
 
 ### What differs from what was accepted
 
 | File | Difference | Why |
 |---|---|---|
-| `1-wiki.md`, after item 5 of `README.md` | Two sentences more: "Title the third column "Code it governs" and write each path as code, between backticks. The check fails on a path that does not exist." | The check must tell a path from the other text of a cell. The owner has not accepted them |
-| `1-wiki.md`, "A page that states a definition" | Two sentences more: "Write the path in the first column, as code. The check fails on a path that does not exist." | The same. The owner has not accepted them |
-| `1-wiki.md`, "`decisions.md`" | One sentence more: "The check fails on a row over the limit that was written after the wiki reached format 3; the owner's words are not counted." | It says what D161 decided where the rule is read. The owner has not accepted it |
+| `1-wiki.md`, after item 5 of `README.md` | Two sentences more: "Title the third column "Code it governs" and write each path as code, between backticks. The check fails on a path that does not exist." | The check must tell a path from the other text of a cell. Accepted by the owner afterwards (D164) |
+| `1-wiki.md`, "A page that states a definition" | Two sentences more: "Write the path in the first column, as code. The check fails on a path that does not exist." | The same. Accepted by the owner afterwards (D164) |
+| `1-wiki.md`, "`decisions.md`" | One sentence more: "The check fails on a row over the limit that was written after the wiki reached format 3; the owner's words are not counted." | It says what D161 decided where the rule is read. Accepted by the owner afterwards (D164) |
 | `1-wiki.md`, "Files" and "Steps" | The file `.unchecked-decisions` is listed. The step of D157 is step 2, and the later steps are renumbered | The check reads that file |
 | `check-wiki.sh` | Two more ways to run it: `--rows` prints how many rows `decisions.md` holds, and `--column` says whether `README.md` has the column | `wiki-format.sh` uses them, so that both scripts read a row and the column in one way |
 | `check-wiki.sh` | It also fails when a wiki at format 3 has no `.unchecked-decisions` | Without it, deleting the file turns the limit of 60 words off with no notice (finding 2 of the review) |
@@ -296,7 +296,7 @@ Corrected:
 7. `format-3.md` said the repair changes one file outside `docs/wiki/`; with opencode it changes two.
 9. [style-guide.md](style-guide.md) still said that nothing enforces the limit of 60 words.
 
-Finding 8 is the owner's to decide: the sentences in `1-wiki.md` that are not in any accepted text, the first three rows of the table above.
+Finding 8 was the owner's to decide: the sentences in `1-wiki.md` that are not in any accepted text, the first three rows of the table above. The owner accepted them (D164).
 
 The review also named cases with no test. They have one now: a path under a linked wiki, a table whose rows do not end in a bar, lines that end in a carriage return, a row inside a code block, a smaller heading inside the list of old code, and a wiki at format 3 without the count.
 
