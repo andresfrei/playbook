@@ -1,19 +1,11 @@
 #!/bin/sh
 # Checks the plugin against the limits and the format in
 # docs/wiki/01-product/style-guide.md, and validates its manifests.
-# Usage: sh scripts/verify.sh [--opencode] [repository root]
-# With --opencode it also checks that opencode, started in the repository
-# root, loads the rules, the skills, and the agents from this repository.
+# Usage: sh scripts/verify.sh [repository root]
 # Exits 0 when every check passes, 1 otherwise.
 set -u
 
-opencode_check=0
-if [ "${1:-}" = "--opencode" ]; then
-  opencode_check=1
-  shift
-fi
 root=${1:-$(cd "$(dirname "$0")/.." && pwd)}
-opencode=${OPENCODE:-opencode}
 plugin="$root/plugin"
 
 max_rules_words=500        # L1
@@ -124,20 +116,7 @@ for agent in "$plugin"/agents/*.md; do
   done
 done
 
-# The agent files of opencode hold only the fields its schema allows. Their
-# text is checked above: set-models.sh --check compares each with its source.
-for agent in "$root"/opencode/agents/*.md; do
-  [ -f "$agent" ] || continue
-  for key in $(front_matter "$agent" | sed -n 's/^\([A-Za-z_][A-Za-z_-]*\):.*/\1/p'); do
-    case $key in
-      model|request|system|description|mode|hidden|color|steps|disabled|permissions) ;;
-      *) fail "opencode/agents/$(basename "$agent") has the field '$key', which opencode does not allow" ;;
-    esac
-  done
-done
-
-# L3 and L4: each agent description. Both tools list agents at session start,
-# and opencode reads the same rules and descriptions, so one count serves both.
+# L3 and L4: each agent description.
 for agent in "$plugin"/agents/*.md; do
   [ -f "$agent" ] || continue
   name=${agent#"$plugin"/}
@@ -154,79 +133,6 @@ done
 if [ "$startup_words" -gt "$max_startup_words" ]; then
   fail "L4 rules.md plus all descriptions have $startup_words words, limit $max_startup_words"
 fi
-
-# The installation in opencode: what opencode resolves when started in the
-# repository root. It reads opencode's own answers and calls no model.
-
-# Prints one line per problem, starting with FAIL, and one line per check that
-# could not be done, starting with SKIP.
-opencode_problems() {
-  # The rules: an instructions entry of opencode's configuration names the file.
-  config=$(cd "$root" && "$opencode" api GET "/api/config?location[directory]=$root" 2>/dev/null)
-  case $config in
-    '['*)
-      entries=$(printf '%s' "$config" | grep -o '"instructions":\[[^]]*\]' |
-        sed 's/^"instructions":\[//; s/\]$//' | tr '\n' ' ' | sed 's/^ *//; s/ *$//')
-      case $entries in
-        *"\"$plugin/rules.md\""*) ;;
-        *) printf 'FAIL opencode: no instructions entry names %s; the entries are: %s\n' \
-             "$plugin/rules.md" "${entries:-none}" ;;
-      esac ;;
-    *) printf 'SKIP opencode did not answer the configuration request, so the rules were not checked\n' ;;
-  esac
-
-  # The skills: opencode lists each one from this repository.
-  skills=$(cd "$root" && "$opencode" api GET "/api/skill?location[directory]=$root" 2>/dev/null)
-  case $skills in
-    '{'*)
-      for skill in "$plugin"/skills/*/SKILL.md; do
-        [ -f "$skill" ] || continue
-        printf '%s' "$skills" | grep -q -F "\"path\":\"$skill\"" ||
-          printf 'FAIL opencode: the skill %s is not loaded from this repository\n' "${skill#"$plugin"/}"
-      done ;;
-    *) printf 'SKIP opencode did not answer the skills request, so the skills were not checked\n' ;;
-  esac
-
-  # The agents: opencode lists each one with the model of models.conf.
-  agents=$(cd "$root" && "$opencode" debug agents 2>/dev/null | tr -d ' \n')
-  case $agents in
-    '['*)
-      while read -r agent _ _ omodel ovariant _; do
-        case $agent in ''|'#'*) continue ;; esac
-        printf '%s' "$agents" | grep -q "\"id\":\"$agent\",\"name\":\"[^\"]*\",\"model\":{\"id\":\"${omodel#*/}\",\"providerID\":\"${omodel%%/*}\",\"variant\":\"$ovariant\"}" ||
-          printf 'FAIL opencode: the agent %s is not loaded with the model %s#%s\n' "$agent" "$omodel" "$ovariant"
-      done < "$plugin/models.conf" ;;
-    *) printf 'SKIP opencode did not list its agents, so the agents were not checked\n' ;;
-  esac
-}
-
-# opencode loads a directory it has not opened yet in the background, and its
-# first answers can be incomplete, so a problem is asked again before it counts.
-check_opencode() {
-  if ! command -v "$opencode" >/dev/null 2>&1; then
-    printf 'SKIP opencode is not installed, so its installation was not checked\n'
-    return
-  fi
-  tries=${OPENCODE_TRIES:-5}
-  while :; do
-    problems=$(opencode_problems)
-    tries=$((tries - 1))
-    case $problems in *FAIL*) ;; *) break ;; esac
-    [ "$tries" -gt 0 ] || break
-    sleep 2
-  done
-  [ -n "$problems" ] ||
-    printf 'opencode loads the rules, the skills, and the agents from this repository\n'
-  while IFS= read -r line; do
-    case $line in
-      'FAIL '*) fail "${line#FAIL }" ;;
-      ?*) printf '%s\n' "$line" ;;
-    esac
-  done <<EOF
-$problems
-EOF
-}
-[ "$opencode_check" -eq 0 ] || check_opencode
 
 if [ "$failures" -gt 0 ]; then
   printf '%s check(s) failed\n' "$failures"

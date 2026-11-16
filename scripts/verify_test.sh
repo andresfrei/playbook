@@ -1,7 +1,6 @@
 #!/bin/sh
-# Tests for scripts/verify.sh, scripts/set-models.sh,
-# scripts/install-opencode.sh, and the check of a project's wiki,
-# plugin/skills/prepare-project/scripts/check-wiki.sh. Each case builds a copy
+# Tests for scripts/verify.sh, scripts/set-models.sh, and the check of a
+# project's wiki, plugin/skills/prepare-project/scripts/check-wiki.sh. Each case builds a copy
 # of the plugin, or a small wiki, in a temporary directory, changes one thing,
 # and checks the exit code and message.
 # Usage: sh scripts/verify_test.sh
@@ -27,9 +26,9 @@ chars() {
 fresh() {
   rm -rf "$tmp/repo"
   mkdir -p "$tmp/repo"
-  cp -R "$root/.claude-plugin" "$root/plugin" "$root/opencode" "$tmp/repo/"
+  cp -R "$root/.claude-plugin" "$root/plugin" "$tmp/repo/"
   mkdir "$tmp/repo/scripts"
-  cp "$root/scripts/set-models.sh" "$root/scripts/install-opencode.sh" "$tmp/repo/scripts/"
+  cp "$root/scripts/set-models.sh" "$tmp/repo/scripts/"
 }
 
 # add_skill <name> <description> <body words> [extra front matter line]
@@ -179,212 +178,15 @@ sed 's/^explore .*/explore  haiku  extreme/' "$tmp/repo/plugin/models.conf" > "$
   mv "$tmp/x" "$tmp/repo/plugin/models.conf"
 expect_models "models: invalid effort is rejected" fail "extreme"
 
-# The agent files of opencode, generated into opencode/agents/.
 fresh
-printf 'edited by hand\n' >> "$tmp/repo/opencode/agents/explore.md"
-expect_models "opencode: hand-edited generated file fails --check" fail "opencode/agents/explore.md differs"
-sh "$root/scripts/set-models.sh" "$tmp/repo" >/dev/null 2>&1
-expect_models "opencode: --check passes after the rewrite" pass ""
-
-fresh
-rm "$tmp/repo/opencode/agents/review.md"
-expect_models "opencode: missing generated file fails --check" fail "opencode/agents/review.md is missing"
-
-fresh
-cp "$tmp/repo/opencode/agents/write.md" "$tmp/repo/opencode/agents/extra.md"
-expect_models "opencode: generated file absent from the configuration fails" fail "opencode/agents/extra.md"
-
-fresh
-sed 's/Use it on a risky change/Use it on any change/' "$tmp/repo/plugin/agents/review.md" > "$tmp/x" &&
-  mv "$tmp/x" "$tmp/repo/plugin/agents/review.md"
-expect_models "opencode: changed source description fails --check" fail "opencode/agents/review.md differs"
-
-fresh
-sed 's/^explore .*/explore  haiku  medium  gpt-6-luna  medium/' "$tmp/repo/plugin/models.conf" > "$tmp/x" &&
+sed 's/^explore .*/explore  haiku  medium  extra/' "$tmp/repo/plugin/models.conf" > "$tmp/x" &&
   mv "$tmp/x" "$tmp/repo/plugin/models.conf"
-expect_models "opencode: model without a provider is rejected" fail "gpt-6-luna"
-
-fresh
-sed 's/^explore .*/explore  haiku  medium  openai\/gpt-6-luna/' "$tmp/repo/plugin/models.conf" > "$tmp/x" &&
-  mv "$tmp/x" "$tmp/repo/plugin/models.conf"
-expect_models "opencode: missing variant is rejected" fail "variant"
-
-fresh
-sed 's/^explore .*/explore  haiku  medium  openai\/gpt-6-luna  medium  extra/' "$tmp/repo/plugin/models.conf" > "$tmp/x" &&
-  mv "$tmp/x" "$tmp/repo/plugin/models.conf"
-expect_models "opencode: a sixth field is rejected" fail "more than five fields"
-
-fresh
-sed 's/^review .*/review  opus  high  openai\/gpt-6-astra  xhigh/' "$tmp/repo/plugin/models.conf" > "$tmp/x" &&
-  mv "$tmp/x" "$tmp/repo/plugin/models.conf"
-sh "$root/scripts/set-models.sh" "$tmp/repo" >/dev/null 2>&1
-if grep -q '^model: openai/gpt-6-astra#xhigh$' "$tmp/repo/opencode/agents/review.md" &&
-   grep -q '^model: opus$' "$tmp/repo/plugin/agents/review.md"; then
-  printf 'ok    opencode: a changed line is written to the generated file only\n'
-else
-  printf 'FAIL  opencode: a changed line is written to the generated file only\n'
-  failed=$((failed + 1))
-fi
-
-fresh
-if grep -q '^  - action: edit$' "$tmp/repo/opencode/agents/explore.md" &&
-   grep -q '^  - action: edit$' "$tmp/repo/opencode/agents/review.md" &&
-   ! grep -q '^permissions:' "$tmp/repo/opencode/agents/write.md"; then
-  printf 'ok    opencode: edit is denied for the read-only agents only\n'
-else
-  printf 'FAIL  opencode: edit is denied for the read-only agents only\n'
-  failed=$((failed + 1))
-fi
+expect_models "models: a fourth field is rejected" fail "more than three fields"
 
 fresh
 sed 's/^description: .*/description: '"$(chars 251)"'/' "$tmp/repo/plugin/agents/write.md" > "$tmp/x" &&
   mv "$tmp/x" "$tmp/repo/plugin/agents/write.md"
 expect "L3: agent description over 250 characters fails" fail "L3 description of agents/write.md"
-
-fresh
-printf -- '---\ndescription: Extra.\nmode: subagent\nmodel: openai/gpt-6-luna#medium\neffort: high\n---\nBody.\n' \
-  > "$tmp/repo/opencode/agents/review.md"
-expect "opencode: a field opencode does not allow fails" fail "has the field 'effort'"
-
-# The installation in opencode, checked against a stand-in for the opencode
-# command that prints what opencode 2.3.0 prints for each request.
-# fake_opencode writes the stand-in and the three answers of a complete
-# installation of the copy.
-fake_opencode() {
-  mkdir -p "$tmp/bin" "$tmp/fake"
-  {
-    printf '#!/bin/sh\n'
-    # The stand-in expands these itself, so they stay unexpanded here.
-    # shellcheck disable=SC2016
-    printf 'case "$1 $2 ${3:-}" in\n'
-    printf '  "debug agents "*) cat "%s/fake/agents.json" ;;\n' "$tmp"
-    printf '  "api GET /api/config"*) cat "%s/fake/config.json" ;;\n' "$tmp"
-    printf '  "api GET /api/skill"*) cat "%s/fake/skill.json" ;;\n' "$tmp"
-    printf 'esac\n'
-  } > "$tmp/bin/opencode"
-  chmod +x "$tmp/bin/opencode"
-  printf '[{"type":"directory","path":"%s"},{"type":"document","path":"%s","info":{"skills":["%s"],"instructions":["%s"]}}]\n' \
-    "$tmp/config" "$tmp/config/opencode.json" "$tmp/repo/plugin/skills" "$tmp/repo/plugin/rules.md" \
-    > "$tmp/fake/config.json"
-  {
-    printf '{"location":{"directory":"%s"},"data":[{"id":"opencode","path":"skill://opencode"}' "$tmp/repo"
-    for skill in "$tmp/repo"/plugin/skills/*/SKILL.md; do
-      printf ',{"id":"x","path":"%s"}' "$skill"
-    done
-    printf ']}\n'
-  } > "$tmp/fake/skill.json"
-  {
-    printf '[\n  {\n    "id": "build",\n    "name": "Build",\n    "mode": "primary"\n  }'
-    while read -r agent _ _ omodel ovariant _; do
-      case $agent in ''|'#'*) continue ;; esac
-      printf ',\n  {\n    "id": "%s",\n    "name": "%s",\n    "model": {\n      "id": "%s",\n      "providerID": "%s",\n      "variant": "%s"\n    },\n    "mode": "subagent"\n  }' \
-        "$agent" "$agent" "${omodel#*/}" "${omodel%%/*}" "$ovariant"
-    done < "$tmp/repo/plugin/models.conf"
-    printf '\n]\n'
-  } > "$tmp/fake/agents.json"
-}
-
-# expect_opencode <case name> <expected exit: pass|fail> <text the output must contain> [opencode command] [tries]
-expect_opencode() {
-  out=$(OPENCODE=${4:-$tmp/bin/opencode} OPENCODE_TRIES=${5:-1} sh "$root/scripts/verify.sh" --opencode "$tmp/repo" 2>&1)
-  code=$?
-  ok=1
-  if [ "$2" = pass ] && [ "$code" -ne 0 ]; then ok=0; fi
-  if [ "$2" = fail ] && [ "$code" -eq 0 ]; then ok=0; fi
-  if [ -n "$3" ] && ! printf '%s' "$out" | grep -q "$3"; then ok=0; fi
-  if [ "$ok" -eq 1 ]; then
-    printf 'ok    %s\n' "$1"
-  else
-    printf 'FAIL  %s (exit %s)\n%s\n' "$1" "$code" "$out"
-    failed=$((failed + 1))
-  fi
-}
-
-fresh
-fake_opencode
-expect_opencode "opencode: a complete installation passes" pass "opencode loads the rules, the skills, and the agents"
-
-fresh
-fake_opencode
-sed 's|"instructions":\[[^]]*\]|"instructions":["/moved/plugin/rules.md"]|' "$tmp/fake/config.json" > "$tmp/x" &&
-  mv "$tmp/x" "$tmp/fake/config.json"
-expect_opencode "opencode: a rules path outside this repository fails and is named" fail 'the entries are: "/moved/plugin/rules.md"'
-
-fresh
-fake_opencode
-sed 's|"instructions":\[[^]]*\]|"instructions":[]|' "$tmp/fake/config.json" > "$tmp/x" &&
-  mv "$tmp/x" "$tmp/fake/config.json"
-expect_opencode "opencode: no instructions entry fails" fail "the entries are: none"
-
-fresh
-fake_opencode
-sed 's|/plugin/skills/write-docs/SKILL.md|/elsewhere/write-docs/SKILL.md|' "$tmp/fake/skill.json" > "$tmp/x" &&
-  mv "$tmp/x" "$tmp/fake/skill.json"
-expect_opencode "opencode: a skill loaded from elsewhere fails" fail "skills/write-docs/SKILL.md is not loaded"
-
-fresh
-fake_opencode
-sed 's/"variant": "high"/"variant": "low"/' "$tmp/fake/agents.json" > "$tmp/x" &&
-  mv "$tmp/x" "$tmp/fake/agents.json"
-expect_opencode "opencode: an agent with another variant fails" fail "the agent review is not loaded"
-
-fresh
-fake_opencode
-: > "$tmp/fake/agents.json"
-: > "$tmp/fake/config.json"
-: > "$tmp/fake/skill.json"
-expect_opencode "opencode: no answer skips the three checks and passes" pass "SKIP opencode did not list its agents"
-
-# opencode answers with an empty list of skills the first time it is asked
-# about a directory, and with the whole list afterwards.
-fresh
-fake_opencode
-mv "$tmp/fake/skill.json" "$tmp/fake/skill-full.json"
-printf '{"location":{"directory":"%s"},"data":[]}\n' "$tmp/repo" > "$tmp/fake/skill.json"
-# The stand-in expands these itself, so they stay unexpanded here.
-# shellcheck disable=SC2016
-{
-  printf '#!/bin/sh\n'
-  printf '"%s/bin/opencode" "$@"\n' "$tmp"
-  printf 'case "$2 ${3:-}" in "GET /api/skill"*) cp "%s/fake/skill-full.json" "%s/fake/skill.json" ;; esac\n' "$tmp" "$tmp"
-} > "$tmp/bin/opencode-slow"
-chmod +x "$tmp/bin/opencode-slow"
-expect_opencode "opencode: an incomplete first answer is asked again" pass "verify passed" "$tmp/bin/opencode-slow" 2
-printf '{"location":{"directory":"%s"},"data":[]}\n' "$tmp/repo" > "$tmp/fake/skill.json"
-expect_opencode "opencode: an incomplete answer fails when it is asked once" fail "is not loaded" "$tmp/bin/opencode-slow" 1
-
-fresh
-expect_opencode "opencode: a missing command skips the check and the rest runs" pass "SKIP opencode is not installed" "$tmp/no-such-command"
-
-fresh
-out=$(OPENCODE="$tmp/no-such-command" sh "$root/scripts/verify.sh" "$tmp/repo" 2>&1)
-case $out in
-  *opencode*) printf 'FAIL  opencode: without --opencode nothing is asked of opencode\n%s\n' "$out"; failed=$((failed + 1)) ;;
-  *) printf 'ok    opencode: without --opencode nothing is asked of opencode\n' ;;
-esac
-
-# The installer for opencode, run from the copy against a temporary directory
-# in place of ~/.config/opencode. Every run also gets HOME and XDG_CONFIG_HOME
-# inside the temporary directory, so that an installer that ignores its
-# argument, or is given none, still cannot write in the real configuration.
-install() {
-  HOME="$tmp/userhome" XDG_CONFIG_HOME="$tmp/xdg" sh "$@"
-}
-# expect_install <case name> <expected exit: pass|fail> <text the output must contain>
-expect_install() {
-  out=$(install "$tmp/repo/scripts/install-opencode.sh" "$tmp/config" 2>&1)
-  code=$?
-  ok=1
-  if [ "$2" = pass ] && [ "$code" -ne 0 ]; then ok=0; fi
-  if [ "$2" = fail ] && [ "$code" -eq 0 ]; then ok=0; fi
-  if [ -n "$3" ] && ! printf '%s' "$out" | grep -q "$3"; then ok=0; fi
-  if [ "$ok" -eq 1 ]; then
-    printf 'ok    %s\n' "$1"
-  else
-    printf 'FAIL  %s (exit %s)\n%s\n' "$1" "$code" "$out"
-    failed=$((failed + 1))
-  fi
-}
 
 # check <case name> <command...>: the case passes when the command succeeds.
 check() {
@@ -397,114 +199,7 @@ check() {
   fi
 }
 
-installed() {
-  grep -q -F "\"instructions\": [\"$tmp/repo/plugin/rules.md\"]" "$tmp/config/opencode.json" &&
-    grep -q -F "\"skills\": [\"$tmp/repo/plugin/skills\"]" "$tmp/config/opencode.json" &&
-    [ "$(readlink "$tmp/config/agents")" = "$tmp/repo/opencode/agents" ]
-}
-same_sum() { [ "$(cksum < "$1")" = "$2" ]; }
 absent() { [ ! -e "$1" ] && [ ! -L "$1" ]; }
-
-fresh
-rm -rf "$tmp/config"
-expect_install "install: an empty configuration directory is installed" pass "Installed"
-check "install: the file names the rules and the skills, and the link points to the agents" installed
-sum=$(cksum < "$tmp/config/opencode.json")
-expect_install "install: a second run passes and says Installed" pass "Installed"
-check "install: a second run changes nothing" same_sum "$tmp/config/opencode.json" "$sum"
-
-fresh
-rm -rf "$tmp/config"
-mkdir -p "$tmp/config"
-printf '{\n  "theme": "dark"\n}\n' > "$tmp/config/opencode.json"
-sum=$(cksum < "$tmp/config/opencode.json")
-expect_install "install: an existing configuration file is not changed and the entries are printed" fail "\"instructions\": \[\"$tmp/repo/plugin/rules.md\"\]"
-check "install: the existing configuration file has the same checksum" same_sum "$tmp/config/opencode.json" "$sum"
-printf '{\n  "theme": "dark",\n  "instructions": ["%s"],\n  "skills": ["/other", "%s"]\n}\n' \
-  "$tmp/repo/plugin/rules.md" "$tmp/repo/plugin/skills" > "$tmp/config/opencode.json"
-expect_install "install: a file with the entries added by hand passes as not confirmed" pass "Not confirmed"
-printf '{\n  // "instructions": ["%s"],\n  // "skills": ["%s"]\n}\n' \
-  "$tmp/repo/plugin/rules.md" "$tmp/repo/plugin/skills" > "$tmp/config/opencode.json"
-expect_install "install: paths that are only in comment lines do not count" fail "TO DO"
-
-fresh
-rm -rf "$tmp/config"
-mkdir -p "$tmp/config"
-printf '{}\n' > "$tmp/config/opencode.jsonc"
-expect_install "install: an existing opencode.jsonc counts as the configuration file" fail "opencode.jsonc exists"
-check "install: no opencode.json is written next to an opencode.jsonc" absent "$tmp/config/opencode.json"
-
-fresh
-rm -rf "$tmp/config"
-mkdir -p "$tmp/config/agents"
-printf 'mine\n' > "$tmp/config/agents/own.md"
-expect_install "install: an agents folder that is not the link stops it" fail "Nothing was changed"
-check "install: nothing is written when it stops" absent "$tmp/config/opencode.json"
-check "install: the agents folder is left as it was" test -f "$tmp/config/agents/own.md"
-
-fresh
-rm -rf "$tmp/config"
-mkdir -p "$tmp/config" "$tmp/elsewhere"
-ln -s "$tmp/elsewhere" "$tmp/config/agents"
-expect_install "install: a link to another folder stops it" fail "Nothing was changed"
-check "install: the link to another folder is left as it was" test "$(readlink "$tmp/config/agents")" = "$tmp/elsewhere"
-
-fresh
-rm -rf "$tmp/config"
-mkdir -p "$tmp/config"
-(cd "$tmp/config" && ln -s ../repo/opencode/agents agents)
-expect_install "install: a link written another way that leads to the agents is accepted" pass "already leads to"
-
-fresh
-rm -rf "$tmp/config"
-mkdir -p "$tmp/config"
-ln -s "$tmp/no-such-folder" "$tmp/config/agents"
-expect_install "install: a link that leads nowhere stops it" fail "Nothing was changed"
-
-# A write that fails: the file size limit of the run is zero.
-fresh
-rm -rf "$tmp/config"
-out=$( (trap '' XFSZ; ulimit -f 0; install "$tmp/repo/scripts/install-opencode.sh" "$tmp/config") 2>&1)
-code=$?
-if [ "$code" -ne 0 ] && absent "$tmp/config/opencode.json" && absent "$tmp/config/agents" &&
-   ! printf '%s' "$out" | grep -q "Nothing was changed"; then
-  printf 'ok    install: a failed write leaves no file and does not say nothing was changed\n'
-else
-  printf 'FAIL  install: a failed write leaves no file and does not say nothing was changed (exit %s)\n%s\n' "$code" "$out"
-  failed=$((failed + 1))
-fi
-
-fresh
-rm -rf "${tmp:?}/xdg" "${tmp:?}/userhome"
-out=$(install "$tmp/repo/scripts/install-opencode.sh" 2>&1)
-check "install: without an argument it follows XDG_CONFIG_HOME" test -f "$tmp/xdg/opencode/opencode.json"
-check "install: with XDG_CONFIG_HOME set it writes nothing under the home directory" absent "$tmp/userhome"
-
-rm -rf "${tmp:?}/xdg" "${tmp:?}/userhome"
-out=$(HOME="$tmp/userhome" sh -c 'unset XDG_CONFIG_HOME; sh "$1"' sh "$tmp/repo/scripts/install-opencode.sh" 2>&1)
-check "install: without the variable it uses .config/opencode under the home directory" test -f "$tmp/userhome/.config/opencode/opencode.json"
-
-fresh
-rm -rf "$tmp/config"
-out=$(cd "$tmp/repo" && CDPATH=. install scripts/install-opencode.sh "$tmp/config" 2>&1)
-check "install: CDPATH does not change the path of the clone" installed
-
-rm -rf "$tmp/my clone" "$tmp/config"
-mkdir -p "$tmp/my clone"
-cp -R "$tmp/repo/plugin" "$tmp/repo/opencode" "$tmp/repo/scripts" "$tmp/my clone/"
-out=$(install "$tmp/my clone/scripts/install-opencode.sh" "$tmp/config" 2>&1)
-if printf '%s' "$out" | grep -q -F "sh '$tmp/my clone/scripts/verify.sh' --opencode" &&
-   grep -q -F "\"$tmp/my clone/plugin/rules.md\"" "$tmp/config/opencode.json"; then
-  printf 'ok    install: a clone path with a space is written whole and quoted in the command\n'
-else
-  printf 'FAIL  install: a clone path with a space is written whole and quoted in the command\n%s\n' "$out"
-  failed=$((failed + 1))
-fi
-
-fresh
-rm -rf "$tmp/config" "$tmp/repo/opencode"
-expect_install "install: a clone without the generated agents stops it" fail "opencode/agents is missing"
-check "install: no configuration directory is made when it stops" absent "$tmp/config"
 
 # The check of a project's wiki.
 check_wiki="$root/plugin/skills/prepare-project/scripts/check-wiki.sh"
@@ -976,10 +671,6 @@ fresh
 awk '/^skills: / { print "skills:"; print "  - no-such-skill"; next } { print }' "$tmp/repo/plugin/agents/review.md" > "$tmp/x" &&
   mv "$tmp/x" "$tmp/repo/plugin/agents/review.md"
 expect "skills: names written as a list under the line fail" fail "has a skills line with no name on it"
-
-fresh
-expect_models "skills: the opencode agent is generated without the skills line" pass ""
-check "skills: the opencode review agent has no skills line" sh -c '! grep -q "^skills:" "$1"' sh "$tmp/repo/opencode/agents/review.md"
 
 fresh
 expect "agents and skills together still pass" pass

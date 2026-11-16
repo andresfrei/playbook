@@ -22,12 +22,13 @@ The repository is public since 2026-11-14 (D145 to D152): https://github.com/and
 
 Waiting for the owner:
 
+- The review of U29, opencode out of the repository, which is built: [05-plan/plan-phase-4.md](05-plan/plan-phase-4.md).
 - Six proposals to spend fewer tokens, P1 to P6: 02-current-state/token-economy.md (kept in the private archive).
 - The plugin's version: an installation from GitHub gets wiki format 3 only when the owner raises it (TD22).
 
 Next steps:
 
-1. U29 to U41 in the order of the plan, one at a time.
+1. U30 to U41 in the order of the plan, one at a time.
 2. The owner reviews each unit when it ends.
 
 Finished:
@@ -108,7 +109,7 @@ Phase 1, kept as a record:
 | [03-technology/phase-3.md](03-technology/phase-3.md) | What phase 3 needs from its technology, needs N7 to N15, and what is chosen for each (stage 2 of phase 3) | |
 | [03-technology/phase-4.md](03-technology/phase-4.md) | What phase 4 needs from its technology, needs N16 to N27, and what is chosen for each (stage 2 of phase 4) | |
 | [03-technology/architecture-phase-4.md](03-technology/architecture-phase-4.md) | The architecture of phase 4: three plugins, the start command with its wizard, and the files of a work, with risks, trade-offs, and how it can evolve | |
-| [03-technology/architecture-phase-3.md](03-technology/architecture-phase-3.md) | The architecture of phase 3: how the product works in opencode next to Claude Code, with risks, trade-offs, and discarded alternatives | `opencode/`, `scripts/install-opencode.sh` |
+| [03-technology/architecture-phase-3.md](03-technology/architecture-phase-3.md) | The architecture of phase 3: how the product works in opencode next to Claude Code, with risks, trade-offs, and discarded alternatives. Kept as a record: phase 4 removed what it describes (D191) | |
 | [05-plan/plan.md](05-plan/plan.md) | The work plan for phase 1, in units (stage 5) | |
 | [05-plan/plan-phase-2.md](05-plan/plan-phase-2.md) | The work plan for phase 2: units U11 to U19 (stage 5 of phase 2) | |
 | [05-plan/plan-phase-3.md](05-plan/plan-phase-3.md) | The work plan for phase 3: units U20 to U27 (stage 5 of phase 3) | |

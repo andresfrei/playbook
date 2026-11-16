@@ -6,7 +6,7 @@ Because the set is personal, a change can be declined even when it is correct, i
 
 ## Issues
 
-Use one of the two templates: **Bug** for something that does not work as described, **Idea** for a proposal. Say which tool and version you use (Claude Code or opencode).
+Use one of the two templates: **Bug** for something that does not work as described, **Idea** for a proposal. Say which tool and version you use (Claude Code).
 
 Do not report a security problem in an issue. See [SECURITY.md](SECURITY.md).
 

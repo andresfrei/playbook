@@ -109,7 +109,7 @@ Each term and its one meaning. Use the same word for the same thing in every pag
 ## Steps
 
 1. Create `README.md` and `decisions.md` as described under Files. Then, from the project's root, run `sh <this skill's folder>/../doctor/scripts/wiki-format.sh mark docs/wiki`: it writes `docs/wiki/.format`, which says that the wiki is in the playbook's present format.
-2. Ask the owner whether to write the two sentences below in the project's instruction file: `CLAUDE.md`, and `AGENTS.md` too only when the owner says the project is used with opencode. Create a file that is missing. In a file that exists, add the two sentences and change nothing else.
+2. Ask the owner whether to write the two sentences below in the project's instruction file: `CLAUDE.md`. Create it when it is missing. In a file that exists, add the two sentences and change nothing else.
 
    > Read `docs/wiki/README.md` first. Before you change code, read the page that its page table names for the paths you change.
 
