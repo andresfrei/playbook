@@ -54,3 +54,5 @@ Three things (Decided: D40):
 The owner, through Claude Code with Anthropic's models. The product is adapted to that; other tools are considered only when it is ready, and only if needed. (Decided: D57, which replaces the part of D11 about staying free of anything exclusive to one tool.)
 
 For now it is optimized for the owner's own work and use. A piece that exists only to serve other tools or other users does not earn a place today. (Decided: D52.)
+
+Phase 4 changes this for the shared core, which is meant for other people and their agent systems: [phase-4.md](phase-4.md). (Decided: D169.)

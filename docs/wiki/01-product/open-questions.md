@@ -4,7 +4,7 @@ Each has a recommendation and says what it blocks. Answered questions move to [.
 
 ## About the product
 
-None open. The last three, Q24, Q30, and Q52, were answered by D153, TD22, and D157.
+None open. Phase 4 opened Q53 to Q60 on 2026-11-16, and D171 to D178 answered them: [phase-4.md](phase-4.md).
 
 ## About the owner's machine
 
