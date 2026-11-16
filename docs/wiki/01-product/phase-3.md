@@ -42,7 +42,7 @@ How much the brief and the earlier decisions cover of each topic a product defin
 
 ## What exists today
 
-- The product, as built in phases 1 and 2: one rules file, six skills, three agents with their model and effort, and the checks. It is installed in Claude Code only. Its parts and how they load are in [../03-technology/architecture.md](../03-technology/architecture.md).
+- The product, as built in phases 1 and 2: one rules file, six skills, three agents with their model and effort, and the checks. It is installed in Claude Code only. Its parts and how they load are in [../03-technology/architecture-phase-2.md](../03-technology/architecture-phase-2.md).
 - opencode 2.3.0 on the owner's machine, with an empty configuration and no provider: ../02-current-state/opencode-on-the-machine.md (kept in the private archive).
 
 ## What separates the two

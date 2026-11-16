@@ -1,6 +1,6 @@
 # Plan for phase 2
 
-The work of phase 2, replacing gentle-ai in the owner's Claude Code, as an ordered list of units. Stage 5 of phase 2. It builds what [../01-product/phase-2.md](../01-product/phase-2.md) lists under "What is missing", with the technology of [../03-technology/architecture.md](../03-technology/architecture.md). The plan of phase 1, U1 to U10, is in [plan.md](plan.md); the numbers continue from it.
+The work of phase 2, replacing gentle-ai in the owner's Claude Code, as an ordered list of units. Stage 5 of phase 2. It builds what [../01-product/phase-2.md](../01-product/phase-2.md) lists under "What is missing", with the technology of [../03-technology/architecture-phase-2.md](../03-technology/architecture-phase-2.md). The plan of phase 1, U1 to U10, is in [plan.md](plan.md); the numbers continue from it.
 
 The owner accepted it (D75).
 
@@ -144,7 +144,7 @@ U17, built by the main agent on 2026-11-13 in a session opened with `claude-play
 
 ## Not verified
 
-The four points of [../03-technology/architecture.md](../03-technology/architecture.md). U11 checks two of them (that a plugin's agents load, and that each alias resolves to the model named), U13 one (the model of a skill that names an agent), and U17 one (what the uninstall removes), now checked: see ../02-current-state/uninstall-rehearsal.md (kept in the private archive).
+The four points of [../03-technology/architecture-phase-2.md](../03-technology/architecture-phase-2.md). U11 checks two of them (that a plugin's agents load, and that each alias resolves to the model named), U13 one (the model of a skill that names an agent), and U17 one (what the uninstall removes), now checked: see ../02-current-state/uninstall-rehearsal.md (kept in the private archive).
 
 ## What the phase left
 

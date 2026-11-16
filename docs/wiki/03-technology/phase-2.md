@@ -1,6 +1,6 @@
 # Technology for phase 2
 
-What phase 2 needs from its technology, and what is chosen for each need. Stage 2 of phase 2. Every need has a decision (TD6 to TD11) or is met by Claude Code as it is. The shape that results is in [architecture.md](architecture.md).
+What phase 2 needs from its technology, and what is chosen for each need. Stage 2 of phase 2. Every need has a decision (TD6 to TD11) or is met by Claude Code as it is. The shape that results is in [architecture-phase-2.md](architecture-phase-2.md).
 
 Phase 2 keeps the technology of phase 1 (TD1 to TD5): a Claude Code plugin read from this repository, plain shell for verification, and Claude Code's own evaluation command. This page covers only what changes.
 

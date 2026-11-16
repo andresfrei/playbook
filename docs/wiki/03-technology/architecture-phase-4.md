@@ -2,7 +2,7 @@
 
 How the product is split into a shared core and the owner's agent system, and how a person starts it in a repository. Stage 2 of phase 4. Status on 2026-11-16: accepted by the owner when stage 2 of phase 4 was closed (D192).
 
-The definition is in [../01-product/phase-4.md](../01-product/phase-4.md), and the evidence for each choice in [phase-4.md](phase-4.md). The product as it is before this phase is in [architecture.md](architecture.md) and [architecture-phase-3.md](architecture-phase-3.md). The terms core, agent system, and work are in the [glossary](../01-product/glossary.md).
+The definition is in [../01-product/phase-4.md](../01-product/phase-4.md), and the evidence for each choice in [phase-4.md](phase-4.md). The product as it is before this phase is in [architecture-phase-2.md](architecture-phase-2.md) and [architecture-phase-3.md](architecture-phase-3.md). The terms core, agent system, and work are in the [glossary](../01-product/glossary.md).
 
 ## The problem
 

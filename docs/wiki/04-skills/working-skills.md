@@ -25,7 +25,7 @@ On 2026-11-13: `skill-creator` 574 words, `skill-improver` 434, `cognitive-doc-d
 
 ## Phase 2
 
-Stage 3 of phase 2: the skills the agent needs to build what [../03-technology/architecture.md](../03-technology/architecture.md) adds, with the technology of TD6 to TD11. The owner accepted the list (D73).
+Stage 3 of phase 2: the skills the agent needs to build what [../03-technology/architecture-phase-2.md](../03-technology/architecture-phase-2.md) adds, with the technology of TD6 to TD11. The owner accepted the list (D73).
 
 Nothing is installed or written for this stage. The product's own skills, built in phase 1, replace the installed ones of the list above.
 

@@ -2,7 +2,7 @@
 
 | Term | Español | Meaning |
 |------|---------|---------|
-| Playbook | Manual de trabajo | This repository: general rules and skills for all projects |
+| Playbook | Manual de trabajo | This repository, and the product it publishes as three plugins: `playbook`, `playbook-wiki`, and `playbook-agents` (TD26, D182) |
 | Rule | Regla | An instruction that always applies, in every project |
 | Skill | Skill | A `SKILL.md` an agent loads for one kind of task |
 | Job | Trabajo | The one thing a skill is for; no two skills share a job |
