@@ -12,7 +12,7 @@ Every statement is one of:
 
 Updated 2026-11-16, after D197.
 
-Phase 4 is open at stage 6, Execution (D167). Stages 1 to 5 are closed (D197). No unit has started. It is version 2 of the product and removes the support for opencode (TD32, D191). It splits the product into a shared core, `playbook-wiki`, and the owner's agent system, `playbook-agents`: [01-product/phase-4.md](01-product/phase-4.md).
+Phase 4 is open at stage 6, Execution (D167). Stages 1 to 5 are closed (D197). It is version 2 of the product and removes the support for opencode (TD32, D191). It splits the product into a shared core, `playbook-wiki`, and the owner's agent system, `playbook-agents`: [01-product/phase-4.md](01-product/phase-4.md).
 
 Wiki maintenance and the doctor (D133 to D142) are built, merged into `main`, and pushed (D144): [01-product/wiki-maintenance.md](01-product/wiki-maintenance.md).
 
@@ -22,13 +22,13 @@ The repository is public since 2026-11-14 (D145 to D152): https://github.com/and
 
 Waiting for the owner:
 
-- The authorization to run U28, the trial of Claude Code, in the trial environment: [05-plan/plan-phase-4.md](05-plan/plan-phase-4.md).
+- The review of U28, the trial of Claude Code, which is built: [05-plan/plan-phase-4.md](05-plan/plan-phase-4.md).
 - Six proposals to spend fewer tokens, P1 to P6: 02-current-state/token-economy.md (kept in the private archive).
 - The plugin's version: an installation from GitHub gets wiki format 3 only when the owner raises it (TD22).
 
 Next steps:
 
-1. U28, then U29 to U41 in the order of the plan, one at a time.
+1. U29 to U41 in the order of the plan, one at a time.
 2. The owner reviews each unit when it ends.
 
 Finished:

@@ -224,16 +224,47 @@ Why three plugins: the only switch Claude Code gives for one repository turns a 
 | The values a plugin asks for, `userConfig` | Discarded. They are kept for the person, not for a repository |
 | The core's files copied into each project by a script (TD23), with a generated copy inside the plugin (TD25) | Replaced by TD26. It was chosen while the core had to work with any agent tool; D181 limits phase 4 to Claude Code, where a plugin delivers the files |
 
+## Tried in U28
+
+Tried on 2026-11-16 with Claude Code 2.1.325, in a trial configuration folder, `~/.claude-playbook`, used through `CLAUDE_CONFIG_DIR` (TD6). The marketplace of the trial, `trial`, had three plugins made for it, outside this repository: `starter`, with one command only the person calls; `tw`, with one skill and three hooks; and `ta`, with one agent, a `userConfig` value, and a dependency on `tw`. Four empty git repositories, `repo-a` to `repo-d`, stood for projects. `~/.claude` was not touched. The plugin commands needed no login. The rows about a session were run after the owner logged in to the trial folder, each as one request with `claude -p --model haiku`, which runs a session without the interface.
+
+| Tried | Command | Seen | As documented |
+|-------|---------|------|---------------|
+| One plugin of a marketplace installed without the others | `claude plugin install starter@trial --scope user` | "Successfully installed plugin: starter@trial (scope: user)". The folder's `settings.json` holds `"starter@trial": true` and names no other plugin | Yes |
+| A plugin on for one repository only | In `repo-a`: `claude plugin install tw@trial --scope local` | It wrote `repo-a/.claude/settings.local.json` with `"enabledPlugins": {"tw@trial": true}`, and nothing in the folder's `settings.json`. `claude plugin list --json` run in `repo-a` gives `tw@trial` with `"enabled": true`; run in `repo-b` it gives the same record with `"enabled": false` | Yes |
+| The dependency | In `repo-b`: `claude plugin install ta@trial --scope local` | "Successfully installed plugin: ta@trial (scope: local) (+ 1 dependency: tw)". `repo-b/.claude/settings.local.json` holds both, `ta@trial` and `tw@trial`, as `true` | Yes |
+| Off for every project, on for one repository | In `repo-c`: `install tw@trial --scope user`, `disable tw@trial --scope user`, `enable tw@trial --scope local` | The folder's `settings.json` holds `"tw@trial": false` and `repo-c/.claude/settings.local.json` holds `"tw@trial": true`. The list run in `repo-c` gives `tw@trial` as enabled; run in `repo-d`, which was never touched, as not enabled | Yes: the local setting overrides the user one |
+| A `userConfig` value set from a script | `claude plugin install ta@trial --scope local --config language=es` | The value is in `pluginConfigs` of the folder's `settings.json`, so it is kept for the person, not for the repository. `claude plugin configure ta@trial` prints "language — Language (optional, set)", and says a value can be given with `--values-stdin` | Yes |
+| What a script can read of the plugins | `claude plugin list --json` | One record for each plugin and scope, with `id`, `scope`, `enabled` for the folder it is run in, `projectPath`, and `readFromFolder`, the folder that holds the plugin's files | Not documented in the pages read |
+| What `details` prints | `claude plugin details tw@trial` | Text, not JSON: the names of the skills and agents, the events of the hooks, and a projected cost in tokens. It gives no description | Not documented in the pages read |
+| The global git excludes | Read before and after the first local install | `~/.config/git/ignore` already held `**/.claude/settings.local.json`, in a file dated before this trial. It did not change | Yes |
+| A command only the person calls | Sessions in `repo-a` and `repo-d`, where `starter` is on, asked to list every skill they see with its description | Neither lists `starter:init`, whose skill has `disable-model-invocation: true`. Both list Claude Code's own `init`, which makes a `CLAUDE.md` | Yes |
+| Nothing loads where the plugin is off | A session in `repo-d`, where only `starter` is on | No text of `tw` or `ta`, and none of their skills | Yes |
+| The hook at the start of a session | Sessions in `repo-a` and `repo-b` | The session quotes "SessionStart:startup hook success: TRIAL-TW-SESSIONSTART-MARKER" | Yes |
+| The `userConfig` value in a hook | A session in `repo-b`, where the hook of `ta` prints `${CLAUDE_PLUGIN_OPTION_LANGUAGE}` | The session quotes "TRIAL-TA-SESSIONSTART-MARKER language=es" | Yes |
+| The hook for a new subagent | In `repo-b`, the session started the agent `ta:helper` and asked it to quote what its context holds | The subagent quotes the text the hook of `tw` gave as `additionalContext`. It quotes neither of the two texts printed at the start of the session | Yes. What a hook prints at the start of a session does not reach a subagent |
+| The hook before a shell command | In `repo-b`, the session ran `git merge --no-edit no-such-branch` | The text the hook gave as `additionalContext` reached the session with the call. The session added: "I did not act on it because it isn't part of your request." | Yes |
+| A plugin installed while a session runs | In `repo-e`, the session ran `claude plugin install tw@trial --scope local`, then a second session was started there | The first session does not see `tw:alpha` after the install, and no message about plugins reached it. The second session sees it and the text of its start hook | Not documented in the pages read |
+| `skillOverrides` | A skill of the person, `beta`, in the trial folder's `skills/`, and one of the project, `gamma`, in `repo-a/.claude/skills/`. Then `"skillOverrides": {"beta": "off", "gamma": "name-only"}` in `repo-a/.claude/settings.local.json` | Before: both visible with their descriptions. After: `beta` is not visible; `gamma` is visible with no description; `tw:alpha`, a plugin's skill, is unchanged | Yes |
+
+What follows from it:
+
+- The wizard's script does not need a plugin to be installed and then turned off. It installs with the scope chosen: `user` for every project, `local` for this repository. The third row shows that the dependency comes with it.
+- To compare skills (D193), a script reads each plugin's folder from `readFromFolder` and the descriptions from the `SKILL.md` files there. `details` gives names only.
+- `userConfig` must declare a `type` and a `title` for each value. `claude plugin validate` failed without them: "userConfig.language.type: Invalid option" and "userConfig.language.title: Invalid input: expected string".
+- `claude plugin validate` accepted a `hooks/hooks.json` with the events `SessionStart`, `SubagentStart`, and `PreToolUse`, and a manifest with `"dependencies": ["tw"]`.
+- `claude plugin details starter@trial` projects "Always-on: ~19 tok added to every session" for a plugin whose only skill has `disable-model-invocation: true`, while a session does not list that skill. Whichever is right, the start plugin costs a session about 19 tokens at most.
+- The wizard must tell the person that what it turned on is used from the next session. `/reload-plugins` was not tried.
+- A text that a hook adds before a merge reaches the agent, and the agent may leave it aside. U35 must make the step at the merge something the agent shows the person; the hook can also stop the command with a reason.
+- The contract must be given to a subagent by the hook for a new subagent. The hook at the start of the session does not reach it (TD29 holds).
+- A person's skill is turned off for one repository with `"off"` in that repository's local settings (TD33 holds). `"name-only"` keeps the name and drops the description.
+- A plugin that came as a dependency is kept apart from one the person installed. After `ta` was uninstalled, Claude Code printed "1 auto-installed dependency no longer needed: tw. Run `claude plugin prune --scope local` to remove." So the wizard's script installs `playbook-wiki` by name in every case, and a person who goes from the whole product to the wiki alone keeps it.
+- Claude Code has a command of its own named `init`. The product's is `/playbook:init`, so the two do not collide, and a person may confuse them.
+- `claude plugin validate` also prints what Anthropic's directory refuses: a plugin with no `README.md` of at least 40 words, and one with no license. It matters for Q61, not for this phase.
+
 ## Not verified
 
-- That a plugin disabled with the scope `user` and enabled with the scope `local` is on in that repository only. The documentation says the local setting overrides the user one; it was not tried.
-- Whether a plugin enabled by the script is used by the session that ran the wizard, or by the next one.
-- That a command only the person can call adds nothing to a session. A summary of the [Skills](https://code.claude.com/docs/en/skills.md) page gives, for a skill with `disable-model-invocation: true`, "Description not in context, full skill loads when invoked"; the sentence was not read in the page's own text.
-- That a person can install one plugin of a marketplace and not the others. The documentation gives each plugin its own identifier and never says the opposite.
-- What `claude plugin list` prints, and whether it says which plugins are on for one repository. N28 depends on it.
-- That a plugin's `hooks/hooks.json` can hold a hook for a new subagent and one before a shell command. The pages read name no event a plugin cannot use, and do not say it outright.
-- Whether what a hook prints at the start of a session reaches a subagent. That part of the page was not read; TD29 does not depend on it.
-- What `skillOverrides` is, in the page's own words: the definition came from a summary of the [Skills](https://code.claude.com/docs/en/skills.md) page. What its value `"name-only"` does is not said.
-- What `claude plugin details` prints, and whether a script can read it.
-- No hook of this page was written or run.
-- Nothing was installed, enabled, or disabled on the owner's machine.
+- How the product behaves in a session with the interface. Every session of U28 was one request run with `claude -p`.
+- `/reload-plugins`, as a way to use in the running session what the wizard turned on.
+- The same behaviours with another model. Every session of U28 used `haiku`.
+- A plugin installed from a git address. The trial's marketplace was a local folder, read in place.

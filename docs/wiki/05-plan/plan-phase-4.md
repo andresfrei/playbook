@@ -8,7 +8,7 @@ The owner accepted it (D197). How a unit is delivered is D196.
 
 | Unit | Status | Evidence |
 |------|--------|----------|
-| U28 | Not started | |
+| U28 | Built 2026-11-16 (waiting for the owner's review) | Begun when the owner answered the request to start it with "ahora cerremmos esta v2", and continued after the owner logged in to the trial folder, `~/.claude-playbook`. Sixteen rows in [../03-technology/phase-4.md](../03-technology/phase-4.md), under "Tried in U28", each with the command, what was seen, and whether it is as documented. Thirteen are as documented and three are not documented in the pages read; none goes against the documentation, so nothing needs a replacement. What it changes in the units that follow is listed there under "What follows from it". The three plugins and the repositories of the trial were deleted, and the trial folder holds no plugin, marketplace, or skill; it stays logged in for the units that need it |
 | U29 | Not started | |
 | U30 | Not started | |
 | U31 | Not started | |
@@ -71,6 +71,8 @@ What is known comes from the page "Submit your plugin" of Anthropic's documentat
 - The start command turns the other two plugins on by the name of this repository's marketplace (TD27). Whether a plugin listed in the directory keeps that name, and whether one listed plugin can depend on another, is not said in the page.
 
 The page also says: the repository must be public before a listing goes live, which it is (D152); the directory follows a branch or a tag for new versions; and "If your `plugin.json` sets `version`, raise it with every release", which TD22 already does.
+
+Seen on 2026-11-16, in the trial folder of U28: `claude plugin marketplace list` names one marketplace that Claude Code brings by itself, `anthropic-plugin-directory`, "Built in (Anthropic Directory)".
 
 Open as Q61 in [../01-product/open-questions.md](../01-product/open-questions.md).
 
