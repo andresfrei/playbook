@@ -30,7 +30,7 @@ What is decided about the product is in [docs/wiki/decisions.md](docs/wiki/decis
 
 ## Releases
 
-The plugin declares its version in `plugin/.claude-plugin/plugin.json`, with [Semantic Versioning](https://semver.org/). Only the owner changes it, when a release is made, and tags that commit `v<version>`:
+Each plugin declares its version in its manifest, `plugins/<name>/.claude-plugin/plugin.json`, with [Semantic Versioning](https://semver.org/). Only the owner changes it, when a release is made, and tags that commit `v<version>`:
 
 - **MAJOR**: a change that breaks an existing installation, such as removing or renaming a skill, a command, or an agent.
 - **MINOR**: something new that breaks nothing, such as a new skill or a new rule.

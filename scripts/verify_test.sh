@@ -1,7 +1,7 @@
 #!/bin/sh
 # Tests for scripts/verify.sh, scripts/set-models.sh, and the check of a
-# project's wiki, plugin/skills/prepare-project/scripts/check-wiki.sh. Each case builds a copy
-# of the plugin, or a small wiki, in a temporary directory, changes one thing,
+# project's wiki, plugins/playbook-wiki/skills/prepare-project/scripts/check-wiki.sh. Each case builds a copy
+# of the three plugins, or a small wiki, in a temporary directory, changes one thing,
 # and checks the exit code and message.
 # Usage: sh scripts/verify_test.sh
 #
@@ -26,18 +26,19 @@ chars() {
   awk -v n="$1" 'BEGIN { for (i = 0; i < n; i++) printf "x"; print "" }'
 }
 
-# Creates a fresh copy of the plugin and its marketplace manifest.
+# Creates a fresh copy of the plugins and its marketplace manifest.
 fresh() {
   rm -rf "$tmp/repo"
   mkdir -p "$tmp/repo"
-  cp -R "$root/.claude-plugin" "$root/plugin" "$tmp/repo/"
+  cp -R "$root/.claude-plugin" "$root/plugins" "$tmp/repo/"
   mkdir "$tmp/repo/scripts"
   cp "$root/scripts/set-models.sh" "$tmp/repo/scripts/"
 }
 
 # add_skill <name> <description> <body words> [extra front matter line]
+# The skill goes to the plugin named in skill_plugin, playbook-agents by default.
 add_skill() {
-  dir="$tmp/repo/plugin/skills/$1"
+  dir="$tmp/repo/plugins/${skill_plugin:-playbook-agents}/skills/$1"
   mkdir -p "$dir"
   {
     printf -- '---\nname: %s\ndescription: %s\n' "$1" "$2"
@@ -71,11 +72,11 @@ add_skill at-limits "$(chars 250)" 700
 expect "skill at the limits passes" pass
 
 fresh
-words 501 > "$tmp/repo/plugin/rules.md"
+words 501 > "$tmp/repo/plugins/playbook-agents/rules.md"
 expect "L1: rules file over 500 words fails" fail "L1"
 
 fresh
-rm "$tmp/repo/plugin/rules.md"
+rm "$tmp/repo/plugins/playbook-agents/rules.md"
 expect "L1: missing rules file fails" fail "L1"
 
 fresh
@@ -87,7 +88,7 @@ add_skill long-description "$(chars 251)" 10
 expect "L3: description over 250 characters fails" fail "L3"
 
 fresh
-words 500 > "$tmp/repo/plugin/rules.md"
+words 500 > "$tmp/repo/plugins/playbook-agents/rules.md"
 for i in 1 2 3 4 5 6 7 8; do
   add_skill "skill-$i" "$(words 40 | cut -c1-200)" 10
 done
@@ -99,12 +100,12 @@ expect "front matter with a third key fails" fail "front matter"
 
 fresh
 add_skill forked "Short description." 10 "context: fork
-agent: playbook:review"
+agent: playbook-agents:review"
 expect "front matter with context and agent passes" pass
 
 fresh
 add_skill forked-model "Short description." 10 "context: fork
-agent: playbook:review
+agent: playbook-agents:review
 model: opus"
 expect "front matter with context, agent, and model fails" fail "front matter"
 
@@ -117,19 +118,19 @@ add_skill owner-only "Short description." 10 "disable-model-invocation: false"
 expect "front matter with disable-model-invocation other than true fails" fail "disable-model-invocation of"
 
 fresh
-words 500 > "$tmp/repo/plugin/rules.md"
+words 500 > "$tmp/repo/plugins/playbook-agents/rules.md"
 for i in 1 2 3 4 5 6 7 8; do
   add_skill "skill-$i" "$(words 40 | cut -c1-200)" 10 "disable-model-invocation: true"
 done
 expect "L4: the description of a skill only the owner starts is not counted" pass
 
 fresh
-add_skill agent-only "Short description." 10 "agent: playbook:review"
+add_skill agent-only "Short description." 10 "agent: playbook-agents:review"
 expect "front matter with agent and no context fails" fail "front matter"
 
 fresh
 add_skill inline "Short description." 10 "context: inline
-agent: playbook:review"
+agent: playbook-agents:review"
 expect "front matter with a context other than fork fails" fail "context of"
 
 # expect_models <case name> <expected exit: pass|fail> <text the output must contain> [args]
@@ -155,42 +156,42 @@ fresh
 expect_models "models: matching tree passes --check" pass ""
 
 fresh
-sed 's/^model: .*/model: opus/' "$tmp/repo/plugin/agents/explore.md" > "$tmp/x" &&
-  mv "$tmp/x" "$tmp/repo/plugin/agents/explore.md"
+sed 's/^model: .*/model: opus/' "$tmp/repo/plugins/playbook-agents/agents/explore.md" > "$tmp/x" &&
+  mv "$tmp/x" "$tmp/repo/plugins/playbook-agents/agents/explore.md"
 expect_models "models: hand-edited model fails --check" fail "explore.md"
 expect_models "models: --check changes nothing" fail "explore.md" --check
-grep -q '^model: opus' "$tmp/repo/plugin/agents/explore.md" ||
+grep -q '^model: opus' "$tmp/repo/plugins/playbook-agents/agents/explore.md" ||
   { printf 'FAIL  models: --check changed a file\n'; failed=$((failed + 1)); }
 sh "$root/scripts/set-models.sh" "$tmp/repo" >/dev/null 2>&1
 expect_models "models: --check passes after the rewrite" pass ""
 
 fresh
-rm "$tmp/repo/plugin/agents/review.md"
+rm "$tmp/repo/plugins/playbook-agents/agents/review.md"
 expect_models "models: configured agent without a file fails" fail "review.md"
 
 fresh
-cp "$tmp/repo/plugin/agents/write.md" "$tmp/repo/plugin/agents/extra.md"
+cp "$tmp/repo/plugins/playbook-agents/agents/write.md" "$tmp/repo/plugins/playbook-agents/agents/extra.md"
 expect_models "models: agent file absent from the configuration fails" fail "extra.md"
 
 fresh
-sed 's/^explore .*/explore  gpt  medium/' "$tmp/repo/plugin/models.conf" > "$tmp/x" &&
-  mv "$tmp/x" "$tmp/repo/plugin/models.conf"
+sed 's/^explore .*/explore  gpt  medium/' "$tmp/repo/plugins/playbook-agents/models.conf" > "$tmp/x" &&
+  mv "$tmp/x" "$tmp/repo/plugins/playbook-agents/models.conf"
 expect_models "models: invalid model is rejected" fail "gpt"
 
 fresh
-sed 's/^explore .*/explore  haiku  extreme/' "$tmp/repo/plugin/models.conf" > "$tmp/x" &&
-  mv "$tmp/x" "$tmp/repo/plugin/models.conf"
+sed 's/^explore .*/explore  haiku  extreme/' "$tmp/repo/plugins/playbook-agents/models.conf" > "$tmp/x" &&
+  mv "$tmp/x" "$tmp/repo/plugins/playbook-agents/models.conf"
 expect_models "models: invalid effort is rejected" fail "extreme"
 
 fresh
-sed 's/^explore .*/explore  haiku  medium  extra/' "$tmp/repo/plugin/models.conf" > "$tmp/x" &&
-  mv "$tmp/x" "$tmp/repo/plugin/models.conf"
+sed 's/^explore .*/explore  haiku  medium  extra/' "$tmp/repo/plugins/playbook-agents/models.conf" > "$tmp/x" &&
+  mv "$tmp/x" "$tmp/repo/plugins/playbook-agents/models.conf"
 expect_models "models: a fourth field is rejected" fail "more than three fields"
 
 fresh
-sed 's/^description: .*/description: '"$(chars 251)"'/' "$tmp/repo/plugin/agents/write.md" > "$tmp/x" &&
-  mv "$tmp/x" "$tmp/repo/plugin/agents/write.md"
-expect "L3: agent description over 250 characters fails" fail "L3 description of agents/write.md"
+sed 's/^description: .*/description: '"$(chars 251)"'/' "$tmp/repo/plugins/playbook-agents/agents/write.md" > "$tmp/x" &&
+  mv "$tmp/x" "$tmp/repo/plugins/playbook-agents/agents/write.md"
+expect "L3: agent description over 250 characters fails" fail "L3 description of playbook-agents/agents/write.md"
 
 # check <case name> <command...>: the case passes when the command succeeds.
 check() {
@@ -206,7 +207,7 @@ check() {
 absent() { [ ! -e "$1" ] && [ ! -L "$1" ]; }
 
 # The check of a project's wiki.
-check_wiki="$root/plugin/skills/prepare-project/scripts/check-wiki.sh"
+check_wiki="$root/plugins/playbook-wiki/skills/prepare-project/scripts/check-wiki.sh"
 
 # fresh_wiki <words under "Where work stands">: an entry point and one page,
 # each linking to the other. The table of pages names no code.
@@ -509,7 +510,7 @@ printf '2\n' > "$tmp/wiki/.format"
 expect_wiki "decisions: a wiki at format 2 has no row checked" pass
 
 # The marker of a wiki's format.
-wiki_format="$root/plugin/skills/doctor/scripts/wiki-format.sh"
+wiki_format="$root/plugins/playbook-wiki/skills/doctor/scripts/wiki-format.sh"
 product_format=$(sed -n 's/^format=//p' "$wiki_format")
 
 # expect_format <case name> <command> <expected exit code> <text the output must contain, or "" for no output>
@@ -634,7 +635,7 @@ expect_format "format: mark refuses a wiki whose only code column is inside a co
 # the session.
 hook=$(awk '/"SessionStart"/ { inside = 1 }
             /"(SessionEnd|Stop|PreToolUse|PostToolUse|UserPromptSubmit)"/ { inside = 0 }
-            inside' "$root/plugin/hooks/hooks.json" |
+            inside' "$root/plugins/playbook-wiki/hooks/hooks.json" |
   sed -n 's/.*"command": "\(sh .*wiki-format.sh.*\)".*/\1/p' | sed 's/\\"/"/g')
 check "format: the plugin runs the notice at session start" test -n "$hook"
 
@@ -642,39 +643,62 @@ fresh_wiki 10
 rm -rf "$tmp/my project"
 mkdir -p "$tmp/my project/docs"
 mv "$tmp/wiki" "$tmp/my project/docs/wiki"
-out=$(CLAUDE_PLUGIN_ROOT="$root/plugin" CLAUDE_PROJECT_DIR="$tmp/my project" sh -c "$hook" 2>&1)
+out=$(CLAUDE_PLUGIN_ROOT="$root/plugins/playbook-wiki" CLAUDE_PROJECT_DIR="$tmp/my project" sh -c "$hook" 2>&1)
 check "format: the hook gives the notice for the project of the session" sh -c 'printf "%s" "$1" | grep -q -F "has no format marker"' sh "$out"
 
 printf '%s\n' "$product_format" > "$tmp/my project/docs/wiki/.format"
-out=$(CLAUDE_PLUGIN_ROOT="$root/plugin" CLAUDE_PROJECT_DIR="$tmp/my project" sh -c "$hook" 2>&1); code=$?
+out=$(CLAUDE_PLUGIN_ROOT="$root/plugins/playbook-wiki" CLAUDE_PROJECT_DIR="$tmp/my project" sh -c "$hook" 2>&1); code=$?
 check "format: the hook prints nothing and exits 0 for a wiki at the playbook's format" test -z "$out" -a "$code" -eq 0
 
-out=$(CLAUDE_PLUGIN_ROOT="$root/plugin" sh -c 'unset CLAUDE_PROJECT_DIR; '"$hook" 2>&1); code=$?
+out=$(CLAUDE_PLUGIN_ROOT="$root/plugins/playbook-wiki" sh -c 'unset CLAUDE_PROJECT_DIR; '"$hook" 2>&1); code=$?
 check "format: the hook prints nothing and exits 0 when the session names no project" test -z "$out" -a "$code" -eq 0
 
 # The skills an agent preloads.
 fresh
-check "skills: the review agent preloads the review skill" grep -q '^skills: review-change$' "$tmp/repo/plugin/agents/review.md"
+check "skills: the review agent preloads the review skill" grep -q '^skills: review-change$' "$tmp/repo/plugins/playbook-agents/agents/review.md"
 expect "skills: an agent that preloads a skill of the plugin passes" pass
 
 fresh
-sed 's/^skills: .*/skills: playbook:review-change, keep-minimal/' "$tmp/repo/plugin/agents/review.md" > "$tmp/x" &&
-  mv "$tmp/x" "$tmp/repo/plugin/agents/review.md"
+sed 's/^skills: .*/skills: playbook-agents:review-change, keep-minimal/' "$tmp/repo/plugins/playbook-agents/agents/review.md" > "$tmp/x" &&
+  mv "$tmp/x" "$tmp/repo/plugins/playbook-agents/agents/review.md"
 expect "skills: several names, with or without the plugin's prefix, pass" pass
 
 fresh
-sed 's/^skills: .*/skills: review-changes/' "$tmp/repo/plugin/agents/review.md" > "$tmp/x" &&
-  mv "$tmp/x" "$tmp/repo/plugin/agents/review.md"
+sed 's/^skills: .*/skills: review-changes/' "$tmp/repo/plugins/playbook-agents/agents/review.md" > "$tmp/x" &&
+  mv "$tmp/x" "$tmp/repo/plugins/playbook-agents/agents/review.md"
 expect "skills: a name that is not a skill of the plugin fails" fail "agents/review.md preloads the skill 'review-changes'"
 
 fresh
-mv "$tmp/repo/plugin/skills/review-change" "$tmp/repo/plugin/skills/review-diff"
+mv "$tmp/repo/plugins/playbook-agents/skills/review-change" "$tmp/repo/plugins/playbook-agents/skills/review-diff"
 expect "skills: renaming a skill that an agent preloads fails" fail "preloads the skill 'review-change'"
 
 fresh
-awk '/^skills: / { print "skills:"; print "  - no-such-skill"; next } { print }' "$tmp/repo/plugin/agents/review.md" > "$tmp/x" &&
-  mv "$tmp/x" "$tmp/repo/plugin/agents/review.md"
+awk '/^skills: / { print "skills:"; print "  - no-such-skill"; next } { print }' "$tmp/repo/plugins/playbook-agents/agents/review.md" > "$tmp/x" &&
+  mv "$tmp/x" "$tmp/repo/plugins/playbook-agents/agents/review.md"
 expect "skills: names written as a list under the line fail" fail "has a skills line with no name on it"
+
+# Each plugin is walked.
+fresh
+skill_plugin=playbook-wiki add_skill wiki-long "$(chars 251)" 10
+expect "plugins: a description over the limit in playbook-wiki fails" fail "L3 description of playbook-wiki/skills/wiki-long"
+
+fresh
+skill_plugin=playbook-agents add_skill agents-long "$(chars 251)" 10
+expect "plugins: a description over the limit in playbook-agents fails" fail "L3 description of playbook-agents/skills/agents-long"
+
+fresh
+skill_plugin=playbook-wiki add_skill wiki-big "Short description." 701
+expect "plugins: a body over the limit in playbook-wiki fails" fail "L2 body of playbook-wiki/skills/wiki-big"
+
+fresh
+sed 's/^skills: .*/skills: prepare-project/' "$tmp/repo/plugins/playbook-agents/agents/review.md" > "$tmp/x" &&
+  mv "$tmp/x" "$tmp/repo/plugins/playbook-agents/agents/review.md"
+expect "plugins: an agent that preloads a skill of another plugin fails" fail "preloads the skill 'prepare-project'"
+
+fresh
+mkdir -p "$tmp/repo/plugins/playbook-wiki/agents"
+cp "$tmp/repo/plugins/playbook-agents/agents/explore.md" "$tmp/repo/plugins/playbook-wiki/agents/extra.md"
+expect "plugins: an agent outside playbook-agents fails" fail "playbook-wiki/agents/extra.md is not in playbook-agents"
 
 fresh
 expect "agents and skills together still pass" pass

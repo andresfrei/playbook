@@ -1,6 +1,6 @@
 # Rules
 
-The text of the general working rules R1–R24 lives in one place: [`plugin/rules.md`](../../../plugin/rules.md), the file the agent loads in every session (D50). This page records only where each rule comes from and which decision accepted it. To change a rule, change that file and add a decision here.
+The text of the general working rules R1–R24 lives in one place: [`plugins/playbook-agents/rules.md`](../../../plugins/playbook-agents/rules.md), the file the agent loads in every session (D50). This page records only where each rule comes from and which decision accepted it. To change a rule, change that file and add a decision here.
 
 R1 to R17 are Decided: five by the decision named below, the other twelve by D34. R18 to R24 are the concepts of gentle-ai that phase 2 keeps (D66), in the product's own words; the number in "Source" is the concept in ../02-current-state/gentle-ai-layer.md (kept in the private archive). Numbers follow the order in which rules were added, not their place in the file.
 

@@ -8,9 +8,9 @@ It is a Claude Code plugin. Every session loads:
 
 | Part | Content |
 |------|---------|
-| Rules | `plugin/rules.md`, 24 short rules. A hook prints them at session start |
-| Skills | Six, loaded on demand: `prepare-project`, `write-skill`, `write-docs`, `keep-minimal`, `avoid-generic-design`, `review-change`. The `SKILL.md` of each, under `plugin/skills/`, says which requests load it and what it does. A seventh, `doctor`, runs only when the owner starts it (`/playbook:doctor` in Claude Code): it repairs a project's wiki after the format of a wiki changed. At session start a hook says so in one line when a project's wiki has no file `docs/wiki/.format` or the file is behind |
-| Agents | Three, for delegated work: `explore`, `write`, `review`. The model and the effort of each are in `plugin/models.conf` |
+| Rules | `plugins/playbook-agents/rules.md`, 24 short rules. A hook prints them at session start |
+| Skills | Six, loaded on demand: `prepare-project`, `write-skill`, `write-docs`, `keep-minimal`, `avoid-generic-design`, `review-change`. The `SKILL.md` of each, under `plugins/playbook-wiki/skills/` and `plugins/playbook-agents/skills/`, says which requests load it and what it does. A seventh, `doctor`, runs only when the owner starts it (`/playbook-wiki:doctor` in Claude Code): it repairs a project's wiki after the format of a wiki changed. At session start a hook says so in one line when a project's wiki has no file `docs/wiki/.format` or the file is behind |
+| Agents | Three, for delegated work: `explore`, `write`, `review`. The model and the effort of each are in `plugins/playbook-agents/models.conf` |
 
 **Status:** "Where work stands" in [docs/wiki/README.md](docs/wiki/README.md) says what is finished, what is open, and what comes next.
 
@@ -64,7 +64,7 @@ claude plugin marketplace add /path/to/this/clone
 claude plugin install playbook@playbook --scope user
 ```
 
-The plugin is read in place from the clone: a change to the files under `plugin/` applies to the next session, or to an open one after `/reload-plugins`, with no reinstall. Whatever is checked out in the clone is what every session loads. The source for this behaviour is in [docs/wiki/03-technology/installation.md](docs/wiki/03-technology/installation.md).
+The plugin is read in place from the clone: a change to the files under `plugins/` applies to the next session, or to an open one after `/reload-plugins`, with no reinstall. Whatever is checked out in the clone is what every session loads. The source for this behaviour is in [docs/wiki/03-technology/installation.md](docs/wiki/03-technology/installation.md).
 
 ### Remove it from Claude Code
 
@@ -82,7 +82,7 @@ claude plugin marketplace remove playbook
 | `.github/` | `CODEOWNERS`, and the templates for issues and pull requests |
 | `LICENSE`, `CONTRIBUTING.md`, `SECURITY.md` | The licence, how to contribute, how to report a vulnerability |
 | `.claude-plugin/marketplace.json` | Makes this repository a Claude Code marketplace |
-| `plugin/` | The plugin: the rules file, the hooks that print it and that compare a wiki's format, the skills, the agents, `models.conf`, and the evaluation cases |
+| `plugins/` | The three plugins. `playbook-wiki` holds the wiki skills, the hook that compares a wiki's format, and their evaluation cases; `playbook-agents` holds the rules file, the other skills, the agents, `models.conf`, and their evaluation cases; `playbook` holds only its manifest for now |
 | `scripts/` | Checks for whoever maintains the plugin, and the script that sets the agents' models |
 
 ## Checks
@@ -93,24 +93,25 @@ sh scripts/verify_test.sh        # tests of the scripts
 shellcheck scripts/*.sh
 ```
 
-To change the model or the effort of an agent, edit its line in `plugin/models.conf`, then run:
+To change the model or the effort of an agent, edit its line in `plugins/playbook-agents/models.conf`, then run:
 
 ```sh
 sh scripts/set-models.sh
 ```
 
-The script writes the values into `plugin/agents/*.md`. Do not edit the `model` or `effort` lines in `plugin/agents/*.md` by hand: `verify.sh` fails when they differ from `plugin/models.conf`.
+The script writes the values into `plugins/playbook-agents/agents/*.md`. Do not edit the `model` or `effort` lines in `plugins/playbook-agents/agents/*.md` by hand: `verify.sh` fails when they differ from `plugins/playbook-agents/models.conf`.
 
 Evaluation cases call the model and are billed to your account, so run them by hand, before a change to a skill is accepted:
 
 ```sh
 # one skill
-claude plugin eval plugin --tag write-skill --ablation none --max-cost-usd 1 --no-publish
-# the whole suite
-claude plugin eval plugin --ablation none --max-cost-usd 4 --no-publish -j 3
+claude plugin eval plugins/playbook-agents --tag write-skill --ablation none --max-cost-usd 1 --no-publish
+# the whole suite, one plugin at a time
+claude plugin eval plugins/playbook-wiki --ablation none --max-cost-usd 2 --no-publish -j 3
+claude plugin eval plugins/playbook-agents --ablation none --max-cost-usd 3 --no-publish -j 3
 ```
 
-`--no-publish` keeps the report on this machine. Each skill has two cases under `plugin/evals/`: one request that must load it and one that must not. `prepare-project` has a third, for a request that starts a new phase.
+`--no-publish` keeps the report on this machine. Each skill has two cases under `plugins/playbook-wiki/evals/` or `plugins/playbook-agents/evals/`: one request that must load it and one that must not. `prepare-project` has a third, for a request that starts a new phase.
 
 `verify.sh` needs the `claude` command. The limits it enforces are in [docs/wiki/01-product/style-guide.md](docs/wiki/01-product/style-guide.md).
 

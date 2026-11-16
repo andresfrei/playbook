@@ -2,7 +2,7 @@
 
 How a project's wiki stays small and current as the project advances, and how a definition the owner changes reaches the next session. It holds what was measured on 2026-11-14, the changes proposed, and the order of the work. The owner decided that this is corrected, that the product maintains the wiki by itself, the order, the reduced scope, and that a changed definition must be followed the next time (D133 to D137 in [decisions.md](../decisions.md)). The owner accepted the rules and the texts under "Decided" as written (D138). They are built and merged into `main` on 2026-11-14; see "Built".
 
-A project's wiki is created by the skill `prepare-project`; its format is in [`plugin/skills/prepare-project/references/1-wiki.md`](../../../plugin/skills/prepare-project/references/1-wiki.md). A change to that file reaches every project. A change to this wiki alone does not.
+A project's wiki is created by the skill `prepare-project`; its format is in [`plugins/playbook-wiki/skills/prepare-project/references/1-wiki.md`](../../../plugins/playbook-wiki/skills/prepare-project/references/1-wiki.md). A change to that file reaches every project. A change to this wiki alone does not.
 
 ## What was measured
 
@@ -69,7 +69,7 @@ Accepted by the owner as written (D138).
 
 Three texts, accepted word for word.
 
-Rule R8 in [`plugin/rules.md`](../../../plugin/rules.md), in place of the present one, which speaks only of the stack:
+Rule R8 in [`plugins/playbook-agents/rules.md`](../../../plugins/playbook-agents/rules.md), in place of the present one, which speaks only of the stack:
 
 > R8. When a request differs from what is Decided, say so and ask: an exception, or a change of the definition? Never change it silently.
 

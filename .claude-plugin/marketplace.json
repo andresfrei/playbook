@@ -7,8 +7,18 @@
   "plugins": [
     {
       "name": "playbook",
-      "description": "Always-loaded working rules and a small set of general skills.",
-      "source": "./plugin"
+      "description": "Starts the playbook in a repository: the wiki alone or the whole product.",
+      "source": "./plugins/playbook"
+    },
+    {
+      "name": "playbook-wiki",
+      "description": "A project's wiki as its shared source of truth: the method, the format, and the check.",
+      "source": "./plugins/playbook-wiki"
+    },
+    {
+      "name": "playbook-agents",
+      "description": "Working rules, skills, and agents for building software with an AI coding agent.",
+      "source": "./plugins/playbook-agents"
     }
   ]
 }

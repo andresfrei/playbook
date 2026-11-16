@@ -19,7 +19,7 @@ A file over a limit fails the verify script. Text that does not fit moves to a r
 
 ## Limits of a project's wiki
 
-Two limits apply to the wiki that `prepare-project` creates in a project, not to the plugin (D138). They are stated in [`plugin/skills/prepare-project/references/1-wiki.md`](../../../plugin/skills/prepare-project/references/1-wiki.md); why they exist is in [wiki-maintenance.md](wiki-maintenance.md).
+Two limits apply to the wiki that `prepare-project` creates in a project, not to the plugin (D138). They are stated in [`plugins/playbook-wiki/skills/prepare-project/references/1-wiki.md`](../../../plugins/playbook-wiki/skills/prepare-project/references/1-wiki.md); why they exist is in [wiki-maintenance.md](wiki-maintenance.md).
 
 | What | Limit | Enforced by |
 |------|-------|-------------|
@@ -28,7 +28,7 @@ Two limits apply to the wiki that `prepare-project` creates in a project, not to
 
 ## Format of a skill
 
-The format of a skill, its writing rules, and the format of its evaluation cases live in one place: [`plugin/skills/write-skill/references/style-guide.md`](../../../plugin/skills/write-skill/references/style-guide.md), the file the agent reads when it writes or audits a skill (D48, unit U5). In short: the front matter holds `name` and `description`, plus `context` and `agent` when the skill runs in a separate context (TD10), or plus `disable-model-invocation: true` when only the owner starts the skill (D141), and the body has up to five sections (When to use, Rules, Steps, Output, References).
+The format of a skill, its writing rules, and the format of its evaluation cases live in one place: [`plugins/playbook-agents/skills/write-skill/references/style-guide.md`](../../../plugins/playbook-agents/skills/write-skill/references/style-guide.md), the file the agent reads when it writes or audits a skill (D48, unit U5). In short: the front matter holds `name` and `description`, plus `context` and `agent` when the skill runs in a separate context (TD10), or plus `disable-model-invocation: true` when only the owner starts the skill (D141), and the body has up to five sections (When to use, Rules, Steps, Output, References).
 
 That file repeats the numbers of L2 and L3, and `scripts/verify.sh` holds all four. A change to a limit changes the three places.
 

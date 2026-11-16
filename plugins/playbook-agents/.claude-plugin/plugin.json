@@ -1,0 +1,9 @@
+{
+  "name": "playbook-agents",
+  "version": "1.0.0",
+  "description": "Working rules, skills, and agents for building software with an AI coding agent.",
+  "author": {
+    "name": "Andres Frei"
+  },
+  "dependencies": ["playbook-wiki"]
+}

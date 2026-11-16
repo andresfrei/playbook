@@ -2,7 +2,7 @@
 name: review-change
 description: Review a change, a diff, a commit, or uncommitted work for defects before it is merged. Reads the change in a separate context and returns only findings, most severe first, each with a failing case.
 context: fork
-agent: playbook:review
+agent: playbook-agents:review
 ---
 
 ## When to use

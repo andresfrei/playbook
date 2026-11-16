@@ -44,7 +44,7 @@ wiki_format() {
   esac
 }
 
-advice='Tell the owner, and recommend running the doctor skill (/playbook:doctor). Do not repair the wiki unasked.'
+advice='Tell the owner, and recommend running the doctor skill (/playbook-wiki:doctor). Do not repair the wiki unasked.'
 
 case $command in
   status)

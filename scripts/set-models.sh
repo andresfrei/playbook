@@ -1,6 +1,6 @@
 #!/bin/sh
-# Writes the values of plugin/models.conf into the model and effort lines of
-# each plugin/agents/<agent>.md.
+# Writes the values of plugins/playbook-agents/models.conf into the model and effort lines of
+# each plugins/playbook-agents/agents/<agent>.md.
 # Usage: sh scripts/set-models.sh [--check] [repository root]
 # With --check it changes nothing and exits 1 when an agent file differs from
 # the configuration. Exits 0 otherwise.
@@ -12,8 +12,8 @@ if [ "${1:-}" = "--check" ]; then
   shift
 fi
 root=${1:-$(cd "$(dirname "$0")/.." && pwd)}
-conf="$root/plugin/models.conf"
-agents="$root/plugin/agents"
+conf="$root/plugins/playbook-agents/models.conf"
+agents="$root/plugins/playbook-agents/agents"
 
 failures=0
 fail() {
@@ -65,17 +65,17 @@ while read -r agent model effort extra; do
     continue
   fi
   if [ ! -f "$file" ]; then
-    fail "plugin/agents/$agent.md is missing, but models.conf configures $agent"
+    fail "plugins/playbook-agents/agents/$agent.md is missing, but models.conf configures $agent"
     continue
   fi
 
   if [ "$check" -eq 1 ]; then
     [ "$(field "$file" model)" = "$model" ] ||
-      fail "plugin/agents/$agent.md has model '$(field "$file" model)', models.conf says '$model'"
+      fail "plugins/playbook-agents/agents/$agent.md has model '$(field "$file" model)', models.conf says '$model'"
     [ "$(field "$file" effort)" = "$effort" ] ||
-      fail "plugin/agents/$agent.md has effort '$(field "$file" effort)', models.conf says '$effort'"
+      fail "plugins/playbook-agents/agents/$agent.md has effort '$(field "$file" effort)', models.conf says '$effort'"
   else
-    write_file "$file" "$model" "$effort" || fail "could not write plugin/agents/$agent.md"
+    write_file "$file" "$model" "$effort" || fail "could not write plugins/playbook-agents/agents/$agent.md"
   fi
 done < "$conf"
 
@@ -84,7 +84,7 @@ for file in "$agents"/*.md; do
   name=$(basename "$file" .md)
   case $configured in
     *" $name "*) ;;
-    *) fail "plugin/agents/$name.md has no line in models.conf" ;;
+    *) fail "plugins/playbook-agents/agents/$name.md has no line in models.conf" ;;
   esac
 done
 

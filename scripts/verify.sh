@@ -1,12 +1,13 @@
 #!/bin/sh
-# Checks the plugin against the limits and the format in
-# docs/wiki/01-product/style-guide.md, and validates its manifests.
+# Checks the three plugins against the limits and the format in
+# docs/wiki/01-product/style-guide.md, and validates their manifests.
 # Usage: sh scripts/verify.sh [repository root]
 # Exits 0 when every check passes, 1 otherwise.
 set -u
 
 root=${1:-$(cd "$(dirname "$0")/.." && pwd)}
-plugin="$root/plugin"
+plugins="$root/plugins"
+agents_plugin="$plugins/playbook-agents"
 
 max_rules_words=500        # L1
 max_skill_body_words=700   # L2
@@ -36,7 +37,7 @@ body() {
 
 # Manifests.
 if command -v claude >/dev/null 2>&1; then
-  for target in "$root" "$plugin"; do
+  for target in "$root" "$plugins/playbook" "$plugins/playbook-wiki" "$agents_plugin"; do
     if ! output=$(claude plugin validate "$target" 2>&1); then
       fail "claude plugin validate $target"
       printf '%s\n' "$output"
@@ -48,8 +49,8 @@ fi
 
 # L1: the rules file.
 startup_words=0
-if [ -f "$plugin/rules.md" ]; then
-  rules_words=$(count_words < "$plugin/rules.md")
+if [ -f "$agents_plugin/rules.md" ]; then
+  rules_words=$(count_words < "$agents_plugin/rules.md")
   startup_words=$rules_words
   if [ "$rules_words" -gt "$max_rules_words" ]; then
     fail "L1 rules.md has $rules_words words, limit $max_rules_words"
@@ -58,10 +59,10 @@ else
   fail "L1 rules.md is missing"
 fi
 
-# L2 and L3: each skill.
-for skill in "$plugin"/skills/*/SKILL.md; do
+# L2 and L3: each skill of each plugin.
+for skill in "$plugins"/*/skills/*/SKILL.md; do
   [ -f "$skill" ] || continue
-  name=${skill#"$plugin"/}
+  name=${skill#"$plugins"/}
 
   matter=$(front_matter "$skill")
   keys=$(printf '%s\n' "$matter" | sed 's/:.*//' | tr '\n' ' ')
@@ -95,31 +96,43 @@ for skill in "$plugin"/skills/*/SKILL.md; do
   fi
 done
 
-# Models: each agent file matches plugin/models.conf.
+# Models: each agent file matches plugins/playbook-agents/models.conf.
 if ! output=$(sh "$root/scripts/set-models.sh" --check "$root" 2>&1); then
-  fail "agent files differ from plugin/models.conf"
+  fail "agent files differ from plugins/playbook-agents/models.conf"
   printf '%s\n' "$output"
 fi
+
+# The models check reads only the agents of playbook-agents, so an agent file
+# anywhere else would have a model that models.conf does not set.
+for agent in "$plugins"/*/agents/*.md; do
+  [ -f "$agent" ] || continue
+  case $agent in
+    "$agents_plugin"/agents/*) ;;
+    *) fail "${agent#"$plugins"/} is not in playbook-agents, so models.conf does not set its model" ;;
+  esac
+done
 
 # An agent of Claude Code may preload skills with a "skills" line: names on
 # that line, separated by commas, each with or without the plugin's prefix. Claude Code
 # gives no error for a name it does not find, and the agent then runs without
-# that skill, so each name must be a skill of this plugin.
-for agent in "$plugin"/agents/*.md; do
+# that skill, so each name must be a skill of the plugin of the agent.
+for agent in "$plugins"/*/agents/*.md; do
   [ -f "$agent" ] || continue
+  plugin=${agent%/agents/*}
+  name=${agent#"$plugins"/}
   if front_matter "$agent" | grep -q '^skills:[[:space:]]*$'; then
-    fail "${agent#"$plugin"/} has a skills line with no name on it; write the names on that line, separated by commas"
+    fail "$name has a skills line with no name on it; write the names on that line, separated by commas"
   fi
   for skill in $(front_matter "$agent" | sed -n 's/^skills: *//p' | tr ',' ' '); do
     [ -f "$plugin/skills/${skill##*:}/SKILL.md" ] ||
-      fail "${agent#"$plugin"/} preloads the skill '$skill', which is not in plugin/skills"
+      fail "$name preloads the skill '$skill', which is not in ${plugin#"$root"/}/skills"
   done
 done
 
 # L3 and L4: each agent description.
-for agent in "$plugin"/agents/*.md; do
+for agent in "$plugins"/*/agents/*.md; do
   [ -f "$agent" ] || continue
-  name=${agent#"$plugin"/}
+  name=${agent#"$plugins"/}
   description=$(front_matter "$agent" | sed -n 's/^description: *//p' |
     sed 's/^"\(.*\)"$/\1/')
   description_chars=$(printf '%s' "$description" | count_chars)

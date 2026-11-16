@@ -22,12 +22,13 @@ The repository is public since 2026-11-14 (D145 to D152): https://github.com/and
 
 Waiting for the owner:
 
+- The review of U30, the three plugins, which is built: [05-plan/plan-phase-4.md](05-plan/plan-phase-4.md).
 - Six proposals to spend fewer tokens, P1 to P6: 02-current-state/token-economy.md (kept in the private archive).
 - The plugin's version: an installation from GitHub gets wiki format 3 only when the owner raises it (TD22).
 
 Next steps:
 
-1. U30 to U41 in the order of the plan, one at a time.
+1. U31 to U41 in the order of the plan, one at a time.
 2. The owner reviews each unit when it ends.
 
 Finished:
@@ -90,19 +91,19 @@ Phase 1, kept as a record:
 | [decisions.md](decisions.md) | Numbered decisions with the owner's words | |
 | [01-product/overview.md](01-product/overview.md) | What the playbook is and is not | |
 | [01-product/form.md](01-product/form.md) | Proposed principles for structure and storage, from the agent's side | |
-| [01-product/rules.md](01-product/rules.md) | Where each working rule comes from and which decision accepted it; the text is in `plugin/rules.md` | `plugin/rules.md` |
-| [01-product/skill-set.md](01-product/skill-set.md) | Which job each skill does, and who owns it | `plugin/skills/` |
-| [01-product/style-guide.md](01-product/style-guide.md) | Format of the rules file and the skills, and the size limits | `plugin/skills/write-skill/references/style-guide.md`, `scripts/verify.sh` |
+| [01-product/rules.md](01-product/rules.md) | Where each working rule comes from and which decision accepted it; the text is in `plugins/playbook-agents/rules.md` | `plugins/playbook-agents/rules.md` |
+| [01-product/skill-set.md](01-product/skill-set.md) | Which job each skill does, and who owns it | `plugins/playbook-wiki/skills/`, `plugins/playbook-agents/skills/` |
+| [01-product/style-guide.md](01-product/style-guide.md) | Format of the rules file and the skills, and the size limits | `plugins/playbook-agents/skills/write-skill/references/style-guide.md`, `scripts/verify.sh` |
 | [01-product/phase-2.md](01-product/phase-2.md) | The product definition for phase 2: what is decided, what each topic still lacks | |
 | [01-product/phase-3.md](01-product/phase-3.md) | The product definition for phase 3, support for opencode 2.x: what is decided, proposed, and open | |
 | [01-product/phase-4.md](01-product/phase-4.md) | The product definition for phase 4, a shared core separate from each person's agent system: what is decided, proposed, and open | |
-| [01-product/wiki-maintenance.md](01-product/wiki-maintenance.md) | How a project's wiki stays small and current, and how a changed definition reaches the next session: what was measured, the changes proposed, and the order of the work | `plugin/skills/doctor/`, `plugin/skills/prepare-project/scripts/check-wiki.sh`, `plugin/skills/prepare-project/references/1-wiki.md` |
-| [01-product/wiki-format-3.md](01-product/wiki-format-3.md) | A proposal for the next format of a project's wiki: the page table says which code each page governs, the page is read before the code is changed, the code left on an old definition is listed, and the check enforces it | `plugin/skills/doctor/references/format-3.md` |
+| [01-product/wiki-maintenance.md](01-product/wiki-maintenance.md) | How a project's wiki stays small and current, and how a changed definition reaches the next session: what was measured, the changes proposed, and the order of the work | `plugins/playbook-wiki/skills/doctor/`, `plugins/playbook-wiki/skills/prepare-project/scripts/check-wiki.sh`, `plugins/playbook-wiki/skills/prepare-project/references/1-wiki.md` |
+| [01-product/wiki-format-3.md](01-product/wiki-format-3.md) | A proposal for the next format of a project's wiki: the page table says which code each page governs, the page is read before the code is changed, the code left on an old definition is listed, and the check enforces it | `plugins/playbook-wiki/skills/doctor/references/format-3.md` |
 | [01-product/glossary.md](01-product/glossary.md) | Vocabulary, with Spanish | |
 | [01-product/open-questions.md](01-product/open-questions.md) | Questions that block closing this stage | |
-| [03-technology/installation.md](03-technology/installation.md) | How the product is installed in Claude Code: the routes evaluated and the one chosen | `.claude-plugin/`, `plugin/.claude-plugin/` |
-| [03-technology/skill-evaluation.md](03-technology/skill-evaluation.md) | How a skill is verified and evaluated: what Claude Code provides and the use chosen | `plugin/evals/` |
-| [03-technology/architecture.md](03-technology/architecture.md) | The architecture: the product as it is and what phase 2 changes, with risks, trade-offs, and discarded alternatives | `plugin/agents/`, `plugin/hooks/`, `plugin/models.conf`, `scripts/set-models.sh` |
+| [03-technology/installation.md](03-technology/installation.md) | How the product is installed in Claude Code: the routes evaluated and the one chosen | `.claude-plugin/`, `plugins/playbook/.claude-plugin/`, `plugins/playbook-wiki/.claude-plugin/`, `plugins/playbook-agents/.claude-plugin/` |
+| [03-technology/skill-evaluation.md](03-technology/skill-evaluation.md) | How a skill is verified and evaluated: what Claude Code provides and the use chosen | `plugins/playbook-wiki/evals/`, `plugins/playbook-agents/evals/` |
+| [03-technology/architecture.md](03-technology/architecture.md) | The architecture: the product as it is and what phase 2 changes, with risks, trade-offs, and discarded alternatives | `plugins/playbook-agents/agents/`, `plugins/playbook-wiki/hooks/`, `plugins/playbook-agents/hooks/`, `plugins/playbook-agents/models.conf`, `scripts/set-models.sh` |
 | [03-technology/phase-2.md](03-technology/phase-2.md) | What phase 2 needs from its technology and what is chosen for each need (stage 2 of phase 2) | |
 | [04-skills/working-skills.md](04-skills/working-skills.md) | The skills the agent uses to build this product (stage 3) | |
 | [03-technology/phase-3.md](03-technology/phase-3.md) | What phase 3 needs from its technology, needs N7 to N15, and what is chosen for each (stage 2 of phase 3) | |
