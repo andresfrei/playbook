@@ -25,6 +25,8 @@ printf '# Invoices\n\nAn invoice has a number, a customer, and lines (invoices-1
 printf '# Customers\n\nA customer has a name and a tax id (customers-1).\n' > docs/wiki/01-product/customers.md
 for w in invoices customers; do
   printf '# %s\n\nLed by Laura Gómez.\n\nStatus: Closed 2026-10-01.\n' "$w" > "docs/wiki/works/$w/README.md"
+  # The backquotes are Markdown code spans, not shell expansions.
+  # shellcheck disable=SC2016
   printf '| ID | Date | Decision | Who decided | Their words | Shared page |\n|---|---|---|---|---|---|\n| %s-1 | 2026-09-01 | See the page | Laura Gómez | "ok" | `01-product/%s.md` |\n' "$w" "$w" > "docs/wiki/works/$w/decisions.md"
 done
 printf 'export const app = {};\n' > src/app.js
