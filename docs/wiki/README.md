@@ -12,7 +12,7 @@ Every statement is one of:
 
 Updated 2026-11-16, after D197.
 
-Phase 4 is open at stage 6, Execution (D167). Stages 1 to 5 are closed (D197), and U28 is done: [05-plan/plan-phase-4.md](05-plan/plan-phase-4.md). It is version 2 of the product and removes the support for opencode (TD32, D191). It splits the product into a shared core, `playbook-wiki`, and the owner's agent system, `playbook-agents`: [01-product/phase-4.md](01-product/phase-4.md).
+Phase 4 is open at stage 6, Execution (D167). Stages 1 to 5 are closed (D197), and U28 and U29 are done: [05-plan/plan-phase-4.md](05-plan/plan-phase-4.md). It is version 2 of the product and removes the support for opencode (TD32, D191). It splits the product into a shared core, `playbook-wiki`, and the owner's agent system, `playbook-agents`: [01-product/phase-4.md](01-product/phase-4.md).
 
 Wiki maintenance and the doctor (D133 to D142) are built, merged into `main`, and pushed (D144): [01-product/wiki-maintenance.md](01-product/wiki-maintenance.md).
 
@@ -22,7 +22,6 @@ The repository is public since 2026-11-14 (D145 to D152): https://github.com/and
 
 Waiting for the owner:
 
-- The review of U29, opencode out of the repository, which is built: [05-plan/plan-phase-4.md](05-plan/plan-phase-4.md).
 - Six proposals to spend fewer tokens, P1 to P6: 02-current-state/token-economy.md (kept in the private archive).
 - The plugin's version: an installation from GitHub gets wiki format 3 only when the owner raises it (TD22).
 
