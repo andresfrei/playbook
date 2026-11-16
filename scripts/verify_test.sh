@@ -872,6 +872,29 @@ check "format: the hook prints nothing and exits 0 for a wiki at the playbook's 
 out=$(CLAUDE_PLUGIN_ROOT="$root/plugin" sh -c 'unset CLAUDE_PROJECT_DIR; '"$hook" 2>&1); code=$?
 check "format: the hook prints nothing and exits 0 when the session names no project" test -z "$out" -a "$code" -eq 0
 
+# The skills an agent preloads.
+fresh
+check "skills: the review agent preloads the review skill" grep -q '^skills: review-change$' "$tmp/repo/plugin/agents/review.md"
+expect "skills: an agent that preloads a skill of the plugin passes" pass
+
+fresh
+sed 's/^skills: .*/skills: playbook:review-change, keep-minimal/' "$tmp/repo/plugin/agents/review.md" > "$tmp/x" &&
+  mv "$tmp/x" "$tmp/repo/plugin/agents/review.md"
+expect "skills: several names, with or without the plugin's prefix, pass" pass
+
+fresh
+sed 's/^skills: .*/skills: review-changes/' "$tmp/repo/plugin/agents/review.md" > "$tmp/x" &&
+  mv "$tmp/x" "$tmp/repo/plugin/agents/review.md"
+expect "skills: a name that is not a skill of the plugin fails" fail "agents/review.md preloads the skill 'review-changes'"
+
+fresh
+mv "$tmp/repo/plugin/skills/review-change" "$tmp/repo/plugin/skills/review-diff"
+expect "skills: renaming a skill that an agent preloads fails" fail "preloads the skill 'review-change'"
+
+fresh
+expect_models "skills: the opencode agent is generated without the skills line" pass ""
+check "skills: the opencode review agent has no skills line" sh -c '! grep -q "^skills:" "$1"' sh "$tmp/repo/opencode/agents/review.md"
+
 fresh
 expect "agents and skills together still pass" pass
 

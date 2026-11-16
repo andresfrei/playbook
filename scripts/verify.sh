@@ -109,6 +109,18 @@ if ! output=$(sh "$root/scripts/set-models.sh" --check "$root" 2>&1); then
   printf '%s\n' "$output"
 fi
 
+# An agent of Claude Code may preload skills with a "skills" line: names
+# separated by commas, each with or without the plugin's prefix. Claude Code
+# gives no error for a name it does not find, and the agent then runs without
+# that skill, so each name must be a skill of this plugin.
+for agent in "$plugin"/agents/*.md; do
+  [ -f "$agent" ] || continue
+  for skill in $(front_matter "$agent" | sed -n 's/^skills: *//p' | tr ',' ' '); do
+    [ -f "$plugin/skills/${skill##*:}/SKILL.md" ] ||
+      fail "${agent#"$plugin"/} preloads the skill '$skill', which is not in plugin/skills"
+  done
+done
+
 # The agent files of opencode hold only the fields its schema allows. Their
 # text is checked above: set-models.sh --check compares each with its source.
 for agent in "$root"/opencode/agents/*.md; do

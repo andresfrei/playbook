@@ -8,6 +8,7 @@ Every definition of the product is written down and decided before any technolog
 docs/wiki/
 ├── README.md           # the single entry point
 ├── .format             # the format of the wiki; a script writes it, never by hand
+├── .unchecked-decisions  # how many rows of decisions.md the check does not read; the same script writes it
 ├── decisions.md        # the numbered decisions
 ├── 01-product/         # overview, glossary, open-questions, one page per topic
 ├── 02-current-state/   # a project already started only
@@ -27,7 +28,9 @@ In this order:
 2. The three statuses of a statement: Decided, Proposed, Open.
 3. "Where work stands": the current state only, as described below.
 4. The stage table.
-5. A table of the pages: each page and what it contains.
+5. A table of the pages: each page, what it contains, and the code it governs: the paths, from the project's root, whose behaviour the page defines. Leave the cell empty for a page that defines no code. Prefer a folder to a list of files.
+
+Title the third column "Code it governs" and write each path as code, between backticks. The check fails on a path that does not exist.
 
 ### "Where work stands"
 
@@ -64,6 +67,12 @@ A phase is a second round of the six stages for a project whose six stages are c
 4. Write the new phase in pages of its own, next to the existing ones. Do not rewrite the pages of the earlier phase.
 5. Continue the numbers of decisions, questions, and units. None starts again at 1.
 
+### A page that states a definition
+
+The page says only the current definition. When the owner changes it and code stays on the old one, the page lists that code under the heading `## Code on the old definition`: one table with the path, the decision that changed the definition, and what the owner chose, "changed when next touched" or "debt". Remove a row when its code is changed, and the heading when the table is empty.
+
+Write the path in the first column, as code. The check fails on a path that does not exist.
+
 ### `decisions.md`
 
 One table: ID, date, decision, owner's words.
@@ -73,7 +82,7 @@ One table: ID, date, decision, owner's words.
 - A decision that replaces an earlier one names it.
 - A decision is a choice the owner made between alternatives, or a rule the owner set. That includes an authorization given before an action, the closing of a stage or a phase, and the acceptance of a plan.
 - Not a row: the acceptance of a unit, which goes in the plan's progress table, and something done after a decision, such as a push or a cleanup.
-- State the choice in at most 60 words and link to the page that holds the detail. Evidence and reasons live in that page.
+- State the choice in at most 60 words and link to the page that holds the detail. Evidence and reasons live in that page. The check fails on a row over the limit; the owner's words are not counted.
 
 ### `01-product/open-questions.md`
 
@@ -100,10 +109,14 @@ Each term and its one meaning. Use the same word for the same thing in every pag
 ## Steps
 
 1. Create `README.md` and `decisions.md` as described under Files. Then, from the project's root, run `sh <this skill's folder>/../doctor/scripts/wiki-format.sh mark docs/wiki`: it writes `docs/wiki/.format`, which says that the wiki is in the playbook's present format.
-2. Compare the owner's brief with the topics before asking anything. Mark each topic covered, partly covered, or missing.
-3. Write the product pages from what the brief covers. Mark each statement Decided, Proposed, or Open.
-4. Write each missing or contradictory point as an open question, with a recommendation and what it blocks. Do not ask about a topic the brief already covers.
-5. Ask the open questions one at a time, starting with the one that blocks the most. Record each answer as a decision and update the pages it affects.
+2. Ask the owner whether to write the two sentences below in the project's instruction file: `CLAUDE.md`, and `AGENTS.md` too only when the owner says the project is used with opencode. Create a file that is missing. In a file that exists, add the two sentences and change nothing else.
+
+   > Read `docs/wiki/README.md` first. Before you change code, read the page that its page table names for the paths you change.
+
+3. Compare the owner's brief with the topics before asking anything. Mark each topic covered, partly covered, or missing.
+4. Write the product pages from what the brief covers. Mark each statement Decided, Proposed, or Open.
+5. Write each missing or contradictory point as an open question, with a recommendation and what it blocks. Do not ask about a topic the brief already covers.
+6. Ask the open questions one at a time, starting with the one that blocks the most. Record each answer as a decision and update the pages it affects.
 
 ## Project already started
 
@@ -115,7 +128,7 @@ Write the wiki in this order:
 
 For the definitions:
 
-- Read the documents the repository already holds, such as a README or design notes, next to the owner's brief. They are a source for steps 2 and 3 above.
+- Read the documents the repository already holds, such as a README or design notes, next to the owner's brief. They are a source for steps 3 and 4 above.
 - What a document says is Proposed until the owner confirms it. Never write it as Decided.
 - Write a point that is ambiguous, or where a document and the code differ, as an open question with its possible readings. Do not choose a reading.
 
