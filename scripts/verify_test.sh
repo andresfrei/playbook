@@ -140,6 +140,30 @@ cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json"
 expect "hooks: the subagent script named at a path where it is not fails" fail "does not run contract-for-subagent.sh under SubagentStart"
 
 fresh
+sed 's/merge-step-hook\.sh/other.sh/' "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json" > "$tmp/hooks.json"
+cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json"
+expect "hooks: hooks.json without the merge script under PreToolUse fails" fail "does not run merge-step-hook.sh under PreToolUse"
+
+fresh
+rm "$tmp/repo/plugins/playbook-wiki/hooks/merge-step-hook.sh"
+expect "hooks: a missing merge script fails" fail "merge-step-hook.sh of playbook-wiki is missing"
+
+fresh
+sed 's|/hooks/merge-step-hook\.sh|/merge-step-hook.sh|' "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json" > "$tmp/hooks.json"
+cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json"
+expect "hooks: the merge script named at a path where it is not fails" fail "does not run merge-step-hook.sh under PreToolUse"
+
+fresh
+sed 's/"matcher": "Bash"/"matcher": "Read"/' "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json" > "$tmp/hooks.json"
+cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json"
+expect "hooks: a PreToolUse group without the Bash matcher fails" fail 'matcher.*Bash.*under PreToolUse'
+
+fresh
+grep -v '"if": "Bash(git \*)"' "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json" > "$tmp/hooks.json"
+cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json"
+expect "hooks: a PreToolUse hook without the git condition fails" fail 'does not set an .if. of Bash(git \*)'
+
+fresh
 printf 'A form feed: \014\n' >> "$tmp/repo/plugins/playbook-wiki/contract.md"
 expect "L1: a contract with a control character fails" fail "contract.md holds 1 control character"
 
@@ -997,6 +1021,306 @@ check "subagent: no quote is left unescaped inside the frame" no_bare_quote "$tm
 rm "$tmp/sub/contract.md"
 out=$(sh "$tmp/sub/hooks/contract-for-subagent.sh" 2>&1); code=$?
 check "subagent: a missing contract prints nothing and exits 0" test -z "$out" -a "$code" -eq 0
+
+# The merge step: lists the decisions and the shared pages to compare before a merge.
+step_script="$root/plugins/playbook-wiki/merge-step.sh"
+hook_script="$root/plugins/playbook-wiki/hooks/merge-step-hook.sh"
+
+# git_in <dir> <git arguments>: runs git quietly in a sample repository.
+git_in() { d=$1; shift; git -C "$d" "$@" >/dev/null 2>&1; }
+
+# row <id> <date> <decision> <shared page or none>: one row of a decisions table.
+row() {
+  if [ "$4" = none ]; then page=none; else page="\`$4\`"; fi
+  printf '| %s | %s | %s | Ana | "ok" | %s |\n' "$1" "$2" "$3" "$page"
+}
+
+# commit_in <dir> <message>: stages everything and commits.
+commit_in() { git_in "$1" add -A && git_in "$1" commit -m "$2"; }
+
+# sample <dir> <what main adds after the branch starts: full|decision|none|top>
+# Builds a repository whose branch feat/rbac adds the decision rbac-1 and
+# changes users.md, and whose main then adds what the second argument says.
+sample() {
+  rm -rf "$1"
+  mkdir -p "$1/docs/wiki/01-product" "$1/docs/wiki/works/old"
+  git_in "$1" init -b main
+  git_in "$1" config user.name Test
+  git_in "$1" config user.email test@example.com
+  git_in "$1" config commit.gpgsign false
+  printf '# Wiki\n' > "$1/docs/wiki/README.md"
+  printf '# Users\n' > "$1/docs/wiki/01-product/users.md"
+  printf '| ID | Date | Decision | Owner'"'"'s words |\n|----|------|----------|---------------|\n| D1 | 2026-01-01 | First. | "x" |\n' > "$1/docs/wiki/decisions.md"
+  {
+    printf '| ID | Date | Decision | Who decided | Their words | Shared page |\n|----|------|----------|-------------|-------------|-------------|\n'
+    row old-1 2026-01-02 "An old choice." none
+  } > "$1/docs/wiki/works/old/decisions.md"
+  commit_in "$1" base
+  git_in "$1" checkout -b feat/rbac
+  mkdir -p "$1/docs/wiki/works/rbac"
+  {
+    printf '| ID | Date | Decision | Who decided | Their words | Shared page |\n|----|------|----------|-------------|-------------|-------------|\n'
+    row rbac-1 2026-02-01 "Roles are fixed." 01-product/users.md
+  } > "$1/docs/wiki/works/rbac/decisions.md"
+  printf 'Roles are fixed (rbac-1).\n' >> "$1/docs/wiki/01-product/users.md"
+  commit_in "$1" rbac
+  git_in "$1" checkout main
+  case $2 in
+    full | decision)
+      mkdir -p "$1/docs/wiki/works/billing"
+      {
+        printf '| ID | Date | Decision | Who decided | Their words | Shared page |\n|----|------|----------|-------------|-------------|-------------|\n'
+        if [ "$2" = full ]; then
+          row billing-1 2026-02-02 "Plans are monthly." 01-product/users.md
+        else
+          row billing-1 2026-02-02 "Plans are monthly." none
+        fi
+      } > "$1/docs/wiki/works/billing/decisions.md"
+      [ "$2" = full ] && printf 'Plans are monthly (billing-1).\n' >> "$1/docs/wiki/01-product/users.md"
+      commit_in "$1" billing ;;
+    top)
+      printf '| D7 | 2026-02-03 | Seven wins. | "y" |\n' >> "$1/docs/wiki/decisions.md"
+      commit_in "$1" top ;;
+  esac
+}
+
+# step <arguments>: runs the merge step and keeps its output and exit code.
+step() { out=$(sh "$step_script" "$@" 2>&1); code=$?; }
+
+# has_line <text>: the output of the last step holds that line, whole.
+has_line() { printf '%s\n' "$out" | grep -Fxq -- "$1"; }
+
+# nothing: the last step printed nothing and exited 0.
+nothing() { [ -z "$out" ] && [ "$code" -eq 0 ]; }
+
+sample "$tmp/mr" full
+step feat/rbac "$tmp/mr"
+expected='Decisions that reached main since feat/rbac started:
+- billing-1: Plans are monthly. (01-product/users.md)
+
+Decisions this merge brings:
+- rbac-1: Roles are fixed. (01-product/users.md)
+
+Shared pages both changed:
+- docs/wiki/01-product/users.md
+
+Read these decisions against each other with the person, and settle a contradiction with a new decision that names both.'
+check "merge: both sides with a decision and a shared page print the three lists and the last line" test "$out" = "$expected" -a "$code" -eq 0
+
+sample "$tmp/mr_none" none
+step feat/rbac "$tmp/mr_none"
+check "merge: main without a change in the wiki prints nothing" nothing
+
+sample "$tmp/mr_dec" decision
+step feat/rbac "$tmp/mr_dec"
+check "merge: a decision on main and no shared page on both sides prints list 1 and 2" has_line "- billing-1: Plans are monthly." -a "$code" -eq 0
+check "merge: list 2 holds the decision the merge brings" has_line "- rbac-1: Roles are fixed. (01-product/users.md)"
+check "merge: an empty list 3 is shown as none" test "$(printf '%s\n' "$out" | grep -A1 '^Shared pages both changed:$' | tail -n 1)" = "- none"
+
+sample "$tmp/mr_top" top
+step feat/rbac "$tmp/mr_top"
+check "merge: a row of the top-level decisions.md added on main appears in list 1" has_line "- D7: Seven wins."
+check "merge: the first row of the top-level decisions.md is not listed" test -z "$(printf '%s\n' "$out" | grep '^- D1:')"
+
+sample "$tmp/mr_ours" none
+git_in "$tmp/mr_ours" checkout feat/rbac
+step main "$tmp/mr_ours"
+check "merge: merging a main that did not move prints nothing, since one side alone contradicts nothing" nothing
+
+sample "$tmp/mr_sync" decision
+git_in "$tmp/mr_sync" checkout feat/rbac
+step main "$tmp/mr_sync"
+check "merge: the heading names the current branch" has_line "Decisions that reached feat/rbac since main started:"
+
+step feat/missing "$tmp/mr"
+check "merge: a ref that does not exist prints nothing" nothing
+mkdir -p "$tmp/plain"
+step feat/rbac "$tmp/plain"
+check "merge: a directory that is not a repository prints nothing" nothing
+step feat/rbac "$tmp/does-not-exist"
+check "merge: a directory that does not exist prints nothing" nothing
+rm -rf "$tmp/nowiki"
+mkdir "$tmp/nowiki"
+git_in "$tmp/nowiki" init -b main
+git_in "$tmp/nowiki" config user.name Test
+git_in "$tmp/nowiki" config user.email test@example.com
+printf 'x\n' > "$tmp/nowiki/f"
+commit_in "$tmp/nowiki" one
+git_in "$tmp/nowiki" branch other
+step other "$tmp/nowiki"
+check "merge: a repository without docs/wiki prints nothing" nothing
+rm -rf "$tmp/unrelated"
+sample "$tmp/unrelated" full
+git_in "$tmp/unrelated" checkout --orphan lone
+git_in "$tmp/unrelated" commit -m lone --allow-empty
+step feat/rbac "$tmp/unrelated"
+check "merge: a ref with no merge base prints nothing" nothing
+
+out=$(sh "$step_script" 2>&1); code=$?
+check "merge: no argument is a usage error with exit 2" test "$code" -eq 2 -a -n "$out"
+
+sample "$tmp/with space/repo" full
+step feat/rbac "$tmp/with space/repo"
+check "merge: a repository path with a space works" has_line "- billing-1: Plans are monthly. (01-product/users.md)"
+out=$(cd "$tmp/with space/repo" && sh "$step_script" feat/rbac 2>&1); code=$?
+check "merge: the default directory is the current one" has_line "- rbac-1: Roles are fixed. (01-product/users.md)"
+
+# The hook: reads the JSON of a Bash call and asks the person when there is a list.
+hook_start='{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"ask","permissionDecisionReason":"'
+
+# unescape: decodes the escaped text on stdin, as a JSON string would.
+unescape() {
+  awk '{ line = $0
+         for (i = 1; i <= length(line); i++) {
+           c = substr(line, i, 1)
+           if (c == "\\") {
+             i++; d = substr(line, i, 1)
+             if (d == "n") c = "\n"; else if (d == "t") c = "\t"; else if (d == "r") c = "\r"; else c = d
+           }
+           printf "%s", c
+         } }'
+}
+
+# hook_run <cwd> <command as JSON-escaped text>: runs the hook on a Bash call.
+hook_run() {
+  out=$(printf '{"session_id":"s","cwd":"%s","tool_name":"Bash","tool_input":{"command":"%s","description":"d"}}' "$1" "$2" | sh "$hook_script" 2>&1)
+  code=$?
+}
+
+# hook_json: the output of the hook is one line of valid JSON that asks and
+# gives the same list as reason and as context. The list is kept in $tmp/hook.text.
+hook_json() {
+  [ "$(printf '%s\n' "$out" | wc -l | tr -d ' ')" -eq 1 ] || return 1
+  case $out in "$hook_start"*) ;; *) return 1 ;; esac
+  reason=$(printf '%s\n' "$out" | sed -e 's/^{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"ask","permissionDecisionReason":"//' -e 's/","additionalContext":".*$//')
+  context=$(printf '%s\n' "$out" | sed -e 's/^.*","additionalContext":"//' -e 's/"}}$//')
+  [ "$reason" = "$context" ] || return 1
+  # no double quote is left once the escaped backslashes and quotes are taken out
+  printf '%s\n' "$reason" | sed -e 's/\\\\//g' -e 's/\\"//g' | grep -q '"' && return 1
+  printf '%s\n' "$reason" | unescape > "$tmp/hook.text"
+}
+
+# hook_lists <text>: the decoded list holds that text.
+hook_lists() { grep -Fq -- "$1" "$tmp/hook.text"; }
+
+hook_run "$tmp/mr" 'git merge feat/rbac'
+check "merge hook: git merge asks, with valid JSON" hook_json -a "$code" -eq 0
+check "merge hook: the reason holds the decision that reached main" hook_lists "- billing-1: Plans are monthly."
+check "merge hook: the reason holds the last line" hook_lists "settle a contradiction with a new decision that names both."
+
+hook_run "$tmp/mr" 'git merge --no-ff -m \"Merge rbac\" feat/rbac'
+check "merge hook: options and a double-quoted message before the ref" hook_json
+hook_run "$tmp/mr" "git merge -m 'x' feat/rbac"
+check "merge hook: a single-quoted message before the ref" hook_json
+hook_run "$tmp/mr" 'git merge -m\"x y\" feat/rbac'
+check "merge hook: -m joined to its message" hook_json
+hook_run "$tmp/mr" 'git merge --message=\"x y\" -s ort feat/rbac'
+check "merge hook: --message=text and a strategy that takes the next token" hook_json
+hook_run "$tmp" 'git -C mr merge feat/rbac'
+check "merge hook: git -C dir merge uses dir from the cwd" hook_json
+hook_run "$tmp" 'git -C \"$PWD/mr\" merge feat/rbac'
+check "merge hook: git -C with a quoted directory that does not exist prints nothing" test -z "$out" -a "$code" -eq 0
+hook_run "$tmp" 'cd mr && git merge feat/rbac'
+check "merge hook: cd dir && git merge uses dir from the cwd" hook_json
+hook_run "$tmp/mr" 'echo hi; git merge feat/rbac | cat && echo done'
+check "merge hook: only the segment with the merge is parsed" hook_json
+hook_run "$tmp/mr" 'git merge --abort'
+check "merge hook: --abort prints nothing" test -z "$out" -a "$code" -eq 0
+hook_run "$tmp/mr" 'git merge --continue'
+check "merge hook: --continue prints nothing" test -z "$out" -a "$code" -eq 0
+hook_run "$tmp/mr" 'git merge --quit'
+check "merge hook: --quit prints nothing" test -z "$out" -a "$code" -eq 0
+hook_run "$tmp/mr" 'git merge -m \"only a message\"'
+check "merge hook: a merge with no ref prints nothing" test -z "$out" -a "$code" -eq 0
+hook_run "$tmp/mr" 'git merge -m \"say \\\"hi\\\" a\\\\b\" feat/rbac'
+check "merge hook: a message with escaped quotes and backslashes still parses" hook_json
+hook_run "$tmp/mr" 'echo \"git merge feat/rbac\" > /dev/null'
+check "merge hook: a merge inside a quoted string is not a merge" test -z "$out" -a "$code" -eq 0
+hook_run "$tmp/mr" 'git merge feat/missing'
+check "merge hook: a ref that does not exist prints nothing" test -z "$out" -a "$code" -eq 0
+hook_run "$tmp/mr_none" 'git merge feat/rbac'
+check "merge hook: when the merge step prints nothing, the hook prints nothing" test -z "$out" -a "$code" -eq 0
+hook_run "$tmp/plain" 'git merge feat/rbac'
+check "merge hook: a directory that is not a repository prints nothing" test -z "$out" -a "$code" -eq 0
+
+out=$(printf '{"cwd":"%s","tool_input":{"description":"d"}}' "$tmp/mr" | sh "$hook_script" 2>&1); code=$?
+check "merge hook: input without a command field prints nothing" test -z "$out" -a "$code" -eq 0
+out=$(printf 'not json at all' | sh "$hook_script" 2>&1); code=$?
+check "merge hook: input that is not JSON prints nothing" test -z "$out" -a "$code" -eq 0
+out=$(printf '' | sh "$hook_script" 2>&1); code=$?
+check "merge hook: empty input prints nothing" test -z "$out" -a "$code" -eq 0
+
+# The branch checked out in an earlier segment is the branch merged into.
+sample "$tmp/mr_co" full
+git_in "$tmp/mr_co" checkout feat/rbac
+step feat/rbac "$tmp/mr_co" main
+check "merge: a third argument names the branch merged into" has_line "- billing-1: Plans are monthly. (01-product/users.md)"
+check "merge: the heading names that branch" has_line "Decisions that reached main since feat/rbac started:"
+hook_run "$tmp/mr_co" 'git checkout main && git merge feat/rbac'
+check "merge hook: git checkout main before the merge sets the branch merged into" hook_json
+check "merge hook: that list holds the decision on main" hook_lists "- billing-1: Plans are monthly."
+hook_run "$tmp/mr_co" 'git switch main; git merge feat/rbac'
+check "merge hook: git switch main before the merge sets the branch merged into" hook_json
+hook_run "$tmp/mr_co" 'git -C . checkout main && git merge feat/rbac'
+check "merge hook: git -C . checkout main before the merge" hook_json
+hook_run "$tmp/mr_co" 'git checkout -b newbranch && git merge feat/rbac'
+check "merge hook: checkout -b before the merge prints nothing" test -z "$out" -a "$code" -eq 0
+hook_run "$tmp/mr_co" 'git switch -c newbranch && git merge feat/rbac'
+check "merge hook: switch -c before the merge prints nothing" test -z "$out" -a "$code" -eq 0
+
+# git does not follow the person's configuration of diff.
+sample "$tmp/mr_cfg" full
+printf '#!/bin/sh\necho EXTERNAL DIFF\n' > "$tmp/ext.sh"
+git_in "$tmp/mr_cfg" config color.diff always
+git_in "$tmp/mr_cfg" config color.ui always
+git_in "$tmp/mr_cfg" config diff.external "sh $tmp/ext.sh"
+git_in "$tmp/mr_cfg" config diff.renames copies
+git_in "$tmp/mr_cfg" config diff.noprefix true
+step feat/rbac "$tmp/mr_cfg"
+check "merge: color and an external diff in the configuration change nothing" test "$out" = "$expected"
+
+# A page renamed on one side and edited on the other.
+sample "$tmp/mr_ren" decision
+git_in "$tmp/mr_ren" mv docs/wiki/01-product/users.md docs/wiki/01-product/people.md
+git_in "$tmp/mr_ren" commit -m rename
+step feat/rbac "$tmp/mr_ren"
+check "merge: a page renamed on one side and edited on the other is listed under its old name" has_line "- docs/wiki/01-product/users.md"
+
+# A lone "-" is the previous branch.
+step - "$tmp/mr"
+check "merge: a ref of - is the previous branch" has_line "- rbac-1: Roles are fixed. (01-product/users.md)"
+check "merge: the heading names the previous branch" has_line "Decisions that reached main since feat/rbac started:"
+hook_run "$tmp/mr" 'git merge -'
+check "merge hook: git merge - asks" hook_json
+
+# A leading ~ is the home directory.
+saved_home=$HOME
+HOME=$tmp; export HOME
+hook_run "$tmp/plain" 'cd ~/mr && git merge feat/rbac'
+check "merge hook: cd ~/dir" hook_json
+hook_run "$tmp/plain" 'git -C ~/mr merge feat/rbac'
+check "merge hook: git -C ~/dir" hook_json
+HOME=$saved_home; export HOME
+
+hook_run "$tmp/mr" 'GIT_MERGE_AUTOEDIT=no git merge feat/rbac'
+check "merge hook: a leading environment assignment" hook_json
+hook_run "$tmp/mr" 'A=1 B=\"x y\" git merge feat/rbac'
+check "merge hook: two leading environment assignments" hook_json
+
+# A cell with an escaped pipe is one cell.
+sample "$tmp/mr_pipe" full
+printf '| billing-3 | 2026-02-05 | Allow read \\| write. | Ana | "ok" | none |\n' >> "$tmp/mr_pipe/docs/wiki/works/billing/decisions.md"
+commit_in "$tmp/mr_pipe" pipe
+step feat/rbac "$tmp/mr_pipe"
+check "merge: an escaped pipe in a decision does not split the row" has_line "- billing-3: Allow read | write."
+
+# A list with a quote, a backslash, a tab, and a control character in a decision.
+sample "$tmp/mr_odd" full
+printf '| billing-2 | 2026-02-04 | Say "hi" to C:\\dir\tand\001stop. | Ana | "ok" | none |\n' >> "$tmp/mr_odd/docs/wiki/works/billing/decisions.md"
+commit_in "$tmp/mr_odd" odd
+hook_run "$tmp/mr_odd" 'git merge feat/rbac'
+check "merge hook: a decision with a quote, a backslash, a tab, and a control character gives valid JSON" hook_json
+check "merge hook: that decision decodes back, without the control character" hook_lists 'Say "hi" to C:\dir	andstop.'
 
 if [ "$failed" -eq 0 ]; then
   printf 'all cases passed\n'

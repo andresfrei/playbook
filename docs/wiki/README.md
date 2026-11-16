@@ -12,7 +12,7 @@ Every statement is one of:
 
 Updated 2026-11-16, after D206.
 
-Phase 4 is open at stage 6, Execution (D167). Stages 1 to 5 are closed (D197), and U28 to U34 are done: [05-plan/plan-phase-4.md](05-plan/plan-phase-4.md). It is version 2 of the product and removes the support for opencode (TD32, D191). It splits the product into a shared core, `playbook-wiki`, and the owner's agent system, `playbook-agents`: [01-product/phase-4.md](01-product/phase-4.md).
+Phase 4 is open at stage 6, Execution (D167). Stages 1 to 5 are closed (D197), and U28 to U35 are done: [05-plan/plan-phase-4.md](05-plan/plan-phase-4.md). It is version 2 of the product and removes the support for opencode (TD32, D191). It splits the product into a shared core, `playbook-wiki`, and the owner's agent system, `playbook-agents`: [01-product/phase-4.md](01-product/phase-4.md).
 
 Wiki maintenance and the doctor (D133 to D142) are built, merged into `main`, and pushed (D144): [01-product/wiki-maintenance.md](01-product/wiki-maintenance.md).
 
@@ -27,7 +27,7 @@ Waiting for the owner:
 
 Next steps:
 
-1. U35 to U41 in the order of the plan, one at a time.
+1. U36 to U41 in the order of the plan, one at a time.
 2. The owner reviews each unit when it ends.
 
 Finished:
@@ -106,7 +106,7 @@ Phase 1, kept as a record:
 | [03-technology/phase-2.md](03-technology/phase-2.md) | What phase 2 needs from its technology and what is chosen for each need (stage 2 of phase 2) | |
 | [04-skills/working-skills.md](04-skills/working-skills.md) | The skills the agent uses to build this product (stage 3) | |
 | [03-technology/phase-3.md](03-technology/phase-3.md) | What phase 3 needs from its technology, needs N7 to N15, and what is chosen for each (stage 2 of phase 3) | |
-| [03-technology/phase-4.md](03-technology/phase-4.md) | What phase 4 needs from its technology, needs N16 to N27, and what is chosen for each (stage 2 of phase 4) | `plugins/playbook-wiki/format.md` |
+| [03-technology/phase-4.md](03-technology/phase-4.md) | What phase 4 needs from its technology, needs N16 to N27, and what is chosen for each (stage 2 of phase 4) | `plugins/playbook-wiki/format.md`, `plugins/playbook-wiki/merge-step.sh`, `plugins/playbook-wiki/hooks/merge-step-hook.sh` |
 | [03-technology/architecture-phase-4.md](03-technology/architecture-phase-4.md) | The architecture of phase 4: three plugins, the start command with its wizard, and the files of a work, with risks, trade-offs, and how it can evolve | |
 | [03-technology/architecture-phase-3.md](03-technology/architecture-phase-3.md) | The architecture of phase 3: how the product works in opencode next to Claude Code, with risks, trade-offs, and discarded alternatives. Kept as a record: phase 4 removed what it describes (D191) | |
 | [05-plan/plan.md](05-plan/plan.md) | The work plan for phase 1, in units (stage 5) | |

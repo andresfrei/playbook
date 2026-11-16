@@ -89,14 +89,18 @@ add_startup() {
   esac
 }
 
-# The hooks of playbook-wiki: the contract at session start and for each subagent.
+# The hooks of playbook-wiki: the contract at session start and for each
+# subagent, and the merge step before a git merge.
 hooks_json="$wiki_plugin/hooks/hooks.json"
 hooks_start=$(awk '/"SessionStart"/ { inside = 1 }
                    /"SubagentStart"/ { inside = 0 }
                    inside' "$hooks_json" 2>/dev/null)
 hooks_subagent=$(awk '/"SubagentStart"/ { inside = 1 }
-                      /"SessionStart"/ { inside = 0 }
+                      /"SessionStart"|"PreToolUse"/ { inside = 0 }
                       inside' "$hooks_json" 2>/dev/null)
+hooks_merge=$(awk '/"PreToolUse"/ { inside = 1 }
+                   /"SessionStart"|"SubagentStart"/ { inside = 0 }
+                   inside' "$hooks_json" 2>/dev/null)
 # The text in single quotes is what hooks.json holds; Claude Code expands it.
 # shellcheck disable=SC2016
 case $hooks_start in
@@ -110,6 +114,22 @@ case $hooks_subagent in
 esac
 [ -f "$wiki_plugin/hooks/contract-for-subagent.sh" ] ||
   fail "hooks/contract-for-subagent.sh of playbook-wiki is missing"
+# shellcheck disable=SC2016
+case $hooks_merge in
+  *'${CLAUDE_PLUGIN_ROOT}/hooks/merge-step-hook.sh'*) ;;
+  *) fail "hooks.json of playbook-wiki does not run merge-step-hook.sh under PreToolUse" ;;
+esac
+case $hooks_merge in
+  *'"matcher": "Bash"'*) ;;
+  *) fail "hooks.json of playbook-wiki does not set \"matcher\": \"Bash\" under PreToolUse" ;;
+esac
+case $hooks_merge in
+  # Bash(git merge *) would miss "git -C <dir> merge", seen in the trial of U35.
+  *'"if": "Bash(git *)"'*) ;;
+  *) fail "hooks.json of playbook-wiki does not set an \"if\" of Bash(git *) under PreToolUse, so the hook would miss a merge or run for every Bash call" ;;
+esac
+[ -f "$wiki_plugin/hooks/merge-step-hook.sh" ] ||
+  fail "hooks/merge-step-hook.sh of playbook-wiki is missing"
 
 # L2 and L3: each skill of each plugin.
 for skill in "$plugins"/*/skills/*/SKILL.md; do
