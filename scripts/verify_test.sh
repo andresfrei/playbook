@@ -510,14 +510,15 @@ check "install: no configuration directory is made when it stops" absent "$tmp/c
 check_wiki="$root/plugin/skills/prepare-project/scripts/check-wiki.sh"
 
 # fresh_wiki <words under "Where work stands">: an entry point and one page,
-# each linking to the other.
+# each linking to the other. The table of pages names no code.
 fresh_wiki() {
   rm -rf "$tmp/wiki"
   mkdir -p "$tmp/wiki/01-product"
   {
     printf '# Wiki\n\n## Where work stands\n\n'
     words "$1"
-    printf '\n## Pages\n\n[Overview](01-product/overview.md)\n'
+    printf '\n## Pages\n\n| Page | Content | Code it governs |\n|---|---|---|\n'
+    printf '| [Overview](01-product/overview.md) | The product | |\n'
   } > "$tmp/wiki/README.md"
   printf '# Overview\n\nBack to the [entry point](../README.md).\n' > "$tmp/wiki/01-product/overview.md"
 }
@@ -625,6 +626,119 @@ rm -f "$tmp/linked"
 ln -s "$tmp/wiki" "$tmp/linked"
 expect_wiki "wiki: a wiki directory that is a link is read" fail "links to gone.md" "$tmp/linked"
 
+# The paths a wiki names as code, read from the project's root.
+# fresh_project: a project with a folder and a file of code, and a wiki in
+# docs/wiki whose table of pages names no code.
+fresh_project() {
+  rm -rf "$tmp/project"
+  mkdir -p "$tmp/project/docs" "$tmp/project/src/filters"
+  printf 'code\n' > "$tmp/project/src/filters/list.ts"
+  fresh_wiki 10
+  mv "$tmp/wiki" "$tmp/project/docs/wiki"
+  project_wiki="$tmp/project/docs/wiki"
+}
+# governs <cell>: adds a row to the table of pages with that last cell.
+governs() {
+  printf '| [Overview](01-product/overview.md) | The filters | %s |\n' "$1" >> "$project_wiki/README.md"
+}
+
+fresh_project
+governs '`src/filters/`, `src/filters/list.ts`'
+expect_wiki "paths: a folder and a file that exist pass" pass "" "$project_wiki"
+
+fresh_project
+governs '`src/sorting/`'
+expect_wiki "paths: a path that does not exist fails and names the page and the path" fail "README.md names the path src/sorting/, which does not exist" "$project_wiki"
+
+fresh_project
+governs '`src/filters/` and `src/gone.ts`'
+expect_wiki "paths: the second path of a cell is checked too" fail "names the path src/gone.ts" "$project_wiki"
+
+fresh_project
+governs '`src/a/`, `src/b/`'
+expect_wiki "paths: each missing path counts as one failure" fail "2 check(s) failed" "$project_wiki"
+
+fresh_project
+printf '| [Overview](01-product/overview.md) | Built with `no-such-tool` | `src/filters/` |\n' >> "$project_wiki/README.md"
+expect_wiki "paths: code text in another column is not read as a path" pass "" "$project_wiki"
+
+fresh_project
+printf '\n| Code it governs | Page |\n|---|---|\n| `src/gone/` | [Overview](01-product/overview.md) |\n' >> "$project_wiki/README.md"
+expect_wiki "paths: the column is found wherever it is in the table" fail "names the path src/gone/" "$project_wiki"
+
+fresh_project
+printf '\nSee `src/gone/`.\n\n| Page | Content |\n|---|---|\n| `src/gone/` | No such column here |\n' >> "$project_wiki/README.md"
+expect_wiki "paths: a later table without the column is not read" pass "" "$project_wiki"
+
+fresh_project
+printf '\n```text\n| Page | Code it governs |\n| An example | `src/gone/` |\n```\n' >> "$project_wiki/README.md"
+expect_wiki "paths: a table inside a code block is not read" pass "" "$project_wiki"
+
+fresh_project
+printf '\n## Code on the old definition\n\n| Path | Decision | What the owner chose |\n|---|---|---|\n| `src/filters/list.ts` | `D41` | Debt |\n' >> "$project_wiki/01-product/overview.md"
+expect_wiki "paths: listed old code that exists passes, and its other cells are not paths" pass "" "$project_wiki"
+
+fresh_project
+printf '\n## Code on the old definition\n\n| Path | Decision |\n|---|---|\n| `src/old.ts` | D41 |\n' >> "$project_wiki/01-product/overview.md"
+expect_wiki "paths: listed old code that is gone fails and names the page" fail "01-product/overview.md names the path src/old.ts" "$project_wiki"
+
+fresh_project
+printf '\n## Code on the old definition\n\nNone.\n\n## Notes\n\n| Tool | Use |\n|---|---|\n| `no-such-tool` | None |\n' >> "$project_wiki/01-product/overview.md"
+expect_wiki "paths: the next heading ends the list of old code" pass "" "$project_wiki"
+
+# The rows of decisions.md.
+# decision <id> <words of the decision> [words of the owner]: prints one row.
+decision() {
+  printf '| %s | 2026-01-01 | %s | "%s" |\n' "$1" "$(words "$2")" "$(words "${3:-1}")"
+}
+# decisions: starts decisions.md of the wiki in $tmp/wiki with its heading.
+decisions() {
+  printf '# Decisions\n\n| ID | Date | Decision | Owner'"'"'s words |\n|---|---|---|---|\n' > "$tmp/wiki/decisions.md"
+}
+
+fresh_wiki 10
+decisions
+decision D1 200 >> "$tmp/wiki/decisions.md"
+expect_wiki "decisions: a wiki without the count of unchecked rows has no row checked" pass
+
+fresh_wiki 10
+decisions
+{ decision D1 200; decision D2 60 300; decision TD1 60; } >> "$tmp/wiki/decisions.md"
+printf '1\n' > "$tmp/wiki/.unchecked-decisions"
+expect_wiki "decisions: rows at the limit pass, and the owner's words are not counted" pass
+
+fresh_wiki 10
+decisions
+{ decision D1 200; decision D2 61; } >> "$tmp/wiki/decisions.md"
+printf '1\n' > "$tmp/wiki/.unchecked-decisions"
+expect_wiki "decisions: a row over 60 words fails and names it" fail "the decision of D2 has 61 words, limit 60"
+
+fresh_wiki 10
+decisions
+{ decision D1 10; decision TD1 90; decision D2 90; } >> "$tmp/wiki/decisions.md"
+printf '1\n' > "$tmp/wiki/.unchecked-decisions"
+expect_wiki "decisions: a technical decision is a row, and each long row is one failure" fail "2 check(s) failed"
+
+fresh_wiki 10
+decisions
+decision D1 90 >> "$tmp/wiki/decisions.md"
+printf '0\n' > "$tmp/wiki/.unchecked-decisions"
+expect_wiki "decisions: with a count of zero the first row is checked" fail "the decision of D1 has 90 words"
+
+fresh_wiki 10
+decisions
+decision D1 90 >> "$tmp/wiki/decisions.md"
+printf 'all\n' > "$tmp/wiki/.unchecked-decisions"
+expect_wiki "decisions: a count that is not a number fails" fail ".unchecked-decisions does not hold a number"
+
+fresh_wiki 10
+decisions
+{ decision D1 10; decision TD1 10; decision D2 10; } >> "$tmp/wiki/decisions.md"
+check "decisions: --rows counts the rows and not the heading of the table" test "$(sh "$check_wiki" --rows "$tmp/wiki")" = 3
+
+fresh_wiki 10
+check "decisions: --rows prints 0 for a wiki without decisions.md" test "$(sh "$check_wiki" --rows "$tmp/wiki")" = 0
+
 # The marker of a wiki's format.
 wiki_format="$root/plugin/skills/doctor/scripts/wiki-format.sh"
 product_format=$(sed -n 's/^format=//p' "$wiki_format")
@@ -707,6 +821,34 @@ expect_format "format: mark fails when the marker cannot be written" mark 1 "cou
 fresh_wiki 10
 printf '99999999999999999999\n' > "$tmp/wiki/.format"
 expect_format "format: a number too long to compare counts as missing" status 0 "has no format marker"
+
+fresh_wiki 10
+awk '{ gsub(/ \| Code it governs/, ""); print }' "$tmp/wiki/README.md" > "$tmp/readme" && mv "$tmp/readme" "$tmp/wiki/README.md"
+expect_format "format: mark refuses a wiki whose table of pages names no code column" mark 1 "has no column \"Code it governs\""
+check "format: a wiki without the column is left without a marker" absent "$tmp/wiki/.format"
+
+fresh_wiki 10
+decisions
+{ decision D1 200; decision D2 200; } >> "$tmp/wiki/decisions.md"
+expect_format "format: the first mark says how many rows are not checked" mark 0 "the 2 rows already in"
+check "format: the first mark writes the count of rows" test "$(cat "$tmp/wiki/.unchecked-decisions")" = 2
+decision D3 61 >> "$tmp/wiki/decisions.md"
+expect_format "format: after mark, a new long row fails the check" mark 1 "the decision of D3 has 61 words"
+
+fresh_wiki 10
+decisions
+{ decision D1 10; decision D2 10; } >> "$tmp/wiki/decisions.md"
+printf '1\n' > "$tmp/wiki/.unchecked-decisions"
+expect_format "format: a later mark succeeds" mark 0 "as wiki format $product_format"
+check "format: a later mark leaves the count of rows as it was" test "$(cat "$tmp/wiki/.unchecked-decisions")" = 1
+
+fresh_wiki 10
+expect_format "format: mark on a wiki without decisions.md succeeds" mark 0 "the 0 rows already in"
+
+fresh_wiki 10
+mkdir "$tmp/wiki/.unchecked-decisions"
+expect_format "format: mark fails when the count of rows cannot be written" mark 1 "could not write"
+check "format: no marker exists when the count of rows could not be written" absent "$tmp/wiki/.format"
 
 # The hook: the command the plugin runs at session start, for the project of
 # the session.

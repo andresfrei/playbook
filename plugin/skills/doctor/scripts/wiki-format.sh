@@ -10,12 +10,14 @@
 # hook is status for the project of a Claude Code session, which it reads from
 # CLAUDE_PROJECT_DIR. It prints nothing when that variable is not set.
 # mark writes the marker only when the wiki has a "Where work stands" section
-# and the check of the wiki passes.
+# and a column "Code it governs" in a table of its README.md, and the check of
+# the wiki passes. The first time, it also writes .unchecked-decisions: how
+# many rows decisions.md holds, which the check of the wiki does not read.
 set -u
 
 # The format of a wiki the playbook is at. Raise it only together with a new
 # references/format-<number>.md that says how a wiki reaches it.
-format=2
+format=3
 
 command=${1:-}
 if [ "$command" = hook ]; then
@@ -26,6 +28,8 @@ fi
 wiki=${2:-docs/wiki}
 wiki=${wiki%/}
 marker="$wiki/.format"
+unchecked="$wiki/.unchecked-decisions"
+check_wiki="$(dirname "$0")/../../prepare-project/scripts/check-wiki.sh"
 
 # Prints the number in the marker, or nothing when the marker is missing or
 # does not hold a number of at most nine digits.
@@ -59,9 +63,21 @@ case $command in
       printf 'FAIL %s/README.md has no "Where work stands" section, so the wiki is not in the format of the playbook. The marker was not written.\n' "$wiki"
       exit 1
     fi
-    if ! sh "$(dirname "$0")/../../prepare-project/scripts/check-wiki.sh" "$wiki"; then
+    if ! grep -q '^[[:space:]]*|.*Code it governs' "$wiki/README.md"; then
+      printf 'FAIL %s/README.md has no column "Code it governs" in its table of pages, so the wiki is not at wiki format %s. The marker was not written.\n' "$wiki" "$format"
+      exit 1
+    fi
+    if ! sh "$check_wiki" "$wiki"; then
       printf 'The marker was not written.\n'
       exit 1
+    fi
+    if [ ! -f "$unchecked" ]; then
+      rows=$(sh "$check_wiki" --rows "$wiki")
+      if ! printf '%s\n' "$rows" 2>/dev/null > "$unchecked"; then
+        printf 'FAIL could not write %s. The marker was not written.\n' "$unchecked"
+        exit 1
+      fi
+      printf 'the %s rows already in %s/decisions.md are not checked\n' "$rows" "$wiki"
     fi
     if ! printf '%s\n' "$format" 2>/dev/null > "$marker"; then
       printf 'FAIL could not write %s. The marker was not written.\n' "$marker"
