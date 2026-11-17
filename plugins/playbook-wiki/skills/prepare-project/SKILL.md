@@ -26,6 +26,10 @@ Do not use it for a small change in an existing repository that has no wiki. Do 
 - Ask one question at a time, with a recommendation, then stop and wait. Use `AskUserQuestion` when available, recommended option first, with what each option costs.
 - "Stage" names only the six stages. One step of the work plan is a "unit". Never use one word for both.
 
+## Gotchas
+
+- After the recommendation, the closing line asks two things, such as "How many dentists are there, and do treatments differ in length?". End with the one question the recommendation answers.
+
 ## Steps
 
 1. Read `docs/wiki/README.md`. When there is none, this is a new project, or a project already started when the repository holds code: follow "A new project" in `references/1-wiki.md`.

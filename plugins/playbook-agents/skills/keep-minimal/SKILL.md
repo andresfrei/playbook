@@ -1,6 +1,6 @@
 ---
 name: keep-minimal
-description: Write or change code, or review a change for unnecessary complexity or overengineering. Keeps an implementation the simplest one that solves the current problem, and reports only the excess in a change.
+description: Write or change code, such as a feature, a cache, or an option, or review a change for excess, such as too much code, unnecessary complexity, or overengineering. Keeps the implementation the simplest that solves the current problem.
 ---
 
 ## When to use

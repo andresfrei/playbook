@@ -42,6 +42,10 @@ Beside its two cases of triggering, a skill gets three cases of behaviour, tagge
 
 Run on `sonnet` for a skill that runs in the session, and on its agent's model for a skill that forks: `review-change` runs on `opus` through `models.conf` (skill-best-practices-6). The other two models are not tried: one model per skill keeps the cost down (skill-best-practices-1).
 
+## Whether a skill loads (Decided: skill-triggering-2, -6, -11)
+
+A skill loads reliably when each case that calls for it loads it in 3 of 3 runs, and each case of not triggering loads it in 0 of 3 (skill-triggering-2). A measurement runs every case three times with `--runs 3`, writes each run's graders and the path of its trace with `--json <file>`, and keeps the run's folders with `--keep-temp`; a case that does not load is read in its trace before the skill changes. The cases of triggering run with `--ablation none`, since a skill cannot load without its plugin; the cases of behaviour with `--ablation with-without` (skill-triggering-6). A case of behaviour that asks for something the contract already refuses, such as code before stage 6, does not ask its skill to load (skill-triggering-11).
+
 ## Cost and ceiling (Decided: skill-best-practices-3, -10)
 
 The cost was measured first, on `write-skill` under a ceiling of USD 2 with `--max-cost-usd`: USD 0.84 for its three cases, about USD 0.09 a run with the skill and 0.05 without. The ceiling of the other six was set from that: USD 1 per skill and per run, one run per arm (skill-best-practices-10). A skill that reaches it is stopped and its result shown to the owner. Measured, a run of one skill's three cases costs about USD 0.4 to 0.5. A paid run happens only when the owner asks.
@@ -55,10 +59,15 @@ The cost was measured first, on `write-skill` under a ceiling of USD 2 with `--m
 - The check that every case loads is free: run the command with `--case no-such-case`; it reports each file it cannot read and runs nothing.
 - The arm with the plugin also gets the owner's plugin settings, such as the language of `playbook-agents`. A grader on the answer accepts each language it may come in, and a scaffold sets git's `user.name` to the person its documents name as the owner (skill-best-practices-13).
 - A grader `skill-loaded` that is not scored shows whether the skill loaded (skill-best-practices-13).
+- In the sandbox of a run, `Bash` reads the case's folder but cannot write it; the `Write` tool can. A script that writes the project's files, such as `wiki-format.sh mark`, fails there (skill-triggering-U2).
 
 ## Result of the first runs (Decided: skill-best-practices-14)
 
 The cases of the seven skills ran, those of the six others three times, and the work closed with the evidence of the third run, though not every case passes with the plugin. What fails is mostly a skill that does not load, or a fault shown in a run, and each is an open question of the work skill-best-practices, for a later work: skill-best-practices-Q1 (descriptions that did not load for `review-change`, `keep-minimal`, and `prepare-project`), skill-best-practices-Q2 (`review-change` ends with a question), skill-best-practices-Q3 (`prepare-project` asks two questions at once), skill-best-practices-Q4 (`avoid-generic-design` builds three equal columns), and skill-best-practices-Q5 (`wiki-format.sh mark` fails where the temporary folder cannot be written). See [the questions](../works/skill-best-practices/questions.md).
+
+## Result of the work skill-triggering (Decided: skill-triggering-13, skill-triggering-16)
+
+The work skill-triggering took those five questions, measured four skills three times per case, and changed what the traces showed: new words in the descriptions of `review-change` and `keep-minimal`, a gotcha in `prepare-project`, and `wiki-format.sh mark` keeps its copy of the marker beside it. It cost USD 15.28 in three measurements. Below skill-triggering-2 after its last run, each an open question for a later work: a small task the agent does itself without loading the skill (skill-triggering-Q5), `prepare-project` ending with more than one question (skill-triggering-Q6), and the report of `review-change` changed before it reaches the owner (skill-triggering-Q7). See [the measurements](../works/skill-triggering/measurements.md) and [the questions](../works/skill-triggering/questions.md).
 
 ## Not verified
 

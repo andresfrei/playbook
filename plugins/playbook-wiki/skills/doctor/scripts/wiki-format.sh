@@ -7,7 +7,7 @@
 #        sh wiki-format.sh --help
 # Exit codes: 0 done; 1 the check of the wiki failed or was interrupted;
 # 2 a wrong call; 3 the wiki is not ready to be marked; 4 a file could not be
-# copied or written. Messages go to standard error.
+# copied, written, or removed. Messages go to standard error.
 # status prints nothing when there is no wiki, or when its marker is at the
 # playbook's format or above, and one line when the marker is missing or
 # behind. It always exits 0.
@@ -31,7 +31,7 @@ format=$(sh "$check_wiki" --format)
 
 command=${1:-}
 usage='Usage: sh wiki-format.sh status|mark [wiki directory], sh wiki-format.sh hook, or sh wiki-format.sh --help.
-Exit codes: 0 done; 1 the check of the wiki failed or was interrupted; 2 a wrong call; 3 the wiki is not ready to be marked; 4 a file could not be copied or written.'
+Exit codes: 0 done; 1 the check of the wiki failed or was interrupted; 2 a wrong call; 3 the wiki is not ready to be marked; 4 a file could not be copied, written, or removed.'
 if [ "$command" = hook ]; then
   [ -n "${CLAUDE_PROJECT_DIR:-}" ] || exit 0
   command=status
@@ -77,30 +77,35 @@ case $command in
       printf 'FAIL %s/README.md has no column "Code it governs" in its table of pages, so the wiki is not at wiki format %s. Add the column as format.md says under "The project'"'"'s README.md". The marker was not written.\n' "$wiki" "$format" >&2
       exit 3
     fi
-    # Keep the old marker, byte for byte, so a failed or interrupted check can
-    # put it back.
-    saved=
-    if [ -f "$marker" ]; then
-      saved=$(mktemp)
-      if [ -z "$saved" ] || ! cp "$marker" "$saved"; then
-        [ -z "$saved" ] || rm -f "$saved"
-        printf 'FAIL could not keep a copy of %s. Check that TMPDIR can be written. The marker was not written.\n' "$marker" >&2
-        exit 4
-      fi
-    fi
-    # From the first write to the end of the check, any exit that is not a
-    # success puts the old marker back, or removes the new one, and deletes the
-    # copy. An interrupt is handled when the running check ends.
+    # Keep the old marker, byte for byte, beside it, so a failed or interrupted
+    # check can put it back. The wiki's folder must be writable for the marker
+    # anyway; a temporary folder may not be. From here on, any exit deletes the
+    # copy; from the first write to the end of the check, any exit that is not
+    # a success also puts the old marker back, or removes the new one. An
+    # interrupt is handled when the running check ends.
+    saved="$marker.saved"
+    had_marker=0
     armed=0
     undo() {
       if [ "$armed" = 1 ]; then
         armed=0
-        if [ -n "$saved" ]; then cp "$saved" "$marker"; else rm -f "$marker"; fi
+        if [ "$had_marker" = 1 ]; then cp "$saved" "$marker"; else rm -f "$marker"; fi
       fi
-      [ -z "$saved" ] || rm -f "$saved"
+      rm -f "$saved" 2>/dev/null
     }
     trap undo EXIT
     trap 'exit 1' INT TERM HUP
+    if ! rm -f "$saved" 2>/dev/null; then
+      printf 'FAIL could not remove %s, left by an earlier run. Remove it by hand. The marker was not written.\n' "$saved" >&2
+      exit 4
+    fi
+    if [ -f "$marker" ]; then
+      had_marker=1
+      if ! cp "$marker" "$saved"; then
+        printf 'FAIL could not keep a copy of %s. Check that its folder can be written. The marker was not written.\n' "$marker" >&2
+        exit 4
+      fi
+    fi
     armed=1
     if ! printf '%s\n' "$format" 2>/dev/null > "$marker"; then
       armed=0
