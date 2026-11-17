@@ -8,14 +8,14 @@ Its decisions up to D208 are in [../../decisions.md](../../decisions.md). New on
 
 ## Where work stands
 
-Updated 2026-11-16, after D208.
+Updated 2026-11-16, after phase-4-2.
 
-Stage 6, Execution, is open. Stages 1 to 5 are closed (D197), and U28 to U40 are done: [../../05-plan/plan-phase-4.md](../../05-plan/plan-phase-4.md).
+Stage 6, Execution, is open. Stages 1 to 5 are closed (D197). U28 to U40 and U42 are done: [../../05-plan/plan-phase-4.md](../../05-plan/plan-phase-4.md). U42, added by phase-4-1, is built before the pull request.
 
 Waiting for the owner:
 
 - The push of `v2` and its pull request into `main`, then the tag `v2.0.0` (TD22, D196, D208).
-- Q61 and Q62, for the release after version 2: [../../01-product/open-questions.md](../../01-product/open-questions.md).
+- Q61, for the release after version 2: [../../01-product/open-questions.md](../../01-product/open-questions.md).
 
 Next steps:
 
@@ -40,4 +40,5 @@ Next steps:
 | [../../01-product/phase-4.md](../../01-product/phase-4.md) | The product definition for phase 4, a shared core separate from each person's agent system: what is decided, proposed, and open | |
 | [../../03-technology/phase-4.md](../../03-technology/phase-4.md) | What phase 4 needs from its technology, needs N16 to N27, and what is chosen for each (stage 2 of phase 4) | `plugins/playbook-wiki/format.md`, `plugins/playbook-wiki/merge-step.sh`, `plugins/playbook-wiki/hooks/merge-step-hook.sh` |
 | [../../03-technology/architecture-phase-4.md](../../03-technology/architecture-phase-4.md) | The architecture of phase 4: three plugins, the start command with its wizard, and the files of a work, with risks, trade-offs, and how it can evolve | |
-| [../../05-plan/plan-phase-4.md](../../05-plan/plan-phase-4.md) | The work plan for phase 4: units U28 to U41 (stage 5 of phase 4) | |
+| [../../05-plan/plan-phase-4.md](../../05-plan/plan-phase-4.md) | The work plan for phase 4: units U28 to U42 (stage 5 of phase 4) | |
+| [decisions.md](decisions.md) | The decisions of this work written at format 4, from phase-4-1 | |

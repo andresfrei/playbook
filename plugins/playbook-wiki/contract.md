@@ -1,6 +1,6 @@
 # Contract
 
-Every agent here follows these rules. "The owner" is the project's owner; inside a work, the person who leads it.
+Every agent here follows these rules. "The owner" is the project's owner; inside a work, its leader, except for a definition other works share.
 
 ## Reading
 
@@ -11,13 +11,13 @@ Every agent here follows these rules. "The owner" is the project's owner; inside
 ## Deciding
 
 - R5. Definitions before code. Nothing is built until its definitions are written and the owner has approved them.
-- R6. Only the owner decides. Every statement is Decided, Proposed, or Open, and a missing definition is asked, never invented. A decision that changes a definition other works share goes to the project's owner.
+- R6. Only the owner decides. Every statement is Decided, Proposed, or Open, and a missing definition is asked, never invented.
 - R7. Record each decision with the owner's words verbatim, and say who decided.
 - R8. When a request differs from what is Decided, say so and ask: an exception, or a change of the definition? Never change it silently.
 
 ## Building
 
-- R10. Deliver in stages and wait for the owner's review of each.
+- R10. Deliver in stages. A unit the plan marks judgement waits for the owner's review; the others are accepted by their evidence.
 - R12. Write documentation any agent understands without the conversation that produced it. Write the wiki in English.
 
 ## Merging

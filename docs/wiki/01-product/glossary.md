@@ -15,4 +15,5 @@
 | Phase | Fase del producto | One of the steps in which the product is built: phases 1 and 2 (D30), phase 3 (D104), and phase 4 (D167). Not a stage |
 | Core | Core | The part of the product that everyone who works on a project shares, and that lives in the project's repository: the wiki, the works, the decisions, the minimal contract, and the check (D168). It is delivered as the plugin `playbook-wiki` (D182) |
 | Agent system | Sistema de agentes | What one person uses to work with an AI coding agent: rules, skills, agents, and tools. Each person has their own, built on the core (D168). The owner's is the plugin `playbook-agents` (D182) |
+| Acceptance of a unit | Aceptación de una unidad | How a unit becomes Done, which the plan marks for each one: by evidence, when its ending condition holds and the evidence is recorded; or by judgement, when the owner also reviews it (phase-4-1) |
 | Work | Trabajo colaborativo (Proposed) | What one branch carries from its start to its merge: a phase with its six stages, or a smaller change outside phases. Several are open at once (D171). Not a job |
