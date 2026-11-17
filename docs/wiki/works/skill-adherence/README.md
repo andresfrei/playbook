@@ -2,20 +2,20 @@
 
 Makes the playbook's skills load when a request calls for them, and makes what they return reach the owner as their Output says. It takes the three questions the work skill-triggering left open. Andres Frei leads it.
 
-Status: Open.
+Status: Closed 2026-11-17 (skill-adherence-17).
 
 ## Where work stands
 
-Updated 2026-11-17, after skill-adherence-16.
+Updated 2026-11-17, after skill-adherence-17.
 
-Stage 6 Execution is open. Every unit of [plan.md](plan.md) is Done; what the paid run showed is in [measurements.md](measurements.md). skill-adherence-Q7 and -Q8, in [questions.md](questions.md), stay open for a later work.
+No stage is open: every unit of [plan.md](plan.md) is Done. What the work decided is in [../../03-technology/skill-evaluation.md](../../03-technology/skill-evaluation.md). What still fails is in [questions.md](questions.md), for a later work.
 
-Waiting for the owner: whether the work needs a new version.
+Waiting for the owner: the pull request of `feat/skill-adherence`.
 
 Next steps:
 
-1. Close the work: the shared pages, and the version if the owner wants one.
-2. The pull request of `feat/skill-adherence`, which the owner merges.
+1. The owner merges the pull request of `feat/skill-adherence`.
+2. Version 2.2.2 (skill-adherence-17): the version in the three manifests, the tag `v2.2.2`, and the release on GitHub, in a release pull request that also records here that the work is merged and released.
 
 ## Stage table
 
@@ -26,7 +26,7 @@ Next steps:
 | 3 Skills | Closed | 2026-11-17 |
 | 4 Design system | Closed (not applicable) | 2026-11-17 |
 | 5 Plan | Closed | 2026-11-17 |
-| 6 Execution | Open | |
+| 6 Execution | Closed | 2026-11-17 |
 
 ## Pages
 
