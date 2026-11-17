@@ -42,9 +42,18 @@ Beside its two cases of triggering, a skill gets three cases of behaviour, tagge
 
 Run on `sonnet` for a skill that runs in the session, and on its agent's model for a skill that forks: `review-change` runs on `opus` through `models.conf` (skill-best-practices-6). The other two models are not tried: one model per skill keeps the cost down (skill-best-practices-1).
 
-## Whether a skill loads (Decided: skill-triggering-2, -6, -11)
+## Whether a skill loads (Decided: skill-triggering-6, -11, skill-adherence-2)
 
-A skill loads reliably when each case that calls for it loads it in 3 of 3 runs, and each case of not triggering loads it in 0 of 3 (skill-triggering-2). A measurement runs every case three times with `--runs 3`, writes each run's graders and the path of its trace with `--json <file>`, and keeps the run's folders with `--keep-temp`; a case that does not load is read in its trace before the skill changes. The cases of triggering run with `--ablation none`, since a skill cannot load without its plugin; the cases of behaviour with `--ablation with-without` (skill-triggering-6). A case of behaviour that asks for something the contract already refuses, such as code before stage 6, does not ask its skill to load (skill-triggering-11).
+A case of triggering passes when its skill loads in 3 of 3 runs, and a case of not triggering when it loads in 0 of 3. A case of behaviour passes on its behaviour, whether the skill loads or not (skill-adherence-2, which replaces skill-triggering-2 for the cases of behaviour). A measurement runs every case three times with `--runs 3`, writes each run's graders and the path of its trace with `--json <file>`, and keeps the run's folders with `--keep-temp`; a case that fails is read in its trace before the skill changes. The cases of triggering run with `--ablation none`, since a skill cannot load without its plugin; the cases of behaviour with `--ablation with-without` (skill-triggering-6). A case of behaviour that asks for something the contract already refuses, such as code before stage 6, does not ask its skill to load (skill-triggering-11).
+
+The traces a run keeps in `/tmp/claude-eval-*` are found through `cases[].arms.with[].tracePath` and `.without[]` of its `--json` report. They are read before a new paid run, and a reboot deletes them (skill-adherence-3).
+
+## What a grader reads (Decided: skill-adherence-4, -9, -10, -11, -16)
+
+- A forked skill returns its result to the session, which writes the last message, and may reword it. Claude Code's documentation names no way to show that result unchanged ([Skills](https://code.claude.com/docs/en/skills.md), "Run skills in a subagent"), so a grader reads the meaning, not the skill's exact words (skill-adherence-4).
+- A `regex` on the last message accepts the wordings of the same meaning in English and Spanish: "No findings", "found no defects", "no encontré defectos" (skill-adherence-9); "Not checked", "Two things weren't checked", "Qué no se verificó" (skill-adherence-16). Each widened `regex` is checked on the kept last messages before it is used.
+- An `llm` grader judges only what the skill's Output asks: for `review-change`, what is under "Not checked" is not a finding (skill-adherence-11); for `prepare-project`, only the question that ends the reply, where a blocked step reported with its command is not a question (skill-adherence-10).
+- A case of triggering gets a scaffold, and `Bash`, when its request names a change in the repository, as `keep-minimal-triggers` does (skill-adherence-11).
 
 ## Cost and ceiling (Decided: skill-best-practices-3, -10)
 
@@ -69,7 +78,10 @@ The cases of the seven skills ran, those of the six others three times, and the 
 
 The work skill-triggering took those five questions, measured four skills three times per case, and changed what the traces showed: new words in the descriptions of `review-change` and `keep-minimal`, a gotcha in `prepare-project`, and `wiki-format.sh mark` keeps its copy of the marker beside it. It cost USD 15.28 in three measurements. Below skill-triggering-2 after its last run, each an open question for a later work: a small task the agent does itself without loading the skill (skill-triggering-Q5), `prepare-project` ending with more than one question (skill-triggering-Q6), and the report of `review-change` changed before it reaches the owner (skill-triggering-Q7). See [the measurements](../works/skill-triggering/measurements.md) and [the questions](../works/skill-triggering/questions.md).
 
+## Result of the work skill-adherence (Decided: skill-adherence-16)
+
+The work skill-adherence took skill-triggering-Q5 to -Q7, read their causes in the kept traces, changed the Output of `review-change`, the example of the gotcha of `prepare-project`, and the graders, and measured once, for USD 1.39. With the plugin, `review-change-clean-commit` passes `no-findings` and `no-padding` in 3 of 3, and `prepare-project-new-project-stage-one` asks one question in 2 of 3. Left open for a later work: `keep-minimal-triggers` loads its skill in 1 of 3, since the agent reviews the commit itself (skill-adherence-Q7), and whether 2 of 3 is enough for `prepare-project` (skill-adherence-Q8). See [the measurements](../works/skill-adherence/measurements.md) and [the questions](../works/skill-adherence/questions.md).
+
 ## Not verified
 
-- The full list of options of each grader.
 - Whether evaluation needs extra software on every operating system. The documentation only says that Windows without a Linux layer has no sandbox for shell commands.
