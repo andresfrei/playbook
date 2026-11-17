@@ -6,16 +6,16 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-17, after skill-triggering-12.
+Updated 2026-11-17, after skill-triggering-15.
 
-Stage 6, Execution, is open. skill-triggering-U1 to -U4 are Done; U5 ran and its ending condition does not hold ([measurements.md](measurements.md)).
+Stage 6, Execution, is open. skill-triggering-U1 to -U5 are Done; U6 is Built and waits for its measurement; see [plan.md](plan.md).
 
-Waiting for the owner: what follows U5, and [skill-triggering-Q4](questions.md).
+Waiting for the owner: the paid run of U6, which happens only when the owner asks (skill-triggering-3).
 
 Next steps:
 
-1. The owner decides what follows U5.
-2. Answer skill-triggering-Q4, then close the work.
+1. U6: the three cases of behaviour of `review-change`, under USD 3.
+2. Close the work: the shared pages, and the version.
 
 ## Stage table
 

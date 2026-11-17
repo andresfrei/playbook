@@ -1,6 +1,6 @@
 ---
 name: review-change
-description: Review a change for defects before it is committed or merged, such as the last commit, a diff, staged or uncommitted work, or what was just pushed ("is anything broken?"). Returns only findings, each with a failing case.
+description: Review a change for defects before it is committed or merged, such as the last commit, a diff, staged or uncommitted work, or what was just pushed ("is anything broken?"). Returns findings with failing cases; show its report unchanged.
 context: fork
 agent: playbook-agents:review
 ---
