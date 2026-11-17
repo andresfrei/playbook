@@ -6,18 +6,18 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-16, after version-on-close-4.
+Updated 2026-11-16, after version-on-close-5.
 
 Stage 1, Wiki, is open.
 
 Waiting for the owner:
 
-- Closing stage 1. Q4 and Q5, in [questions.md](questions.md), are about how, for stage 2.
+- Closing stage 1. No question is open: [definition.md](definition.md).
 
 Next steps:
 
 1. The owner closes stage 1.
-2. Stage 2: Q4 and Q5.
+2. Stage 2, likely only the text of one step: no technology is added.
 
 ## Stage table
 
