@@ -6,23 +6,23 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-17, after skill-triggering-4.
+Updated 2026-11-17, after skill-triggering-5.
 
-Stage 1, Wiki, is open. The problem and what the work proposes are in [definition.md](definition.md).
+Stage 2, Technology, is open. The problem is in [definition.md](definition.md); the technology proposed, N1 to N6, in [technology.md](technology.md).
 
-Waiting for the owner: closing stage 1. No question is open.
+Waiting for the owner: accepting [technology.md](technology.md). No question is open.
 
 Next steps:
 
-1. Close stage 1.
-2. Stage 2, Technology: how the cases run three times, and what each measurement costs.
+1. Accept the technology and close stage 2.
+2. Stage 3, Skills.
 
 ## Stage table
 
 | Stage | Status | Closed on |
 |-------|--------|-----------|
-| 1 Wiki | Open | |
-| 2 Technology | Not started | |
+| 1 Wiki | Closed | 2026-11-17 |
+| 2 Technology | Open | |
 | 3 Skills | Not started | |
 | 4 Design system | Not started | |
 | 5 Plan | Not started | |
@@ -35,3 +35,4 @@ Next steps:
 | [definition.md](definition.md) | The faults the work takes, what it must and must not do, and the coverage of each topic | |
 | [decisions.md](decisions.md) | The decisions of this work | |
 | [questions.md](questions.md) | The questions still open | |
+| [technology.md](technology.md) | What the work needs from its technology, and its architecture | |
