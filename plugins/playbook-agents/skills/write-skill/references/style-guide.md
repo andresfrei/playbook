@@ -230,6 +230,8 @@ The graders' fields are in Claude Code's documentation: https://code.claude.com/
 
 A case that passes as well without the plugin proves nothing the skill adds: replace it.
 
+Add to each case that a request loads the skill `graders/skill-loaded.md` from the cases of triggering: it is not scored, and shows whether the skill loaded. The arm with the plugin also gets the person's settings for it, such as the language of `playbook-agents`: a `regex` on the answer accepts each language the answer may come in. In a scaffold, set git's `user.name` to the person the case's documents name as the owner.
+
 ### Running them
 
 Run one skill's cases on the model the skill runs on: `sonnet` for a skill that runs in the session; a skill with `context: fork` runs on its agent's model.
