@@ -12,11 +12,11 @@ Stage 6, Execution, is open: [plan.md](plan.md).
 
 Waiting for the owner:
 
-- The review of U4: [plan.md](plan.md).
+- Whether `init` may write a choice about a project's skill straight into `04-skills/`: [plan.md](plan.md), U4.
 
 Next steps:
 
-1. The owner reviews U4, which is built; then U5, the other audit. U1 to U3 are Done.
+1. U5, the audit of the skills of `playbook-agents`. U1 to U4 are Done.
 2. U6, under USD 1 per skill (skill-best-practices-10).
 
 ## Stage table
