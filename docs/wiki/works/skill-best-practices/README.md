@@ -12,13 +12,12 @@ Stage 6, Execution, is open: [plan.md](plan.md).
 
 Waiting for the owner:
 
-- The review of U5: [plan.md](plan.md).
+- Nothing now.
 
 Next steps:
 
-1. The owner reviews U5, which is built. U1 to U4 are Done.
-2. U6, under USD 1 per skill (skill-best-practices-10).
-3. At closing, also rewrite `03-technology/installation.md` for skill-best-practices-11.
+1. U6, under USD 1 per skill (skill-best-practices-10). U1 to U5 are Done.
+2. At closing, also rewrite `03-technology/installation.md` for skill-best-practices-11.
 
 ## Stage table
 
