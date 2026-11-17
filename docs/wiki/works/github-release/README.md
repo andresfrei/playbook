@@ -6,9 +6,9 @@ Status: Closed 2026-11-16.
 
 ## Where work stands
 
-Updated 2026-11-16, after github-release-1.
+Updated 2026-11-16, after github-release-2.
 
-No stage is open: the work is one change, decided and written.
+No stage is open: the work is one change, with two decisions, decided and written.
 
 Waiting for the owner:
 
@@ -22,4 +22,4 @@ Next steps:
 
 | Page | Content | Code it governs |
 |------|---------|-----------------|
-| [decisions.md](decisions.md) | The decision of this work | |
+| [decisions.md](decisions.md) | The decisions of this work | |
