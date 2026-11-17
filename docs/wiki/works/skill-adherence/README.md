@@ -10,12 +10,7 @@ Updated 2026-11-17, after skill-adherence-17.
 
 No stage is open: every unit of [plan.md](plan.md) is Done. What the work decided is in [../../03-technology/skill-evaluation.md](../../03-technology/skill-evaluation.md). What still fails is in [questions.md](questions.md), for a later work.
 
-Waiting for the owner: the pull request of `feat/skill-adherence`.
-
-Next steps:
-
-1. The owner merges the pull request of `feat/skill-adherence`.
-2. Version 2.2.2 (skill-adherence-17): the version in the three manifests, the tag `v2.2.2`, and the release on GitHub, in a release pull request that also records here that the work is merged and released.
+Merged into `main` by pull request #17, and released as version 2.2.2 by pull request #18, with the tag `v2.2.2` and its release on GitHub (skill-adherence-17).
 
 ## Stage table
 
