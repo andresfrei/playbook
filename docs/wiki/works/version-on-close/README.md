@@ -6,18 +6,18 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-16, after version-on-close-7.
+Updated 2026-11-16, after version-on-close-8.
 
-Stage 5, Plan, is open. Stages 1 to 4 are closed (version-on-close-6, version-on-close-7).
+Stage 6, Execution, is open. Stages 1 to 5 are closed (version-on-close-6 to version-on-close-8).
 
 Waiting for the owner:
 
-- Accepting the plan and how its unit is delivered: [plan.md](plan.md).
+- The owner's review of the text of U1: [plan.md](plan.md).
 
 Next steps:
 
-1. The owner accepts the plan and closes stage 5.
-2. Stage 6: U1.
+1. The owner accepts U1.
+2. Closing the work, with the version of the plugins.
 
 ## Stage table
 
@@ -27,8 +27,8 @@ Next steps:
 | 2 Technology | Closed | 2026-11-16 |
 | 3 Skills | Closed (not applicable) | 2026-11-16 |
 | 4 Design system | Closed (not applicable) | 2026-11-16 |
-| 5 Plan | Open | |
-| 6 Execution | Not started | |
+| 5 Plan | Closed | 2026-11-16 |
+| 6 Execution | Open | |
 
 ## Pages
 
