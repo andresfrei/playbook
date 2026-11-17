@@ -2,22 +2,22 @@
 
 Makes the check of a wiki run when an agent commits a change to the wiki, so that a wiki cannot drift out of its format between two runs of `prepare-project` or the doctor. Andres Frei leads it.
 
-Status: Open.
+Status: Closed 2026-11-16 (wiki-check-on-commit-9).
 
 ## Where work stands
 
-Updated 2026-11-16, after wiki-check-on-commit-8.
+Updated 2026-11-16, after wiki-check-on-commit-9.
 
-Stage 6, Execution, is open. Stages 1 to 5 are closed (wiki-check-on-commit-5, wiki-check-on-commit-7, wiki-check-on-commit-8).
+No stage is open. The six stages are closed, and U1 and U2 are done: [plan.md](plan.md).
 
 Waiting for the owner:
 
-- The owner's review of the text of U2: [plan.md](plan.md).
+- The merge of this work's pull request into `main`.
 
 Next steps:
 
-1. The owner accepts U2.
-2. Closing the work, and version 2.1.0 (version-on-close-9).
+1. The owner merges the pull request.
+2. Version 2.1.0, with version-on-close (version-on-close-9): the version in the three manifests, the tag `v2.1.0`, and the release on GitHub.
 
 ## Stage table
 
@@ -28,7 +28,7 @@ Next steps:
 | 3 Skills | Closed (not applicable) | 2026-11-16 |
 | 4 Design system | Closed (not applicable) | 2026-11-16 |
 | 5 Plan | Closed | 2026-11-16 |
-| 6 Execution | Open | |
+| 6 Execution | Closed | 2026-11-16 |
 
 ## Pages
 

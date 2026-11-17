@@ -26,7 +26,7 @@ flowchart LR
   init -- "turns on" --> wiki["playbook-wiki<br/>the core"]
   init -. "turns on, when you choose<br/>the whole product" .-> agents["playbook-agents<br/>the owner's agent system"]
   agents -- "needs" --> wiki
-  wiki --- wikiHolds["the contract<br/>the wiki format<br/>and its check<br/>the step at the merge<br/>prepare-project<br/>write-docs<br/>doctor"]
+  wiki --- wikiHolds["the contract<br/>the wiki format<br/>and its check<br/>the check at the commit<br/>the step at the merge<br/>prepare-project<br/>write-docs<br/>doctor"]
   agents --- agentsHolds["18 rules<br/>the language you chose<br/>the agents<br/>explore, write, review<br/>keep-minimal<br/>review-change<br/>write-skill<br/>avoid-generic-design"]
   wiki -- "reads and writes" --> repo[("docs/wiki/<br/>in your project")]
 ```
@@ -55,6 +55,10 @@ sequenceDiagram
     CC->>A: the agent explore, write, or review
     CC->>W: a subagent starts
     W-->>CC: the contract, for the subagent
+  end
+  opt a git commit that changes docs/wiki/
+    CC->>W: before the command runs
+    W-->>CC: the commit is stopped when the wiki's check fails, with what to repair
   end
   opt a git merge
     CC->>W: before the command runs
