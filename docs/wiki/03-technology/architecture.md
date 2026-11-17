@@ -88,4 +88,5 @@ Counted for each plugin by `scripts/verify.sh` (D199):
 - A tool other than Claude Code: the contract is one Markdown file and the check is plain shell, so both can be given to another tool as files (D191).
 - A project that wants `playbook-wiki` on for everyone: Claude Code's scope `project`, an entry in the repository's `.claude/settings.json`.
 - A team of more than five people: an index of works, decided when that team exists (D178).
+- A listing in Anthropic's plugin directory, once the owner's organization is Verified (plugin-directory-9).
 - A new model: one line of `models.conf`, by a decision (TD8, TD11).

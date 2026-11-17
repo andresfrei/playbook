@@ -48,6 +48,18 @@ Checked by reading the files:
 
 Open, for stage 2, and not stated in the pages read: whether a plugin listed in the directory may depend on another, under what marketplace name a plugin installed from the directory appears, and whether `sh "${CLAUDE_PLUGIN_ROOT}/..."` counts as a path from `${CLAUDE_PLUGIN_ROOT}`. The portal's Validate answers the last one.
 
+## What the portal's Validate reported
+
+Run by the owner on 2026-11-17: on `main` at `208457f`, for `plugins/playbook` and then `plugins/playbook-wiki`; then on `feat/plugin-directory` at `5fb9ce1` for `plugins/playbook-wiki`, with 3 blocking findings, the same three below, and 4 policy holds, with no icon warning. These rules are not in the pages read above; the portal's report is their source.
+
+- Blocking: "The directory accepts command hooks only from Verified organizations, and your organization isn't one. Remove every hook of type command [...] Changing the type won't help: this rule covers hooks of every type."
+- Blocking: "The directory accepts scripts, programs, and other restricted files only from Verified organizations": a non-Verified organization ships only Markdown, text, JSON, YAML, and images, and no file that starts with `#!`.
+- Blocking: a hook command whose path the validator cannot follow; the report names inline programs such as `awk '…'` and command substitution among the causes.
+- Policy hold for `playbook`: "\"playbook\" is the name of directory connector \"playbook\". Only its owner can publish under this name"; and a hold for a name that "may be confused with an existing listing".
+- Warning: no icon, because `main` does not hold the icons of U1 yet.
+
+`playbook-wiki` and `playbook-agents` both work through command hooks and shell scripts, so neither can be listed while the owner's organization is not Verified.
+
 ## What the work must do
 
 - Submit `playbook-wiki` and `playbook-agents` to the directory, as two submissions. `playbook` is not submitted (plugin-directory-1).
