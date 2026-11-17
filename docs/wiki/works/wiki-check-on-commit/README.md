@@ -12,11 +12,11 @@ Stage 6, Execution, is open. Stages 1 to 5 are closed (wiki-check-on-commit-5, w
 
 Waiting for the owner:
 
-- Nothing, while U2 is built.
+- The owner's review of the text of U2: [plan.md](plan.md).
 
 Next steps:
 
-1. U2, the doctor's step, then the owner's review of its text: [plan.md](plan.md).
+1. The owner accepts U2.
 2. Closing the work, and version 2.1.0 (version-on-close-9).
 
 ## Stage table
