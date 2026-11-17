@@ -2,22 +2,22 @@
 
 Brings the way this product writes and checks a skill, the skill `write-skill` and its style guide, in line with the best practices for skills that Anthropic and agentskills.io publish, where they add what the guide lacks. Andres Frei leads it.
 
-Status: Open.
+Status: Closed 2026-11-17 (skill-best-practices-15).
 
 ## Where work stands
 
-Updated 2026-11-17, after skill-best-practices-14.
+Updated 2026-11-17, after skill-best-practices-15.
 
-Stage 6, Execution, is open: [plan.md](plan.md).
+No stage is open: every unit of [plan.md](plan.md) is Done. What the work decided is in [../../01-product/style-guide.md](../../01-product/style-guide.md), [../../03-technology/skill-evaluation.md](../../03-technology/skill-evaluation.md), and [../../03-technology/installation.md](../../03-technology/installation.md). What still fails is in [questions.md](questions.md), for a later work.
 
 Waiting for the owner:
 
-- Nothing now.
+- The merge of `feat/skill-best-practices` into `main`.
 
-Next steps:
+Next steps, after the merge (skill-best-practices-15):
 
-1. Close the work: every unit is Done. Rewrite the shared pages, then recommend a version.
-2. At closing, also rewrite `03-technology/installation.md` for skill-best-practices-11.
+1. Set the version 2.2.0 in the three `plugin.json`.
+2. Tag `v2.2.0`, and publish its release on GitHub.
 
 ## Stage table
 
@@ -28,7 +28,7 @@ Next steps:
 | 3 Skills | Closed | 2026-11-17 |
 | 4 Design system | Closed (not applicable) | 2026-11-17 |
 | 5 Plan | Closed | 2026-11-17 |
-| 6 Execution | Open | |
+| 6 Execution | Closed | 2026-11-17 |
 
 ## Pages
 
