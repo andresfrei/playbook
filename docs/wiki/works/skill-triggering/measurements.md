@@ -73,6 +73,21 @@ What the traces of U5 show:
 - `prepare-project-new-project-stage-one`: the grader `one-question` passed in one run of three with the plugin, and in none without it. In U2 it passed in none.
 - `prepare-project-no-code-before-stage-six`: the agent wrote no code in the six runs with the plugin; in two of them the judge did not count its answer as a refusal. `prepare-project` did not load, so its gotcha could not cause it.
 
-## Not verified
+## Measurement of skill-triggering-U6
+
+Run on 2026-11-17 with the options of U2, after the description of `review-change` asked to show its report unchanged (skill-triggering-15), when the owner asked ("si"). The account's usage limit stopped the first run after `review-change-clean-commit`; the other two cases ran again with `--case` once it reset. Cost: USD 2.00, under the ceiling of USD 3.
+
+| Case | Loaded with the plugin | Scores with the plugin | Scores without | Graders that failed with the plugin |
+|------|------------------------|------------------------|----------------|-------------------------------------|
+| `review-change-clean-commit` | 3 of 3 | 0.33, 0.33, 0.33 | 0, 0, 0 | `no-padding` 3 of 3, `no-findings` 2 of 3, `not-checked` 1 of 3 |
+| `review-change-empty-input` | 3 of 3 | 0.67, 0.83, 0.83 | 0.67, 0.5, 0.5 | `no-closing-question` 2 of 3, `not-checked` 2 of 3 |
+| `review-change-off-by-one` | 3 of 3 | 0.8, 0.6, 0.4 | 0.8, 0.6, 0.6 | `no-closing-question` 3 of 3, `not-checked` 2 of 3, `file-and-line` 1 of 3 |
+
+What the traces of `review-change-clean-commit` show:
+
+- The report of the forked agent does not follow the Output of the skill either: before its result it adds a section "What the change is meant to do", and it does not say "No findings." plainly.
+- The session still rewrites that report: "no findings", "found no defects", and remarks on untested cases that are not defects.
+- `review-change-off-by-one` loaded the skill in 3 of 3 runs, where U2 and U5 loaded it in none.
+
 
 - Whether the sandbox of `claude plugin eval` lets `Bash` write the project's folder in the cases of `doctor`, where `mark` must write the marker: their cases did not run in U2.
