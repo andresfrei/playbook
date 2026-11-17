@@ -6,18 +6,18 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-17, after skill-best-practices-9.
+Updated 2026-11-17, after skill-best-practices-10.
 
 Stage 6, Execution, is open: [plan.md](plan.md).
 
 Waiting for the owner:
 
-- The ceiling of the paid runs of U6, from the cost of U3: [plan.md](plan.md).
+- Nothing now.
 
 Next steps:
 
-1. The owner sets the ceiling of U6. U1 and U2 are Done; U3 is built.
-2. U4 and U5, the audits.
+1. U4 and U5, the audits, each reviewed by the owner. U1 to U3 are Done.
+2. U6, under USD 1 per skill (skill-best-practices-10).
 
 ## Stage table
 
