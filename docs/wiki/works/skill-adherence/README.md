@@ -6,16 +6,16 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-17, after skill-adherence-15.
+Updated 2026-11-17, after skill-adherence-16.
 
-Stage 6 Execution is open. skill-adherence-U1 to -U4 are Done: [plan.md](plan.md).
+Stage 6 Execution is open. Every unit of [plan.md](plan.md) is Done; what the paid run showed is in [measurements.md](measurements.md). skill-adherence-Q7 and -Q8, in [questions.md](questions.md), stay open for a later work.
 
-Waiting for the owner: asking for the paid run of skill-adherence-U5.
+Waiting for the owner: whether the work needs a new version.
 
 Next steps:
 
-1. skill-adherence-U5, when the owner asks.
-2. Closing the work: the shared pages, the version, and the pull request.
+1. Close the work: the shared pages, and the version if the owner wants one.
+2. The pull request of `feat/skill-adherence`, which the owner merges.
 
 ## Stage table
 
@@ -39,3 +39,4 @@ Next steps:
 | [technology.md](technology.md) | What the work needs from its technology, and its architecture | |
 | [skills.md](skills.md) | The skills the work uses for each technology | |
 | [plan.md](plan.md) | The units of the work, their progress, and how each is delivered | |
+| [measurements.md](measurements.md) | What the paid run of the cases showed, and what its traces show | |
