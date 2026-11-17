@@ -12,11 +12,11 @@ Stage 6, Execution, is open: [plan.md](plan.md).
 
 Waiting for the owner:
 
-- Nothing now.
+- The paid run of U3, which waits for the owner to ask: [plan.md](plan.md).
 
 Next steps:
 
-1. U2, the checks of a name and of references. U1 is Done.
+1. U3: the cases of `write-skill`, then a run under USD 2 when the owner asks. U1 and U2 are Done.
 
 ## Stage table
 

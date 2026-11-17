@@ -14,6 +14,8 @@ max_contract_words=250     # L1, the contract of playbook-wiki
 max_rules_words=400        # L1, the rules of playbook-agents
 max_skill_body_words=700   # L2
 max_description_chars=250  # L3
+max_name_chars=64          # the name of a skill
+max_reference_lines=100    # a reference file with no section Contents
 max_wiki_startup_words=350    # L4, playbook-wiki
 max_agents_startup_words=620  # L4, playbook-agents
 
@@ -178,6 +180,45 @@ for skill in "$plugins"/*/skills/*/SKILL.md; do
   body_words=$(body "$skill" | count_words)
   if [ "$body_words" -gt "$max_skill_body_words" ]; then
     fail "L2 body of $name has $body_words words, limit $max_skill_body_words"
+  fi
+
+  # The name: lowercase letters, digits, and single hyphens between them, at
+  # most 64 characters, and not the word claude or anthropic.
+  skill_name=$(printf '%s\n' "$matter" | sed -n 's/^name: *//p' | tr -d '\r' |
+    sed 's/[[:space:]]*$//; s/^"\(.*\)"$/\1/')
+  case "$skill_name" in
+    '' | -* | *- | *--* | *[!a-z0-9-]*)
+      fail "name of $name must be lowercase letters, digits, and single hyphens between them" ;;
+  esac
+  if [ "${#skill_name}" -gt "$max_name_chars" ]; then
+    fail "name of $name has ${#skill_name} characters, limit $max_name_chars"
+  fi
+  case "-$skill_name-" in
+    *-claude-* | *-anthropic-*) fail "name of $name holds the word claude or anthropic" ;;
+  esac
+done
+
+# References are one level deep: a reference file names no other file of its
+# folder, since SKILL.md lists them all. One over 100 lines opens with a
+# section "## Contents", so a partial read still shows what it holds.
+for ref in "$plugins"/*/skills/*/references/*.md; do
+  [ -f "$ref" ] || continue
+  name=${ref#"$plugins"/}
+  for other in "${ref%/*}"/*.md; do
+    [ "$other" = "$ref" ] && continue
+    # The name alone, or after "references/", not inside a longer name or path.
+    # shellcheck disable=SC2016
+    pattern=$(printf '%s' "${other##*/}" | sed 's/[].[\\*^$()+?{}|]/\\&/g')
+    if grep -qE -e "(^|[^A-Za-z0-9._/-])(references/)?$pattern([^A-Za-z0-9_-]|$)" "$ref"; then
+      fail "$name names ${other##*/}, another reference file; list every reference in SKILL.md instead"
+    fi
+  done
+  # awk counts a last line that has no newline, which wc -l does not.
+  ref_lines=$(awk 'END { print NR }' "$ref")
+  # The first "## " heading outside a code block.
+  first_section=$(awk '/^```/ { fence = !fence; next } !fence && /^## / { print; exit }' "$ref")
+  if [ "$ref_lines" -gt "$max_reference_lines" ] && [ "$first_section" != "## Contents" ]; then
+    fail "$name has $ref_lines lines and does not open with a section \"## Contents\""
   fi
 done
 

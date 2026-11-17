@@ -101,6 +101,99 @@ add_skill long-description "$(chars 251)" 10
 expect "L3: description over 250 characters fails" fail "L3"
 
 fresh
+add_skill bad--name "Short description." 10
+expect "name: a double hyphen fails" fail "single hyphens"
+
+fresh
+add_skill Bad-name "Short description." 10
+expect "name: a capital letter fails" fail "single hyphens"
+
+fresh
+add_skill "$(chars 64)" "Short description." 10
+expect "name: 64 characters pass" pass
+
+fresh
+add_skill "$(chars 65)" "Short description." 10
+expect "name: 65 characters fail" fail "65 characters, limit 64"
+
+fresh
+add_skill claude-helper "Short description." 10
+expect "name: the word claude fails" fail "the word claude or anthropic"
+
+fresh
+add_skill my-anthropic "Short description." 10
+expect "name: the word anthropic at the end fails" fail "the word claude or anthropic"
+
+fresh
+add_skill claudette "Short description." 10
+expect "name: claude inside a word passes" pass
+
+fresh
+add_skill -lead "Short description." 10
+expect "name: a leading hyphen fails" fail "single hyphens"
+
+fresh
+add_skill trail- "Short description." 10
+expect "name: a trailing hyphen fails" fail "single hyphens"
+
+fresh
+add_skill quoted "Short description." 10
+sed 's/^name: quoted$/name: "quoted" /' "$tmp/repo/plugins/playbook-agents/skills/quoted/SKILL.md" > "$tmp/skill.md"
+cp "$tmp/skill.md" "$tmp/repo/plugins/playbook-agents/skills/quoted/SKILL.md"
+expect "name: quoted, with a trailing space, passes" pass
+
+# add_ref <skill> <file> <lines> [text of the first line]
+add_ref() {
+  dir="$tmp/repo/plugins/playbook-agents/skills/$1/references"
+  mkdir -p "$dir"
+  {
+    [ $# -ge 4 ] && printf '%s\n' "$4"
+    awk -v n="$3" 'BEGIN { for (i = 0; i < n; i++) print "line" }'
+  } > "$dir/$2"
+}
+
+fresh
+add_skill with-refs "Short description." 10
+add_ref with-refs one.md 5 "Read two.md next."
+add_ref with-refs two.md 5
+expect "references: a reference naming another fails" fail "names two.md, another reference file"
+
+fresh
+add_skill with-refs "Short description." 10
+add_ref with-refs one.md 101
+expect "references: over 100 lines with no Contents fails" fail "101 lines and does not open with"
+
+fresh
+add_skill with-refs "Short description." 10
+add_ref with-refs one.md 100 "## Contents"
+add_ref with-refs two.md 100
+expect "references: Contents, or 100 lines, pass" pass
+
+fresh
+add_skill with-refs "Short description." 10
+add_ref with-refs one.md 5 "Read references/two.md next."
+add_ref with-refs two.md 5
+expect "references: a reference naming another by its path fails" fail "names two.md"
+
+fresh
+add_skill with-refs "Short description." 10
+add_ref with-refs one.md 5 "See data.md and 5-a.md for the data."
+add_ref with-refs a.md 5
+expect "references: a name inside a longer name passes" pass
+
+fresh
+add_skill with-refs "Short description." 10
+add_ref with-refs one.md 100 "## Usage"
+printf '```markdown\n## Contents\n```\n' >> "$tmp/repo/plugins/playbook-agents/skills/with-refs/references/one.md"
+expect "references: Contents only inside a code block fails" fail "does not open with"
+
+fresh
+add_skill with-refs "Short description." 10
+add_ref with-refs one.md 100
+printf 'last' >> "$tmp/repo/plugins/playbook-agents/skills/with-refs/references/one.md"
+expect "references: 101 lines, the last with no newline, fail" fail "101 lines"
+
+fresh
 words 400 > "$tmp/repo/plugins/playbook-agents/rules.md"
 for i in 1 2 3 4 5 6 7 8; do
   add_skill "skill-$i" "$(words 40 | cut -c1-200)" 10
