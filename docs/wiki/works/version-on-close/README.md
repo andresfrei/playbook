@@ -2,22 +2,21 @@
 
 Makes `prepare-project`, when it closes a work in a project that publishes versions, recommend whether the work needs a new version and which one, and ask the person who leads the work. Brings to every project what github-release-2 does for this repository. Andres Frei leads it.
 
-Status: Open.
+Status: Closed 2026-11-16 (version-on-close-10).
 
 ## Where work stands
 
-Updated 2026-11-16, after version-on-close-9.
+Updated 2026-11-16, after version-on-close-10.
 
-Stage 6, Execution, is open: U1 is Done and the work is ready to close. Stages 1 to 5 are closed (version-on-close-6 to version-on-close-8).
+No stage is open. The six stages are closed, and U1 is Done: [plan.md](plan.md).
 
 Waiting for the owner:
 
-- Closing stage 6 and the work, and merging its pull request.
+- Nothing in this work.
 
 Next steps:
 
-1. The owner closes the work, and merges its pull request.
-2. Version 2.1.0, released when wiki-check-on-commit is merged (version-on-close-9): the version in the three manifests, the tag `v2.1.0`, and the release on GitHub.
+1. Version 2.1.0, released when wiki-check-on-commit is merged (version-on-close-9): the version in the three manifests, the tag `v2.1.0`, and the release on GitHub.
 
 ## Stage table
 
@@ -28,7 +27,7 @@ Next steps:
 | 3 Skills | Closed (not applicable) | 2026-11-16 |
 | 4 Design system | Closed (not applicable) | 2026-11-16 |
 | 5 Plan | Closed | 2026-11-16 |
-| 6 Execution | Open | |
+| 6 Execution | Closed | 2026-11-16 |
 
 ## Pages
 
