@@ -11,3 +11,4 @@
 | skill-triggering-7 | 2026-11-17 | The skills of [skills.md](skills.md) are accepted. Stage 3, Skills, is closed. | Andres Frei | acepto | none |
 | skill-triggering-8 | 2026-11-17 | Stage 4, Design system, is closed as not applicable: the work changes the text of skills, evaluation cases, and one script, and has no interface. | Andres Frei | si | none |
 | skill-triggering-9 | 2026-11-17 | The plan of [plan.md](plan.md) is accepted: U1, U2, and U5 by evidence, U3 and U4 by the owner's judgement, built one after the other on `feat/skill-triggering`, one pull request the owner merges, each paid run when the owner asks. Stage 5, Plan, is closed. | Andres Frei | acepto | none |
+| skill-triggering-10 | 2026-11-17 | The ceiling of skill-triggering-U5 is USD 3 per skill, as in U2, whose skills cost USD 1.53 to 2.45 each ([measurements.md](measurements.md)). | Andres Frei | si, esta bien | none |
