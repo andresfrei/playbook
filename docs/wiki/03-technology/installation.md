@@ -1,8 +1,29 @@
 # Installation in Claude Code
 
+How the product is installed and started since phase 4. The route is the one TD1 chose, a marketplace in this repository, with three plugins in place of one (TD26).
+
+## How it is installed
+
+1. The person adds this repository as a marketplace: `claude plugin marketplace add andresfrei/playbook`, or the path of a local clone.
+2. The person installs the start plugin alone: `claude plugin install playbook@playbook --scope user`. It holds only `/playbook:init`, which loads nothing until the person types it (D184).
+3. In a repository, the person runs `/playbook:init`. Its script installs `playbook-wiki`, and `playbook-agents` for the whole product, with the scope chosen: `user` for every project, `local` for this repository (D183, TD27).
+4. What it turned on is used from the next session. A session does not see a plugin installed while it runs (tried in U28, [phase-4.md](phase-4.md)).
+
+The answers are kept in four places, none of them a file of the product's own (TD27): which plugins are on, in `enabledPlugins` of the user's `settings.json` or of the repository's `.claude/settings.local.json`, which git ignores; the language, under `pluginConfigs` of the user's `settings.json`, so it holds in every project (TD31); a skill of the person turned off, under `skillOverrides` of the same settings file as the plugins (TD33); and a choice about a skill of the project, as a decision in the project's wiki (TD33). The script installs `playbook-wiki` by name even with `playbook-agents`, so it is never kept only as a dependency ([phase-4.md](phase-4.md), "What follows from it").
+
+## Versions
+
+Each plugin declares its version in its own `plugin.json`, never in the marketplace entry, and each release commit is tagged `v<version>` (TD22). Version 2 is phase 4, a MAJOR version because it breaks an installation of version 1: the plugin `playbook` loses its skills, agents, and rules and becomes the start plugin (TD32). A person who had version 1 updates it and runs `/playbook:init` once.
+
+An installation from GitHub gets a commit only when the version changes. A marketplace added from a local clone loads the plugins in place: a change applies to the next session, or to an open one after `/reload-plugins`.
+
+## The evaluation of 2026-11-13 (TD1)
+
+Kept as a record of how the route was chosen, when the product was one plugin that loaded its rules in every session.
+
 Evaluation for Q21, made on 2026-11-13 against the current Claude Code documentation and one plugin already installed on the owner's machine. The owner chose route A (Decided: TD1).
 
-## What the installation must do
+### What the installation must do
 
 | Requirement | Source |
 |-------------|--------|
@@ -13,7 +34,7 @@ Evaluation for Q21, made on 2026-11-13 against the current Claude Code documenta
 | Work for the owner now and for invited people later | D29 |
 | Claude Code only | D27 |
 
-## What Claude Code provides
+### What Claude Code provides
 
 | Fact | Evidence |
 |------|----------|
@@ -30,11 +51,11 @@ Evaluation for Q21, made on 2026-11-13 against the current Claude Code documenta
 | At session start only the name and description of each skill load. The description is cut at 1,536 characters. | [Skills](https://code.claude.com/docs/en/skills.md) |
 | An `@path` line in `~/.claude/CLAUDE.md` imports a file into every session. Each person adds that line by hand. | [Memory](https://code.claude.com/docs/en/memory.md) |
 
-## A working example on this machine
+### A working example on this machine
 
 Engram is installed as a plugin at user scope. Its repository is the marketplace, the plugin lives in a subfolder (`./plugin/claude-code`), and its `SessionStart` hook writes the memory context seen at the start of every session. The route recommended below is this same pattern.
 
-## Routes compared
+### Routes compared
 
 | | A. Private marketplace | B. Plugin folder inside `~/.claude/skills/` | C. No plugin |
 |---|---|---|---|
@@ -47,7 +68,7 @@ Engram is installed as a plugin at user scope. Its repository is the marketplace
 | Same steps for the owner and for invited people | Yes | Yes | Each person edits their own files |
 | Verified working | Yes, by Engram on this machine | No | Not for linked skill folders |
 
-## Chosen route (Decided: TD1)
+### Chosen route (Decided: TD1)
 
 Route A. The plugin lives in a subfolder of this repository, with the five skills and a `SessionStart` hook that prints the rules file. The repository is also the marketplace. The owner adds the marketplace from the local clone, so edits apply without reinstalling; invited people add it by its git address.
 
@@ -58,7 +79,7 @@ What it costs:
 - While gentle-ai is in use (phase 1), an old skill and the product's skill for the same job both appear in the skill list, until the old one is removed at its source (D40). This is against F3 for as long as it lasts.
 - Updates for invited people are by hand unless they turn automatic update on.
 
-## Not verified
+### Not verified
 
 - The exact wording of the `SessionStart` section of the hooks page. It was read from a summary because the page is too long to fetch whole. The behaviour itself is observed on this machine.
 - Whether there is a limit on the total size of the skill list.

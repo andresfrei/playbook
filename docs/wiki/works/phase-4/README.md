@@ -10,14 +10,17 @@ Its decisions up to D208 are in [../../decisions.md](../../decisions.md). New on
 
 Updated 2026-11-16, after D208.
 
-Stage 6, Execution, is open. Stages 1 to 5 are closed (D197), and U28 to U39 are done: [../../05-plan/plan-phase-4.md](../../05-plan/plan-phase-4.md).
+Stage 6, Execution, is open. Stages 1 to 5 are closed (D197), and U28 to U40 are done: [../../05-plan/plan-phase-4.md](../../05-plan/plan-phase-4.md).
 
-Waiting for the owner: nothing that blocks this phase. Q61 and Q62 wait for the release after version 2: [../../01-product/open-questions.md](../../01-product/open-questions.md).
+Waiting for the owner:
+
+- The push of `v2` and its pull request into `main`, then the tag `v2.0.0` (TD22, D196, D208).
+- Q61 and Q62, for the release after version 2: [../../01-product/open-questions.md](../../01-product/open-questions.md).
 
 Next steps:
 
-1. U40, then U41, in the order of the plan. The agent works as a software factory (D208).
-2. The pull request of `v2` into `main` when U40 is accepted, and U41, are the owner's.
+1. The owner merges the pull request of `v2` into `main`.
+2. U41, on the owner's machine, when the owner asks for it.
 
 ## Stage table
 

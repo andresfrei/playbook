@@ -1,22 +1,24 @@
 # playbook
 
-A set of working rules and skills for AI coding agents (Claude Code), valid for every project. It is one person's set, shared as it is: use it, copy it, or adapt it under the [MIT License](LICENSE). Issues and pull requests are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md).
+A Claude Code product for building software with an AI coding agent, shared as it is: use it, copy it, or adapt it under the [MIT License](LICENSE). Issues and pull requests are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-In this repository, "the owner" means the person whose set this is. Project-specific rules live in each project, not here.
+It keeps a project's definitions and decisions in a wiki inside the project's repository, so every person and every agent on the project works from the same source of truth. In this repository, "the owner" means the person who maintains the product.
 
-It is a Claude Code plugin. Every session loads:
+It is three plugins in one marketplace:
 
-| Part | Content |
-|------|---------|
-| Rules | `plugins/playbook-agents/rules.md`, 18 short rules. A hook prints them at session start. The other six rules of the set are in `plugins/playbook-wiki/contract.md`, which `playbook-wiki` prints at session start |
-| Skills | Six, loaded on demand: `prepare-project`, `write-skill`, `write-docs`, `keep-minimal`, `avoid-generic-design`, `review-change`. The `SKILL.md` of each, under `plugins/playbook-wiki/skills/` and `plugins/playbook-agents/skills/`, says which requests load it and what it does. A seventh, `doctor`, runs only when the owner starts it (`/playbook-wiki:doctor` in Claude Code): it repairs a project's wiki after the format of a wiki changed. At session start a hook says so in one line when a project's wiki has no file `docs/wiki/.format` or the file is behind |
-| Agents | Three, for delegated work: `explore`, `write`, `review`. The model and the effort of each are in `plugins/playbook-agents/models.conf` |
+| Plugin | For | Holds |
+|--------|-----|-------|
+| `playbook` | Starting the product | Only the command `/playbook:init`. Nothing else loads until you run it |
+| `playbook-wiki` | Everyone who works on a project | The contract an agent follows, printed at session start; the format of a project's wiki and its check; a step before a `git merge` that shows the decisions to compare; and three skills: `prepare-project`, `write-docs`, and `doctor`, which only you start (`/playbook-wiki:doctor`) |
+| `playbook-agents` | The owner's way of working, for whoever wants it | 18 working rules, printed at session start; the agents `explore`, `write`, and `review`, with the model of each in `plugins/playbook-agents/models.conf`; and four skills: `keep-minimal`, `review-change`, `write-skill`, and `avoid-generic-design`. It needs `playbook-wiki` |
 
-**Status:** "Where work stands" in [docs/wiki/README.md](docs/wiki/README.md) says what is finished, what is open, and what comes next.
+You can use the wiki alone with your own agent setup, or the whole product.
+
+**Status:** the work in progress is under [docs/wiki/works/](docs/wiki/works/); start at [docs/wiki/README.md](docs/wiki/README.md).
 
 ## Needs
 
-The plugin does not install these tools. Install each one in Claude Code yourself. The decisions are in [docs/wiki/decisions.md](docs/wiki/decisions.md).
+`playbook-agents` uses these tools and does not install them. Install each one in Claude Code yourself; `playbook-wiki` alone needs none of them, only git. The decisions are in [docs/wiki/decisions.md](docs/wiki/decisions.md).
 
 | Tool | Used for | Decision |
 |------|----------|----------|
@@ -26,20 +28,6 @@ The plugin does not install these tools. Install each one in Claude Code yoursel
 
 ## Install
 
-### With an agent
-
-Paste this prompt into a Claude Code session. The agent runs the commands below and asks before changing a file of yours.
-
-```text
-Install the playbook plugin for Claude Code from https://github.com/andresfrei/playbook.
-Run `claude plugin marketplace add andresfrei/playbook`, then
-`claude plugin install playbook@playbook --scope user`, then `claude plugin list`,
-and confirm that playbook@playbook is enabled and show its version.
-Change no other setting. Then read the "Needs" section of the repository's README.md
-and tell me which of Engram, CodeGraph, and context7 I am missing. Do not install
-them unless I ask.
-```
-
 ### From GitHub, in Claude Code
 
 ```sh
@@ -47,28 +35,63 @@ claude plugin marketplace add andresfrei/playbook
 claude plugin install playbook@playbook --scope user
 ```
 
+Then start a new Claude Code session inside a repository, and run:
+
+```text
+/playbook:init
+```
+
+It asks two questions: the wiki alone or the whole product, and this repository or every project. For the whole product it also asks the language the agent talks to you in, and tells you which other plugins are on and whether you have a global `CLAUDE.md`, because two agent setups in one session collide. It lists the skills you already have that do the same job as one it turns on, and asks what to do with each. Then a script turns the plugins on with Claude Code's own commands and prints each one. What it turned on is used from the next session.
+
+Run `/playbook:init` again to change what is on, in that repository or in every project. It writes in no `CLAUDE.md`.
+
+### With an agent
+
+Paste this prompt into a Claude Code session:
+
+```text
+Install the playbook for Claude Code from https://github.com/andresfrei/playbook.
+Run `claude plugin marketplace add andresfrei/playbook`, then
+`claude plugin install playbook@playbook --scope user`, then `claude plugin list`,
+and confirm that playbook@playbook is enabled and show its version.
+Change no other setting. Then read the "Needs" section of the repository's README.md
+and tell me which of Engram, CodeGraph, and context7 I am missing. Do not install
+them unless I ask. Tell me to start a new session and run /playbook:init.
+```
+
+### Updates
+
 Claude Code installs a copy of the latest release. Automatic updates are off by default for this marketplace, so update by hand when a new release is out:
 
 ```sh
+claude plugin marketplace update playbook
 claude plugin update playbook@playbook
 ```
 
-Inside a session, `/plugin marketplace update playbook` does the same. A release reaches you only when its version changes; the releases and their tags are on GitHub. How versions are made is in [CONTRIBUTING.md](CONTRIBUTING.md#releases).
+Then update each of `playbook-wiki@playbook` and `playbook-agents@playbook` that `claude plugin list` shows, with `--scope local` from inside a repository where it was turned on for that repository only.
+
+A release reaches you only when its version changes; the releases and their tags are on GitHub. How versions are made is in [CONTRIBUTING.md](CONTRIBUTING.md#releases).
+
+**From version 1.** Version 2 splits the old plugin `playbook` into three. After the update, `playbook` holds only the start command, so your rules, skills, and agents are gone until you run `/playbook:init` once, in a new session, and choose the whole product for every project.
 
 ### From a local clone, in Claude Code
 
-To change the plugin, or to load every commit as it is made:
+To change the plugins, or to load every commit as it is made:
 
 ```sh
 claude plugin marketplace add /path/to/this/clone
 claude plugin install playbook@playbook --scope user
 ```
 
-The plugin is read in place from the clone: a change to the files under `plugins/` applies to the next session, or to an open one after `/reload-plugins`, with no reinstall. Whatever is checked out in the clone is what every session loads. The source for this behaviour is in [docs/wiki/03-technology/installation.md](docs/wiki/03-technology/installation.md).
+Then run `/playbook:init` as above. The plugins are read in place from the clone: a change to the files under `plugins/` applies to the next session, or to an open one after `/reload-plugins`, with no reinstall. Whatever is checked out in the clone is what every session loads. The source for this behaviour is in [docs/wiki/03-technology/installation.md](docs/wiki/03-technology/installation.md).
 
 ### Remove it from Claude Code
 
+Uninstall each plugin that `claude plugin list` shows, in this order, with the scope it lists: add `--scope local`, from inside the repository, for one that `/playbook:init` turned on for that repository only.
+
 ```sh
+claude plugin uninstall playbook-agents@playbook
+claude plugin uninstall playbook-wiki@playbook
 claude plugin uninstall playbook@playbook
 claude plugin marketplace remove playbook
 ```
@@ -77,12 +100,12 @@ claude plugin marketplace remove playbook
 
 | Path | Content |
 |------|---------|
-| `docs/wiki/` | What is decided, what is open, and the plan |
+| `docs/wiki/` | This repository's own wiki: what is decided, what is open, and the work in progress |
 | `CLAUDE.md` | Instructions for an agent that works in this repository |
 | `.github/` | `CODEOWNERS`, and the templates for issues and pull requests |
 | `LICENSE`, `CONTRIBUTING.md`, `SECURITY.md` | The licence, how to contribute, how to report a vulnerability |
 | `.claude-plugin/marketplace.json` | Makes this repository a Claude Code marketplace |
-| `plugins/` | The three plugins. `playbook-wiki` holds the wiki skills, the hook that compares a wiki's format, and their evaluation cases; `playbook-agents` holds the rules file, the other skills, the agents, `models.conf`, and their evaluation cases; `playbook` holds only its manifest for now |
+| `plugins/` | The three plugins. `playbook-wiki` holds the contract, the format of a wiki and its check, the step before a merge, the wiki skills, their hooks, and their evaluation cases; `playbook-agents` holds the rules file, the other skills, the agents, `models.conf`, and their evaluation cases; `playbook` holds the start command and its script |
 | `scripts/` | Checks for whoever maintains the plugin, and the script that sets the agents' models |
 
 ## Checks
@@ -90,7 +113,7 @@ claude plugin marketplace remove playbook
 ```sh
 sh scripts/verify.sh             # manifests, format, size limits, and agent models
 sh scripts/verify_test.sh        # tests of the scripts
-shellcheck scripts/*.sh
+shellcheck scripts/*.sh plugins/*/*.sh plugins/*/hooks/*.sh plugins/*/skills/*/scripts/*.sh
 ```
 
 To change the model or the effort of an agent, edit its line in `plugins/playbook-agents/models.conf`, then run:

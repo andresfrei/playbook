@@ -23,12 +23,12 @@ A file over a limit fails the verify script. Text that does not fit moves to a r
 
 ## Limits of a project's wiki
 
-Two limits apply to the wiki that `prepare-project` creates in a project, not to the plugin (D138). They are stated in [`plugins/playbook-wiki/skills/prepare-project/references/1-wiki.md`](../../../plugins/playbook-wiki/skills/prepare-project/references/1-wiki.md); why they exist is in [wiki-maintenance.md](wiki-maintenance.md).
+Two limits apply to a project's wiki, not to the plugin (D138). They are stated in the format of a wiki, [`plugins/playbook-wiki/format.md`](../../../plugins/playbook-wiki/format.md) (D201); why they exist is in [wiki-maintenance.md](wiki-maintenance.md).
 
 | What | Limit | Enforced by |
 |------|-------|-------------|
-| The section "Where work stands" of the wiki's `README.md` | 250 words | `plugins/playbook-wiki/check-wiki.sh`, which also fails on a relative link that does not resolve and on a path the wiki names as code that does not exist (D160) |
-| The text of a decision in `decisions.md` | 60 words | The same script, for the rows written after the wiki reached format 3 (D161). Earlier rows are not checked or changed |
+| The section "Where work stands" of a work's `README.md` | 250 words | `plugins/playbook-wiki/check-wiki.sh`, which also fails on a relative link that does not resolve and on a path the wiki names as code that does not exist (D160) |
+| The text of a decision in a work's `decisions.md` | 60 words | The same script (D161). The `decisions.md` of an earlier format is history: the script does not read it (D202) |
 
 ## Format of a skill
 
@@ -38,13 +38,13 @@ That file repeats the numbers of L2 and L3, and `scripts/verify.sh` holds all fo
 
 ## Format of an agent file and the model configuration
 
-An agent file is `plugin/agents/<name>.md` (TD7, TD8, TD11). Its front matter holds `name`, `description` (one line, within L3), `tools` (comma-separated, optional), `skills` (optional: the skills of the plugin that the agent preloads, on one line, separated by commas; D159), `model`, and `effort`. The body is the agent's system prompt: plain imperative rules, under about 150 words. Claude Code lists every agent with its description at session start, so agent descriptions count toward L4.
+An agent file is `plugins/playbook-agents/agents/<name>.md` (TD7, TD8, TD11). Its front matter holds `name`, `description` (one line, within L3), `tools` (comma-separated, optional), `skills` (optional: the skills of the plugin that the agent preloads, on one line, separated by commas; D159), `model`, and `effort`. The body is the agent's system prompt: plain imperative rules, under about 150 words. Claude Code lists every agent with its description at session start, so agent descriptions count toward L4.
 
-The `model` and `effort` lines are written from `plugin/models.conf` by `scripts/set-models.sh` and never edited by hand. The file has one line per agent: name, model, effort, with `#` for comments. A model is `haiku`, `sonnet`, `opus`, `fable`, `inherit`, or a full id starting with `claude-`. An effort is `low`, `medium`, `high`, `xhigh`, or `max`. `scripts/verify.sh` runs `set-models.sh --check` and fails when an agent file differs from the configuration, when a configured agent has no file, or when an agent file has no line.
+The `model` and `effort` lines are written from `plugins/playbook-agents/models.conf` by `scripts/set-models.sh` and never edited by hand. The file has one line per agent: name, model, effort, with `#` for comments. A model is `haiku`, `sonnet`, `opus`, `fable`, `inherit`, or a full id starting with `claude-`. An effort is `low`, `medium`, `high`, `xhigh`, or `max`. `scripts/verify.sh` runs `set-models.sh --check` and fails when an agent file differs from the configuration, when a configured agent has no file, or when an agent file has no line.
 
 ## Format of the rules file
 
-One line per rule, under five headings. No sources, no status, no numbers of decisions: those stay in [rules.md](rules.md).
+Each of the two files holds one line per rule, under headings: the rules of `playbook-agents` under five, the contract of `playbook-wiki` under four (D175). No sources, no status, no numbers of decisions: those stay in [rules.md](rules.md).
 
 ## What changes from the installed style guide
 

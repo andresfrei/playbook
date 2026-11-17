@@ -1,8 +1,8 @@
 # Contributing
 
-This repository is one person's set of working rules and skills for AI coding agents, shared as it is. Issues and pull requests are welcome. Every pull request is reviewed and approved by the owner before it is merged; nothing reaches `main` without that approval.
+This repository is a Claude Code product of three plugins, maintained by one person and shared as it is. Issues and pull requests are welcome. Every pull request is reviewed and approved by the owner before it is merged; nothing reaches `main` without that approval.
 
-Because the set is personal, a change can be declined even when it is correct, if it does not fit how the owner works. For anything larger than a small fix, open an issue first and wait for an answer before writing the change.
+`playbook-wiki` is meant for anyone who works on a project with others. `playbook-agents` is the owner's own way of working, so a change to it can be declined even when it is correct, if it does not fit how the owner works. For anything larger than a small fix, open an issue first and wait for an answer before writing the change.
 
 ## Issues
 
@@ -21,7 +21,7 @@ Do not report a security problem in an issue. See [SECURITY.md](SECURITY.md).
   ```sh
   sh scripts/verify.sh
   sh scripts/verify_test.sh
-  shellcheck scripts/*.sh
+  shellcheck scripts/*.sh plugins/*/*.sh plugins/*/hooks/*.sh plugins/*/skills/*/scripts/*.sh
   ```
 
   `verify.sh` needs the `claude` command. The limits it enforces are in [docs/wiki/01-product/style-guide.md](docs/wiki/01-product/style-guide.md).
