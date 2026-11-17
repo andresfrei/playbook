@@ -13,12 +13,12 @@ Checked on 2026-11-17, by running `claude --version` (2.1.326) and `claude plugi
 
 | # | Need | Choice | Status |
 |---|------|--------|--------|
-| N1 | Three runs per case (skill-triggering-2) | `--runs 3` on every measurement | Proposed |
-| N2 | A record of whether the skill loaded in each run, and what the agent did when it did not | `--json <file>` beside the report, and `--keep-temp`; the file is read for the grader `skill-loaded` of each run | Proposed |
-| N3 | Spend only where a measurement says something (skill-triggering-3) | The cases of triggering run with `--tag <skill> --ablation none`, since the skill cannot load without the plugin; the cases of behaviour with `--tag <skill>-behaviour --ablation with-without`, as before | Proposed |
+| N1 | Three runs per case (skill-triggering-2) | `--runs 3` on every measurement | Decided (skill-triggering-6) |
+| N2 | A record of whether the skill loaded in each run, and what the agent did when it did not | `--json <file>` beside the report, and `--keep-temp`; the file is read for the grader `skill-loaded` of each run | Decided (skill-triggering-6) |
+| N3 | Spend only where a measurement says something (skill-triggering-3) | The cases of triggering run with `--tag <skill> --ablation none`, since the skill cannot load without the plugin; the cases of behaviour with `--tag <skill>-behaviour --ablation with-without`, as before | Decided (skill-triggering-6) |
 | N4 | The model of each case | As skill-best-practices-6 decided: `--model sonnet`, and `review-change` on `opus` through its agent | Decided (skill-best-practices-6) |
 | N5 | A ceiling per measurement | `--max-cost-usd 3` per skill on the first measurement (skill-triggering-3); the later ceiling set from its cost | Decided (skill-triggering-3) |
-| N6 | `wiki-format.sh mark` where the temporary folder cannot be written (skill-best-practices-Q5) | Keep the copy of the old marker beside it, in the wiki's folder, which `mark` must write anyway; a case in `scripts/verify_test.sh` with an unwritable `TMPDIR` | Proposed |
+| N6 | `wiki-format.sh mark` where the temporary folder cannot be written (skill-best-practices-Q5) | Keep the copy of the old marker beside it, in the wiki's folder, which `mark` must write anyway; a case in `scripts/verify_test.sh` with an unwritable `TMPDIR` | Decided (skill-triggering-6) |
 
 ## Architecture
 
