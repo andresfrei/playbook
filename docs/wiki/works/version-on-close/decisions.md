@@ -1,0 +1,8 @@
+# Decisions of version-on-close
+
+| ID | Date | Decision | Who decided | Their words | Shared page |
+|----|------|----------|-------------|-------------|-------------|
+| version-on-close-1 | 2026-11-16 | When `prepare-project` closes a work in a project that publishes versions, it recommends whether the work needs a new version and which one, and asks. It is written in the closing step of stage 6, `references/6-execution.md`, not in the rules of `playbook-agents`, which load in every session and are at 609 of 620 words. | Andres Frei | Asked "¿Mergeo este como está, solo para este repo, y abrimos ese work aparte para llevarlo al producto?", after that place was recommended; answered "si" | none |
+| version-on-close-2 | 2026-11-16 | A project publishes versions when git has at least one tag that is a version, such as `v1.2.0` or `1.2.0`. No file of the project is read for it. Answers Q1. | Andres Frei | Option chosen: "Por los tags de git (Recomendado)" | none |
+| version-on-close-3 | 2026-11-16 | The recommendation follows the project's own written rule of versions when it has one, and otherwise Semantic Versioning: MAJOR when the work breaks what users have, MINOR when it adds without breaking, PATCH for a fix, none when nothing reaches users. Answers Q2. | Andres Frei | Option chosen: "SemVer, salvo regla propia (Recomendado)" | none |
+| version-on-close-4 | 2026-11-16 | On a yes, the agent also makes the release, after the work is merged: the new version in the project's files, the tag, and the release on the forge. The yes authorizes those steps. Answers Q3, against the recommendation to only record the version and list the steps. | Andres Frei | Option chosen: "Hacer el release" | none |
