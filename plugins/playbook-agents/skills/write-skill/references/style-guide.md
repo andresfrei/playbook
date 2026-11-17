@@ -224,6 +224,8 @@ weight: 1
 <What a correct result shows, in one checkable sentence>
 ```
 
+To check what a file the agent wrote holds, give a `regex` grader the target `source: file` and the file's `path`. In a pattern, write three dashes as `-{3}`: with `---` in the front matter, the case fails to load as invalid YAML.
+
 The graders' fields are in Claude Code's documentation: https://code.claude.com/docs/en/plugin-evals.md.
 
 A case that passes as well without the plugin proves nothing the skill adds: replace it.
@@ -239,5 +241,7 @@ claude plugin eval <plugin> --tag <skill-name> --ablation none --model sonnet --
 # Behaviour: with the plugin and without it
 claude plugin eval <plugin> --tag <skill-name>-behaviour --model sonnet --max-cost-usd <ceiling> --no-publish
 ```
+
+Add `--allow-tools <tool>` for each tool a case lists beyond Read, Glob, Grep, and Skill, such as `--allow-tools Write`. To check that every case loads, at no cost, run the same command with `--case no-such-case`: it reports each file it cannot read and runs nothing.
 
 A case of behaviour runs in an arm with the plugin and in a baseline arm without it. It passes when its graders pass in the arm with the plugin; the report also gives the baseline's score. The command exits 0 only when every case passes. Every run is a billed model call, and by default each case runs three times in each arm.
