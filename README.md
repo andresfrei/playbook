@@ -16,6 +16,54 @@ You can use the wiki alone with your own agent setup, or the whole product.
 
 **Status:** the work in progress is under [docs/wiki/works/](docs/wiki/works/); start at [docs/wiki/README.md](docs/wiki/README.md).
 
+## How it works
+
+How the three plugins relate. `/playbook:init` turns the others on; nothing of the product loads before it.
+
+```mermaid
+flowchart LR
+  you([You]) -- "/playbook:init" --> init["playbook<br/>the start command"]
+  init -- "turns on" --> wiki["playbook-wiki<br/>the core"]
+  init -. "turns on, when you choose<br/>the whole product" .-> agents["playbook-agents<br/>the owner's agent system"]
+  agents -- "needs" --> wiki
+  wiki --- wikiHolds["the contract<br/>the wiki format<br/>and its check<br/>the step at the merge<br/>prepare-project<br/>write-docs<br/>doctor"]
+  agents --- agentsHolds["18 rules<br/>the language you chose<br/>the agents<br/>explore, write, review<br/>keep-minimal<br/>review-change<br/>write-skill<br/>avoid-generic-design"]
+  wiki -- "reads and writes" --> repo[("docs/wiki/<br/>in your project")]
+```
+
+What each plugin does during a session. The steps inside a box run only when the case arises.
+
+```mermaid
+sequenceDiagram
+  participant You
+  participant CC as Claude Code
+  participant W as playbook-wiki
+  participant A as playbook-agents
+  participant Wiki as docs/wiki/
+  You->>CC: start a session
+  CC->>W: session starts
+  W-->>CC: the contract, and a notice when the wiki's format is behind
+  CC->>A: session starts
+  A-->>CC: the rules, and the language
+  You->>CC: a request
+  CC->>Wiki: read README.md, then the page that governs the code to change
+  opt a new project, phase, or feature
+    CC->>W: prepare-project, six stages, each closed by you
+    W->>Wiki: the work's decisions, questions, and plan, under works/
+  end
+  opt work is delegated
+    CC->>A: the agent explore, write, or review
+    CC->>W: a subagent starts
+    W-->>CC: the contract, for the subagent
+  end
+  opt a git merge
+    CC->>W: before the command runs
+    W-->>You: the decisions to compare, when there are any
+  end
+```
+
+The hooks and modules behind each step are in [docs/wiki/03-technology/architecture.md](docs/wiki/03-technology/architecture.md).
+
 ## Needs
 
 `playbook-agents` uses these tools and does not install them. Install each one in Claude Code yourself; `playbook-wiki` alone needs none of them, only git. The decisions are in [docs/wiki/decisions.md](docs/wiki/decisions.md).
