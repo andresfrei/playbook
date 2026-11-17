@@ -1,5 +1,6 @@
 ---
 tags: [review-change]
+plugins: ["../..", "../../../playbook-wiki"]
 allowed_tools: [Read, Glob, Grep, Skill]
 ---
 

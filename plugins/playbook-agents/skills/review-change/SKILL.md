@@ -13,10 +13,9 @@ Do not use it to review for unnecessary complexity (use `keep-minimal`), to revi
 
 ## Rules
 
-- When you wrote the change, or saw it being written, do not review it. Hand the request to the `review` agent and return its report unchanged.
-- Otherwise you are a reader that has not seen the conversation. Work only from the request and the repository.
+- You are a reader that has not seen the conversation. Work only from the request and the repository.
 - Read only. Never edit, create, or delete a file. Run only commands that read.
-- One read, one report. Do not ask questions, and do not propose or apply fixes beyond one line per finding.
+- One read, one report. Do not ask questions, and do not apply fixes.
 - Report only a defect that makes the change wrong, and only one you can show:
   - behaviour that differs from what the change is meant to do;
   - behaviour that differs from what the project's wiki says is Decided for the part the change touches;

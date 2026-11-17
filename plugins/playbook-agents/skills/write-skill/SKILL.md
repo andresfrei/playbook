@@ -16,9 +16,13 @@ Do not use it for rules that apply to every task, for project documentation, or 
 - No two skills share a job. When an available skill already answers the same requests, propose changing that skill instead of adding one.
 - Every skill follows `references/style-guide.md`: its files, format, limits, and writing rules.
 - Ask the owner for a missing job or trigger request. Do not invent it.
-- A new skill gets two evaluation cases: one request that must trigger it and one that must not.
+- Every skill gets the evaluation cases the style guide asks for. A new skill gets its cases of behaviour before its `SKILL.md`.
 - In an existing skill, change only what breaks the style guide or what the owner asked for. Keep its job.
 - Run a paid evaluation only when the owner asks.
+
+## Gotchas
+
+- A request that asks for two results, such as "writes the changelog and also publishes the release", is two jobs, even under one name such as `release`: propose two skills, ask which to write first, and write nothing until the owner answers.
 
 ## Steps
 
@@ -27,10 +31,12 @@ Do not use it for rules that apply to every task, for project documentation, or 
 1. Read `references/style-guide.md`.
 2. Write down the job in one sentence, the requests that must trigger the skill, and one similar request that must not. Ask the owner for whatever is missing.
 3. Read the names and descriptions of the available skills. If one has the same job, stop and report it.
-4. Write `SKILL.md` from the template in the style guide.
-5. Move detail that only some tasks need into `references/`, one file per topic. List each file under References with when to read it.
-6. Write the two evaluation cases.
-7. Do the checks below.
+4. Collect the project's own material for the job: tasks done, the owner's corrections, and its documents. Ask the owner when there is none.
+5. Write the three cases of behaviour from that material.
+6. Write `SKILL.md` from the template in the style guide.
+7. Move detail that only some tasks need into `references/`, one file per topic. List each file under References with when to read it.
+8. Write the two cases of triggering.
+9. Do the checks below.
 
 ### Existing skill
 
@@ -48,7 +54,7 @@ Do not use it for rules that apply to every task, for project documentation, or 
 
 ## Output
 
-- New skill: the files written, the body's word count, the description's character count, and the two evaluation cases.
+- New skill: the files written, the body's word count, the description's character count, and the evaluation cases.
 - Audit: the findings, or "no findings".
 - Fix: the findings, the changes made, and both counts before and after.
 - Any check that failed or could not run.

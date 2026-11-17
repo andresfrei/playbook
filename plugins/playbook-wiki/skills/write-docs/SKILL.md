@@ -24,7 +24,7 @@ Do not use it for writing a skill or for preparing a project in stages. Use it f
 - Write what the reader must do as instructions: "Run X", "Open Y". Keep reasons and history in a section or page of their own.
 - Use a table to compare options and to list items that share the same fields. Use a numbered list for actions in order.
 - Write dates in full, such as 2026-11-13. Never "today" or "last week".
-- When the owner changes a definition, rewrite the page that states it so that it says only the new one. Record the decision and name the one it replaces. Ask what happens to the code that follows the old definition: changed now, changed when it is next touched, or listed as debt. List the code left on the old definition in that page, under "Code on the old definition". When the change is for every project, it belongs to the playbook, not to this project.
+- When the owner changes a definition, rewrite the page that states it so that it says only the new one. Record the decision and name the one it replaces. Ask what happens to the code that follows the old definition: changed now, changed when next touched, or debt. In a wiki, list the code left on it as `<this skill's folder>/../../format.md` says under "A shared page". When the change is for every project, tell the owner it belongs to the playbook, and do not write it in this project.
 
 ## Steps
 
@@ -33,7 +33,7 @@ Do not use it for writing a skill or for preparing a project in stages. Use it f
 3. Collect the facts the document needs. Verify each one against its source: the code, a command's output, a tool's current documentation, or the owner's words. Keep the evidence. Ask the owner for a fact that has no source. Do not invent it.
 4. Write the document following the Rules.
 5. Link a new page from the entry point, and update what the entry point says is decided, open, and next when that changed. When several documents have no entry point, report it to the owner.
-6. Read the document as a reader who has nothing else. Fix every reference that needs the conversation, every link or path that does not resolve, every fact stated twice, and every unverified claim that is not marked.
+6. Read the document as a reader who has nothing else. Fix every break of the Rules, and every link or path that does not resolve.
 
 ## Output
 

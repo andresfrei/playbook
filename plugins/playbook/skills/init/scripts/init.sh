@@ -22,9 +22,11 @@
 #              empty or missing language clears it.
 #        `claude plugin install` of a plugin already installed turns it on
 #        and marks it as installed by name, not as a dependency.
-#        Each claude command is printed with "+ " before it runs. Exits 1 at
-#        the first command that fails, after printing its output.
-# Exits 2 on bad arguments.
+#        Each claude command is printed with "+ " before it runs.
+#
+# Exit codes: 0 done; 1 a claude command failed, after printing its output;
+# 2 bad arguments; 3 the marketplace playbook is not added; 4 the plugins or
+# marketplaces could not be read from claude. Messages go to standard error.
 #
 # `claude plugin list --json` reports, in each record, whether the plugin is
 # on in the folder it runs in, not at the record's scope. The folder decides:
@@ -35,13 +37,25 @@ marketplace=playbook
 wiki_id=playbook-wiki@$marketplace
 agents_id=playbook-agents@$marketplace
 
-usage() {
-  cat >&2 <<'USAGE'
+usage_text() {
+  cat <<'USAGE'
 Usage: init.sh scan
        init.sh skills <wiki|all>
        init.sh apply <wiki|all> <local|user> [language]
+       init.sh --help
+Exit codes: 0 done; 1 a claude command failed; 2 bad arguments;
+3 the marketplace playbook is not added; 4 claude could not be read.
 USAGE
+}
+
+usage() {
+  usage_text >&2
   exit 2
+}
+
+bad_language() {
+  printf 'the language must not hold a quote, a backslash, or a control character\n' >&2
+  usage
 }
 
 # records <json> prints one line per installed plugin and scope: id, scope,
@@ -72,7 +86,7 @@ records() {
 # list <folder> prints the records, as `records` does, read in that folder.
 list() {
   json=$(cd "$1" && claude plugin list --json) ||
-    { printf 'could not read claude plugin list --json\n' >&2; exit 1; }
+    { printf 'could not read claude plugin list --json. Check that the claude command runs in this shell.\n' >&2; exit 4; }
   records "$json"
 }
 
@@ -90,7 +104,7 @@ run() {
   out=$("$@" 2>&1)
   code=$?
   [ -z "$out" ] || printf '%s\n' "$out"
-  [ "$code" -eq 0 ] || exit 1
+  [ "$code" -eq 0 ] || { printf 'FAIL the command above exited %s. Repair what it printed, then run init.sh again.\n' "$code" >&2; exit 1; }
 }
 
 # Saves the language of playbook-agents, empty to clear it.
@@ -101,11 +115,11 @@ configure_language() {
     claude plugin configure "$agents_id" --values-stdin 2>&1)
   code=$?
   [ -z "$out" ] || printf '%s\n' "$out"
-  [ "$code" -eq 0 ] || exit 1
+  [ "$code" -eq 0 ] || { printf 'FAIL the command above exited %s. Repair what it printed, then run init.sh again.\n' "$code" >&2; exit 1; }
 }
 
 scan() {
-  recs=$(list .) || exit 1
+  recs=$(list .) || exit $?
   printf 'Plugins of the playbook on this machine:\n'
   for id in "$wiki_id" "$agents_id"; do
     lines=$(printf '%s\n' "$recs" | awk -F '\t' -v id="$id" '$1 == id')
@@ -210,15 +224,15 @@ skills_in() {
 skills() {
   case ${1:-} in wiki | all) ;; *) usage ;; esac
   json=$(claude plugin marketplace list --json) ||
-    { printf 'could not read claude plugin marketplace list --json\n' >&2; exit 1; }
+    { printf 'could not read claude plugin marketplace list --json. Check that the claude command runs in this shell.\n' >&2; exit 4; }
   location=$(printf '%s\n' "$json" | awk -v m="$marketplace" '
     /^    "name":/ { name = $0; sub(/^[^:]*: *"/, "", name); sub(/".*$/, "", name) }
     /^    "installLocation":/ && name == m {
       sub(/^[^:]*: *"/, ""); sub(/"[ ,]*$/, ""); print; exit
     }')
   if [ -z "$location" ]; then
-    printf 'the marketplace %s is not added\n' "$marketplace" >&2
-    exit 1
+    printf 'the marketplace %s is not added. Add it with claude plugin marketplace add, from GitHub or from a clone.\n' "$marketplace" >&2
+    exit 3
   fi
   off_names=$(off_names)
   plugins=playbook-wiki
@@ -234,7 +248,7 @@ skills() {
   skills_in "$personal" ""
   printf 'Skills of the other plugins that are on here:\n'
   json=$(claude plugin list --json) ||
-    { printf 'could not read claude plugin list --json\n' >&2; exit 1; }
+    { printf 'could not read claude plugin list --json. Check that the claude command runs in this shell.\n' >&2; exit 4; }
   folders=$(printf '%s\n' "$json" | awk -v m="@$marketplace" '
     function value(line) {
       sub(/^[^:]*: */, "", line); sub(/[ ,]*$/, "", line)
@@ -275,14 +289,14 @@ apply() {
   case $scope in local | user) ;; *) usage ;; esac
   # The language goes into a JSON string and a command line.
   case $language in
-    *\"* | *\\*) usage ;;
+    *\"* | *\\*) bad_language ;;
   esac
-  [ "$(printf '%s' "$language" | tr -d '[:cntrl:]')" = "$language" ] || usage
+  [ "$(printf '%s' "$language" | tr -d '[:cntrl:]')" = "$language" ] || bad_language
 
   if [ "$what" = wiki ]; then
     folder=.
     [ "$scope" = user ] && folder=/
-    recs=$(list "$folder") || exit 1
+    recs=$(list "$folder") || exit $?
     agents_on=$(is_on "$recs" "$agents_id")
   fi
 
@@ -300,6 +314,7 @@ apply() {
 }
 
 case ${1:-} in
+  -h | --help) usage_text ;;
   scan) [ $# -eq 1 ] || usage; scan ;;
   skills) [ $# -eq 2 ] || usage; skills "$2" ;;
   apply) [ $# -ge 3 ] && [ $# -le 4 ] || usage; shift; apply "$@" ;;

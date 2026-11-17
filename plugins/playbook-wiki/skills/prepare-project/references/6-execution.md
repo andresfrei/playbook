@@ -5,9 +5,9 @@ The plan is built unit by unit. A unit is accepted as the plan says: by its evid
 ## Steps
 
 1. Take the first unit of the work's `plan.md` that is not Done. Do not start a unit before the one before it is Done. When the plan allows parallel units, take with it the units the plan says may be built together.
-2. Build the unit with the execution workflow that the session's instructions define, and deliver it as the plan says: its branch, and how it reaches the main branch. This skill adds no workflow of its own. Create a document for a unit only when that workflow requires one.
+2. Build the unit with the execution workflow that the session's instructions define, and deliver it as the plan says: its branch, and how it reaches the main branch. This skill adds no workflow of its own; when the instructions define none, build the unit directly. Create a document for a unit only when that workflow requires one.
 3. When a definition is missing, ask the owner, record the decision in the wiki, and then continue. When one changes, do what the `write-docs` skill says for a changed definition.
-4. When the unit's ending condition holds, record its evidence in the progress table: what was run and what was observed. Rewrite "Where work stands" in the work's `README.md`, counting a unit accepted by evidence as Done, and run the check from the project's root: `sh <this skill's folder>/../../check-wiki.sh docs/wiki`. When it passes:
+4. When the unit's ending condition holds, record its evidence in the progress table: what was run and what was observed. Rewrite "Where work stands" as step 5 of the skill says, counting a unit accepted by evidence as Done, and run the check that step 6 names. When it passes:
    - A unit accepted by evidence: set it to Done, with the date. Ask the owner only what written decisions cannot resolve.
    - A unit accepted by judgement: set it to Built and ask the owner to review it. When the owner accepts it, set it to Done, with the date and the owner's words.
 5. The acceptance of a unit is not a row of the work's `decisions.md`.
