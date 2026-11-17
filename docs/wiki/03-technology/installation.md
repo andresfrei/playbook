@@ -13,7 +13,7 @@ The answers are kept in four places, none of them a file of the product's own (T
 
 ## Versions
 
-Each plugin declares its version in its own `plugin.json`, never in the marketplace entry, and each release commit is tagged `v<version>` (TD22). Version 2 is phase 4, a MAJOR version because it breaks an installation of version 1: the plugin `playbook` loses its skills, agents, and rules and becomes the start plugin (TD32). A person who had version 1 updates it and runs `/playbook:init` once.
+Each plugin declares its version in its own `plugin.json`, never in the marketplace entry, and each release commit is tagged `v<version>` (TD22). The tag then gets a release on GitHub, titled `playbook <version>`, with notes on what changed and, for a MAJOR version, how to move from the one before (github-release-1). Version 2 is phase 4, a MAJOR version because it breaks an installation of version 1: the plugin `playbook` loses its skills, agents, and rules and becomes the start plugin (TD32). A person who had version 1 updates it and runs `/playbook:init` once.
 
 An installation from GitHub gets a commit only when the version changes. A marketplace added from a local clone loads the plugins in place: a change applies to the next session, or to an open one after `/reload-plugins`.
 
