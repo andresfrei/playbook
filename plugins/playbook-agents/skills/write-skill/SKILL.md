@@ -20,6 +20,10 @@ Do not use it for rules that apply to every task, for project documentation, or 
 - In an existing skill, change only what breaks the style guide or what the owner asked for. Keep its job.
 - Run a paid evaluation only when the owner asks.
 
+## Gotchas
+
+- A request that asks for two results, such as "writes the changelog and also publishes the release", is two jobs, even under one name such as `release`: propose two skills, ask which to write first, and write nothing until the owner answers.
+
 ## Steps
 
 ### New skill

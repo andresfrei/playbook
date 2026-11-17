@@ -12,11 +12,12 @@ Stage 6, Execution, is open: [plan.md](plan.md).
 
 Waiting for the owner:
 
-- The paid run of U3, which waits for the owner to ask: [plan.md](plan.md).
+- The ceiling of the paid runs of U6, from the cost of U3: [plan.md](plan.md).
 
 Next steps:
 
-1. U3: the cases of `write-skill`, then a run under USD 2 when the owner asks. U1 and U2 are Done.
+1. The owner sets the ceiling of U6. U1 and U2 are Done; U3 is built.
+2. U4 and U5, the audits.
 
 ## Stage table
 

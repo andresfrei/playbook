@@ -1,5 +1,6 @@
 ---
 tags: [write-skill]
+plugins: ["../..", "../../../playbook-wiki"]
 allowed_tools: [Read, Glob, Grep, Skill]
 ---
 

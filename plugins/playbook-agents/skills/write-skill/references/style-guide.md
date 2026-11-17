@@ -232,16 +232,18 @@ A case that passes as well without the plugin proves nothing the skill adds: rep
 
 ### Running them
 
-Run one skill's cases from the directory that holds the plugin, on the model the skill runs on: `sonnet` for a skill that runs in the session; a skill with `context: fork` runs on its agent's model.
+Run one skill's cases on the model the skill runs on: `sonnet` for a skill that runs in the session; a skill with `context: fork` runs on its agent's model.
 
 ```sh
 # Triggering: no baseline arm, which does not score a Skill grader
-claude plugin eval <plugin> --tag <skill-name> --ablation none --model sonnet --max-cost-usd <ceiling> --no-publish
+claude plugin eval <plugin> --tag <skill-name> --ablation none --model sonnet --max-cost-usd <ceiling> -j 1 --no-publish
 
 # Behaviour: with the plugin and without it
-claude plugin eval <plugin> --tag <skill-name>-behaviour --model sonnet --max-cost-usd <ceiling> --no-publish
+claude plugin eval <plugin> --tag <skill-name>-behaviour --model sonnet --max-cost-usd <ceiling> -j 1 --no-publish
 ```
 
-Add `--allow-tools <tool>` for each tool a case lists beyond Read, Glob, Grep, and Skill, such as `--allow-tools Write`. To check that every case loads, at no cost, run the same command with `--case no-such-case`: it reports each file it cannot read and runs nothing.
+A plugin that declares `dependencies` loads only with them; without them Claude Code drops it, and both arms run without the skill. Then list them in each case's `prompt.md`, such as `plugins: ["../..", "../../../<dependency>"]`, and run from the folder that holds both plugins: replace `<plugin>` with `. --eval-dir <plugin>/evals`, and add `--ablation with-without` for the cases of behaviour.
+
+Add `--allow-tools <tool>` for each tool a case lists beyond Read, Glob, Grep, and Skill, such as `--allow-tools Write`. To check that every case loads, at no cost, run the same command with `--case no-such-case`: it reports each file it cannot read and runs nothing. `-j 1` keeps the cost under the ceiling, which is checked only before each run starts.
 
 A case of behaviour runs in an arm with the plugin and in a baseline arm without it. It passes when its graders pass in the arm with the plugin; the report also gives the baseline's score. The command exits 0 only when every case passes. Every run is a billed model call, and by default each case runs three times in each arm.

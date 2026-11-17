@@ -1,5 +1,6 @@
 ---
 tags: [write-skill-behaviour]
+plugins: ["../..", "../../../playbook-wiki"]
 max_turns: 25
 allowed_tools: [Read, Glob, Grep, Skill, Write]
 ---
