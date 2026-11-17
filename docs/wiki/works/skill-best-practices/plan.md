@@ -6,7 +6,7 @@ Stage 5. It builds what [definition.md](definition.md) and [technology.md](techn
 
 | Unit | Status | Evidence | Done on | Owner's words |
 |------|--------|----------|---------|---------------|
-| skill-best-practices-U1 | Not started | | | |
+| skill-best-practices-U1 | Done 2026-11-17, accepted by the owner's judgement | `plugins/playbook-agents/skills/write-skill/references/style-guide.md` gains a section Contents, the rules of a name (G4), references one level deep and Contents over 100 lines (G5), a section Gotchas in the body and its template (G3), writing from the project's material (G8), one default, strictness by fragility, and examples (G6), a section Scripts (G7), and cases of behaviour: three per skill, tagged `<skill-name>-behaviour`, free graders first and `llm` graders for what needs reading, run with a baseline arm on the skill's model (G1, G2). The format of an `llm` grader was read from a case that `claude plugin eval init --bare` wrote in a scratch plugin on 2026-11-17. `write-skill` gains the steps that collect the project's material and write the cases of behaviour before `SKILL.md`; its body has 530 words. Run on 2026-11-17: `bash scripts/verify.sh` passed | 2026-11-17 | Asked "¿Aceptás la U1?"; answered "acepto" |
 | skill-best-practices-U2 | Not started | | | |
 | skill-best-practices-U3 | Not started | | | |
 | skill-best-practices-U4 | Not started | | | |

@@ -12,11 +12,11 @@ Stage 6, Execution, is open: [plan.md](plan.md).
 
 Waiting for the owner:
 
-- Nothing yet.
+- Nothing now.
 
 Next steps:
 
-1. U1, the style guide and `write-skill`.
+1. U2, the checks of a name and of references. U1 is Done.
 
 ## Stage table
 
