@@ -6,18 +6,18 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-16, after version-on-close-8.
+Updated 2026-11-16, after version-on-close-9.
 
-Stage 6, Execution, is open. Stages 1 to 5 are closed (version-on-close-6 to version-on-close-8).
+Stage 6, Execution, is open: U1 is Done and the work is ready to close. Stages 1 to 5 are closed (version-on-close-6 to version-on-close-8).
 
 Waiting for the owner:
 
-- The owner's review of the text of U1: [plan.md](plan.md).
+- Closing stage 6 and the work, and merging its pull request.
 
 Next steps:
 
-1. The owner accepts U1.
-2. Closing the work, with the version of the plugins.
+1. The owner closes the work, and merges its pull request.
+2. Version 2.1.0, released when wiki-check-on-commit is merged (version-on-close-9): the version in the three manifests, the tag `v2.1.0`, and the release on GitHub.
 
 ## Stage table
 
