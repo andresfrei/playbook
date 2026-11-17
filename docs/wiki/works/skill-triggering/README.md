@@ -8,15 +8,15 @@ Status: Open.
 
 Updated 2026-11-17, after skill-triggering-9.
 
-Stage 6, Execution, is open. skill-triggering-U1 is Done; see [plan.md](plan.md).
+Stage 6, Execution, is open. skill-triggering-U1 and -U2 are Done; see [plan.md](plan.md) and [measurements.md](measurements.md).
 
-Waiting for the owner: the paid run of skill-triggering-U2, which happens only when the owner asks (skill-triggering-3).
+Waiting for the owner: the ceiling of skill-triggering-U5, which the plan asks the owner to set from the cost of U2.
 
 Next steps:
 
-1. skill-triggering-U2: the first measurement of `review-change`, `keep-minimal`, `prepare-project`, and `avoid-generic-design`, under USD 3 per skill.
-2. The owner sets the ceiling of U5 from its cost.
-3. U3 and U4, then U5.
+1. The owner sets the ceiling of U5.
+2. U3, the descriptions of `review-change` and `keep-minimal`, and U4, from the traces of U2; both wait for the owner's review.
+3. U5, the second measurement.
 
 ## Stage table
 
@@ -39,3 +39,4 @@ Next steps:
 | [technology.md](technology.md) | What the work needs from its technology, and its architecture | |
 | [skills.md](skills.md) | The skills the work uses for each technology | |
 | [plan.md](plan.md) | The units of the work, their progress, and how each is delivered | |
+| [measurements.md](measurements.md) | What each run of the cases showed, and what the traces show | |
