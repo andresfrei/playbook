@@ -8,14 +8,14 @@ Status: Open.
 
 Updated 2026-11-17, after skill-adherence-15.
 
-Stage 6 Execution is open. skill-adherence-U1 is Done and -U2 is Built: [plan.md](plan.md).
+Stage 6 Execution is open. skill-adherence-U1 to -U3 are Done: [plan.md](plan.md).
 
-Waiting for the owner: the review of skill-adherence-U2.
+Waiting for the owner: nothing.
 
 Next steps:
 
-1. The owner reviews skill-adherence-U2.
-2. skill-adherence-U3 and -U4, which cost nothing; then U5, paid, when the owner asks.
+1. skill-adherence-U4, which costs nothing.
+2. skill-adherence-U5, paid, when the owner asks.
 
 ## Stage table
 
