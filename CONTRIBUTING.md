@@ -36,6 +36,12 @@ Each plugin declares its version in its manifest, `plugins/<name>/.claude-plugin
 - **MINOR**: something new that breaks nothing, such as a new skill or a new rule.
 - **PATCH**: a fix to text or behaviour.
 
+Then create the release on GitHub for that tag, titled `playbook <version>`, with notes on what changed and, for a MAJOR version, how to move from the one before. A tag alone is not listed under "Releases":
+
+```sh
+gh release create v<version> --verify-tag --title "playbook <version>" --notes-file <notes.md>
+```
+
 An installation from this repository's git address updates only when the version changes, so a commit merged between releases reaches users with the next release. Do not change the version in a pull request.
 
 By contributing, you agree that your contribution is licensed under the [MIT License](LICENSE).
