@@ -29,3 +29,4 @@ Accepted by the owner (plugin-directory-8), read from how this repository delive
 - The submission itself. The directory follows the default branch, so the owner submits each plugin in the portal after this work is merged, and after the release the version recommendation of the closing step leads to.
 - Checking, after the listing, that installing `playbook-agents` from the directory brings `playbook-wiki` (N2). It waits for Anthropic's review, which has no date.
 - `playbook`, which is not submitted (plugin-directory-1).
+- Aligning `write-skill` and its style guide with Anthropic's and agentskills.io's best practices for skills, compared on 2026-11-17: a later work, which the owner asked to note.

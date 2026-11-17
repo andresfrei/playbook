@@ -21,6 +21,8 @@ Checked by running, on 2026-11-17: `claude plugin validate` (Claude Code 2.1.326
 | N6 | The icons (plugin-directory-3) | An SVG written by hand for each plugin, turned into a 512 px PNG with ImageMagick, at `.claude-plugin/icon.png`, where the validator looks | Decided (plugin-directory-5) |
 | N7 | What the security scan and the policy ask to be disclosed | Each plugin's `README.md` says what each hook reads, prints, and stops, that nothing leaves the machine, and gives three example prompts. Support: the repository's GitHub issues, and the contact email the owner gives in the portal. No privacy policy: no data is collected or sent | Decided (plugin-directory-5) |
 
+Checked for N2 on 2026-11-17, in the trial configuration `~/.claude-playbook` with this branch as the marketplace: `claude plugin install playbook-agents@playbook --scope user` printed "Successfully installed plugin: playbook-agents@playbook (scope: user) (+ 1 dependency: playbook-wiki)", and both were enabled. Everything was removed after, and that configuration's `settings.json` is as before. How the directory resolves it is still checked after the listing.
+
 ## Architecture
 
 The product does not change shape: the same three plugins in the marketplace `playbook`. The work adds files inside two plugin folders, a `README.md` and an icon, and one field to two manifests. No script or hook changes.

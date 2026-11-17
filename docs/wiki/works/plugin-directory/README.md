@@ -12,12 +12,11 @@ Stage 6, Execution, is open: [plan.md](plan.md).
 
 Waiting for the owner:
 
-- The push of the branch, for U3.
+- U3, the portal's Validate, which only the owner can run: [plan.md](plan.md).
 
 Next steps:
 
-1. The push of the branch. U1 and U2 are Done.
-2. U3: the owner runs the portal's Validate on the branch.
+1. U3: the owner runs the portal's Validate on `feat/plugin-directory`, pushed on 2026-11-17. U1 and U2 are Done.
 
 ## Stage table
 
