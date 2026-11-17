@@ -6,8 +6,8 @@ Stage 5. The units that answer [definition.md](definition.md) with the technolog
 
 | ID | Status | Evidence | Done on | Owner's words |
 |----|--------|----------|---------|---------------|
-| skill-adherence-U1 | Built | The description ends at "Returns findings with failing cases." (235 to 208 characters). The Output adds "Then what the change is meant to do, in the one sentence of step 3." after the first line, and "and list no case that passed" after "No findings." (489 to 511 words). On 2026-11-17: `bash scripts/verify.sh` exited 0, `playbook-agents` loads 615 words at session start, limit 620; `claude plugin validate plugins/playbook-agents` passed. Not measured until U5 | | |
-| skill-adherence-U2 | Not started | | | |
+| skill-adherence-U1 | Done | The description ends at "Returns findings with failing cases." (235 to 208 characters). The Output adds "Then what the change is meant to do, in the one sentence of step 3." after the first line, and "and list no case that passed" after "No findings." (489 to 511 words). On 2026-11-17: `bash scripts/verify.sh` exited 0, `playbook-agents` loads 615 words at session start, limit 620; `claude plugin validate plugins/playbook-agents` passed. Not measured until U5 | 2026-11-17 | Acepto |
+| skill-adherence-U2 | Built | The gotcha's example is now "Which breads does the bakery bake each day, and can customers order ahead?", in place of the dental clinic of `prepare-project-new-project-stage-one`; the body stays at 688 words. On 2026-11-17: `grep -rliE "bakery|bread|bake"` over every `prompt.md` and grader under `plugins/*/evals/` found nothing; `bash scripts/verify.sh` exited 0; `claude plugin validate plugins/playbook-wiki` passed. Not measured until U5 | | |
 | skill-adherence-U3 | Not started | | | |
 | skill-adherence-U4 | Not started | | | |
 | skill-adherence-U5 | Not started | | | |

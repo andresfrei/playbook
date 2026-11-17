@@ -28,7 +28,7 @@ Do not use it for a small change in an existing repository that has no wiki. Do 
 
 ## Gotchas
 
-- After the recommendation, the closing line asks two things, such as "How many dentists are there, and do treatments differ in length?". End with the one question the recommendation answers.
+- After the recommendation, the closing line asks two things, such as "Which breads does the bakery bake each day, and can customers order ahead?". End with the one question the recommendation answers.
 
 ## Steps
 
