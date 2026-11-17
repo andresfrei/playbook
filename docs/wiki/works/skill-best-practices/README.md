@@ -12,11 +12,11 @@ Stage 6, Execution, is open: [plan.md](plan.md).
 
 Waiting for the owner:
 
-- Nothing now.
+- The review of U4: [plan.md](plan.md).
 
 Next steps:
 
-1. U4 and U5, the audits, each reviewed by the owner. U1 to U3 are Done.
+1. The owner reviews U4, which is built; then U5, the other audit. U1 to U3 are Done.
 2. U6, under USD 1 per skill (skill-best-practices-10).
 
 ## Stage table

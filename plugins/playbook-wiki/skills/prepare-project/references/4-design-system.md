@@ -10,7 +10,7 @@ The visual language is decided before any screen is built.
 4. Define the tokens: the named values the code uses for colour, type, spacing, and shape.
 5. Define the patterns: the components that the product's flows repeat, each with its states.
 6. Record each choice the owner accepts as a decision.
-7. Write `05-design-system/`: the identity, the tokens, and the patterns.
+7. Write, in the work's folder, the identity, the tokens, and the patterns. They become `05-design-system/` when the work closes.
 
 ## Project already started
 

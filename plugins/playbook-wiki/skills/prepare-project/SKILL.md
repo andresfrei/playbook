@@ -13,7 +13,7 @@ Do not use it for a small change in an existing repository that has no wiki. Do 
 
 ## Rules
 
-- "The owner" is the person who leads the work. Read the format of a wiki, `<this skill's folder>/../../format.md`, before you write in the wiki.
+- Read the format of a wiki, `<this skill's folder>/../../format.md`, before you write in the wiki.
 - A work is prepared in six stages, in this order: 1 wiki, 2 technology, 3 skills, 4 design system, 5 plan, 6 execution.
 - Work on one stage at a time: the first one in the work's stage table that is not closed. Never start a stage before the owner closes the one before it.
 - Only the owner closes a stage, also one that does not apply, as not applicable. Never skip one.
@@ -21,12 +21,10 @@ Do not use it for a small change in an existing repository that has no wiki. Do 
 - For a project already started, also follow "Project already started" in each reference file.
 - What is in progress lives in the work's folder: its decisions, questions, plan, and the pages of each stage. The shared pages change only when the work closes.
 - Mark every statement Decided, Proposed, or Open. Decided means a row of the work's `decisions.md`.
-- Only the owner turns Proposed into Decided. Never invent a missing definition: write it as a question and ask.
-- When a decision changes a shared page that existed before the work, say so, name the project's owner from `docs/wiki/README.md`, and ask who decides. Record the name given; people coordinate this, do not enforce it.
-- Record each decision with its date, who decided, and their words verbatim, in their language.
+- When a decision changes a shared page that existed before the work, say so, name the project's owner from `docs/wiki/README.md`, and ask who decides. Record the name given; do not enforce it.
+- Record each decision with its date, in the decider's language.
 - Ask one question at a time, with a recommendation, then stop and wait. Use `AskUserQuestion` when available, recommended option first, with what each option costs.
 - "Stage" names only the six stages. One step of the work plan is a "unit". Never use one word for both.
-- Read the reference file of the current stage only.
 
 ## Steps
 

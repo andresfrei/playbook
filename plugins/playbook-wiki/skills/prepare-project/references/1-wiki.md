@@ -30,9 +30,9 @@ Then do the steps below.
 ## Steps
 
 1. Compare the owner's brief with the topics before asking anything. Mark each topic covered, partly covered, or missing.
-2. Write the product pages, in the work's folder, from what the brief covers. Mark each statement Decided, Proposed, or Open.
+2. Write the product pages, in the work's folder, from what the brief covers.
 3. Write each missing or contradictory point as a question in the work's `questions.md`, with a recommendation and what it blocks. Do not ask about a topic the brief already covers.
-4. Ask the questions one at a time, starting with the one that blocks the most. Record each answer as a decision and update the pages it affects.
+4. Ask the questions, starting with the one that blocks the most. Record each answer as a decision and update the pages it affects.
 
 ## Project already started
 

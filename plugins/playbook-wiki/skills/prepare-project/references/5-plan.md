@@ -11,7 +11,7 @@ The work is an ordered list of units. The plan says how each one is accepted: by
    - **judgement**: it also waits for the owner's review. Recommend it when the unit writes something a check cannot judge: a definition's text, an interface or a design people use, or how it fits requirements the checks do not cover.
    When unsure, recommend judgement. The owner settles each one by accepting the plan.
 4. Order the units by what each one depends on.
-5. Ask the owner how a unit is delivered, one question at a time. Record each answer as a decision:
+5. Ask the owner how a unit is delivered. Record each answer as a decision:
    - whether each unit is built on its own branch or on the main branch;
    - whether a unit reaches the main branch by a pull request or by a local merge;
    - whether units that do not depend on each other may be built in parallel.

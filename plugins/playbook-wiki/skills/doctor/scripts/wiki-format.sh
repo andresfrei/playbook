@@ -4,6 +4,10 @@
 # Usage: sh wiki-format.sh status [wiki directory]    (default: docs/wiki)
 #        sh wiki-format.sh mark [wiki directory]
 #        sh wiki-format.sh hook
+#        sh wiki-format.sh --help
+# Exit codes: 0 done; 1 the check of the wiki failed or was interrupted;
+# 2 a wrong call; 3 the wiki is not ready to be marked; 4 a file could not be
+# copied or written. Messages go to standard error.
 # status prints nothing when there is no wiki, or when its marker is at the
 # playbook's format or above, and one line when the marker is missing or
 # behind. It always exits 0.
@@ -26,6 +30,8 @@ check_wiki="$(dirname "$0")/../../../check-wiki.sh"
 format=$(sh "$check_wiki" --format)
 
 command=${1:-}
+usage='Usage: sh wiki-format.sh status|mark [wiki directory], sh wiki-format.sh hook, or sh wiki-format.sh --help.
+Exit codes: 0 done; 1 the check of the wiki failed or was interrupted; 2 a wrong call; 3 the wiki is not ready to be marked; 4 a file could not be copied or written.'
 if [ "$command" = hook ]; then
   [ -n "${CLAUDE_PROJECT_DIR:-}" ] || exit 0
   command=status
@@ -60,16 +66,16 @@ case $command in
     exit 0 ;;
   mark)
     if [ ! -f "$wiki/README.md" ]; then
-      printf 'FAIL %s has no README.md\n' "$wiki"
-      exit 1
+      printf 'FAIL %s has no README.md. Run this from the project'"'"'s root, or pass the folder of the wiki.\n' "$wiki" >&2
+      exit 3
     fi
     if [ -L "$marker" ]; then
-      printf 'FAIL %s is a symbolic link; replace it with a file. The marker was not written.\n' "$marker"
-      exit 1
+      printf 'FAIL %s is a symbolic link; replace it with a file. The marker was not written.\n' "$marker" >&2
+      exit 3
     fi
     if ! sh "$check_wiki" --column "$wiki"; then
-      printf 'FAIL %s/README.md has no column "Code it governs" in its table of pages, so the wiki is not at wiki format %s. The marker was not written.\n' "$wiki" "$format"
-      exit 1
+      printf 'FAIL %s/README.md has no column "Code it governs" in its table of pages, so the wiki is not at wiki format %s. Add the column as format.md says under "The project'"'"'s README.md". The marker was not written.\n' "$wiki" "$format" >&2
+      exit 3
     fi
     # Keep the old marker, byte for byte, so a failed or interrupted check can
     # put it back.
@@ -78,8 +84,8 @@ case $command in
       saved=$(mktemp)
       if [ -z "$saved" ] || ! cp "$marker" "$saved"; then
         [ -z "$saved" ] || rm -f "$saved"
-        printf 'FAIL could not keep a copy of %s. The marker was not written.\n' "$marker"
-        exit 1
+        printf 'FAIL could not keep a copy of %s. Check that TMPDIR can be written. The marker was not written.\n' "$marker" >&2
+        exit 4
       fi
     fi
     # From the first write to the end of the check, any exit that is not a
@@ -98,12 +104,12 @@ case $command in
     armed=1
     if ! printf '%s\n' "$format" 2>/dev/null > "$marker"; then
       armed=0
-      printf 'FAIL could not write %s. The marker was not written.\n' "$marker"
-      exit 1
+      printf 'FAIL could not write %s. Check that its folder can be written. The marker was not written.\n' "$marker" >&2
+      exit 4
     fi
     if ! sh "$check_wiki" "$wiki"; then
       undo
-      printf 'The marker was not written.\n'
+      printf 'The marker was not written. Repair what the check lists, then run mark again.\n' >&2
       exit 1
     fi
     armed=0
@@ -111,7 +117,9 @@ case $command in
     trap - EXIT INT TERM HUP
     rm -f "$wiki/.unchecked-decisions"
     printf 'marked %s as wiki format %s\n' "$wiki" "$format" ;;
+  -h|--help)
+    printf '%s\n' "$usage" ;;
   *)
-    printf 'Usage: sh wiki-format.sh status|mark [wiki directory], or sh wiki-format.sh hook\n'
+    printf '%s\n' "$usage" >&2
     exit 2 ;;
 esac

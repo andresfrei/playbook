@@ -1013,15 +1013,25 @@ check "format: the README of the sample has no Where work stands section" sh -c 
 expect_format "format: mark succeeds on a README without a Where work stands section" mark 0 "as wiki format $product_format"
 
 rm -rf "$tmp/wiki"
-expect_format "format: mark fails when there is no wiki" mark 1 "has no README.md"
+expect_format "format: mark fails when there is no wiki" mark 3 "has no README.md"
+out=$(sh "$wiki_format" mark "$tmp/wiki" 2>/dev/null)
+check "format: a failed mark prints nothing on standard output" test -z "$out"
 
 out=$(sh "$wiki_format" 2>&1); code=$?
 check "format: without a command it prints the usage and exits 2" test "$code" -eq 2
+out=$(sh "$wiki_format" --help 2>/dev/null); code=$?
+check "format: --help prints the usage on standard output and exits 0" sh -c 'test "$1" -eq 0 && printf "%s" "$2" | grep -q "Exit codes"' sh "$code" "$out"
+out=$(sh "$wiki_format" 2>/dev/null)
+check "format: a wrong call prints nothing on standard output" test -z "$out"
 
 fresh_wiki
 rm "$tmp/wiki/.format"
 mkdir "$tmp/wiki/.format"
-expect_format "format: mark fails when the marker cannot be written" mark 1 "could not write"
+expect_format "format: mark fails when the marker cannot be written" mark 4 "could not write"
+
+fresh_wiki
+out=$(TMPDIR="$tmp/no-such-dir" sh "$wiki_format" mark "$tmp/wiki" 2>&1); code=$?
+check "format: mark exits 4 and keeps the marker when it cannot copy it" sh -c 'test "$1" -eq 4 && printf "%s" "$2" | grep -q "could not keep a copy" && test "$(cat "$3")" = 4' sh "$code" "$out" "$tmp/wiki/.format"
 
 fresh_wiki
 printf '99999999999999999999\n' > "$tmp/wiki/.format"
@@ -1030,13 +1040,13 @@ expect_format "format: a number too long to compare counts as missing" status 0 
 fresh_wiki
 rm "$tmp/wiki/.format"
 awk '{ gsub(/ \| Code it governs/, ""); print }' "$tmp/wiki/README.md" > "$tmp/readme" && mv "$tmp/readme" "$tmp/wiki/README.md"
-expect_format "format: mark refuses a wiki whose table of pages names no code column" mark 1 "has no column \"Code it governs\""
+expect_format "format: mark refuses a wiki whose table of pages names no code column" mark 3 "has no column \"Code it governs\""
 check "format: a wiki without the column is left without a marker" absent "$tmp/wiki/.format"
 
 fresh_wiki
 rm "$tmp/wiki/.format"
 printf '# Wiki\n\nProject owner: Ana.\n\n```text\n| Page | Content | Code it governs |\n```\n' > "$tmp/wiki/README.md"
-expect_format "format: mark refuses a wiki whose only code column is inside a code block" mark 1 "has no column"
+expect_format "format: mark refuses a wiki whose only code column is inside a code block" mark 3 "has no column"
 
 # The ending condition of the doctor: a wiki of format 3 is brought to 4 by
 # the steps of the doctor, and its decisions.md is not touched.
@@ -1121,7 +1131,7 @@ check "interrupt: the stand-in alone writes a marker when it is not interrupted"
 fresh_wiki
 rm "$tmp/wiki/.format"
 ln -s "$tmp/no-such-target" "$tmp/wiki/.format"
-expect_format "link: mark refuses a dangling link and names it" mark 1 "FAIL $tmp/wiki/.format is a symbolic link; replace it with a file. The marker was not written."
+expect_format "link: mark refuses a dangling link and names it" mark 3 "FAIL $tmp/wiki/.format is a symbolic link; replace it with a file. The marker was not written."
 check "link: the dangling link is untouched" sh -c 'test -L "$1" && test ! -e "$2"' sh "$tmp/wiki/.format" "$tmp/no-such-target"
 expect_format "link: status reads through a dangling link as a missing marker" status 0 "has no format marker"
 
@@ -1129,7 +1139,7 @@ fresh_wiki
 rm "$tmp/wiki/.format"
 printf '3\n' > "$tmp/target"
 ln -s "$tmp/target" "$tmp/wiki/.format"
-expect_format "link: mark refuses a link to a file" mark 1 "is a symbolic link"
+expect_format "link: mark refuses a link to a file" mark 3 "is a symbolic link"
 check "link: the file behind the link is untouched" test "$(cat "$tmp/target")" = 3
 expect_format "link: status reads through a link to a file" status 0 "is at wiki format 3"
 
@@ -1775,8 +1785,8 @@ init_ok "init: a failing configure makes apply exit 1" \
 
 init_fresh
 FAKE_FAIL=list init_run apply wiki user
-init_ok "init: apply exits 1 when the list cannot be read" \
-  "$([ "$init_code" -eq 1 ] && echo true || echo false)"
+init_ok "init: apply exits 4 when the list cannot be read" \
+  "$([ "$init_code" -eq 4 ] && echo true || echo false)"
 init_log_is "init: apply runs no command when the list cannot be read" ""
 
 # Bad arguments.
@@ -1794,6 +1804,24 @@ init_bad "no argument"
 init_bad "apply alone" apply
 init_bad "apply with one argument" apply wiki
 init_bad "an unknown product" apply some local
+
+init_fresh
+init_out=$(cd "$tmp/init/repo" && HOME="$tmp/init/home" PATH="$tmp/init/bin:$PATH" sh "$init_script" --help 2>/dev/null)
+init_ok "init: --help prints the usage on standard output" \
+  "$(printf '%s\n' "$init_out" | grep -q '^Usage:' && echo true || echo false)"
+init_out=$(cd "$tmp/init/repo" && HOME="$tmp/init/home" PATH="$tmp/init/bin:$PATH" sh "$init_script" apply 2>/dev/null)
+init_ok "init: a wrong call prints nothing on standard output" \
+  "$([ -z "$init_out" ] && echo true || echo false)"
+
+init_fresh
+init_run --help
+init_ok "init: --help prints the usage with the exit codes and exits 0" \
+  "$([ "$init_code" -eq 0 ] && printf '%s\n' "$init_out" | grep -q '^Exit codes' && echo true || echo false)"
+
+init_fresh
+init_run apply all local 'a"b'
+init_ok "init: a language with a quote says what is wrong" \
+  "$([ "$init_code" -eq 2 ] && printf '%s\n' "$init_out" | grep -q 'must not hold a quote' && echo true || echo false)"
 init_bad "an unknown scope" apply wiki project
 init_bad "too many arguments" apply wiki local es extra
 init_bad "scan with an argument" scan extra
@@ -1833,8 +1861,8 @@ init_ok "init: scan reports no plugin, no other plugin, and no CLAUDE.md on a cl
 
 init_fresh
 FAKE_FAIL=list init_run scan
-init_ok "init: scan exits 1 when the list cannot be read" \
-  "$([ "$init_code" -eq 1 ] && echo true || echo false)"
+init_ok "init: scan exits 4 when the list cannot be read" \
+  "$([ "$init_code" -eq 4 ] && echo true || echo false)"
 
 init_fresh
 mkdir "$tmp/init/config"
@@ -1944,13 +1972,13 @@ init_ok "init: skills prints none for each empty group" \
 
 init_fresh
 init_run skills wiki
-init_ok "init: skills exits 1 when the marketplace is not added" \
-  "$([ "$init_code" -eq 1 ] && echo true || echo false)"
+init_ok "init: skills exits 3 when the marketplace is not added" \
+  "$([ "$init_code" -eq 3 ] && echo true || echo false)"
 
 init_fresh
 FAKE_MARKET=$tmp/init/market FAKE_FAIL=marketplace init_run skills wiki
-init_ok "init: skills exits 1 when the marketplaces cannot be read" \
-  "$([ "$init_code" -eq 1 ] && echo true || echo false)"
+init_ok "init: skills exits 4 when the marketplaces cannot be read" \
+  "$([ "$init_code" -eq 4 ] && echo true || echo false)"
 
 init_bad "skills alone" skills
 init_bad "skills of an unknown product" skills some
