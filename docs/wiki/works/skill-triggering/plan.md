@@ -1,12 +1,12 @@
 # Plan of skill-triggering
 
-Stage 5. The units that answer [definition.md](definition.md) with the technology of [technology.md](technology.md). Proposed until the owner accepts it.
+Stage 5. The units that answer [definition.md](definition.md) with the technology of [technology.md](technology.md). Accepted by the owner (skill-triggering-9).
 
 ## Progress
 
 | ID | Status | Evidence | Done on | Owner's words |
 |----|--------|----------|---------|---------------|
-| skill-triggering-U1 | Not started | | | |
+| skill-triggering-U1 | Done | `wiki-format.sh mark` keeps the copy of the old marker as `<wiki>/.format.saved`, sets its traps before it touches the copy, removes a copy left by an earlier run, and deletes it on every exit; exit 4 now also covers a copy that cannot be removed. Eight cases in `scripts/verify_test.sh`: `TMPDIR` that does not exist, no copy left after a passing or a failed `mark`, after an interrupt, a stale copy with and without a marker, a copy that cannot be removed, a folder that cannot be written. On 2026-11-17: `sh scripts/verify_test.sh` printed "all cases passed" (444 cases), `bash scripts/verify.sh` exited 0, `shellcheck` printed nothing. The `review` agent read the change twice: it found a copy left when there was no marker, and the contract of exit 4 not naming removal; both fixed. Left as they were before the change: a marker lost when its write fails partway, or when the restore fails | 2026-11-17 | |
 | skill-triggering-U2 | Not started | | | |
 | skill-triggering-U3 | Not started | | | |
 | skill-triggering-U4 | Not started | | | |
@@ -26,7 +26,7 @@ Order: U1 depends on nothing and costs nothing. U2 comes before U3 and U4, since
 
 ## How a unit is delivered
 
-Proposed, read from how this repository delivered its last works (skill-best-practices-9): the five units are built on this work's branch, `feat/skill-triggering`, one after the other and not in parallel. The work reaches `main` by one pull request, which the owner merges (R14). U1 changes `wiki-format.sh`, so the `review` agent reads it before it is Done (R20). A paid run of `claude plugin eval` happens only when the owner asks (skill-triggering-3).
+Accepted by the owner (skill-triggering-9), read from how this repository delivered its last works (skill-best-practices-9): the five units are built on this work's branch, `feat/skill-triggering`, one after the other and not in parallel. The work reaches `main` by one pull request, which the owner merges (R14). U1 changes `wiki-format.sh`, so the `review` agent reads it before it is Done (R20). A paid run of `claude plugin eval` happens only when the owner asks (skill-triggering-3).
 
 ## Left out
 

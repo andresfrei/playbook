@@ -6,16 +6,17 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-17, after skill-triggering-8.
+Updated 2026-11-17, after skill-triggering-9.
 
-Stage 5, Plan, is open. The plan proposed, units U1 to U5, is in [plan.md](plan.md).
+Stage 6, Execution, is open. skill-triggering-U1 is Done; see [plan.md](plan.md).
 
-Waiting for the owner: accepting [plan.md](plan.md), with how a unit is delivered. No question is open.
+Waiting for the owner: the paid run of skill-triggering-U2, which happens only when the owner asks (skill-triggering-3).
 
 Next steps:
 
-1. Accept the plan and close stage 5.
-2. Stage 6, Execution: U1, then U2 when the owner asks for the paid run.
+1. skill-triggering-U2: the first measurement of `review-change`, `keep-minimal`, `prepare-project`, and `avoid-generic-design`, under USD 3 per skill.
+2. The owner sets the ceiling of U5 from its cost.
+3. U3 and U4, then U5.
 
 ## Stage table
 
@@ -25,8 +26,8 @@ Next steps:
 | 2 Technology | Closed | 2026-11-17 |
 | 3 Skills | Closed | 2026-11-17 |
 | 4 Design system | Closed (not applicable) | 2026-11-17 |
-| 5 Plan | Open | |
-| 6 Execution | Not started | |
+| 5 Plan | Closed | 2026-11-17 |
+| 6 Execution | Open | |
 
 ## Pages
 

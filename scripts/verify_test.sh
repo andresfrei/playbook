@@ -981,6 +981,7 @@ printf '3\r\n' > "$tmp/wiki/.format"
 cp "$tmp/wiki/.format" "$tmp/marker-before"
 expect_format "format: a failed mark reports the failure" mark 1 "links to gone.md"
 check "format: a failed mark puts the older marker back byte for byte" cmp -s "$tmp/marker-before" "$tmp/wiki/.format"
+check "format: a failed mark leaves no copy of the marker" absent "$tmp/wiki/.format.saved"
 
 fresh_wiki
 printf '3\n' > "$tmp/wiki/.format"
@@ -1031,7 +1032,36 @@ expect_format "format: mark fails when the marker cannot be written" mark 4 "cou
 
 fresh_wiki
 out=$(TMPDIR="$tmp/no-such-dir" sh "$wiki_format" mark "$tmp/wiki" 2>&1); code=$?
-check "format: mark exits 4 and keeps the marker when it cannot copy it" sh -c 'test "$1" -eq 4 && printf "%s" "$2" | grep -q "could not keep a copy" && test "$(cat "$3")" = 4' sh "$code" "$out" "$tmp/wiki/.format"
+check "format: mark works when the temporary folder cannot be written" sh -c 'test "$1" -eq 0 && test "$(cat "$2")" = 4' sh "$code" "$tmp/wiki/.format"
+check "format: mark leaves no copy of the marker in the wiki" absent "$tmp/wiki/.format.saved"
+
+fresh_wiki
+printf '3\n' > "$tmp/wiki/.format"
+printf 'stale\n' > "$tmp/wiki/.format.saved"
+sh "$wiki_format" mark "$tmp/wiki" >/dev/null 2>&1; code=$?
+check "format: mark replaces a copy left by an earlier run, and deletes it" sh -c 'test "$1" -eq 0 && test "$(cat "$2")" = 4 && test ! -e "$3"' sh "$code" "$tmp/wiki/.format" "$tmp/wiki/.format.saved"
+
+fresh_wiki
+rm "$tmp/wiki/.format"
+printf 'stale\n' > "$tmp/wiki/.format.saved"
+sh "$wiki_format" mark "$tmp/wiki" >/dev/null 2>&1; code=$?
+check "format: mark deletes a copy left by an earlier run when there is no marker" sh -c 'test "$1" -eq 0 && test "$(cat "$2")" = 4 && test ! -e "$3"' sh "$code" "$tmp/wiki/.format" "$tmp/wiki/.format.saved"
+
+fresh_wiki
+printf '3\n' > "$tmp/wiki/.format"
+mkdir "$tmp/wiki/.format.saved"
+out=$(sh "$wiki_format" mark "$tmp/wiki" 2>&1); code=$?
+check "format: mark exits 4 and keeps the marker when an old copy cannot be removed" sh -c 'test "$1" -eq 4 && printf "%s" "$2" | grep -q "could not remove" && test "$(cat "$3")" = 3' sh "$code" "$out" "$tmp/wiki/.format"
+rmdir "$tmp/wiki/.format.saved"
+
+if [ "$(id -u)" -ne 0 ]; then
+  fresh_wiki
+  printf '3\n' > "$tmp/wiki/.format"
+  chmod a-w "$tmp/wiki"
+  out=$(sh "$wiki_format" mark "$tmp/wiki" 2>&1); code=$?
+  chmod u+w "$tmp/wiki"
+  check "format: mark exits 4 and keeps the marker when it cannot copy it" sh -c 'test "$1" -eq 4 && printf "%s" "$2" | grep -q "could not keep a copy" && test "$(cat "$3")" = 3' sh "$code" "$out" "$tmp/wiki/.format"
+fi
 
 fresh_wiki
 printf '99999999999999999999\n' > "$tmp/wiki/.format"
@@ -1119,7 +1149,7 @@ TMPDIR="$standin/tmpdir" sh "$interrupted" mark "$tmp/wiki" >/dev/null 2>&1
 code=$?
 check "interrupt: a TERM during the check makes mark fail" test "$code" -ne 0
 check "interrupt: the old marker is back byte for byte" cmp -s "$tmp/marker-before" "$tmp/wiki/.format"
-check "interrupt: the saved copy is deleted" test -z "$(ls -A "$standin/tmpdir")"
+check "interrupt: the saved copy is deleted" absent "$tmp/wiki/.format.saved"
 
 fresh_wiki
 rm "$tmp/wiki/.format"
