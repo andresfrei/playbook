@@ -10,12 +10,7 @@ Updated 2026-11-17, after skill-triggering-17.
 
 No stage is open: every unit of [plan.md](plan.md) is Done. What the work decided is in [../../03-technology/skill-evaluation.md](../../03-technology/skill-evaluation.md) and [../../03-technology/installation.md](../../03-technology/installation.md). What still fails is in [questions.md](questions.md), for a later work.
 
-Waiting for the owner: the merge of `feat/skill-triggering` into `main`.
-
-Next steps, after the merge (skill-triggering-17):
-
-1. Set the version 2.2.1 in the three `plugin.json`.
-2. Tag `v2.2.1`, and publish its release on GitHub.
+Merged into `main` by pull request #14, and released as version 2.2.1 by pull request #15, with the tag `v2.2.1` and its release on GitHub (skill-triggering-17).
 
 ## Stage table
 
