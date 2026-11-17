@@ -52,4 +52,4 @@ Decided:
 
 ## Not verified
 
-- Whether Claude Code can pass a forked skill's result to the owner unchanged: not checked in its documentation.
+- Whether Claude Code can pass a forked skill's result to the owner unchanged: its documentation names no such option ([technology.md](technology.md)).
