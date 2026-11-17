@@ -6,18 +6,19 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-17, after skill-best-practices-10.
+Updated 2026-11-17, after skill-best-practices-11.
 
 Stage 6, Execution, is open: [plan.md](plan.md).
 
 Waiting for the owner:
 
-- Whether `init` may write a choice about a project's skill straight into `04-skills/`: [plan.md](plan.md), U4.
+- Nothing now.
 
 Next steps:
 
 1. U5, the audit of the skills of `playbook-agents`. U1 to U4 are Done.
 2. U6, under USD 1 per skill (skill-best-practices-10).
+3. At closing, also rewrite `03-technology/installation.md` for skill-best-practices-11.
 
 ## Stage table
 

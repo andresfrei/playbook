@@ -32,7 +32,7 @@ Do not use it for Claude Code's own `/init`, which writes a `CLAUDE.md`.
 6. Run `sh "${CLAUDE_SKILL_DIR}/scripts/init.sh" apply <wiki|all> <local|user> [language]`, with the answers; leave the language out for none. Show its output.
 7. Then write each choice:
    - A skill of the person turned off: add `"<name>": "off"` under `skillOverrides` in `.claude/settings.local.json` for this repository, or in the `settings.json` of the folder that holds the person's skills folder the script printed, for every project. Create the key or the file when missing, and change nothing else in it.
-   - A choice about a skill of the project, when `docs/wiki/` exists: a decision with the person's words, in the work this branch carries, as the format the script printed says. Cite it in the page of skills under `docs/wiki/04-skills/`, and add that page to the page table of `docs/wiki/README.md` when it is new.
+   - A choice about a skill of the project, when `docs/wiki/` exists: a decision with the person's words, in the work this branch carries, as the format the script printed says. Write nothing in `docs/wiki/04-skills/`: it changes when the work closes.
 8. Tell the person that what was turned on, and a skill turned off, take effect from the next session.
 
 ## Output
