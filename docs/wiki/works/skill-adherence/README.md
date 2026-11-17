@@ -6,27 +6,27 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-17, after skill-adherence-11.
+Updated 2026-11-17, after skill-adherence-15.
 
-Stage 2 Technology is open, and its closing condition holds: every need of [technology.md](technology.md) has a decision or a technology already in use, and the architecture is written.
+Stage 6 Execution is open. skill-adherence-U1 is Built: [plan.md](plan.md).
 
-Waiting for the owner: closing stage 2.
+Waiting for the owner: the review of skill-adherence-U1.
 
 Next steps:
 
-1. The owner closes stage 2.
-2. Stage 3 Skills.
+1. The owner reviews skill-adherence-U1.
+2. skill-adherence-U2 to -U4, which cost nothing; then U5, paid, when the owner asks.
 
 ## Stage table
 
 | Stage | Status | Closed on |
 |-------|--------|-----------|
 | 1 Wiki | Closed | 2026-11-17 |
-| 2 Technology | Open | |
-| 3 Skills | Not started | |
-| 4 Design system | Not started | |
-| 5 Plan | Not started | |
-| 6 Execution | Not started | |
+| 2 Technology | Closed | 2026-11-17 |
+| 3 Skills | Closed | 2026-11-17 |
+| 4 Design system | Closed (not applicable) | 2026-11-17 |
+| 5 Plan | Closed | 2026-11-17 |
+| 6 Execution | Open | |
 
 ## Pages
 
@@ -37,3 +37,5 @@ Next steps:
 | [questions.md](questions.md) | The questions still open | |
 | [traces.md](traces.md) | What the traces of skill-triggering show for each fault | |
 | [technology.md](technology.md) | What the work needs from its technology, and its architecture | |
+| [skills.md](skills.md) | The skills the work uses for each technology | |
+| [plan.md](plan.md) | The units of the work, their progress, and how each is delivered | |

@@ -1,6 +1,6 @@
 ---
 name: review-change
-description: Review a change for defects before it is committed or merged, such as the last commit, a diff, staged or uncommitted work, or what was just pushed ("is anything broken?"). Returns findings with failing cases; show its report unchanged.
+description: Review a change for defects before it is committed or merged, such as the last commit, a diff, staged or uncommitted work, or what was just pushed ("is anything broken?"). Returns findings with failing cases.
 context: fork
 agent: playbook-agents:review
 ---
@@ -40,10 +40,11 @@ Do not use it to review for unnecessary complexity (use `keep-minimal`), to revi
 ## Output
 
 - Start with the change you reviewed, in one line.
+- Then what the change is meant to do, in the one sentence of step 3.
 - Findings, most severe first. Each one holds:
   - the file and line;
   - what is wrong;
   - a concrete case that fails: the input and the wrong result;
   - the fix, in one line.
-- When there are no findings, say "No findings." plainly.
+- When there are no findings, say "No findings." plainly, and list no case that passed.
 - End with "Not checked": what you did not read, run, or could not show.
