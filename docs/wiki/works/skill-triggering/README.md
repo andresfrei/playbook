@@ -8,13 +8,13 @@ Status: Open.
 
 Updated 2026-11-17, after skill-triggering-12.
 
-Stage 6, Execution, is open. skill-triggering-U1 to -U4 are Done; see [plan.md](plan.md).
+Stage 6, Execution, is open. skill-triggering-U1 to -U4 are Done; U5 ran and its ending condition does not hold ([measurements.md](measurements.md)).
 
-Waiting for the owner: the paid run of U5, which happens only when the owner asks (skill-triggering-3), and [skill-triggering-Q4](questions.md).
+Waiting for the owner: what follows U5, and [skill-triggering-Q4](questions.md).
 
 Next steps:
 
-1. U5: the cases of `review-change` and `keep-minimal`, and the cases of behaviour of `prepare-project` (skill-triggering-12), under USD 3 per skill (skill-triggering-10).
+1. The owner decides what follows U5.
 2. Answer skill-triggering-Q4, then close the work.
 
 ## Stage table

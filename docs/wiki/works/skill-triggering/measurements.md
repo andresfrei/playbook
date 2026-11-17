@@ -46,6 +46,33 @@ Read from the trace of each run, kept by `--keep-temp`:
 - In `prepare-project-new-project-stage-one` the skill loaded, and the grader `one-question` failed in both arms. With the skill the last answer asks one question of the work, then a second one inside it ("How many dentists… and do treatments differ in length?"), and also asks the owner to run `wiki-format.sh mark`, because the sandbox of the run let `Bash` read the project's folder but not write it.
 - `avoid-generic-design-build-page` built no three equal columns in the three runs with the plugin; one run without it did. skill-best-practices-Q4 did not show again.
 
+## Second measurement, skill-triggering-U5
+
+Run on 2026-11-17 with the options of U2, after U3 and U4, when the owner asked ("si"): the cases of `review-change` and `keep-minimal`, and the cases of behaviour of `prepare-project` (skill-triggering-12). Cost: USD 5.25. Per skill: `review-change` 2.04, `keep-minimal` 1.53, `prepare-project` 1.68, each under its ceiling of USD 3 (skill-triggering-10).
+
+| Case | Loaded in U2 | Loaded in U5 | Scores with the plugin in U5 | Scores without in U5 |
+|------|--------------|--------------|------------------------------|----------------------|
+| `review-change-triggers` | 3 of 3 | 3 of 3 | 1, 1, 1 | not run |
+| `review-change-does-not-trigger` | 0 of 3 | 0 of 3, as it should | 1, 1, 1 | not run |
+| `review-change-clean-commit` | 3 of 3 | 3 of 3 | 0, 1, 0 | 0, 0, 0 |
+| `review-change-empty-input` | 0 of 3 | 3 of 3 | 0.83, 0.83, 0.83 | 0.5, 0.5, 0.67 |
+| `review-change-off-by-one` | 0 of 3 | 0 of 3 | 0.6, 0.6, 0.6 | 0.6, 0.6, 0.8 |
+| `keep-minimal-triggers` | 2 of 3 | 1 of 3 | 0, 0, 1 | not run |
+| `keep-minimal-does-not-trigger` | 0 of 3 | 0 of 3, as it should | 1, 1, 1 | not run |
+| `keep-minimal-add-feature` | 0 of 3 | 3 of 3 | 1, 0.83, 1 | 0.67, 0.5, 0.67 |
+| `keep-minimal-review-excess` | 2 of 3 | 3 of 3 | 0.75, 0.75, 0.75 | 0.5, 0.5, 0.25 |
+| `keep-minimal-rule-required` | 3 of 3 | 3 of 3 | 1, 0.75, 0.75 | 0.75, 0.5, 0.5 |
+| `prepare-project-close-stage-spanish` | 3 of 3 | 3 of 3 | 1, 0.83, 1 | 0.83, 0.83, 0.83 |
+| `prepare-project-new-project-stage-one` | 3 of 3 | 3 of 3 | 0.67, 1, 0.67 | 0.67, 0.67, 0.67 |
+| `prepare-project-no-code-before-stage-six` | 0 of 3 | not graded (skill-triggering-11) | 0.67, 1, 0.67 | 0.33, 0.33, 0.33 |
+
+What the traces of U5 show:
+
+- `review-change-off-by-one`, "Review my uncommitted changes before I commit them": in the three runs the agent ran `git diff` and wrote the review itself, with the defect and its failing case, though the description now names "uncommitted work" and "before it is committed".
+- `keep-minimal-triggers`, a request that holds the whole change in its text: in the two runs that did not load the skill, the agent answered at once, without reading a file or calling a tool.
+- `prepare-project-new-project-stage-one`: the grader `one-question` passed in one run of three with the plugin, and in none without it. In U2 it passed in none.
+- `prepare-project-no-code-before-stage-six`: the agent wrote no code in the six runs with the plugin; in two of them the judge did not count its answer as a refusal. `prepare-project` did not load, so its gotcha could not cause it.
+
 ## Not verified
 
 - Whether the sandbox of `claude plugin eval` lets `Bash` write the project's folder in the cases of `doctor`, where `mark` must write the marker: their cases did not run in U2.
