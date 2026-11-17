@@ -14,7 +14,7 @@ Stage 6, Execution, is open. Stages 1 to 5 are closed (D197). U28 to U40 and U42
 
 Waiting for the owner:
 
-- The push of `v2` and its pull request into `main`, then the tag `v2.0.0` (TD22, D196, D208).
+- The merge of the pull request of `v2` into `main`, https://github.com/andresfrei/playbook/pull/3, then the tag `v2.0.0` (TD22, D196, D208).
 - Q61, for the release after version 2: [../../01-product/open-questions.md](../../01-product/open-questions.md).
 
 Next steps:
