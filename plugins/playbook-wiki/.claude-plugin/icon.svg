@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<rect width="512" height="512" rx="112" fill="#1E2B3A"/>
+<path d="M256 176 C210 146 150 140 96 148 L96 372 C150 364 210 370 256 400 Z" fill="#F4EDE1"/>
+<path d="M256 176 C302 146 362 140 416 148 L416 372 C362 364 302 370 256 400 Z" fill="#E8DFCF"/>
+<g stroke="#1E2B3A" stroke-opacity="0.35" stroke-width="14" stroke-linecap="round">
+<line x1="132" y1="214" x2="222" y2="222"/><line x1="132" y1="258" x2="222" y2="266"/><line x1="132" y1="302" x2="198" y2="308"/></g>
+<polyline points="298,272 334,308 390,232" fill="none" stroke="#D9643A" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

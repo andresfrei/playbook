@@ -17,6 +17,18 @@ Each plugin declares its version in its own `plugin.json`, never in the marketpl
 
 An installation from GitHub gets a commit only when the version changes. A marketplace added from a local clone loads the plugins in place: a change applies to the next session, or to an open one after `/reload-plugins`.
 
+## Anthropic's plugin directory
+
+The product is not listed in Anthropic's plugin directory. The directory accepts command hooks and scripts only from a Verified organization, and both `playbook-wiki` and `playbook-agents` work through them; the owner's organization is not Verified. The listing is a new work once it is (plugin-directory-9). The evidence, the portal's report of 2026-11-17, is in [../works/plugin-directory/definition.md](../works/plugin-directory/definition.md).
+
+Ready for that work:
+
+- Only `playbook-wiki` and `playbook-agents` are submitted, as two submissions; `playbook` is not, because it turns the others on by this repository's marketplace name (plugin-directory-1).
+- The installation from this repository's marketplace stays as it is; the directory is a second way in (plugin-directory-2).
+- Each of the two holds what the directory reads inside the plugin folder: a `README.md`, `"license": "MIT"` in its `plugin.json`, and its icon, `.claude-plugin/icon.png`, drawn from `.claude-plugin/icon.svg` (plugin-directory-3, plugin-directory-5). The directory takes the icon only at the first submission.
+
+Installing `playbook-agents` from this marketplace also installs `playbook-wiki`, its dependency: checked on 2026-11-17 in [../works/plugin-directory/technology.md](../works/plugin-directory/technology.md).
+
 ## The evaluation of 2026-11-13 (TD1)
 
 Kept as a record of how the route was chosen, when the product was one plugin that loaded its rules in every session.

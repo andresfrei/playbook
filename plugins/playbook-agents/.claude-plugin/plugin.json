@@ -5,6 +5,7 @@
   "author": {
     "name": "Andres Frei"
   },
+  "license": "MIT",
   "dependencies": ["playbook-wiki"],
   "userConfig": {
     "language": {

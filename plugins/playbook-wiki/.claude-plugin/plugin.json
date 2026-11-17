@@ -4,5 +4,6 @@
   "description": "A project's wiki as its shared source of truth: the method, the format, and the check.",
   "author": {
     "name": "Andres Frei"
-  }
+  },
+  "license": "MIT"
 }
