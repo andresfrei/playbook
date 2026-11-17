@@ -6,17 +6,17 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-17, after skill-triggering-9.
+Updated 2026-11-17, after skill-triggering-11.
 
-Stage 6, Execution, is open. skill-triggering-U1 and -U2 are Done; see [plan.md](plan.md) and [measurements.md](measurements.md).
+Stage 6, Execution, is open. skill-triggering-U1 to -U3 are Done, U4 is Built; see [plan.md](plan.md).
 
-Waiting for the owner: the ceiling of skill-triggering-U5, which the plan asks the owner to set from the cost of U2.
+Waiting for the owner: the review of U4, and [skill-triggering-Q4](questions.md).
 
 Next steps:
 
-1. The owner sets the ceiling of U5.
-2. U3, the descriptions of `review-change` and `keep-minimal`, and U4, from the traces of U2; both wait for the owner's review.
-3. U5, the second measurement.
+1. The owner reviews U4.
+2. U5, the second measurement, under USD 3 per skill (skill-triggering-10).
+3. Answer skill-triggering-Q4, then close the work.
 
 ## Stage table
 
