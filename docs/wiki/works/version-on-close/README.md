@@ -6,28 +6,28 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-16, after version-on-close-6.
+Updated 2026-11-16, after version-on-close-7.
 
-Stage 2, Technology, is open. Stage 1 is closed (version-on-close-6).
+Stage 5, Plan, is open. Stages 1 to 4 are closed (version-on-close-6, version-on-close-7).
 
 Waiting for the owner:
 
-- Accepting the technology and closing stage 2: [technology.md](technology.md).
+- Accepting the plan and how its unit is delivered: [plan.md](plan.md).
 
 Next steps:
 
-1. The owner closes stage 2.
-2. Stages 3 and 4, likely not applicable, then stage 5, the plan.
+1. The owner accepts the plan and closes stage 5.
+2. Stage 6: U1.
 
 ## Stage table
 
 | Stage | Status | Closed on |
 |-------|--------|-----------|
 | 1 Wiki | Closed | 2026-11-16 |
-| 2 Technology | Open | |
-| 3 Skills | Not started | |
-| 4 Design system | Not started | |
-| 5 Plan | Not started | |
+| 2 Technology | Closed | 2026-11-16 |
+| 3 Skills | Closed (not applicable) | 2026-11-16 |
+| 4 Design system | Closed (not applicable) | 2026-11-16 |
+| 5 Plan | Open | |
 | 6 Execution | Not started | |
 
 ## Pages
@@ -36,5 +36,6 @@ Next steps:
 |------|---------|-----------------|
 | [definition.md](definition.md) | The problem, what is decided, and the coverage of each topic | |
 | [decisions.md](decisions.md) | The decisions of this work | |
+| [plan.md](plan.md) | The unit of this work and how it is delivered and accepted | |
 | [questions.md](questions.md) | The questions of this work | |
 | [technology.md](technology.md) | What the work needs from its technology, and its architecture | |

@@ -4,9 +4,9 @@ What the work needs from its technology, from [definition.md](definition.md). St
 
 | # | Need | Choice | Status |
 |---|------|--------|--------|
-| N1 | Know whether the project has a version tag (version-on-close-2) | `git tag --list`, read by the agent, looking for a tag of the form `v1.2.0` or `1.2.0` | Proposed |
-| N2 | Know what the work brings, to recommend a version (version-on-close-3) | The work's decisions and the commits of its branch since it left the main branch, which the closing step already reads | Proposed |
-| N3 | Find the project's own rule of versions (version-on-close-3) | The shared pages and the project's `CONTRIBUTING.md`, when it exists, as the agent reads any definition; no file is required | Proposed |
+| N1 | Know whether the project has a version tag (version-on-close-2) | `git tag --list`, read by the agent, looking for a tag of the form `v1.2.0` or `1.2.0` | Decided (version-on-close-7) |
+| N2 | Know what the work brings, to recommend a version (version-on-close-3) | The work's decisions and the commits of its branch since it left the main branch, which the closing step already reads | Decided (version-on-close-7) |
+| N3 | Find the project's own rule of versions (version-on-close-3) | The shared pages and the project's `CONTRIBUTING.md`, when it exists, as the agent reads any definition; no file is required | Decided (version-on-close-7) |
 
 ## Architecture
 
