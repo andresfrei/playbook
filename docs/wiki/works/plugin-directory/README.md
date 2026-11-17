@@ -12,11 +12,12 @@ Stage 6, Execution, is open: [plan.md](plan.md).
 
 Waiting for the owner:
 
-- Nothing yet.
+- The push of the branch, for U3.
 
 Next steps:
 
-1. U2, which waits for the owner's review, then the push of the branch and U3. U1 is Done.
+1. The push of the branch. U1 and U2 are Done.
+2. U3: the owner runs the portal's Validate on the branch.
 
 ## Stage table
 
