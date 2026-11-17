@@ -1,4 +1,4 @@
 schema_version: "1.1"
-name: prepare-project-skills-table-spanish
+name: write-docs-one-fact-one-place
 context:
   scaffold_script: fixture.sh

@@ -1,4 +1,5 @@
 ---
 type: regex
-pattern: 'Deferred'
+pattern: 'Deferred|Diferid|Aplazad|Pospuest|Postergad'
+flags: i
 ---

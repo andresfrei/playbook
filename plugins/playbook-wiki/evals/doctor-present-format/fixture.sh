@@ -4,7 +4,7 @@
 set -eu
 git init -q -b main .
 git config user.email eval@example.com
-git config user.name Eval
+git config user.name "Laura Gómez"
 mkdir -p docs/wiki/01-product docs/wiki/works/invoices src
 printf '4\n' > docs/wiki/.format
 cat > docs/wiki/README.md <<'MD'

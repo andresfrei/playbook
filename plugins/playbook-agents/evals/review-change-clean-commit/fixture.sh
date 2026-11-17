@@ -3,8 +3,9 @@ set -eu
 git init -q -b main .
 git config user.email eval@example.com
 git config user.name Eval
-# Builds a repository whose last commit adds a correct, tested chunk() with
-# short names that invite style comments.
+# Builds a repository whose last commit adds a correct chunk() with short names
+# that invite style comments. Its tests cover every branch of the size guard
+# (below 1, not an integer, NaN), so the change is clean.
 mkdir -p src test
 printf '{ "name": "list-tools", "version": "1.0.0", "type": "module" }\n' > package.json
 git add -A
@@ -35,8 +36,18 @@ test("chunk of an empty list is empty", () => {
   assert.deepEqual(chunk([], 3), []);
 });
 
+test("chunk splits when the size is larger than the list", () => {
+  assert.deepEqual(chunk([1, 2], 5), [[1, 2]]);
+});
+
 test("chunk rejects a size below 1", () => {
   assert.throws(() => chunk([1], 0), RangeError);
+  assert.throws(() => chunk([1], -2), RangeError);
+});
+
+test("chunk rejects a size that is not an integer", () => {
+  assert.throws(() => chunk([1, 2, 3], 1.5), RangeError);
+  assert.throws(() => chunk([1, 2, 3], NaN), RangeError);
 });
 JS
 git add -A

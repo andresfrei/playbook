@@ -23,5 +23,5 @@ The format is `../../../format.md`. Read its sections "The project's `README.md`
    - When the moved "Where work stands" holds more than 250 words, or says what is finished, take out what does not belong in it. Delete a sentence that another page of the wiki already holds, and link to that page. Move what is finished to the page of the phase's plan, and link to it. Never open a new section in the work's `README.md` to hold it.
    - In its table of pages, link the pages of that phase where they are. Do not move them.
    - Its earlier decisions keep their `D#`. Say in the work's `README.md` that its decisions up to the last `D#` are in `../../decisions.md`, and that new ones are `<name>-1` onwards in its own `decisions.md`.
-6. Move the stage tables of closed phases under a heading `## Phases before format 4` at the end of `docs/wiki/README.md`. When no phase is open, move the "Where work stands" section there too.
+6. Move the stage tables of closed phases under a heading `## Phases before format 4` at the end of `docs/wiki/README.md`. When no phase is open, move the "Where work stands" section there too, as `### Where work stands`: a heading of level 2 ends the section.
 7. Continue with the last step of the skill. The check refuses the wiki while `README.md` names no owner, or holds a state section or a stage table outside `## Phases before format 4`.

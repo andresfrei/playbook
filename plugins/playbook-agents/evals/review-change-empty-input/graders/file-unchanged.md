@@ -2,6 +2,6 @@
 type: regex
 target:
   source: file
-  path: src/stats.js
-pattern: 'return sum\(numbers\) / numbers\.length;'
+  path: src/report.js
+pattern: 'average: total / amounts\.length,'
 ---

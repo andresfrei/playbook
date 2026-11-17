@@ -1,5 +1,5 @@
 ---
 type: file_exists
-path: skills/**
+path: src/cache.js
 exists: false
 ---

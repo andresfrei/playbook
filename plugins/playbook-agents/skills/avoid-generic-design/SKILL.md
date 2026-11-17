@@ -39,7 +39,7 @@ Do not use it for work with no visual design in it, such as a data model, an API
 ## Output
 
 - Design: the design, the four choices of step 3 with the evidence for each, and any generic pattern kept, with who asked for it.
-- Review: one entry per finding with the generic pattern, where it is, and the alternative proposed. Or "no generic patterns found".
+- Review: one entry per finding with the generic pattern, where it is, and the alternative proposed with its evidence. Or "no generic patterns found".
 - Any requirement the stack cannot meet, with the alternatives proposed.
 - The design system or visual identity followed, when the project has one.
 
