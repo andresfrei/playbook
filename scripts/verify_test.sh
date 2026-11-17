@@ -154,6 +154,19 @@ cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json"
 expect "hooks: the merge script named at a path where it is not fails" fail "does not run merge-step-hook.sh under PreToolUse"
 
 fresh
+sed 's/commit-check-hook\.sh/other.sh/' "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json" > "$tmp/hooks.json"
+cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json"
+expect "hooks: hooks.json without the commit script under PreToolUse fails" fail "does not run commit-check-hook.sh under PreToolUse"
+
+fresh
+rm "$tmp/repo/plugins/playbook-wiki/hooks/commit-check-hook.sh"
+expect "hooks: a missing commit script fails" fail "commit-check-hook.sh of playbook-wiki is missing"
+
+fresh
+rm "$tmp/repo/plugins/playbook-wiki/hooks/git-hook-lib.sh"
+expect "hooks: a missing shared hook library fails" fail "git-hook-lib.sh of playbook-wiki is missing"
+
+fresh
 sed 's/"matcher": "Bash"/"matcher": "Read"/' "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json" > "$tmp/hooks.json"
 cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json"
 expect "hooks: a PreToolUse group without the Bash matcher fails" fail 'matcher.*Bash.*under PreToolUse'
@@ -162,6 +175,11 @@ fresh
 grep -v '"if": "Bash(git \*)"' "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json" > "$tmp/hooks.json"
 cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json"
 expect "hooks: a PreToolUse hook without the git condition fails" fail 'does not set an .if. of Bash(git \*)'
+
+fresh
+awk '/"if": "Bash\(git \*\)"/ && ++n == 2 { sub(/Bash\(git \*\)/, "Bash(git commit *)") } { print }' "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json" > "$tmp/hooks.json"
+cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json"
+expect "hooks: a commit hook with a narrower git condition fails" fail 'for both the merge and the commit hooks'
 
 fresh
 printf 'A form feed: \014\n' >> "$tmp/repo/plugins/playbook-wiki/contract.md"
@@ -1844,6 +1862,118 @@ init_ok "init: skills exits 1 when the marketplaces cannot be read" \
 init_bad "skills alone" skills
 init_bad "skills of an unknown product" skills some
 init_bad "skills with too many arguments" skills wiki extra
+
+# The commit check: the check of the wiki runs before a commit that changes it.
+commit_hook="$root/plugins/playbook-wiki/hooks/commit-check-hook.sh"
+
+# wiki_repo <dir> <format marker or none>: a repository with a wiki that passes
+# the check, committed.
+wiki_repo() {
+  rm -rf "$1"
+  mkdir -p "$1/docs/wiki/works/w"
+  git_in "$1" init -b main
+  git_in "$1" config user.name Test
+  git_in "$1" config user.email test@example.com
+  git_in "$1" config commit.gpgsign false
+  printf '# W\n\nProject owner: Ana.\n' > "$1/docs/wiki/README.md"
+  printf '# w\n\n## Where work stands\n\nShort.\n' > "$1/docs/wiki/works/w/README.md"
+  [ "$2" = none ] || printf '%s\n' "$2" > "$1/docs/wiki/.format"
+  commit_in "$1" base
+}
+
+# break_wiki <dir>: makes "Where work stands" of the work hold 300 words.
+break_wiki() {
+  { printf '# w\n\n## Where work stands\n\n'; words 300; } > "$1/docs/wiki/works/w/README.md"
+}
+
+# commit_run <cwd> <command as JSON-escaped text>: runs the hook on a Bash call.
+commit_run() {
+  out=$(printf '{"session_id":"s","cwd":"%s","tool_name":"Bash","tool_input":{"command":"%s","description":"d"}}' "$1" "$2" | sh "$commit_hook" 2>&1)
+  code=$?
+}
+
+# denied: the output is one line that denies and holds the check's failure.
+denied() {
+  [ "$code" -eq 0 ] || return 1
+  [ "$(printf '%s\n' "$out" | wc -l | tr -d ' ')" -eq 1 ] || return 1
+  case $out in
+    '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"'*'"}}') ;;
+    *) return 1 ;;
+  esac
+  printf '%s\n' "$out" | grep -Fq 'FAIL works/w/README.md: \"Where work stands\" has 300 words, limit 250' &&
+    printf '%s\n' "$out" | grep -Fq 'the commit is stopped until it passes'
+}
+
+present_format=$(sh "$root/plugins/playbook-wiki/check-wiki.sh" --format)
+wiki_repo "$tmp/cc" "$present_format"
+break_wiki "$tmp/cc"
+commit_run "$tmp/cc" 'git commit -m x'
+check "commit hook: a failing wiki change stops git commit, with the check's output" denied
+commit_run "$tmp/cc" 'git add -A && git commit -m x'
+check "commit hook: a failing wiki change stops git add -A && git commit, nothing staged yet" denied
+commit_run "$tmp" "cd $tmp/cc && git commit -m x"
+check "commit hook: a failing wiki change stops cd <dir> && git commit" denied
+commit_run "$tmp" "git -C $tmp/cc commit -m x"
+check "commit hook: a failing wiki change stops git -C <dir> commit" denied
+commit_run "$tmp/cc" 'git status'
+check "commit hook: a command with no commit prints nothing" test -z "$out" -a "$code" -eq 0
+commit_run "$tmp/cc" 'echo "git commit -m x"'
+check "commit hook: a commit inside a quoted string prints nothing" test -z "$out" -a "$code" -eq 0
+
+wiki_repo "$tmp/cc_ok" "$present_format"
+printf '\nMore.\n' >> "$tmp/cc_ok/docs/wiki/works/w/README.md"
+commit_run "$tmp/cc_ok" 'git commit -m x'
+check "commit hook: a wiki that passes prints nothing" test -z "$out" -a "$code" -eq 0
+
+# A committed wiki that fails, and a change outside docs/wiki/.
+wiki_repo "$tmp/cc_same" "$present_format"
+break_wiki "$tmp/cc_same"
+commit_in "$tmp/cc_same" broken
+printf 'x\n' > "$tmp/cc_same/other.txt"
+commit_run "$tmp/cc_same" 'git add -A && git commit -m x'
+check "commit hook: a commit with no change under docs/wiki/ prints nothing, even if the wiki fails" test -z "$out" -a "$code" -eq 0
+
+wiki_repo "$tmp/cc_new" "$present_format"
+printf '# n\n\n[x](missing.md)\n' > "$tmp/cc_new/docs/wiki/new.md"
+commit_run "$tmp/cc_new" 'git commit -m x'
+check "commit hook: a new file under docs/wiki/ counts as a change" test "$code" -eq 0 -a -n "$out"
+
+wiki_repo "$tmp/cc_old" $((present_format - 1))
+break_wiki "$tmp/cc_old"
+commit_run "$tmp/cc_old" 'git commit -m x'
+check "commit hook: a wiki below the format prints nothing" test -z "$out" -a "$code" -eq 0
+wiki_repo "$tmp/cc_new5" $((present_format + 1))
+break_wiki "$tmp/cc_new5"
+commit_run "$tmp/cc_new5" 'git commit -m x'
+check "commit hook: a failing wiki change above the format is stopped" denied
+wiki_repo "$tmp/cc_long" 0000000004
+break_wiki "$tmp/cc_long"
+commit_run "$tmp/cc_long" 'git commit -m x'
+check "commit hook: a format marker of ten digits or more prints nothing" test -z "$out" -a "$code" -eq 0
+wiki_repo "$tmp/cc_nomark" none
+break_wiki "$tmp/cc_nomark"
+commit_run "$tmp/cc_nomark" 'git commit -m x'
+check "commit hook: a wiki with no format marker prints nothing" test -z "$out" -a "$code" -eq 0
+wiki_repo "$tmp/cc_nan" abc
+break_wiki "$tmp/cc_nan"
+commit_run "$tmp/cc_nan" 'git commit -m x'
+check "commit hook: a format marker that is not a number prints nothing" test -z "$out" -a "$code" -eq 0
+
+wiki_repo "$tmp/cc_nowiki" "$present_format"
+git_in "$tmp/cc_nowiki" rm -r docs
+commit_in "$tmp/cc_nowiki" nowiki
+printf 'x\n' > "$tmp/cc_nowiki/a.txt"
+commit_run "$tmp/cc_nowiki" 'git commit -m x'
+check "commit hook: a repository with no docs/wiki/ prints nothing" test -z "$out" -a "$code" -eq 0
+commit_run "$tmp/plain" 'git commit -m x'
+check "commit hook: a directory that is not a repository prints nothing" test -z "$out" -a "$code" -eq 0
+
+out=$(printf '{"cwd":"%s","tool_input":{"description":"d"}}' "$tmp/cc" | sh "$commit_hook" 2>&1); code=$?
+check "commit hook: input without a command field prints nothing" test -z "$out" -a "$code" -eq 0
+out=$(printf 'not json at all' | sh "$commit_hook" 2>&1); code=$?
+check "commit hook: input that is not JSON prints nothing" test -z "$out" -a "$code" -eq 0
+out=$(printf '' | sh "$commit_hook" 2>&1); code=$?
+check "commit hook: empty input prints nothing" test -z "$out" -a "$code" -eq 0
 
 # The hook of playbook-agents: the rules, and the language line when it is set.
 hook_command=$(sed -n 's/^ *"command": "\(.*\)"$/\1/p' "$root/plugins/playbook-agents/hooks/hooks.json" |

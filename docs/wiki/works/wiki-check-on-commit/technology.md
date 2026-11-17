@@ -35,6 +35,7 @@ Modules:
 Risks:
 
 - A command the parser does not read, such as a commit inside a script or an alias: the commit is not checked. Reduced by N6: nothing breaks, the wiki is checked at the next commit the parser reads.
+- The check reads the files on disk, not what the commit carries (wiki-check-on-commit-6). A commit with no wiki change is stopped while a failing wiki change waits uncommitted; and a failing page staged, then repaired on disk without staging it again, is committed failing. Found by the `review` agent in U1; both follow from the decision.
 - A deny on a commit the person wants anyway: the person commits in their own terminal (wiki-check-on-commit-5).
 
 Discarded: running the check after each edit (wiki-check-on-commit-1); a git `pre-commit` hook in the project, because the product writes nothing in a project outside `docs/wiki/` and `CLAUDE.md` (D185, `format.md`).

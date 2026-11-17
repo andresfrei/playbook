@@ -29,7 +29,7 @@ Nothing. The questions are in [questions.md](questions.md).
 | Who uses it | Covered | A person with `playbook-wiki` on, and the agent that commits for that person |
 | Main flows | Covered | The commit (wiki-check-on-commit-1) and the doctor (wiki-check-on-commit-2) |
 | What it must do | Covered | wiki-check-on-commit-1, wiki-check-on-commit-3, wiki-check-on-commit-4 |
-| What it must not do | Covered | It does not run after each edit (wiki-check-on-commit-1). It does not touch a commit with no change under `docs/wiki/` |
+| What it must not do | Covered | It does not run after each edit (wiki-check-on-commit-1). It does not touch a commit while nothing under `docs/wiki/` differs from the last commit; while something does, it checks every commit, also one that carries no change to the wiki (wiki-check-on-commit-6) |
 | Qualities | Covered, the how in stage 2 | Never stopping a commit by its own error, as the hook of the step at the merge does: stage 2 |
 | Limits | Covered | Claude Code only (D181); sh, sed, and awk, as the other hooks |
 | Outside systems | Covered | git only (D173) |

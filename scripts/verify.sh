@@ -130,6 +130,19 @@ case $hooks_merge in
 esac
 [ -f "$wiki_plugin/hooks/merge-step-hook.sh" ] ||
   fail "hooks/merge-step-hook.sh of playbook-wiki is missing"
+# shellcheck disable=SC2016
+case $hooks_merge in
+  *'${CLAUDE_PLUGIN_ROOT}/hooks/commit-check-hook.sh'*) ;;
+  *) fail "hooks.json of playbook-wiki does not run commit-check-hook.sh under PreToolUse" ;;
+esac
+# Each of the two hooks on Bash needs its own "if" of Bash(git *): one more
+# precise, such as Bash(git commit *), would miss "git -C <dir> commit".
+[ "$(printf '%s\n' "$hooks_merge" | grep -c '"if": "Bash(git \*)"')" -ge 2 ] ||
+  fail "hooks.json of playbook-wiki does not set an \"if\" of Bash(git *) for both the merge and the commit hooks"
+[ -f "$wiki_plugin/hooks/commit-check-hook.sh" ] ||
+  fail "hooks/commit-check-hook.sh of playbook-wiki is missing"
+[ -f "$wiki_plugin/hooks/git-hook-lib.sh" ] ||
+  fail "hooks/git-hook-lib.sh of playbook-wiki is missing, and both PreToolUse hooks source it"
 
 # L2 and L3: each skill of each plugin.
 for skill in "$plugins"/*/skills/*/SKILL.md; do

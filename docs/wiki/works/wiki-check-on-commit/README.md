@@ -12,12 +12,12 @@ Stage 6, Execution, is open. Stages 1 to 5 are closed (wiki-check-on-commit-5, w
 
 Waiting for the owner:
 
-- Nothing. The owner paused the work on 2026-11-16 before U1 started.
+- Nothing, while U2 is built.
 
 Next steps:
 
-1. U1, the hook of the commit: [plan.md](plan.md).
-2. U2, the doctor's step.
+1. U2, the doctor's step, then the owner's review of its text: [plan.md](plan.md).
+2. Closing the work, and version 2.1.0 (version-on-close-9).
 
 ## Stage table
 
