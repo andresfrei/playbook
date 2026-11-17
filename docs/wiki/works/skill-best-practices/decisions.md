@@ -1,0 +1,13 @@
+# Decisions of the work skill-best-practices
+
+| ID | Date | Decision | Who decided | Their words | Shared page |
+|----|------|----------|-------------|-------------|-------------|
+| skill-best-practices-1 | 2026-11-17 | The work adopts G1, G3, G4, G5, G6, and G7 of [definition.md](definition.md); G8 as one line of G1; G2 as a run on the model each skill runs on, not on all three. G9 is left as it is, and the limits of the body and the description stay. Answers skill-best-practices-Q1. | Andres Frei | Como recomendás (Recomendado) | none |
+| skill-best-practices-2 | 2026-11-17 | The seven skills are changed in this work: each is audited with `write-skill` against the new rules and gets its cases of behaviour (G1). None is left on the old definition. Answers skill-best-practices-Q2. | Andres Frei | En este work (Recomendado) | none |
+| skill-best-practices-3 | 2026-11-17 | The cost is measured first: the cases of `write-skill` run under a ceiling of USD 2 with `--max-cost-usd`, and the ceiling of the other six is set from that cost. Every paid run only when the owner asks. Answers skill-best-practices-Q3. | Andres Frei | Medir primero (Recomendado) | none |
+| skill-best-practices-4 | 2026-11-17 | Stage 1, Wiki, is closed: [definition.md](definition.md) covers every topic, with no question open. | Andres Frei | si | none |
+| skill-best-practices-5 | 2026-11-17 | Adds to skill-best-practices-2 the eighth skill, `init` of the plugin `playbook`: it is audited against the new rules, G7 included for `init.sh`, and gets no cases of behaviour, because a case would change the plugin settings it runs in. | Andres Frei | Solo auditar el texto (Recomendado) | none |
+| skill-best-practices-6 | 2026-11-17 | The technology of [technology.md](technology.md), N1 to N6, is accepted, with `sonnet` as the model of the cases of the skills that run in the session. Stage 2, Technology, is closed. | Andres Frei | acepto | none |
+| skill-best-practices-7 | 2026-11-17 | The skills of [skills.md](skills.md) are accepted. Stage 3, Skills, is closed. | Andres Frei | acepto | none |
+| skill-best-practices-8 | 2026-11-17 | Stage 4, Design system, is closed as not applicable: the work changes text, checks, and evaluation cases, and has no interface. | Andres Frei | acepto | none |
+| skill-best-practices-9 | 2026-11-17 | The plan of [plan.md](plan.md) is accepted: U2, U3, and U6 by evidence, U1, U4, and U5 by the owner's judgement, built one after the other on `feat/skill-best-practices`, one pull request the owner merges, each paid run when the owner asks. Stage 5, Plan, is closed. | Andres Frei | acepto | none |
