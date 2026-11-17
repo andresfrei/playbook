@@ -6,17 +6,16 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-17, after skill-triggering-1.
+Updated 2026-11-17, after skill-triggering-4.
 
 Stage 1, Wiki, is open. The problem and what the work proposes are in [definition.md](definition.md).
 
-Waiting for the owner: [skill-triggering-Q1 to -Q3](questions.md).
+Waiting for the owner: closing stage 1. No question is open.
 
 Next steps:
 
-1. Answer skill-triggering-Q1, when a skill counts as loading reliably.
-2. Answer -Q2, the cost ceiling, and -Q3, the form of a description.
-3. Close stage 1.
+1. Close stage 1.
+2. Stage 2, Technology: how the cases run three times, and what each measurement costs.
 
 ## Stage table
 

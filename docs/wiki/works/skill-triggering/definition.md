@@ -24,19 +24,16 @@ The person who installs the playbook. A request such as "Review the last commit 
 
 ## What the work must do
 
-Proposed, until the owner answers [questions.md](questions.md):
-
-- Measure how often each skill of the table loads, with more than one run per case, before changing its text.
-- Change the description of `review-change`, `keep-minimal`, and `prepare-project` until their cases load, and measure again.
-- Add to `review-change`, `prepare-project`, and `avoid-generic-design` what fixes the faults of Q2 to Q4, each measured in the same runs.
-- Make `wiki-format.sh mark` work where the temporary folder cannot be written, with its test.
+- Measure how often each skill of the table loads, with three runs per case, before changing its text. A skill loads reliably when each case that calls for it loads it in 3 of 3 runs, and each case of not triggering in 0 of 3 (Decided: skill-triggering-2).
+- Change the words of the description of `review-change`, `keep-minimal`, and `prepare-project` until their cases load, and measure again (Decided: skill-triggering-4).
+- Add to `review-change`, `prepare-project`, and `avoid-generic-design` what fixes the faults of skill-best-practices-Q2 to -Q4, each measured in the same runs (Decided: skill-triggering-1).
+- Make `wiki-format.sh mark` work where the temporary folder cannot be written, with its test (Decided: skill-triggering-1).
 
 ## What the work must not do
 
-Proposed:
-
-- Raise the limit of a description, 250 characters, or of a body, 700 words, which skill-best-practices-1 kept.
-- Run a paid evaluation without the owner asking, as skill-best-practices-3 set.
+- Raise the limit of a description, 250 characters, or of a body, 700 words, which skill-best-practices-1 kept (Decided: skill-triggering-4).
+- Change the form of a description, unless its words alone do not reach skill-triggering-2 (Decided: skill-triggering-4).
+- Run a paid evaluation without the owner asking (Decided: skill-triggering-3).
 
 ## Coverage of the topics
 
@@ -45,10 +42,10 @@ Proposed:
 | The problem, and who has it | Covered: above |
 | Who uses it | Covered: the person who installs the playbook, and the agent that loads the skills |
 | Main flows | Covered: a request that should load a skill; a run of the cases that measures it |
-| What it must do | Partly: when a skill counts as loading reliably is Open, [skill-triggering-Q1](questions.md) |
-| What it must not do | Partly: whether a description may change its form is Open, [skill-triggering-Q3](questions.md) |
+| What it must do | Covered: skill-triggering-2 |
+| What it must not do | Covered: skill-triggering-3, -4 |
 | Qualities | Covered: the limits of [../../01-product/style-guide.md](../../01-product/style-guide.md) stay |
-| Limits | Missing: the cost ceiling of the work, [skill-triggering-Q2](questions.md) |
+| Limits | Covered: measured first, under USD 3 per skill, and the later ceiling set from that cost (skill-triggering-3) |
 | Outside systems | Covered: `claude plugin eval` and Anthropic's models |
 | Volume | Covered: four skills to change, `review-change`, `keep-minimal`, `prepare-project`, `avoid-generic-design`, and one script |
 | Who runs and maintains it | Covered: the owner |
