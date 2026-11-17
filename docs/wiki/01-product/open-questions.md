@@ -4,7 +4,11 @@ Each has a recommendation and says what it blocks. Answered questions move to [.
 
 ## About the product
 
-None open. The last three, Q24, Q30, and Q52, were answered by D153, TD22, and D157.
+Phase 4 opened Q53 to Q60 on 2026-11-16, and D171 to D178 answered them: [phase-4.md](phase-4.md). One question is open: the release after version 2 (D198). Q62, whether the product adopts the way phase 4 is worked (D208), was answered by phase-4-1 in [../works/phase-4/decisions.md](../works/phase-4/decisions.md).
+
+| # | Question | Recommendation | Blocks |
+|---|----------|----------------|--------|
+| Q61 | What does Anthropic's plugin directory ask of the product, and which of the three plugins are submitted? What is known is in [../05-plan/plan-phase-4.md](../05-plan/plan-phase-4.md), under "After the plan". | Read the directory's pre-submission checklist and its policy when the next release is prepared, and decide then which plugins to submit. | The submission. Nothing in phase 4 |
 
 ## About the owner's machine
 

@@ -1,6 +1,6 @@
 # Rules
 
-The text of the general working rules R1–R24 lives in one place: [`plugin/rules.md`](../../../plugin/rules.md), the file the agent loads in every session (D50). This page records only where each rule comes from and which decision accepted it. To change a rule, change that file and add a decision here.
+The text of the general working rules R1–R24 lives in two files, and each rule in one of them. Six rules, R5 to R8, R10, and R12, are in the contract of `playbook-wiki`, [`plugins/playbook-wiki/contract.md`](../../../plugins/playbook-wiki/contract.md), which every person on a project loads (D175). The other eighteen are in [`plugins/playbook-agents/rules.md`](../../../plugins/playbook-agents/rules.md), the owner's agent system (D50). The contract adds to four of its rules: who decides when more than one person works on a project, in its first sentence and R6 (D172, phase-4-2); how a unit is accepted, by its evidence or by the owner's judgement as the plan marks it, in R10 (phase-4-1, phase-4-2); who decided, in R7 (D179); and the wiki in English, in R12 (D187). It also holds what is not a numbered rule: reading the wiki before changing code (D175), the two layers of a wiki (D189), and the step at the merge (D173). This page records only where each rule comes from and which decision accepted it. To change a rule, change the file that holds it and add a decision here.
 
 R1 to R17 are Decided: five by the decision named below, the other twelve by D34. R18 to R24 are the concepts of gentle-ai that phase 2 keeps (D66), in the product's own words; the number in "Source" is the concept in ../02-current-state/gentle-ai-layer.md (kept in the private archive). Numbers follow the order in which rules were added, not their place in the file.
 
@@ -15,7 +15,7 @@ R1 to R17 are Decided: five by the decision named below, the other twelve by D34
 | R7 | Deciding | Practice in the owner's project wikis | D34 |
 | R8 | Deciding | "Si algo del stack no permite cumplir un requisito, dímelo y propón alternativas en lugar de cambiarlo por tu cuenta", widened from the stack to anything Decided ([wiki-maintenance.md](wiki-maintenance.md)) | D34, D138 |
 | R9 | Building | D4, D19 | D4, D19 |
-| R10 | Building | "entrega y espera mi revisión al final de cada una" | D34 |
+| R10 | Building | "entrega y espera mi revisión al final de cada una"; since phase 4, only a unit the plan marks judgement waits for that review | D34, phase-4-1 |
 | R11 | Building | Owner's briefs ask for tests with the feature | D34 |
 | R12 | Building | "todo documentaco y ordenado para que cualquier LLM lo pueda entender de forma optima" | D34 |
 | R13 | Delivering | Current global instructions | D34 |

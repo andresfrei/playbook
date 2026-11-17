@@ -25,7 +25,7 @@ On 2026-11-13: `skill-creator` 574 words, `skill-improver` 434, `cognitive-doc-d
 
 ## Phase 2
 
-Stage 3 of phase 2: the skills the agent needs to build what [../03-technology/architecture.md](../03-technology/architecture.md) adds, with the technology of TD6 to TD11. The owner accepted the list (D73).
+Stage 3 of phase 2: the skills the agent needs to build what [../03-technology/architecture-phase-2.md](../03-technology/architecture-phase-2.md) adds, with the technology of TD6 to TD11. The owner accepted the list (D73).
 
 Nothing is installed or written for this stage. The product's own skills, built in phase 1, replace the installed ones of the list above.
 
@@ -63,3 +63,21 @@ Nothing is installed or written for this stage. Every skill named is the product
 | Prepare and track the work | The six stages | `playbook:prepare-project` | `plugin/skills/prepare-project/` | Each stage and each unit |
 | Execute and commit | The session's instructions | The product's own rules | `plugin/rules.md` | Always |
 
+## Phase 4
+
+Stage 3 of phase 4: the skills the agent needs to build what [../03-technology/architecture-phase-4.md](../03-technology/architecture-phase-4.md) describes, with the technology of TD24 and TD26 to TD33. The owner accepted the list (D194).
+
+Nothing is installed or written for this stage. Every skill named is the product's own and is loaded in the owner's Claude Code, seen in the skill list of the session of 2026-11-16.
+
+| Job in this repository | Technology | What the agent uses | Where it lives | When |
+|------------------------|------------|---------------------|----------------|------|
+| Change `prepare-project` and `doctor`, rename the agent that `review-change` names, and write the start skill (TD30, TD31) | Skill files | `playbook:write-skill`, with its style guide and the two evaluation cases it asks for | `plugin/skills/write-skill/` | Each time a skill file is written or changed |
+| Write the three manifests, the marketplace entries, the dependency, the `userConfig` option, and the hooks (TD26, TD28, TD29, TD31) | Claude Code plugins | No skill needed. The documentation quoted in [../03-technology/phase-4.md](../03-technology/phase-4.md), read again through the `claude-code-guide` agent when a detail is missing, and `claude plugin validate`. A skill for the plugin format stays Deferred, as in phases 1 to 3 | Claude Code 2.1.325 on the owner's machine | When each file is written |
+| Write the wizard's script and the script of the step at the merge, and change the check and `scripts/verify.sh` (TD24, TD27, TD28) | Plain shell (TD2) | No skill needed. `shellcheck` checks each script, and `scripts/verify_test.sh` holds the tests | The owner's machine: `shellcheck` 0.11.0, seen with `shellcheck --version` on 2026-11-16 | Each change to a script |
+| Try how Claude Code's scopes and hooks behave, which [../03-technology/phase-4.md](../03-technology/phase-4.md) lists as not verified | Claude Code's plugin commands | No skill needed. Each command's own help, and a trial that the owner authorizes before it runs on the owner's machine | Claude Code 2.1.325 | Before anything is built on a behaviour that was not tried |
+| Take out what phase 3 built for opencode (D191) | Files of this repository | No skill needed | This repository | Once |
+| Write the contract and the wiki | Markdown | `playbook:write-docs` | `plugin/skills/write-docs/` | Each page written or changed |
+| Keep each change minimal | Any | `playbook:keep-minimal` | `plugin/skills/keep-minimal/` | Each change to code |
+| Read a risky change before delivery: the wizard's script, which changes a person's settings, the hooks, and the check | Any | `playbook:review-change`, on the `review` agent (R20) | `plugin/skills/review-change/` | Before a risky change is delivered |
+| Prepare and track the work | The six stages | `playbook:prepare-project` | `plugin/skills/prepare-project/` | Each stage and each unit |
+| Execute and commit | The session's instructions | The product's own rules | `plugin/rules.md` | Always |

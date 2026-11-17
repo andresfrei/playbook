@@ -19,6 +19,6 @@ body:
     id: tool
     attributes:
       label: Tool and version
-      placeholder: Claude Code 2.x / opencode 2.3.0
+      placeholder: Claude Code 2.x
     validations:
       required: true

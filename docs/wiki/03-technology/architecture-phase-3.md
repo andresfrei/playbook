@@ -1,6 +1,6 @@
 # Architecture of phase 3
 
-How the product works in opencode 2.x next to Claude Code. It describes only what phase 3 adds; the product as it is, with its modules and how they load in Claude Code, is in [architecture.md](architecture.md) and does not change (D112). The decisions behind this page are TD13 to TD20, and the evidence for each is in [phase-3.md](phase-3.md).
+How the product works in opencode 2.x next to Claude Code. It describes only what phase 3 adds; the product as it is, with its modules and how they load in Claude Code, is in [architecture-phase-2.md](architecture-phase-2.md) and does not change (D112). The decisions behind this page are TD13 to TD20, and the evidence for each is in [phase-3.md](phase-3.md).
 
 Every statement here is Decided. The owner accepted this page when stage 2 of phase 3 was closed (D114), with the points listed under "Not verified".
 
@@ -40,7 +40,7 @@ It fits the requirements because the two shared parts, the rules and the skills,
 
 ## Modules
 
-What phase 3 adds or changes. The other modules are in [architecture.md](architecture.md).
+What phase 3 adds or changes. The other modules are in [architecture-phase-2.md](architecture-phase-2.md).
 
 | Module | Path | Responsible for | Does not | Used by | State |
 |--------|------|-----------------|----------|---------|-------|
@@ -74,7 +74,7 @@ The product's `explore` replaces opencode's built-in agent of the same name (tri
 2. When the agent asked is the one that wrote the change, the rule added to `review-change` tells it to hand the review to the `review` agent (TD17).
 3. opencode starts the `review` agent in a child session with a new context, on `gpt-6.1-sol` at high effort. It loads `review-change`, reads the change, and returns its findings.
 
-In Claude Code the review runs as before ([architecture.md](architecture.md)).
+In Claude Code the review runs as before ([architecture-phase-2.md](architecture-phase-2.md)).
 
 ## The main data
 

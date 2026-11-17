@@ -2,4 +2,4 @@
 .atl/
 
 # Results of evaluation runs
-plugin/evals/results/
+plugins/*/evals/results/
