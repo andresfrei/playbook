@@ -1,5 +1,6 @@
 ---
 tags: [avoid-generic-design]
+plugins: ["../..", "../../../playbook-wiki"]
 allowed_tools: [Read, Glob, Grep, Skill]
 ---
 

@@ -2,9 +2,7 @@
 
 The catalogue of patterns that make a web or interface design look generic: what each looks like, how to find it, and its alternatives.
 
-A pattern is generic when it is in the design because it is the default, not because someone chose it. The same pattern is not a finding when the owner or the project's design system asks for it.
-
-The list of alternatives under each pattern is a starting point, not a menu to copy. Pick the simplest one that fits the project and state its evidence, as the rules in `SKILL.md` require.
+A pattern is generic when it is in the design because it is the default, not because someone chose it.
 
 ## 1. The default sans-serif typeface
 

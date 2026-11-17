@@ -12,18 +12,16 @@ Do not use it to review a change for correctness, security, or reliability, or t
 
 ## Rules
 
-- Choose the simplest solution that solves the current problem and can evolve.
 - Every piece of a change serves a requirement that exists today. A piece that no current requirement uses is excess:
   - code for a caller, a case, or an option that nobody has asked for;
   - a layer that only passes a call on;
   - a dependency or a pattern that nothing in the current context justifies;
   - a second way to do what the project already does;
   - a change to code that the current problem does not touch.
-- Add a dependency or a pattern only when the current context justifies it, and name that justification.
-- Simple never means incorrect or untested. A change in behaviour comes with its tests, and tests of the changed behaviour are never excess.
+- When you add a dependency or a pattern, name what in the current context justifies it (R9).
+- Simple never means incorrect or untested. Tests of the changed behaviour (R11) are never excess.
 - The project's own rules win over this skill. What a project rule requires is never excess.
-- Leave excess out whole; do not build half of it. Report it as Deferred, with the evidence that would justify adding it later.
-- A review reports only excess. It is not a correctness, security, or reliability review, and its report says so.
+- Leave excess out whole; do not build half of it.
 
 ## Steps
 

@@ -17,7 +17,6 @@ Do not use it for work with no visual design in it, such as a data model, an API
 - Back each choice that replaces a generic pattern with evidence: something in the project, such as its content, its audience, or its brand, or a reference the owner named. Cite no source you have not checked.
 - Choose the simplest alternative that removes the generic pattern. Add a dependency, such as a web font, an icon set, or a library, only when the context justifies it (R9).
 - When the project's stack cannot produce an alternative, say so and propose ones it can. Never change the stack silently (R8).
-- In a review, change nothing. Apply the alternatives only when the owner asked to refine or fix the design.
 
 ## Steps
 

@@ -12,11 +12,11 @@ Stage 6, Execution, is open: [plan.md](plan.md).
 
 Waiting for the owner:
 
-- Nothing now.
+- The review of U5: [plan.md](plan.md).
 
 Next steps:
 
-1. U5, the audit of the skills of `playbook-agents`. U1 to U4 are Done.
+1. The owner reviews U5, which is built. U1 to U4 are Done.
 2. U6, under USD 1 per skill (skill-best-practices-10).
 3. At closing, also rewrite `03-technology/installation.md` for skill-best-practices-11.
 
