@@ -32,6 +32,11 @@
             "type": "command",
             "if": "Bash(git *)",
             "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/merge-step-hook.sh\""
+          },
+          {
+            "type": "command",
+            "if": "Bash(git *)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/commit-check-hook.sh\""
           }
         ]
       }

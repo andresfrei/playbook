@@ -31,8 +31,9 @@ Three kinds of content, split by when each one loads (D65):
 | Contract | `plugins/playbook-wiki/contract.md` | The rules about deciding, R5 to R8, R10, and R12, reading the wiki before changing code, the two layers of a wiki, and the step at the merge (D175, D189, D173) | Say how a person's agent talks, delegates, tests, or commits |
 | Format | `plugins/playbook-wiki/format.md` | Format 4 of a project's wiki: the shared pages, the works, their files and identifiers (D201) | |
 | Check | `plugins/playbook-wiki/check-wiki.sh` | Failing on a wiki that breaks the present format, work by work (D202) | Read a wiki at an earlier format: it sends it to the doctor. Detect two decisions that contradict each other (D173) |
-| Step at the merge | `plugins/playbook-wiki/merge-step.sh`, `plugins/playbook-wiki/hooks/merge-step-hook.sh` | Listing, before a merge, the decisions each side added and the shared pages both changed, and, when there is something to compare, asking the person in the permission prompt before the merge runs (TD28) | Decide which decision holds |
-| Wiki skills | `plugins/playbook-wiki/skills/` | `prepare-project`, which works on the open work (D203); `doctor`, which brings a wiki to the present format (D207); `write-docs` (TD30) | |
+| Check at the commit | `plugins/playbook-wiki/hooks/commit-check-hook.sh` | Running the check before an agent's `git commit` when anything under `docs/wiki/` differs from the last commit, and stopping the commit with the check's output when it fails (wiki-check-on-commit-1, wiki-check-on-commit-3, wiki-check-on-commit-6) | Check a wiki below the present format (wiki-check-on-commit-4). Reach a commit a person runs in their own terminal (wiki-check-on-commit-5). Read which files the commit carries: it checks the files on disk. Stop a commit by its own error |
+| Step at the merge | `plugins/playbook-wiki/merge-step.sh`, `plugins/playbook-wiki/hooks/merge-step-hook.sh`, with `hooks/git-hook-lib.sh`, which both hooks on git share | Listing, before a merge, the decisions each side added and the shared pages both changed, and, when there is something to compare, asking the person in the permission prompt before the merge runs (TD28) | Decide which decision holds |
+| Wiki skills | `plugins/playbook-wiki/skills/` | `prepare-project`, which works on the open work (D203); `doctor`, which brings a wiki to the present format (D207) and, moving a state section that is too long, takes out what another page holds and what is finished (wiki-check-on-commit-2); `write-docs` (TD30) | |
 | Rules | `plugins/playbook-agents/rules.md` | The owner's rules that are not in the contract (D175, D200) | Define the wiki |
 | Agents | `plugins/playbook-agents/agents/` | `explore`, `write`, and `review`, each with its model and effort (TD8) | Decide when to delegate; the rules do |
 | Model configuration | `plugins/playbook-agents/models.conf`, `scripts/set-models.sh` | The one place where the model and effort of each agent are set; the script writes them into the agent files (TD11) | Run at session time |
@@ -47,6 +48,7 @@ Three kinds of content, split by when each one loads (D65):
 | `playbook-wiki` | `SessionStart` | Prints the contract, then the notice of the wiki's format when it is behind (`skills/doctor/scripts/wiki-format.sh hook`) |
 | `playbook-wiki` | `SubagentStart` | Gives the contract to each subagent as extra context (TD29) |
 | `playbook-wiki` | `PreToolUse` on `Bash(git *)` | The step at the merge, for a `git merge` |
+| `playbook-wiki` | `PreToolUse` on `Bash(git *)` | The check at the commit, for a `git commit` (wiki-check-on-commit-1) |
 | `playbook-agents` | `SessionStart` | Prints the rules, then "Talk to the person in <language>." when the person set a language |
 
 ## How a review runs

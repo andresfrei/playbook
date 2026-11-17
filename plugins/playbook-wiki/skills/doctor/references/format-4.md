@@ -19,7 +19,8 @@ The format is `../../../format.md`. Read its sections "The project's `README.md`
 4. Write the project's owner in `docs/wiki/README.md`, after the first section, as `Project owner: <name>.`
 5. When there is an open phase, it becomes a work:
    - Create `docs/wiki/works/<name>/README.md` as the format says: what the work is for, who leads it, "Status: Open", then move there the "Where work stands" section and the phase's stage table.
-   - A link that moves with the text is relative to `docs/wiki/`, and the work's folder is two levels below it: put `../../` in front of each relative link you move, so that it still resolves. This is the only change to the moved text.
+   - A link that moves with the text is relative to `docs/wiki/`, and the work's folder is two levels below it: put `../../` in front of each relative link you move, so that it still resolves. This, and the next item, are the only changes to the moved text.
+   - When the moved "Where work stands" holds more than 250 words, or says what is finished, take out what does not belong in it. Delete a sentence that another page of the wiki already holds, and link to that page. Move what is finished to the page of the phase's plan, and link to it. Never open a new section in the work's `README.md` to hold it.
    - In its table of pages, link the pages of that phase where they are. Do not move them.
    - Its earlier decisions keep their `D#`. Say in the work's `README.md` that its decisions up to the last `D#` are in `../../decisions.md`, and that new ones are `<name>-1` onwards in its own `decisions.md`.
 6. Move the stage tables of closed phases under a heading `## Phases before format 4` at the end of `docs/wiki/README.md`. When no phase is open, move the "Where work stands" section there too.
