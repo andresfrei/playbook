@@ -7,7 +7,7 @@ Stage 5. The units that answer [definition.md](definition.md) with the technolog
 | ID | Status | Evidence | Done on | Owner's words |
 |----|--------|----------|---------|---------------|
 | review-trigger-U1 | Done | `plugins/playbook-agents/hooks/review-before-commit.sh`, `review-ran.sh`, `hook-lib.sh`, and `hooks.json`; 38 cases `hold:` and 7 cases `hooks:` of `playbook-agents` in `scripts/verify_test.sh`. On 2026-11-18: `sh scripts/verify_test.sh` prints "all cases passed" (489 cases); `bash scripts/verify.sh` exits 0; `claude plugin validate plugins/playbook-agents` passes; shellcheck is clean. The agent `review` read it three times; its findings were fixed, two by review-trigger-14 and -15 | 2026-11-18 | si |
-| review-trigger-U2 | Not started | | | |
+| review-trigger-U2 | Done | [measurements.md](measurements.md): three runs when the owner asked, USD 0.24 under the ceiling of 2. The first commit was held with the reminder; SubagentStop of `playbook-agents:review` wrote the mark under the main session's `session_id`; the commit after `review` ran | 2026-11-18 | |
 
 ## Units
 

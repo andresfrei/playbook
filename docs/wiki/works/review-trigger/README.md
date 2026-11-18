@@ -8,11 +8,11 @@ Status: Open.
 
 Updated 2026-11-18, after review-trigger-15.
 
-Stage 6, execution, is open: [plan.md](plan.md). review-trigger-U1 is Done. Waiting for the owner: the order to run review-trigger-U2, the trial, under its ceiling of USD 2.
+Stage 6, execution, is open: [plan.md](plan.md). review-trigger-U1 and U2 are Done. The trial showed that a held commit tried again with another command is held again ([measurements.md](measurements.md)). Waiting for the owner: whether the key of a held commit drops the command.
 
 Next:
 
-1. review-trigger-U2, the trial, when the owner asks.
+1. The owner decides the key of a held commit.
 2. The close of the work: the shared pages and the version.
 
 ## Stage table
@@ -31,6 +31,7 @@ Next:
 | Page | Content | Code it governs |
 |------|---------|-----------------|
 | [decisions.md](decisions.md) | The work's decisions, with the owner's words | |
+| [measurements.md](measurements.md) | What the trial of U2 showed | |
 | [plan.md](plan.md) | The units of the work and how each is accepted | |
 | [questions.md](questions.md) | The work's open questions | |
 | [definition.md](definition.md) | What the work must make true, what exists today, and what it must and must not do | |
