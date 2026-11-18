@@ -25,7 +25,7 @@ R1 to R17 are Decided: five by the decision named below, the other twelve by D34
 | R17 | Organizing rules and skills | D6 | D6 |
 | R18 | Deciding | Concept 1, change authorization | D66 |
 | R19 | Building | Concept 2, task size; "no todo los procesos reuqieren el mismo esfuerzo" (D57) | D66 |
-| R20 | Building | Concept 3, the high-risk list; the second reader is the `review` agent (TD8) | D66 |
+| R20 | Building | Concept 3, the high-risk list; the second reader is the `review` agent (TD8). A hook of `playbook-agents` reminds the agent of it at each commit with no `review` since the last one (review-trigger-1) | D66 |
 | R21 | Building | Concepts 6 and 7, delegation and edit surfaces; the agents carry the model of each job (TD7, TD8) | D66 |
 | R22 | Building | Concept 15, CodeGraph first | D66 |
 | R23 | Building | Concept 16, what belongs in Engram (D36) | D66 |

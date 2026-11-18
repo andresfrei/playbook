@@ -2,18 +2,20 @@
 
 Makes the agent `review` read a change when R20 calls it risky, without depending on the writing agent remembering R20, and counts again how often it does. Andres Frei leads it.
 
-Status: Open.
+Status: Closed 2026-11-18 (review-trigger-17).
 
 ## Where work stands
 
-Updated 2026-11-18, after review-trigger-15.
+Updated 2026-11-18, after review-trigger-17.
 
-Stage 6, execution, is open: [plan.md](plan.md). review-trigger-U1 and U2 are Done. The trial showed that a held commit tried again with another command is held again ([measurements.md](measurements.md)). Waiting for the owner: whether the key of a held commit drops the command.
+No stage is open: U1 and U2 of [plan.md](plan.md) are Done. What the work decided is in [../../03-technology/architecture.md](../../03-technology/architecture.md) and [../../01-product/rules.md](../../01-product/rules.md). Left for later: [questions.md](questions.md), review-trigger-Q6, the count after the release.
+
+Version 2.3.0 (review-trigger-17).
 
 Next:
 
-1. The owner decides the key of a held commit.
-2. The close of the work: the shared pages and the version.
+1. The owner merges the work into `main` by its pull request (review-trigger-12).
+2. The release: the version in the three manifests, the tag `v2.3.0`, and the release on GitHub.
 
 ## Stage table
 
@@ -24,7 +26,7 @@ Next:
 | 3 Skills | Closed | 2026-11-17 |
 | 4 Design system | Closed (not applicable) | 2026-11-18 |
 | 5 Plan | Closed | 2026-11-18 |
-| 6 Execution | Open | |
+| 6 Execution | Closed | 2026-11-18 |
 
 ## Pages
 
