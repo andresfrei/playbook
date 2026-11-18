@@ -2,20 +2,19 @@
 
 Measures whether the validator of code, the skill `review-change` on the agent `review`, does its job, and changes it only where the evidence shows a gap. Andres Frei leads it.
 
-Status: Open.
+Status: Closed 2026-11-17 (review-evidence-18).
 
 ## Where work stands
 
-Updated 2026-11-17, after review-evidence-16.
+Updated 2026-11-17, after review-evidence-18.
 
-Stage 6 Execution is open, on the units of [plan.md](plan.md). Stages 1 to 3 closed with [definition.md](definition.md), [research.md](research.md), [technology.md](technology.md), and [skills.md](skills.md); stage 4 did not apply; stage 5 closed with the plan.
+No stage is open: U1 to U4 of [plan.md](plan.md) are Done, and the owner ended the plan before U5 (review-evidence-17). What the work decided is in [../../03-technology/skill-evaluation.md](../../03-technology/skill-evaluation.md). What is left for a later work is in [questions.md](questions.md): review-evidence-Q4, making the review run when R20 says it should, and review-evidence-Q5.
 
-Waiting for the owner: the review of review-evidence-U4, the table in [measurements.md](measurements.md); then whether U5 is built.
+No new version (review-evidence-18).
 
 Next:
 
-1. The owner reviews review-evidence-U4.
-2. The owner decides U5, the wrapper, on the result of U4.
+1. The owner merges the work into `main` by its pull request (review-evidence-15).
 
 ## Stage table
 
@@ -26,7 +25,7 @@ Next:
 | 3 Skills | Closed | 2026-11-17 |
 | 4 Design system | Closed (not applicable) | 2026-11-17 |
 | 5 Plan | Closed | 2026-11-17 |
-| 6 Execution | Open | |
+| 6 Execution | Closed | 2026-11-17 |
 
 ## Pages
 

@@ -82,6 +82,17 @@ The work skill-triggering took those five questions, measured four skills three 
 
 The work skill-adherence took skill-triggering-Q5 to -Q7, read their causes in the kept traces, changed the Output of `review-change`, the example of the gotcha of `prepare-project`, and the graders, and measured once, for USD 1.39. With the plugin, `review-change-clean-commit` passes `no-findings` and `no-padding` in 3 of 3, and `prepare-project-new-project-stage-one` asks one question in 2 of 3. Left open for a later work: `keep-minimal-triggers` loads its skill in 1 of 3, since the agent reviews the commit itself (skill-adherence-Q7), and whether 2 of 3 is enough for `prepare-project` (skill-adherence-Q8). See [the measurements](../works/skill-adherence/measurements.md) and [the questions](../works/skill-adherence/questions.md).
 
+## Measuring the reviewer (Decided: review-evidence-3, review-evidence-7, review-evidence-10, review-evidence-11, review-evidence-17)
+
+The work review-evidence measured whether `review-change`, on the agent `review`, finds defects, against Claude Code's `/code-review`, alone and with a rule in `CLAUDE.md`.
+
+- The cases live in `plugins/playbook-agents/evals/review-evidence/`, tagged `review-evidence`, so a run by skill's tag leaves them out. Each seeded diff is the files of a fixed commit of this repository and one patch of `seeds/<diff>/seed.patch`, built by `seeds/build.sh`; the prompt names the reviewer, `/playbook-agents:review-change HEAD~1..HEAD` or `/code-review high HEAD~1..HEAD` (review-evidence-11).
+- The cases run from `plugins/`, with `.` as the target, since a case that loads both plugins is refused when the target is one of them; the report goes to `plugins/evals/results/`, which `.gitignore` leaves out.
+- `/code-review` with the rule runs through `run-rule.sh`, in `claude -p` inside a clone under `TMPDIR`, with an empty `CLAUDE_CONFIG_DIR` and `CLAUDE_CODE_OAUTH_TOKEN` from `claude setup-token`, since no `CLAUDE.md` loads in an eval (review-evidence-7, review-evidence-10).
+- A gap is a seeded defect that `review` misses and `/code-review` finds, or a finding that is not real, in two of three runs of a diff; or `review` not running on a change R20 calls risky (review-evidence-3).
+
+Result, on 2026-11-17, USD 14.88 for 63 runs: each reviewer found the six seeded defects in three of three runs; findings that are not real were 1 for `review-change`, 59 for `/code-review` alone, and 45 with the rule. `review-change` stays as it is (review-evidence-17). `review` did not run before 27 of the 37 risky commits found in the transcripts of this repository, which review-evidence-Q4 leaves for a later work. See [the measurements](../works/review-evidence/measurements.md) and [the questions](../works/review-evidence/questions.md).
+
 ## Not verified
 
 - Whether evaluation needs extra software on every operating system. The documentation only says that Windows without a Linux layer has no sandbox for shell commands.
