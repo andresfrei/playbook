@@ -1,0 +1,208 @@
+# Measurements of review-evidence
+
+What each unit of [plan.md](plan.md) measured, with how it was measured and its limits.
+
+## review-evidence-U1: the count for R20
+
+Measured on 2026-11-17 from the Claude Code transcripts of this repository's sessions on the owner's machine, 101 JSON Lines files with those of their subagents, read locally (review-evidence-4). Only counts, commit hashes, and commit subjects from `git log` are written here; no transcript text.
+
+### How
+
+1. Every tool call was listed in time order per session: a `Bash` call whose command runs `git commit`, an `Agent` call whose agent's name holds `review`, and a `Skill` call whose skill's name holds `review`.
+2. Each commit command was matched to a commit of this repository by its subject, against `git log --all`. A commit counts as reviewed when a review call came after the previous commit of the same session and before it.
+3. Each matched commit was classed by the paths it changes (`git show --name-only`), against R20's list in `plugins/playbook-agents/rules.md`:
+   - **delivery**: it changes a plugin manifest under `.claude-plugin/`;
+   - **interface others use, script or hook**: it changes a shipped script, hook, or configuration under `plugins/`, outside `evals/`;
+   - **interface others use, text**: it changes a shipped skill, agent, rule, or contract text under `plugins/`, outside `evals/`;
+   - not risky: anything else, such as the wiki, the cases under `evals/`, or `scripts/`.
+
+### Result
+
+| | Commits | Reviewed |
+|---|---|---|
+| Commits of this repository found in the transcripts | 108 | 13 |
+| Risky by R20 | 37 | 10 |
+| Delivery: a manifest | 11 | 3 |
+| Interface others use: a shipped script or hook | 8 | 5 |
+| Interface others use: a shipped skill, agent, rule, or contract text | 18 | 2 |
+| Not risky | 71 | 3 |
+
+27 of the 37 risky commits had no call of `review` before them. Every review found was the agent `review`, as `playbook-agents:review` or, before version 2, `playbook:review`; no call of the skill `review-change` was found.
+
+By review-evidence-3, a change to the validator is justified when `review` did not run on a change R20 calls risky. This count shows it did not, in 27 commits, if the owner accepts the classing below.
+
+### Risky commits
+
+| Commit | Subject | R20 item | Reviewed before |
+|--------|---------|----------|-----------------|
+| `82ae054` | fix(doctor): keep the copy of the marker beside it, not in TMPDIR | interface others use (shipped script or hook) | yes, `playbook-agents:review` |
+| `302bdbf` | fix(skills): align prepare-project, write-docs, init, and the two scripts with the style guide | interface others use (shipped script or hook) | yes, `playbook-agents:review` |
+| `8d99c3e` | feat(playbook-wiki): add the contract and its hooks | interface others use (shipped script or hook) | yes, `playbook:review` |
+| `46d2c28` | feat(playbook-wiki): check the works of a wiki | interface others use (shipped script or hook) | yes, `playbook:review` |
+| `d5af090` | feat(playbook-wiki): bring a wiki to format 4 with the doctor | interface others use (shipped script or hook) | yes, `playbook:review` |
+| `d7a5481` | feat(playbook-wiki): check the wiki before an agent commits a change to it | interface others use (shipped script or hook) | no |
+| `8c62c54` | feat(playbook): compare the skills that are not the product's in /playbook:init | interface others use (shipped script or hook) | no |
+| `94829da` | feat(playbook-wiki): show the decisions to compare before a merge | interface others use (shipped script or hook) | no |
+| `b177b3c` | docs: describe version 2 and how to start it, and set 2.0.0 | delivery (manifest) | yes, `playbook:review` |
+| `a00124c` | feat!: split the plugin into playbook, playbook-wiki, and playbook-agents | delivery (manifest) | yes, `playbook:review` |
+| `c368900` | feat(playbook): add /playbook:init to turn the product on | delivery (manifest) | yes, `playbook:review` |
+| `8e62c5d` | chore(release): 2.2.1 | delivery (manifest) | no |
+| `14d3718` | chore(release): 2.1.0 | delivery (manifest) | no |
+| `03ac4e5` | feat(playbook-wiki,playbook-agents): add the directory icons | delivery (manifest) | no |
+| `e548a31` | docs(playbook-wiki,playbook-agents): add a README and the licence to each plugin | delivery (manifest) | no |
+| `f6c9022` | chore(release): 2.2.0 | delivery (manifest) | no |
+| `4b9c5f4` | chore(release): 2.2.2 | delivery (manifest) | no |
+| `5fe0ac8` | feat: first public release of the playbook | delivery (manifest) | no |
+| `fef053d` | feat: declare version 1.0.0 and document how releases are made | delivery (manifest) | no |
+| `8a5d136` | fix(playbook-agents): align keep-minimal, review-change, and avoid-generic-design with the style guide | interface others use (shipped skill, agent, or rule text) | yes, `playbook-agents:review` |
+| `4c26efc` | feat(playbook-wiki): accept a unit by its evidence or by the owner's judgement | interface others use (shipped skill, agent, or rule text) | yes, `playbook:review` |
+| `9cd9c1a` | fix(skills): name the requests that missed review-change and keep-minimal | interface others use (shipped skill, agent, or rule text) | no |
+| `8862bfc` | fix(prepare-project): add a gotcha for a closing line that asks two things | interface others use (shipped skill, agent, or rule text) | no |
+| `fae1512` | fix(review-change): ask the session to show the report unchanged | interface others use (shipped skill, agent, or rule text) | no |
+| `beb21ba` | feat(playbook-wiki): recommend a version when a work closes | interface others use (shipped skill, agent, or rule text) | no |
+| `428758e` | feat(playbook-wiki): the doctor trims a moved state section that is too long | interface others use (shipped skill, agent, or rule text) | no |
+| `f06dba1` | feat(playbook-agents): adopt the best practices for skills in write-skill and its style guide | interface others use (shipped skill, agent, or rule text) | no |
+| `72ababd` | test(playbook-agents): add the cases of behaviour of write-skill | interface others use (shipped skill, agent, or rule text) | no |
+| `cc1e19f` | test(playbook-agents): run the cases of write-skill with playbook-wiki, and add its first gotcha | interface others use (shipped skill, agent, or rule text) | no |
+| `a3e6638` | fix(init): record a choice about a project skill only in the open work | interface others use (shipped skill, agent, or rule text) | no |
+| `bb4e7d0` | test(skills): run the cases with their scaffold, and drop graders that expect the wiki before the first answer | interface others use (shipped skill, agent, or rule text) | no |
+| `d058c9e` | docs(write-skill): record what the second run of U6 taught about cases of behaviour | interface others use (shipped skill, agent, or rule text) | no |
+| `82f6f40` | test(skills): fix the cases of behaviour after the second run, and two skill faults they found | interface others use (shipped skill, agent, or rule text) | no |
+| `531ffb4` | feat(review-change): place the intent sentence and drop passing cases from the report | interface others use (shipped skill, agent, or rule text) | no |
+| `dfd4b7f` | fix(prepare-project): take the gotcha's example from a domain no case uses | interface others use (shipped skill, agent, or rule text) | no |
+| `4580d35` | feat(playbook-wiki): define format 4 of a wiki in format.md | interface others use (shipped skill, agent, or rule text) | no |
+| `b6ca3b6` | feat(playbook-wiki): prepare a project one work at a time | interface others use (shipped skill, agent, or rule text) | no |
+
+### Limits
+
+- 257 commit commands were found; 143 did not match a commit of this repository: commits in the temporary repositories of tests and fixtures, such as "feat: invoicing app"; commands whose message could not be read; text that only mentions `git commit`; and commits of the history before 2026-11-14, kept in the private `andresfrei/playbook-archive`. The count covers the 108 that matched.
+- A review in another session than the commit, or a `/code-review` typed by the owner, is not a tool call of the session and is not counted.
+- A review that came before a commit may have read another change than that commit.
+- Classing by path is a judgement: whether a change to a skill's text is "an interface others use" is for the owner to accept.
+
+## review-evidence-U2: the trial
+
+Run on 2026-11-17 with Claude Code 2.1.327, when the owner asked ("listo"), on the seeded diff `dash`: a commit titled as a refactor of `plugins/playbook-wiki/merge-step.sh` that drops the arm `-)` of `case $ref in -) ;; -*) exit 0 ;; esac`, so a ref of `-`, the previous branch, exits with no output. One run of each reviewer:
+
+- The two cases, from `plugins/`: `claude plugin eval . --tag review-evidence --runs 1 --ablation none --scaffold --keep-temp --model opus --allow-tools Bash --max-cost-usd 3 --no-publish --trust-plugin --json <file>`.
+- The run with the rule: `bash plugins/playbook-agents/evals/review-evidence/run-rule.sh plugins/playbook-agents/evals/review-evidence/dash-code-review 1 <folder> 2`, with `CLAUDE_CODE_OAUTH_TOKEN` read from the owner's file.
+
+### Cost of one run
+
+List-price estimates reported by each run:
+
+| Reviewer | Cost (USD) | Duration |
+|----------|-----------|----------|
+| `review-change` (eval) | 0.16 | 32 s |
+| `/code-review` alone (eval) | 0.20 | 33 s |
+| `/code-review` with the rule (`claude -p`) | 0.27 | 43 s |
+
+Total of the trial: USD 0.64. A first eval run loaded no case and a first run with the rule failed at login; neither cost anything (see below).
+
+### The four points that were not verified
+
+| Point | Answer | Evidence |
+|-------|--------|----------|
+| A case's prompt can call `/code-review` and a plugin's skill by name | Yes | The traces show the turns of each reviewer marked `forked-command-code-review` and `forked-command-playbook-agents:review-change`. The grader `tool_used: Skill` does not see such a call, since no `Skill` tool runs: it failed with "Skill called 0x" and was removed |
+| `fixture.sh` finds this repository from its own path | Yes | Both cases reviewed the seeded commit; `build.sh` finds the repository as `$(dirname "$0")/../../../../..` |
+| An empty `CLAUDE_CONFIG_DIR` loads nothing of the owner's | Yes | The `init` event of the run with the rule lists the plugins `cc-plugin-agents-md`, `cc-plugin-telemetry`, `cc-plugin-privacy`, and `cc-plugin-plugin-authoring`, which the eval cases also list, no MCP server, only the built-in agents, and the auto memory under the empty folder; none of the owner's plugins, such as Engram or the playbook, and the clone under `/tmp` |
+| `--max-budget-usd` caps a run on a plan | Not shown | The run reports `total_cost_usd` 0.27, under the ceiling of 2, so the cap was never reached. The ceiling of U4 also rests on the number of runs and the owner's order |
+
+### What else the trial showed
+
+- All three reviewers found the seeded defect, with the line, a failing case, and the tests in `scripts/verify_test.sh` that would fail.
+- Only `/code-review` with the rule reported that the change contradicts the wiki: `docs/wiki/05-plan/plan-phase-4.md` records "`git merge -` was ignored" as a defect fixed in U35. It read `docs/wiki/README.md` to find the page, as the rule asks.
+- `/code-review` alone, in the eval, wrote "Only the repo-root `CLAUDE.md` applies", though no `CLAUDE.md` loads there: it read the file itself.
+- Run against `plugins/playbook-agents`, the eval refuses a case that loads `playbook-wiki`, outside that folder; it runs from `plugins/`, and then writes its report to `plugins/evals/results/`, now in `.gitignore`.
+- The token file held the marker `[200~` that a terminal adds to a paste; it is removed when the token is read.
+
+### Ceiling proposed for U4
+
+Seven diffs, three runs each, at the costs above: about USD 13. Proposed: `--max-cost-usd 12` for the fourteen cases, and `--max-budget-usd 1` for each of the 21 runs with the rule, about USD 6 expected; together under USD 20. The owner approves it before U4 (review-evidence-5).
+
+## review-evidence-U3: the seeded diffs
+
+Built on 2026-11-17 in `plugins/playbook-agents/evals/review-evidence/`. Each diff is the files of a fixed commit as a first commit and one patch of `seeds/<diff>/seed.patch` as the second, built by `seeds/build.sh`; each has a case for `review-change` and one for `/code-review`. This table is what the replies of U4 are read against (N8).
+
+| Diff | Class (N7) | Seeded defect | A case that fails |
+|------|-----------|---------------|-------------------|
+| `dash` | A failing edge case | `plugins/playbook-wiki/merge-step.sh:21`: the arm `-)` is dropped, so `-` matches `-*` and exits 0 | `sh merge-step.sh - <repo>` prints nothing, though `-` is the previous branch (line 7), so `git merge -` is not checked |
+| `limit` | Contradicts a Decided statement | `scripts/verify.sh:15`: the body limit of a skill, L2, goes from 700 to 800 words | A body of 750 words passes; L2 is 700 words in `docs/wiki/01-product/style-guide.md`, and skill-best-practices-1 forbids raising it |
+| `bytes` | Behaviour other than the change means | `scripts/verify.sh:30`: `count_chars` uses `wc -c`, which counts bytes, not characters | The description `a — b` counts 7, not 5; a description of 245 characters with three em dashes fails L3, 250 characters |
+| `truncate` | Data loss | `scripts/set-models.sh`, `write_file`: `awk ... "$1" > "$1"` empties the file before `awk` reads it | `sh scripts/set-models.sh` leaves the three files of `plugins/playbook-agents/agents/` at 0 bytes (run: 1490 bytes before, 0 after) |
+| `language` | A security problem | `plugins/playbook/skills/init/scripts/init.sh`, `apply`: the checks that keep a quote, a backslash, and control characters out of the language are removed | The language `es","x":"y` goes unchecked into the JSON that `configure_language` sends to `claude plugin configure`, which writes another key |
+| `folder` | Changed behaviour with no test | `scripts/verify.sh:200`: a new check fails a skill whose name differs from its folder | `scripts/verify_test.sh` has no case for it (`grep -c "but its folder is"` gives 0), so breaking the check fails no test |
+| `clean` | None | The real commit `82ae054`, "fix(doctor): keep the copy of the marker beside it, not in TMPDIR", on its parent `e09c6b0`, with its tests and its record in the wiki | Every finding on it counts as not real unless shown otherwise |
+
+Checked on 2026-11-17: each `fixture.sh`, with and without `--rule`, run in an empty temporary folder, exited 0 and left the two commits with the diff of its seed.
+
+## review-evidence-U4: the measurement
+
+Run on 2026-11-17 with Claude Code 2.1.327, when the owner asked ("si"), under the ceiling proposed in U2:
+
+- The fourteen cases, from `plugins/`: `claude plugin eval . --tag review-evidence --runs 3 --ablation none --scaffold --keep-temp --model opus --allow-tools Bash --max-cost-usd 12 --no-publish --trust-plugin -j 4 --json <file>`. 42 runs, no error, not partial.
+- The 21 runs with the rule: `run-rule.sh` on each diff, three runs, `--max-budget-usd 1` each. All ended in `success`.
+
+Cost, list-price estimates: USD 14.88 in all, under the ceiling of 20.
+
+| Reviewer | Runs | Cost (USD) | Per run |
+|----------|------|-----------|---------|
+| `review-change` | 21 | 4.88 | 0.23 |
+| `/code-review` alone | 21 | 5.19 | 0.25 |
+| `/code-review` with the rule | 21 | 4.80 | 0.23 |
+
+### How the replies were read
+
+As N8 says: seven agents, one per diff, each read the nine replies of its diff against the seeded defect of U3 and against the seeded repository, and judged every other finding real or not real, citing the file and line or the command run on a copy. A finding that follows from the seeded defect, such as a test that now fails, counts as real. A finding about code the change did not touch, a fix suggestion, style, or a case not shown counts as not real. What is under "Not checked" is not a finding.
+
+One verdict was changed after the reading, so every diff is read by the same rule: in `bytes`, the reader marked "no test covers the changed behaviour" not real, because the gap was there before. The change does alter behaviour and no test would fail, which is a defect by the rules of `review-change` and the class of the diff `folder`, so the nine findings count as real.
+
+### Result
+
+Seeded defects found, out of three runs:
+
+| Diff | `review-change` | `/code-review` alone | `/code-review` with the rule |
+|------|-----------------|----------------------|------------------------------|
+| `dash` | 3 | 3 | 3 |
+| `limit` | 3 | 3 | 3 |
+| `bytes` | 3 | 3 | 3 |
+| `truncate` | 3 | 3 | 3 |
+| `language` | 3 | 3 | 3 |
+| `folder` | 3 | 3 | 3 |
+| All | 18 of 18 | 18 of 18 | 18 of 18 |
+
+Other findings, real and not real, over the three runs of each diff:
+
+| Diff | `review-change` | `/code-review` alone | `/code-review` with the rule |
+|------|-----------------|----------------------|------------------------------|
+| `dash` | 0 real, 0 not | 9 real, 1 not | 11 real, 0 not |
+| `limit` | 4 real, 0 not | 17 real, 2 not | 13 real, 0 not |
+| `bytes` | 3 real, 0 not | 16 real, 3 not | 14 real, 1 not |
+| `truncate` | 1 real, 0 not | 5 real, 11 not | 9 real, 5 not |
+| `language` | 4 real, 0 not | 16 real, 4 not | 14 real, 3 not |
+| `folder` | 0 real, 0 not | 3 real, 10 not | 3 real, 11 not |
+| `clean` | 0 real, 1 not | 0 real, 28 not | 0 real, 25 not |
+| All | 12 real, 1 not | 66 real, 59 not | 64 real, 45 not |
+
+Of everything each reviewer reported as wrong, seeded defect included, the share that is real: `review-change` 30 of 31, 97%; `/code-review` alone 84 of 143, 59%; `/code-review` with the rule 82 of 127, 65%.
+
+What the numbers mean:
+
+- Most real findings of `/code-review` are consequences of the seeded defect written as separate findings: the tests that now fail, a stale comment, a page left on the old value. `review-change` writes the same consequences inside its one finding, so its count of other findings stays low. The counts measure how a reviewer reports as much as what it finds.
+- One real finding no run of `review-change` reported as a finding: in `folder`, the wiki's `01-product/style-guide.md` does not list the new rule. `/code-review` reported it in all six runs, alone and with the rule. Two runs of `review-change` saw it and put it under "Not checked".
+- `/code-review` alone also found `limit`, the defect that needs the wiki, in three of three: no `CLAUDE.md` loads in the eval, but the repository holds `docs/wiki/`, and it read the decisions.
+- On `clean`, a real commit that `review` had read before its merge, no reviewer found a real defect. `review-change` reported one finding in one run, an artifact of the seeded repository's history; `/code-review` reported 28 and 25, among them defects of the code before the change and races with no case shown.
+
+### The result by review-evidence-3
+
+- Seeded defects: `review` missed none that `/code-review` found. No gap.
+- Findings that are not real: `review` reported one, in one run of `clean`, below two of three runs. No gap.
+- Runs of `review` on risky changes: it did not run on 27 of the 37 risky commits of U1. Gap shown.
+
+The condition proposed for U5 in [definition.md](definition.md), that `/code-review` with the rule finds at least what `review` finds, holds for the seeded defects: 18 of 18 each. It reports 45 findings that are not real against 1.
+
+### Limits
+
+- Six seeded defects and one clean diff, in shell scripts of one repository. The seeds are one line to a few lines; a larger diff may give other numbers ([research.md](research.md), C6).
+- Each verdict is one agent's reading, with its evidence cited; the owner reviews the table (N8).
+- Two readers used the same scratch folder at the same time, and one removed it while the other worked; the reader of `clean` had finished its runs, and its verdicts cite runs it made in its own copies. A reader started `scripts/verify_test.sh` in the repository itself by a failed `cd` and stopped it; `git status` showed no change.

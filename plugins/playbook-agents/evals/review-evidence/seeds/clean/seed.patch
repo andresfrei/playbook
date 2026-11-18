@@ -1,0 +1,208 @@
+diff --git a/docs/wiki/works/skill-triggering/README.md b/docs/wiki/works/skill-triggering/README.md
+index 96045fd..dd22916 100644
+--- a/docs/wiki/works/skill-triggering/README.md
++++ b/docs/wiki/works/skill-triggering/README.md
+@@ -6,16 +6,17 @@ Status: Open.
+ 
+ ## Where work stands
+ 
+-Updated 2026-11-17, after skill-triggering-8.
++Updated 2026-11-17, after skill-triggering-9.
+ 
+-Stage 5, Plan, is open. The plan proposed, units U1 to U5, is in [plan.md](plan.md).
++Stage 6, Execution, is open. skill-triggering-U1 is Done; see [plan.md](plan.md).
+ 
+-Waiting for the owner: accepting [plan.md](plan.md), with how a unit is delivered. No question is open.
++Waiting for the owner: the paid run of skill-triggering-U2, which happens only when the owner asks (skill-triggering-3).
+ 
+ Next steps:
+ 
+-1. Accept the plan and close stage 5.
+-2. Stage 6, Execution: U1, then U2 when the owner asks for the paid run.
++1. skill-triggering-U2: the first measurement of `review-change`, `keep-minimal`, `prepare-project`, and `avoid-generic-design`, under USD 3 per skill.
++2. The owner sets the ceiling of U5 from its cost.
++3. U3 and U4, then U5.
+ 
+ ## Stage table
+ 
+@@ -25,8 +26,8 @@ Next steps:
+ | 2 Technology | Closed | 2026-11-17 |
+ | 3 Skills | Closed | 2026-11-17 |
+ | 4 Design system | Closed (not applicable) | 2026-11-17 |
+-| 5 Plan | Open | |
+-| 6 Execution | Not started | |
++| 5 Plan | Closed | 2026-11-17 |
++| 6 Execution | Open | |
+ 
+ ## Pages
+ 
+diff --git a/docs/wiki/works/skill-triggering/decisions.md b/docs/wiki/works/skill-triggering/decisions.md
+index 1697214..3d65bb5 100644
+--- a/docs/wiki/works/skill-triggering/decisions.md
++++ b/docs/wiki/works/skill-triggering/decisions.md
+@@ -10,3 +10,4 @@
+ | skill-triggering-6 | 2026-11-17 | The technology of [technology.md](technology.md), N1 to N6, is accepted: `--runs 3`, `--json` and `--keep-temp` on every measurement, `--ablation none` for the cases of triggering, and the copy of the marker beside it in `wiki-format.sh mark`. Stage 2, Technology, is closed. | Andres Frei | acepto | none |
+ | skill-triggering-7 | 2026-11-17 | The skills of [skills.md](skills.md) are accepted. Stage 3, Skills, is closed. | Andres Frei | acepto | none |
+ | skill-triggering-8 | 2026-11-17 | Stage 4, Design system, is closed as not applicable: the work changes the text of skills, evaluation cases, and one script, and has no interface. | Andres Frei | si | none |
++| skill-triggering-9 | 2026-11-17 | The plan of [plan.md](plan.md) is accepted: U1, U2, and U5 by evidence, U3 and U4 by the owner's judgement, built one after the other on `feat/skill-triggering`, one pull request the owner merges, each paid run when the owner asks. Stage 5, Plan, is closed. | Andres Frei | acepto | none |
+diff --git a/docs/wiki/works/skill-triggering/plan.md b/docs/wiki/works/skill-triggering/plan.md
+index 0514a3d..dd23103 100644
+--- a/docs/wiki/works/skill-triggering/plan.md
++++ b/docs/wiki/works/skill-triggering/plan.md
+@@ -1,12 +1,12 @@
+ # Plan of skill-triggering
+ 
+-Stage 5. The units that answer [definition.md](definition.md) with the technology of [technology.md](technology.md). Proposed until the owner accepts it.
++Stage 5. The units that answer [definition.md](definition.md) with the technology of [technology.md](technology.md). Accepted by the owner (skill-triggering-9).
+ 
+ ## Progress
+ 
+ | ID | Status | Evidence | Done on | Owner's words |
+ |----|--------|----------|---------|---------------|
+-| skill-triggering-U1 | Not started | | | |
++| skill-triggering-U1 | Done | `wiki-format.sh mark` keeps the copy of the old marker as `<wiki>/.format.saved`, sets its traps before it touches the copy, removes a copy left by an earlier run, and deletes it on every exit; exit 4 now also covers a copy that cannot be removed. Eight cases in `scripts/verify_test.sh`: `TMPDIR` that does not exist, no copy left after a passing or a failed `mark`, after an interrupt, a stale copy with and without a marker, a copy that cannot be removed, a folder that cannot be written. On 2026-11-17: `sh scripts/verify_test.sh` printed "all cases passed" (444 cases), `bash scripts/verify.sh` exited 0, `shellcheck` printed nothing. The `review` agent read the change twice: it found a copy left when there was no marker, and the contract of exit 4 not naming removal; both fixed. Left as they were before the change: a marker lost when its write fails partway, or when the restore fails | 2026-11-17 | |
+ | skill-triggering-U2 | Not started | | | |
+ | skill-triggering-U3 | Not started | | | |
+ | skill-triggering-U4 | Not started | | | |
+@@ -26,7 +26,7 @@ Order: U1 depends on nothing and costs nothing. U2 comes before U3 and U4, since
+ 
+ ## How a unit is delivered
+ 
+-Proposed, read from how this repository delivered its last works (skill-best-practices-9): the five units are built on this work's branch, `feat/skill-triggering`, one after the other and not in parallel. The work reaches `main` by one pull request, which the owner merges (R14). U1 changes `wiki-format.sh`, so the `review` agent reads it before it is Done (R20). A paid run of `claude plugin eval` happens only when the owner asks (skill-triggering-3).
++Accepted by the owner (skill-triggering-9), read from how this repository delivered its last works (skill-best-practices-9): the five units are built on this work's branch, `feat/skill-triggering`, one after the other and not in parallel. The work reaches `main` by one pull request, which the owner merges (R14). U1 changes `wiki-format.sh`, so the `review` agent reads it before it is Done (R20). A paid run of `claude plugin eval` happens only when the owner asks (skill-triggering-3).
+ 
+ ## Left out
+ 
+diff --git a/plugins/playbook-wiki/skills/doctor/scripts/wiki-format.sh b/plugins/playbook-wiki/skills/doctor/scripts/wiki-format.sh
+index e2d95ec..cf65e02 100755
+--- a/plugins/playbook-wiki/skills/doctor/scripts/wiki-format.sh
++++ b/plugins/playbook-wiki/skills/doctor/scripts/wiki-format.sh
+@@ -7,7 +7,7 @@
+ #        sh wiki-format.sh --help
+ # Exit codes: 0 done; 1 the check of the wiki failed or was interrupted;
+ # 2 a wrong call; 3 the wiki is not ready to be marked; 4 a file could not be
+-# copied or written. Messages go to standard error.
++# copied, written, or removed. Messages go to standard error.
+ # status prints nothing when there is no wiki, or when its marker is at the
+ # playbook's format or above, and one line when the marker is missing or
+ # behind. It always exits 0.
+@@ -31,7 +31,7 @@ format=$(sh "$check_wiki" --format)
+ 
+ command=${1:-}
+ usage='Usage: sh wiki-format.sh status|mark [wiki directory], sh wiki-format.sh hook, or sh wiki-format.sh --help.
+-Exit codes: 0 done; 1 the check of the wiki failed or was interrupted; 2 a wrong call; 3 the wiki is not ready to be marked; 4 a file could not be copied or written.'
++Exit codes: 0 done; 1 the check of the wiki failed or was interrupted; 2 a wrong call; 3 the wiki is not ready to be marked; 4 a file could not be copied, written, or removed.'
+ if [ "$command" = hook ]; then
+   [ -n "${CLAUDE_PROJECT_DIR:-}" ] || exit 0
+   command=status
+@@ -77,30 +77,35 @@ case $command in
+       printf 'FAIL %s/README.md has no column "Code it governs" in its table of pages, so the wiki is not at wiki format %s. Add the column as format.md says under "The project'"'"'s README.md". The marker was not written.\n' "$wiki" "$format" >&2
+       exit 3
+     fi
+-    # Keep the old marker, byte for byte, so a failed or interrupted check can
+-    # put it back.
+-    saved=
+-    if [ -f "$marker" ]; then
+-      saved=$(mktemp)
+-      if [ -z "$saved" ] || ! cp "$marker" "$saved"; then
+-        [ -z "$saved" ] || rm -f "$saved"
+-        printf 'FAIL could not keep a copy of %s. Check that TMPDIR can be written. The marker was not written.\n' "$marker" >&2
+-        exit 4
+-      fi
+-    fi
+-    # From the first write to the end of the check, any exit that is not a
+-    # success puts the old marker back, or removes the new one, and deletes the
+-    # copy. An interrupt is handled when the running check ends.
++    # Keep the old marker, byte for byte, beside it, so a failed or interrupted
++    # check can put it back. The wiki's folder must be writable for the marker
++    # anyway; a temporary folder may not be. From here on, any exit deletes the
++    # copy; from the first write to the end of the check, any exit that is not
++    # a success also puts the old marker back, or removes the new one. An
++    # interrupt is handled when the running check ends.
++    saved="$marker.saved"
++    had_marker=0
+     armed=0
+     undo() {
+       if [ "$armed" = 1 ]; then
+         armed=0
+-        if [ -n "$saved" ]; then cp "$saved" "$marker"; else rm -f "$marker"; fi
++        if [ "$had_marker" = 1 ]; then cp "$saved" "$marker"; else rm -f "$marker"; fi
+       fi
+-      [ -z "$saved" ] || rm -f "$saved"
++      rm -f "$saved" 2>/dev/null
+     }
+     trap undo EXIT
+     trap 'exit 1' INT TERM HUP
++    if ! rm -f "$saved" 2>/dev/null; then
++      printf 'FAIL could not remove %s, left by an earlier run. Remove it by hand. The marker was not written.\n' "$saved" >&2
++      exit 4
++    fi
++    if [ -f "$marker" ]; then
++      had_marker=1
++      if ! cp "$marker" "$saved"; then
++        printf 'FAIL could not keep a copy of %s. Check that its folder can be written. The marker was not written.\n' "$marker" >&2
++        exit 4
++      fi
++    fi
+     armed=1
+     if ! printf '%s\n' "$format" 2>/dev/null > "$marker"; then
+       armed=0
+diff --git a/scripts/verify_test.sh b/scripts/verify_test.sh
+index b125b00..2bd25d9 100644
+--- a/scripts/verify_test.sh
++++ b/scripts/verify_test.sh
+@@ -981,6 +981,7 @@ printf '3\r\n' > "$tmp/wiki/.format"
+ cp "$tmp/wiki/.format" "$tmp/marker-before"
+ expect_format "format: a failed mark reports the failure" mark 1 "links to gone.md"
+ check "format: a failed mark puts the older marker back byte for byte" cmp -s "$tmp/marker-before" "$tmp/wiki/.format"
++check "format: a failed mark leaves no copy of the marker" absent "$tmp/wiki/.format.saved"
+ 
+ fresh_wiki
+ printf '3\n' > "$tmp/wiki/.format"
+@@ -1031,7 +1032,36 @@ expect_format "format: mark fails when the marker cannot be written" mark 4 "cou
+ 
+ fresh_wiki
+ out=$(TMPDIR="$tmp/no-such-dir" sh "$wiki_format" mark "$tmp/wiki" 2>&1); code=$?
+-check "format: mark exits 4 and keeps the marker when it cannot copy it" sh -c 'test "$1" -eq 4 && printf "%s" "$2" | grep -q "could not keep a copy" && test "$(cat "$3")" = 4' sh "$code" "$out" "$tmp/wiki/.format"
++check "format: mark works when the temporary folder cannot be written" sh -c 'test "$1" -eq 0 && test "$(cat "$2")" = 4' sh "$code" "$tmp/wiki/.format"
++check "format: mark leaves no copy of the marker in the wiki" absent "$tmp/wiki/.format.saved"
++
++fresh_wiki
++printf '3\n' > "$tmp/wiki/.format"
++printf 'stale\n' > "$tmp/wiki/.format.saved"
++sh "$wiki_format" mark "$tmp/wiki" >/dev/null 2>&1; code=$?
++check "format: mark replaces a copy left by an earlier run, and deletes it" sh -c 'test "$1" -eq 0 && test "$(cat "$2")" = 4 && test ! -e "$3"' sh "$code" "$tmp/wiki/.format" "$tmp/wiki/.format.saved"
++
++fresh_wiki
++rm "$tmp/wiki/.format"
++printf 'stale\n' > "$tmp/wiki/.format.saved"
++sh "$wiki_format" mark "$tmp/wiki" >/dev/null 2>&1; code=$?
++check "format: mark deletes a copy left by an earlier run when there is no marker" sh -c 'test "$1" -eq 0 && test "$(cat "$2")" = 4 && test ! -e "$3"' sh "$code" "$tmp/wiki/.format" "$tmp/wiki/.format.saved"
++
++fresh_wiki
++printf '3\n' > "$tmp/wiki/.format"
++mkdir "$tmp/wiki/.format.saved"
++out=$(sh "$wiki_format" mark "$tmp/wiki" 2>&1); code=$?
++check "format: mark exits 4 and keeps the marker when an old copy cannot be removed" sh -c 'test "$1" -eq 4 && printf "%s" "$2" | grep -q "could not remove" && test "$(cat "$3")" = 3' sh "$code" "$out" "$tmp/wiki/.format"
++rmdir "$tmp/wiki/.format.saved"
++
++if [ "$(id -u)" -ne 0 ]; then
++  fresh_wiki
++  printf '3\n' > "$tmp/wiki/.format"
++  chmod a-w "$tmp/wiki"
++  out=$(sh "$wiki_format" mark "$tmp/wiki" 2>&1); code=$?
++  chmod u+w "$tmp/wiki"
++  check "format: mark exits 4 and keeps the marker when it cannot copy it" sh -c 'test "$1" -eq 4 && printf "%s" "$2" | grep -q "could not keep a copy" && test "$(cat "$3")" = 3' sh "$code" "$out" "$tmp/wiki/.format"
++fi
+ 
+ fresh_wiki
+ printf '99999999999999999999\n' > "$tmp/wiki/.format"
+@@ -1119,7 +1149,7 @@ TMPDIR="$standin/tmpdir" sh "$interrupted" mark "$tmp/wiki" >/dev/null 2>&1
+ code=$?
+ check "interrupt: a TERM during the check makes mark fail" test "$code" -ne 0
+ check "interrupt: the old marker is back byte for byte" cmp -s "$tmp/marker-before" "$tmp/wiki/.format"
+-check "interrupt: the saved copy is deleted" test -z "$(ls -A "$standin/tmpdir")"
++check "interrupt: the saved copy is deleted" absent "$tmp/wiki/.format.saved"
+ 
+ fresh_wiki
+ rm "$tmp/wiki/.format"

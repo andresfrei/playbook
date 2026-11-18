@@ -3,3 +3,4 @@
 
 # Results of evaluation runs
 plugins/*/evals/results/
+plugins/evals/results/
