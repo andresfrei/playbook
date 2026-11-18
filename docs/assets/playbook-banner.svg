@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="176" viewBox="0 0 960 176" role="img" aria-labelledby="title">
+  <title id="title">Playbook</title>
+  <rect width="960" height="176" rx="10" fill="#132923"/>
+  <g transform="translate(62 32) scale(16)" fill="#e8f3dc" shape-rendering="crispEdges">
+    <path d="M0 0h4v1h-4z M0 1h2v1h-2z M4 1h1v1h-1z M0 2h2v1h-2z M4 2h1v1h-1z M0 3h4v1h-4z M0 4h2v1h-2z M0 5h2v1h-2z M0 6h2v1h-2z"/>
+    <path d="M7 0h2v1h-2z M7 1h2v1h-2z M7 2h2v1h-2z M7 3h2v1h-2z M7 4h2v1h-2z M7 5h2v1h-2z M7 6h5v1h-5z"/>
+    <path d="M15 0h3v1h-3z M14 1h2v1h-2z M18 1h1v1h-1z M14 2h2v1h-2z M18 2h1v1h-1z M14 3h5v1h-5z M14 4h2v1h-2z M18 4h1v1h-1z M14 5h2v1h-2z M18 5h1v1h-1z M14 6h2v1h-2z M18 6h1v1h-1z"/>
+    <path d="M21 0h1v1h-1z M25 0h1v1h-1z M21 1h1v1h-1z M25 1h1v1h-1z M22 2h1v1h-1z M24 2h1v1h-1z M23 3h1v1h-1z M23 4h1v1h-1z M23 5h1v1h-1z M23 6h1v1h-1z"/>
+    <path d="M28 0h4v1h-4z M28 1h2v1h-2z M32 1h1v1h-1z M28 2h2v1h-2z M32 2h1v1h-1z M28 3h4v1h-4z M28 4h2v1h-2z M32 4h1v1h-1z M28 5h2v1h-2z M32 5h1v1h-1z M28 6h4v1h-4z"/>
+    <path d="M36 0h3v1h-3z M35 1h2v1h-2z M39 1h1v1h-1z M35 2h2v1h-2z M39 2h1v1h-1z M35 3h2v1h-2z M39 3h1v1h-1z M35 4h2v1h-2z M39 4h1v1h-1z M35 5h2v1h-2z M39 5h1v1h-1z M36 6h3v1h-3z"/>
+    <path d="M43 0h3v1h-3z M42 1h2v1h-2z M46 1h1v1h-1z M42 2h2v1h-2z M46 2h1v1h-1z M42 3h2v1h-2z M46 3h1v1h-1z M42 4h2v1h-2z M46 4h1v1h-1z M42 5h2v1h-2z M46 5h1v1h-1z M43 6h3v1h-3z"/>
+    <path d="M49 0h2v1h-2z M53 0h1v1h-1z M49 1h2v1h-2z M52 1h1v1h-1z M49 2h3v1h-3z M49 3h2v1h-2z M49 4h3v1h-3z M49 5h2v1h-2z M52 5h1v1h-1z M49 6h2v1h-2z M53 6h1v1h-1z"/>
+  </g>
+  <path d="M937 136h14v8h-14z" fill="#a5e482"/>
+</svg>

@@ -1,0 +1,32 @@
+{
+  "name": "playbook",
+  "interface": {
+    "displayName": "Playbook"
+  },
+  "plugins": [
+    {
+      "name": "playbook-wiki",
+      "source": {
+        "source": "local",
+        "path": "./plugins/playbook-wiki"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "playbook-agents",
+      "source": {
+        "source": "local",
+        "path": "./plugins/playbook-agents"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

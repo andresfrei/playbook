@@ -1,193 +1,115 @@
-# playbook
+# ![Playbook](docs/assets/playbook-banner.svg)
 
-A Claude Code product for building software with an AI coding agent, shared as it is: use it, copy it, or adapt it under the [MIT License](LICENSE). Issues and pull requests are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md).
+Playbook is a set of plugins for building software with a coding agent in Claude Code or Codex CLI. The developer decides what the software should do. The agent records those decisions in the project's Git-backed wiki, uses them to implement changes, and reports how it checked the result. A teammate starting a fresh session can see what was agreed, why it changed, and which question to pick up next.
 
-It keeps a project's definitions and decisions in a wiki inside the project's repository, so every person and every agent on the project works from the same source of truth. In this repository, "the owner" means the person who maintains the product.
+## Ask your agent to install Playbook
 
-It is three plugins in one marketplace:
+Copy the prompt for your client into a session. You choose whether to use the wiki alone or add the working agents.
 
-| Plugin | For | Holds |
-|--------|-----|-------|
-| `playbook` | Starting the product | Only the command `/playbook:init`. Nothing else loads until you run it |
-| `playbook-wiki` | Everyone who works on a project | The contract an agent follows, printed at session start; the format of a project's wiki and its check; a step before a `git merge` that shows the decisions to compare; and three skills: `prepare-project`, `write-docs`, and `doctor`, which only you start (`/playbook-wiki:doctor`) |
-| `playbook-agents` | The owner's way of working, for whoever wants it | 18 working rules, printed at session start; the agents `explore`, `write`, and `review`, with the model of each in `plugins/playbook-agents/models.conf`; and four skills: `keep-minimal`, `review-change`, `write-skill`, and `avoid-generic-design`. It needs `playbook-wiki` |
+### Claude Code prompt
 
-You can use the wiki alone with your own agent setup, or the whole product.
+```text
+Install Playbook for Claude Code from https://github.com/andresfrei/playbook.
+Add its marketplace with `claude plugin marketplace add andresfrei/playbook`
+if it is missing. Run `claude plugin install playbook@playbook --scope user`.
+Use `claude plugin list` to confirm the plugin is enabled and tell me its version.
+Then tell me how to start a fresh Claude Code session in my project and run
+/playbook:init so I can choose the components and scope.
+```
 
-**Status:** the work in progress is under [docs/wiki/works/](docs/wiki/works/); start at [docs/wiki/README.md](docs/wiki/README.md).
+### Codex CLI prompt
 
-## How it works
+```text
+Install Playbook for Codex CLI from https://github.com/andresfrei/playbook.
+Ask me which setup I want: 1 for the wiki only, or 2 for the wiki and agents.
+Use my local Playbook checkout if it contains codex/install.py. Otherwise,
+clone the repository into a fresh directory. From the checkout root, run
+`python3 codex/install.py` and supply my choice when it prompts.
+Report what was installed and any existing profiles the installer kept.
+Show me which hooks to review in /hooks, then how to start a fresh Codex
+session in my project.
+```
 
-How the three plugins relate. `/playbook:init` turns the others on; nothing of the product loads before it.
+## Choose your plugins
+
+Playbook is opt-in. You can use the wiki with your own agent setup or add the working agents. Each plugin guide shows its workflow.
+
+| Plugin | When to choose it |
+|--------|-------------------|
+| [`playbook` — setup](plugins/playbook/README.md) | Use the optional `/playbook:init` wizard in Claude Code to choose components and scope. Codex users make their selection in the installer. |
+| [`playbook-wiki` — project memory](plugins/playbook-wiki/README.md) | Choose this on its own to keep decisions in Git, prepare work in stages, and check wiki changes before commits and merges. |
+| [`playbook-agents` — working rules and agents](plugins/playbook-agents/README.md) | Add this to the wiki when you want the working rules, specialized skills and the `explore`, `write`, and `review` roles. It requires `playbook-wiki`. |
 
 ```mermaid
 flowchart LR
-  you([You]) -- "/playbook:init" --> init["playbook<br/>the start command"]
-  init -- "turns on" --> wiki["playbook-wiki<br/>the core"]
-  init -. "turns on, when you choose<br/>the whole product" .-> agents["playbook-agents<br/>the owner's agent system"]
-  agents -- "needs" --> wiki
-  wiki --- wikiHolds["the contract<br/>the wiki format<br/>and its check<br/>the check at the commit<br/>the step at the merge<br/>prepare-project<br/>write-docs<br/>doctor"]
-  agents --- agentsHolds["18 rules<br/>the language you chose<br/>the agents<br/>explore, write, review<br/>keep-minimal<br/>review-change<br/>write-skill<br/>avoid-generic-design"]
-  wiki -- "reads and writes" --> repo[("docs/wiki/<br/>in your project")]
+    claude["Claude Code<br/>/playbook:init"] --> choice{"Which setup?"}
+    codex["Codex CLI<br/>python3 codex/install.py"] --> choice
+    choice -->|Wiki only| wiki["playbook-wiki"]
+    choice -->|Wiki with agents| agents["playbook-agents<br/>explore · write · review"]
+    agents -->|Requires| wiki
+    wiki -->|Reads and checks| repo[("Project repository<br/>docs/wiki/")]
 ```
 
-What each plugin does during a session. The steps inside a box run only when the case arises.
+## How a change moves through Playbook
+
+1. **Read the project.** At session start, the wiki plugin gives the agent its working contract. Before editing a file, the agent opens `docs/wiki/README.md` and follows the entry for the code it will touch. Shared wiki pages describe the product as it stands.
+2. **Define the work.** For a new project, phase, or feature that needs definition, the agent opens a work folder under `docs/wiki/works/`. It distinguishes proposals from open questions and records each decision with the owner's words. The owner closes each of six stages: wiki and product definition, technology, skills, design system, plan, and execution. A stage can be closed as inapplicable.
+3. **Build and verify.** The plan divides implementation into units. Each has an observable ending condition: a passing check, for example, or the owner's judgement on a document. The agent records the evidence and updates the work's README with what comes next. A small, already-defined change can be handled directly.
+4. **Commit and merge.** A hook checks changes to a current-format wiki before commit and reports broken links or invalid records. Before merging, the agent brings accepted definitions into the shared pages. If both branches added decisions or changed the same shared page, Playbook lists what the owner and agent need to compare.
+
+### What happens during a session
 
 ```mermaid
 sequenceDiagram
-  participant You
-  participant CC as Claude Code
-  participant W as playbook-wiki
-  participant A as playbook-agents
-  participant Wiki as docs/wiki/
-  You->>CC: start a session
-  CC->>W: session starts
-  W-->>CC: the contract, and a notice when the wiki's format is behind
-  CC->>A: session starts
-  A-->>CC: the rules, and the language
-  You->>CC: a request
-  CC->>Wiki: read README.md, then the page that governs the code to change
-  opt a new project, phase, or feature
-    CC->>W: prepare-project, six stages, each closed by you
-    W->>Wiki: the work's decisions, questions, and plan, under works/
-  end
-  opt work is delegated
-    CC->>A: the agent explore, write, or review
-    CC->>W: a subagent starts
-    W-->>CC: the contract, for the subagent
-  end
-  opt a git commit that changes docs/wiki/
-    CC->>W: before the command runs
-    W-->>CC: the commit is stopped when the wiki's check fails, with what to repair
-  end
-  opt a git merge
-    CC->>W: before the command runs
-    W-->>You: the decisions to compare, when there are any
-  end
+    actor Owner
+    participant Agent as Claude Code or Codex
+    participant W as playbook-wiki
+    participant A as playbook-agents
+    participant Repo as Project wiki
+    W-->>Agent: Load the contract at session start and flag an outdated wiki
+    opt Working agents enabled
+        A-->>Agent: Load the working rules
+    end
+    Owner->>Agent: Request a change
+    Agent->>Repo: Read the index and the page governing the affected code
+    opt The work needs definition
+        Agent->>Owner: Propose a decision or ask an open question
+        Owner-->>Agent: Decide and close each stage when ready
+        Agent->>Repo: Record decisions and the plan under works/
+    end
+    opt Work is delegated
+        Agent->>A: Assign a task to explore, write, or review
+        W-->>A: Supply the contract to the subagent
+        A-->>Agent: Return findings or implementation evidence
+    end
+    opt Commit changes the wiki
+        Agent->>W: Check the wiki before committing
+        W-->>Agent: Allow the commit or report what to repair
+    end
+    opt Branches have decisions or shared edits to compare
+        Agent->>W: Check the branches before merging
+        W-->>Owner: Show the decisions or pages to compare
+    end
 ```
 
-The hooks and modules behind each step are in [docs/wiki/03-technology/architecture.md](docs/wiki/03-technology/architecture.md).
+## Set up your client
 
-## Needs
+| Client | Start here |
+|--------|------------|
+| Claude Code | Install the marketplace and run `/playbook:init` to choose your setup. [Claude Code guide](docs/claude-code.md) |
+| Codex CLI | From a local clone, run `python3 codex/install.py`, choose your setup, and review the hooks in `/hooks`. [Codex CLI guide](codex/README.md) |
 
-`playbook-agents` uses these tools and does not install them. Install each one in Claude Code yourself; `playbook-wiki` alone needs none of them, only git. The decisions are in [docs/wiki/decisions.md](docs/wiki/decisions.md).
+## Explore this repository
 
-| Tool | Used for | Decision |
-|------|----------|----------|
-| Engram | Memory across sessions. Rule R23 says what belongs in it | D25, D28 |
-| CodeGraph | Questions about code structure. Rule R22 says when to use it | D25, D28 |
-| `context7` | An MCP server the agent reaches when it needs the official documentation of a library or a version. No rule or skill names it | D90, D97 |
+This repository contains the plugins and uses Playbook for its own development. For a concrete example, follow the [Codex support work](docs/wiki/works/codex-support/README.md) from the owner's decisions through model trials, the installer design, and the implementation plan.
 
-## Install
+Start with the [project wiki](docs/wiki/README.md). Its page table connects product definitions to the code they govern. Then follow the part relevant to your task:
 
-### From GitHub, in Claude Code
+| To understand | Read |
+|---------------|------|
+| What an agent must do, and what it writes in the wiki | [Working contract](plugins/playbook-wiki/contract.md) and [wiki format](plugins/playbook-wiki/format.md) |
+| Where the behaviour is implemented | [Wiki plugin](plugins/playbook-wiki/), [working agents](plugins/playbook-agents/), and [Codex adaptation](codex/) |
+| Why a change was made and how it was verified | The relevant [work folder](docs/wiki/works/), starting with its README |
+| How to test or contribute a change | [Contributing guide](CONTRIBUTING.md) |
 
-```sh
-claude plugin marketplace add andresfrei/playbook
-claude plugin install playbook@playbook --scope user
-```
-
-Then start a new Claude Code session inside a repository, and run:
-
-```text
-/playbook:init
-```
-
-It asks two questions: the wiki alone or the whole product, and this repository or every project. For the whole product it also asks the language the agent talks to you in, and tells you which other plugins are on and whether you have a global `CLAUDE.md`, because two agent setups in one session collide. It lists the skills you already have that do the same job as one it turns on, and asks what to do with each. Then a script turns the plugins on with Claude Code's own commands and prints each one. What it turned on is used from the next session.
-
-Run `/playbook:init` again to change what is on, in that repository or in every project. It writes in no `CLAUDE.md`.
-
-### With an agent
-
-Paste this prompt into a Claude Code session:
-
-```text
-Install the playbook for Claude Code from https://github.com/andresfrei/playbook.
-Run `claude plugin marketplace add andresfrei/playbook`, then
-`claude plugin install playbook@playbook --scope user`, then `claude plugin list`,
-and confirm that playbook@playbook is enabled and show its version.
-Change no other setting. Then read the "Needs" section of the repository's README.md
-and tell me which of Engram, CodeGraph, and context7 I am missing. Do not install
-them unless I ask. Tell me to start a new session and run /playbook:init.
-```
-
-### Updates
-
-Claude Code installs a copy of the latest release. Automatic updates are off by default for this marketplace, so update by hand when a new release is out:
-
-```sh
-claude plugin marketplace update playbook
-claude plugin update playbook@playbook
-```
-
-Then update each of `playbook-wiki@playbook` and `playbook-agents@playbook` that `claude plugin list` shows, with `--scope local` from inside a repository where it was turned on for that repository only.
-
-A release reaches you only when its version changes; the releases and their tags are on GitHub. How versions are made is in [CONTRIBUTING.md](CONTRIBUTING.md#releases).
-
-**From version 1.** Version 2 splits the old plugin `playbook` into three. After the update, `playbook` holds only the start command, so your rules, skills, and agents are gone until you run `/playbook:init` once, in a new session, and choose the whole product for every project.
-
-### From a local clone, in Claude Code
-
-To change the plugins, or to load every commit as it is made:
-
-```sh
-claude plugin marketplace add /path/to/this/clone
-claude plugin install playbook@playbook --scope user
-```
-
-Then run `/playbook:init` as above. The plugins are read in place from the clone: a change to the files under `plugins/` applies to the next session, or to an open one after `/reload-plugins`, with no reinstall. Whatever is checked out in the clone is what every session loads. The source for this behaviour is in [docs/wiki/03-technology/installation.md](docs/wiki/03-technology/installation.md).
-
-### Remove it from Claude Code
-
-Uninstall each plugin that `claude plugin list` shows, in this order, with the scope it lists: add `--scope local`, from inside the repository, for one that `/playbook:init` turned on for that repository only.
-
-```sh
-claude plugin uninstall playbook-agents@playbook
-claude plugin uninstall playbook-wiki@playbook
-claude plugin uninstall playbook@playbook
-claude plugin marketplace remove playbook
-```
-
-## Layout
-
-| Path | Content |
-|------|---------|
-| `docs/wiki/` | This repository's own wiki: what is decided, what is open, and the work in progress |
-| `CLAUDE.md` | Instructions for an agent that works in this repository |
-| `.github/` | `CODEOWNERS`, and the templates for issues and pull requests |
-| `LICENSE`, `CONTRIBUTING.md`, `SECURITY.md` | The licence, how to contribute, how to report a vulnerability |
-| `.claude-plugin/marketplace.json` | Makes this repository a Claude Code marketplace |
-| `plugins/` | The three plugins. `playbook-wiki` holds the contract, the format of a wiki and its check, the step before a merge, the wiki skills, their hooks, and their evaluation cases; `playbook-agents` holds the rules file, the other skills, the agents, `models.conf`, and their evaluation cases; `playbook` holds the start command and its script |
-| `scripts/` | Checks for whoever maintains the plugin, and the script that sets the agents' models |
-
-## Checks
-
-```sh
-sh scripts/verify.sh             # manifests, format, size limits, and agent models
-sh scripts/verify_test.sh        # tests of the scripts
-shellcheck scripts/*.sh plugins/*/*.sh plugins/*/hooks/*.sh plugins/*/skills/*/scripts/*.sh
-```
-
-To change the model or the effort of an agent, edit its line in `plugins/playbook-agents/models.conf`, then run:
-
-```sh
-sh scripts/set-models.sh
-```
-
-The script writes the values into `plugins/playbook-agents/agents/*.md`. Do not edit the `model` or `effort` lines in `plugins/playbook-agents/agents/*.md` by hand: `verify.sh` fails when they differ from `plugins/playbook-agents/models.conf`.
-
-Evaluation cases call the model and are billed to your account, so run them by hand, before a change to a skill is accepted:
-
-```sh
-# one skill
-claude plugin eval plugins/playbook-agents --tag write-skill --ablation none --max-cost-usd 1 --no-publish
-# the whole suite, one plugin at a time
-claude plugin eval plugins/playbook-wiki --scaffold --ablation none --max-cost-usd 2 --no-publish -j 3
-claude plugin eval plugins/playbook-agents --ablation none --max-cost-usd 3 --no-publish -j 3
-```
-
-`--no-publish` keeps the report on this machine. Each skill has two cases under `plugins/playbook-wiki/evals/` or `plugins/playbook-agents/evals/`: one request that must load it and one that must not. `prepare-project` has two more: a request that starts a new phase, and one that starts a work in a repository with a wiki. That last case builds its repository with a script, `fixture.sh`, which runs only with `--scaffold`.
-
-`verify.sh` needs the `claude` command. The limits it enforces are in [docs/wiki/01-product/style-guide.md](docs/wiki/01-product/style-guide.md).
-
-Start at [docs/wiki/README.md](docs/wiki/README.md). The wiki is the source of truth for what this repository is, what is decided, and what is still open.
+Playbook is available under the [MIT License](LICENSE).
