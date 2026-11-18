@@ -29,10 +29,10 @@ On 2026-11-17, on Claude Code 2.1.327:
 |---|------|--------|--------|
 | N4 | Know that `review` ran | A SubagentStop hook with the matcher `^playbook-agents:review$` writes a mark for the session, `${CLAUDE_PLUGIN_DATA}/review/<session_id>`. The PreToolUse hook reads it. The transcript is not read: its format is no contract, and it may lag | Decided (review-trigger-7) |
 | N5 | Which reviews count for a commit | A review since the last commit of the session. The first commit the mark lets through writes the repository and `HEAD` into it; commits run while they match, and once `HEAD` moves the mark is removed. Any move of `HEAD` counts as a commit | Decided (review-trigger-6, review-trigger-15) |
-| N6 | Hold one commit only once | The hook writes `${CLAUDE_PLUGIN_DATA}/held/<session_id>` with the repository, `HEAD`, and the commit's command when it holds; that command then runs on every try until `HEAD` moves | Decided (review-trigger-7, review-trigger-15) |
-| N7 | What the agent is shown | R20's sentence, read from the plugin's `rules.md`; what the commit changes, `git status --short`, at most 20 lines; and what to do: call `review`, or try the same commit again when the change is not risky | Decided (review-trigger-7) |
+| N6 | Hold one commit only once | The hook writes `${CLAUDE_PLUGIN_DATA}/held/<session_id>` with the repository and `HEAD` when it holds; any commit then runs until `HEAD` moves | Decided (review-trigger-7, review-trigger-15, review-trigger-16) |
+| N7 | What the agent is shown | R20's sentence, read from the plugin's `rules.md`; what the commit changes, `git status --short`, at most 20 lines; and what to do: call `review`, or commit again when the change is not risky | Decided (review-trigger-7) |
 | N11 | Let a commit of the wiki alone run | When every path of `git status --porcelain --untracked-files=all` is under `docs/wiki/`, both paths of a rename or copy included, the hook prints nothing; the same reading as `commit-check-hook.sh`. Only when nothing but `cd` and `git add` without `-f` runs before the commit in the same call, since the hook reads the status before the call runs | Decided (review-trigger-14) |
-| N8 | Parse the hook's input and find a `git commit` | `plugins/playbook-agents/hooks/hook-lib.sh`: copies of `json_string` and `json_lines` from `plugins/playbook-wiki/hooks/git-hook-lib.sh`, and `commit_dir`, the commit part of its `git_parse`, since a project may install `playbook-agents` without `playbook-wiki` | Decided (review-trigger-7, review-trigger-15) |
+| N8 | Parse the hook's input and find a `git commit` | `plugins/playbook-agents/hooks/hook-lib.sh`: copies of `json_string` and `json_lines` from `plugins/playbook-wiki/hooks/git-hook-lib.sh`, and `commit_dir`, the commit part of its `git_parse`, since a hook knows only its own plugin's folder | Decided (review-trigger-7, review-trigger-15, review-trigger-16) |
 | N9 | Tests | Cases in `scripts/verify_test.sh` that feed the hooks their JSON and check the decision, as for `commit-check-hook.sh` (R11) | Decided (review-trigger-7) |
 | N10 | Count again | The method of review-evidence-U1, on the transcripts of the sessions after the change is installed | Decided (review-trigger-7) |
 
@@ -43,7 +43,7 @@ The plugin `playbook-agents` gets two hooks, next to `hooks/session-start.sh`:
 | Path | What it does | Need |
 |------|--------------|------|
 | `plugins/playbook-agents/hooks/review-ran.sh` | On SubagentStop of `playbook-agents:review`: writes the session's mark | N4 |
-| `plugins/playbook-agents/hooks/review-before-commit.sh` | On a `git commit`: lets a commit of the wiki alone run; with a mark, lets commits run until `HEAD` moves; with none, holds the call once with the reminder, and lets the same commit run on the next tries until `HEAD` moves | N5 to N7, N11 |
+| `plugins/playbook-agents/hooks/review-before-commit.sh` | On a `git commit`: lets a commit of the wiki alone run; with a mark, lets commits run until `HEAD` moves; with none, holds the call once with the reminder, and lets any commit run on the next tries until `HEAD` moves | N5 to N7, N11 |
 | `plugins/playbook-agents/hooks/hook-lib.sh` | The parsing both hooks source | N8 |
 | `plugins/playbook-agents/hooks/hooks.json` | Registers both | N1 |
 
@@ -51,7 +51,7 @@ Flow:
 
 1. The writing agent runs `git commit`. With no mark, the hook writes `held/<session_id>` and denies the call with the reminder.
 2. The agent calls `review`; when it finishes, the SubagentStop hook writes the mark. Or the agent judges the change not risky.
-3. The agent runs the commit again. The hook finds the mark, or the same command on the same `HEAD` in `held/`, and lets it run. When the commit happens, `HEAD` moves, and the next commit needs another review.
+3. The agent commits again. The hook finds the mark, or the same repository and `HEAD` in `held/`, and lets it run. When the commit happens, `HEAD` moves, and the next commit needs another review.
 
 Risks:
 

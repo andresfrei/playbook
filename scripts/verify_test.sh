@@ -2207,7 +2207,7 @@ held() {
   esac
   printf '%s\n' "$out" | grep -Fq 'R20. A change is risky' &&
     printf '%s\n' "$out" | grep -Fq ' M a.sh' &&
-    printf '%s\n' "$out" | grep -Fq 'run the same commit again'
+    printf '%s\n' "$out" | grep -Fq 'commit again and it will go through'
 }
 passes() { [ -z "$out" ] && [ "$code" -eq 0 ]; }
 # held_any: one line that denies, whatever the changes listed.
@@ -2218,11 +2218,11 @@ held_any() {
 hold_run s1 "$tmp/hold" 'git add -A && git commit -m x'
 check "hold: a commit with no review since the last commit is held, with R20 and the changes" held
 hold_run s1 "$tmp/hold" 'git add -A && git commit -m x'
-check "hold: the same commit on the same HEAD then runs" passes
+check "hold: a commit on the same HEAD then runs" passes
 hold_run s1 "$tmp/hold" 'git add -A && git commit -m x'
 check "hold: the same commit runs again while HEAD has not moved, as after a failed commit" passes
-hold_run s1 "$tmp/hold" 'git add -A && git commit -m y'
-check "hold: another command is held, not let through by the earlier hold" held
+hold_run s1 "$tmp/hold" 'git add -A && git commit -m y; git log --oneline | head -3'
+check "hold: another command on the same HEAD runs, as when the agent adds commands to its try" passes
 hold_run s2 "$tmp/hold" 'git add -A && git commit -m y'
 check "hold: a hold of one session does not let another session through" held
 hold_run s3 "$tmp" "git -C $tmp/hold commit -am x"
@@ -2294,9 +2294,9 @@ check "hold: a rename of code into docs/wiki/ is held" held_any
 git_in "$tmp/hold_wiki" mv docs/wiki/a.sh a.sh
 hold_run s16 "$tmp/hold_wiki" 'printf x >> a.sh && git commit -am w'
 check "hold: a wiki commit after a command that may change code is held" held_any
-hold_run s16 "$tmp/hold_wiki" 'git add -f docs/wiki && git commit -m w'
+hold_run s18 "$tmp/hold_wiki" 'git add -f docs/wiki && git commit -m w'
 check "hold: a wiki commit after git add -f is held" held_any
-hold_run s16 "$tmp/hold_wiki" "cd $tmp/hold_wiki && git add docs/wiki && git commit -m w"
+hold_run s19 "$tmp/hold_wiki" "cd $tmp/hold_wiki && git add docs/wiki && git commit -m w"
 check "hold: a wiki commit after cd and git add runs" passes
 printf 'q\n' > "$tmp/hold_wiki/docs/wiki/x -> y.md"
 hold_run s17 "$tmp/hold_wiki" 'git add -A && git commit -m w'

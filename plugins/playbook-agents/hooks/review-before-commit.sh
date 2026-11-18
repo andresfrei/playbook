@@ -1,10 +1,9 @@
 #!/bin/sh
 # PreToolUse hook for Bash commands that run "git commit" (review-trigger-4,
-# review-trigger-6). When the agent review has not run since the last commit of
+# review-trigger-6, review-trigger-16). When the agent review has not run since the last commit of
 # the session, it holds the call once: it denies it with R20 and what the
 # commit changes, so the agent has review read the change or, when the change
-# is not risky, runs the same commit again. The same command on the same HEAD
-# then runs. A mark left by review-ran.sh lets commits run until HEAD moves.
+# is not risky, commits again. Any commit on the same HEAD then runs. A mark left by review-ran.sh lets commits run until HEAD moves.
 # Nothing is used up before HEAD moves, since a commit can still fail after
 # this hook lets it through.
 # Uses only sh, sed, awk, tr, and git. Prints nothing and exits 0 in every other
@@ -72,11 +71,11 @@ if [ -f "$mark" ]; then
   rm -f "$mark"
 fi
 
-# A held commit runs on every later try while the command and HEAD are the same.
+# Once held, any commit runs while the repository and HEAD are the same: the
+# agent got the reminder for this change, whatever command it tries next.
 held="$data/held/$session"
-key=$(printf '%s\n%s' "$here" "$command")
-[ -f "$held" ] && [ "$(cat "$held" 2>/dev/null)" = "$key" ] && exit 0
-mkdir -p "$data/held" 2>/dev/null && printf '%s' "$key" > "$held" 2>/dev/null || exit 0
+[ -f "$held" ] && [ "$(cat "$held" 2>/dev/null)" = "$here" ] && exit 0
+mkdir -p "$data/held" 2>/dev/null && printf '%s' "$here" > "$held" 2>/dev/null || exit 0
 
 r20=$(sed -n 's/^- \(R20\. .*\)$/\1/p' "$plugin/rules.md" 2>/dev/null)
 [ -n "$r20" ] || r20="R20. A change is risky when a mistake is hard to notice or undo. Have the review agent read it before delivery."
@@ -87,5 +86,5 @@ text=$(json_lines "This commit is held once: the agent review has not run since 
 $r20
 What the commit changes (git status --short, at most 20 lines):
 $changes
-If the change is risky by R20, have the review agent read it, then commit again. If it is not, run the same commit again and it will go through.")
+If the change is risky by R20, have the review agent read it, then commit again. If it is not, commit again and it will go through.")
 printf '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"%s"}}\n' "$text"
