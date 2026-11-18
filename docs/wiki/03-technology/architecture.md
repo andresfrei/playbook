@@ -34,6 +34,7 @@ Three kinds of content, split by when each one loads (D65):
 | Check at the commit | `plugins/playbook-wiki/hooks/commit-check-hook.sh` | Running the check before an agent's `git commit` when anything under `docs/wiki/` differs from the last commit, and stopping the commit with the check's output when it fails (wiki-check-on-commit-1, wiki-check-on-commit-3, wiki-check-on-commit-6) | Check a wiki below the present format (wiki-check-on-commit-4). Reach a commit a person runs in their own terminal (wiki-check-on-commit-5). Read which files the commit carries: it checks the files on disk. Stop a commit by its own error |
 | Step at the merge | `plugins/playbook-wiki/merge-step.sh`, `plugins/playbook-wiki/hooks/merge-step-hook.sh`, with `hooks/git-hook-lib.sh`, which both hooks on git share | Listing, before a merge, the decisions each side added and the shared pages both changed, and, when there is something to compare, asking the person in the permission prompt before the merge runs (TD28) | Decide which decision holds |
 | Wiki skills | `plugins/playbook-wiki/skills/` | `prepare-project`, which works on the open work (D203); `doctor`, which brings a wiki to the present format (D207) and, moving a state section that is too long, takes out what another page holds and what is finished (wiki-check-on-commit-2); `write-docs` (TD30) | |
+| Hold at the commit | `plugins/playbook-agents/hooks/review-before-commit.sh`, `hooks/review-ran.sh`, with `hooks/hook-lib.sh`, which parses for both | Holding an agent's `git commit` once, in every project, when the agent `review` has not run since the last commit of the session, with R20 and what the commit changes, so the agent judges whether the change is risky (review-trigger-2, review-trigger-3, review-trigger-4, review-trigger-6). After the hold, or after `review`, letting commits run until `HEAD` moves (review-trigger-15, review-trigger-16). Letting a commit of `docs/wiki/` alone run (review-trigger-14) | Judge whether a change is risky: the agent does (review-trigger-3). Stop a person, or a commit by its own error (review-trigger-5). Change what `review` does |
 | Rules | `plugins/playbook-agents/rules.md` | The owner's rules that are not in the contract (D175, D200) | Define the wiki |
 | Agents | `plugins/playbook-agents/agents/` | `explore`, `write`, and `review`, each with its model and effort (TD8) | Decide when to delegate; the rules do |
 | Model configuration | `plugins/playbook-agents/models.conf`, `scripts/set-models.sh` | The one place where the model and effort of each agent are set; the script writes them into the agent files (TD11) | Run at session time |
@@ -50,6 +51,8 @@ Three kinds of content, split by when each one loads (D65):
 | `playbook-wiki` | `PreToolUse` on `Bash(git *)` | The step at the merge, for a `git merge` |
 | `playbook-wiki` | `PreToolUse` on `Bash(git *)` | The check at the commit, for a `git commit` (wiki-check-on-commit-1) |
 | `playbook-agents` | `SessionStart` | Prints the rules, then "Talk to the person in <language>." when the person set a language |
+| `playbook-agents` | `SubagentStop` on `^playbook-agents:review$` | Writes the session's mark under `${CLAUDE_PLUGIN_DATA}/review/` (review-trigger-7) |
+| `playbook-agents` | `PreToolUse` on `Bash(git *)` | The hold at the commit, for a `git commit` (review-trigger-4) |
 
 ## How a review runs
 
@@ -62,6 +65,7 @@ The reviewer starts without the conversation, so the request must say what to re
 ## The data
 
 - In a project's repository: the wiki, in two layers (D189). The shared pages say how the project is now; the folder of each work, `docs/wiki/works/<name>/`, holds its decisions with their reasons and who decided (TD24).
+- On a person's machine, in `${CLAUDE_PLUGIN_DATA}` of `playbook-agents`: a mark per session after `review` runs, and the commit held per session, each a few bytes, removed after seven days (review-trigger-7).
 - On a person's machine: which plugins are on, `enabledPlugins` in `~/.claude/settings.json` for every project or in a repository's `.claude/settings.local.json` for one (TD27); the language, with `userConfig` of `playbook-agents` (TD31); a skill the person turned off, with `skillOverrides` (TD33).
 - In the owner's agent system: Engram for what was learned across sessions, and CodeGraph for the map of a codebase (D25, D36).
 
