@@ -146,6 +146,37 @@ esac
 [ -f "$wiki_plugin/hooks/git-hook-lib.sh" ] ||
   fail "hooks/git-hook-lib.sh of playbook-wiki is missing, and both PreToolUse hooks source it"
 
+# The hooks of playbook-agents that hold a commit until review has read it
+# (review-trigger-7): a mark when review stops, the hold before a git commit.
+agents_hooks="$agents_plugin/hooks/hooks.json"
+agents_stop=$(awk '/"SubagentStop"/ { inside = 1 }
+                   /"SessionStart"|"PreToolUse"/ { inside = 0 }
+                   inside' "$agents_hooks" 2>/dev/null)
+agents_pre=$(awk '/"PreToolUse"/ { inside = 1 }
+                  /"SessionStart"|"SubagentStop"/ { inside = 0 }
+                  inside' "$agents_hooks" 2>/dev/null)
+# shellcheck disable=SC2016
+case $agents_stop in
+  *'${CLAUDE_PLUGIN_ROOT}/hooks/review-ran.sh'*) ;;
+  *) fail "hooks.json of playbook-agents does not run review-ran.sh under SubagentStop" ;;
+esac
+case $agents_stop in
+  *'"matcher": "^playbook-agents:review$"'*) ;;
+  *) fail "hooks.json of playbook-agents does not set \"matcher\": \"^playbook-agents:review$\" under SubagentStop" ;;
+esac
+# shellcheck disable=SC2016
+case $agents_pre in
+  *'${CLAUDE_PLUGIN_ROOT}/hooks/review-before-commit.sh'*) ;;
+  *) fail "hooks.json of playbook-agents does not run review-before-commit.sh under PreToolUse" ;;
+esac
+case $agents_pre in
+  *'"matcher": "Bash"'*'"if": "Bash(git *)"'*) ;;
+  *) fail "hooks.json of playbook-agents does not set \"matcher\": \"Bash\" and an \"if\" of Bash(git *) under PreToolUse" ;;
+esac
+for f in review-ran.sh review-before-commit.sh hook-lib.sh; do
+  [ -f "$agents_plugin/hooks/$f" ] || fail "hooks/$f of playbook-agents is missing"
+done
+
 # L2 and L3: each skill of each plugin.
 for skill in "$plugins"/*/skills/*/SKILL.md; do
   [ -f "$skill" ] || continue

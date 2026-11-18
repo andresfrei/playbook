@@ -29,6 +29,7 @@ Anyone who installs `playbook-agents`, the owner first: they rely on `review` to
 - Count again, as review-evidence-U1 did, how many risky commits had `review` before them (Decided: review-trigger-1).
 - Apply in every project that installs `playbook-agents`, with no list of risky paths of one repository (Decided: review-trigger-2).
 - Let the writing agent judge whether a change is risky: at the commit it is reminded of R20, shown what the commit changes, and told whether `review` ran since the last commit of the session (Decided: review-trigger-3, review-trigger-6).
+- Let a commit that changes only `docs/wiki/` run without being held: the wiki is not code, and `playbook-wiki` checks it before the commit (Decided: review-trigger-14).
 - Hold the first commit call of a change when `review` has not run since the last commit of the session (review-trigger-6), so the reminder comes before the commit; the agent calls `review`, or tries the same commit again and it runs. Never stop the person, and hold the agent once per commit (Decided: review-trigger-4).
 
 ## What the work must not do

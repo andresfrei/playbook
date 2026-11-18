@@ -6,13 +6,13 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-18, after review-trigger-13.
+Updated 2026-11-18, after review-trigger-15.
 
-Stage 6, execution, is open: [plan.md](plan.md).
+Stage 6, execution, is open: [plan.md](plan.md). review-trigger-U1 is Built. Waiting for the owner: the review of U1.
 
 Next:
 
-1. review-trigger-U1, the two hooks, built and reviewed by the owner.
+1. The owner reviews review-trigger-U1.
 2. review-trigger-U2, the trial, when the owner asks.
 
 ## Stage table

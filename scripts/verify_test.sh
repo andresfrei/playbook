@@ -260,6 +260,32 @@ rm "$tmp/repo/plugins/playbook-wiki/hooks/git-hook-lib.sh"
 expect "hooks: a missing shared hook library fails" fail "git-hook-lib.sh of playbook-wiki is missing"
 
 fresh
+sed 's/review-ran\.sh/other.sh/' "$tmp/repo/plugins/playbook-agents/hooks/hooks.json" > "$tmp/hooks.json"
+cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-agents/hooks/hooks.json"
+expect "hooks: hooks.json of playbook-agents without the mark script fails" fail "does not run review-ran.sh under SubagentStop"
+
+fresh
+sed 's/"\^playbook-agents:review\$"/"review"/' "$tmp/repo/plugins/playbook-agents/hooks/hooks.json" > "$tmp/hooks.json"
+cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-agents/hooks/hooks.json"
+expect "hooks: a SubagentStop matcher that is not exact fails" fail "under SubagentStop"
+
+fresh
+sed 's/review-before-commit\.sh/other.sh/' "$tmp/repo/plugins/playbook-agents/hooks/hooks.json" > "$tmp/hooks.json"
+cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-agents/hooks/hooks.json"
+expect "hooks: hooks.json of playbook-agents without the hold script fails" fail "does not run review-before-commit.sh under PreToolUse"
+
+fresh
+sed 's/"if": "Bash(git \*)"/"if": "Bash(git commit *)"/' "$tmp/repo/plugins/playbook-agents/hooks/hooks.json" > "$tmp/hooks.json"
+cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-agents/hooks/hooks.json"
+expect "hooks: a hold hook with a narrower if fails" fail "playbook-agents does not set \"matcher\": \"Bash\" and an"
+
+for f in review-ran.sh review-before-commit.sh hook-lib.sh; do
+  fresh
+  rm "$tmp/repo/plugins/playbook-agents/hooks/$f"
+  expect "hooks: a missing $f of playbook-agents fails" fail "hooks/$f of playbook-agents is missing"
+done
+
+fresh
 sed 's/"matcher": "Bash"/"matcher": "Read"/' "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json" > "$tmp/hooks.json"
 cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-wiki/hooks/hooks.json"
 expect "hooks: a PreToolUse group without the Bash matcher fails" fail 'matcher.*Bash.*under PreToolUse'
@@ -2127,7 +2153,7 @@ out=$(printf '' | sh "$commit_hook" 2>&1); code=$?
 check "commit hook: empty input prints nothing" test -z "$out" -a "$code" -eq 0
 
 # The hook of playbook-agents: the rules, and the language line when it is set.
-hook_command=$(sed -n 's/^ *"command": "\(.*\)"$/\1/p' "$root/plugins/playbook-agents/hooks/hooks.json" |
+hook_command=$(sed -n 's/^ *"command": "\(.*session-start\.sh.*\)"$/\1/p' "$root/plugins/playbook-agents/hooks/hooks.json" |
   sed 's/\\"/"/g')
 hook_text() {
   # shellcheck disable=SC2016
@@ -2144,6 +2170,174 @@ init_ok "init: the hook prints only the rules when the language is empty" \
 init_out=$(env -u CLAUDE_PLUGIN_OPTION_LANGUAGE sh -c "CLAUDE_PLUGIN_ROOT='$root/plugins/playbook-agents' sh -c '$hook_command'")
 init_ok "init: the hook prints only the rules when no language is set" \
   "$([ "$init_out" = "$rules_text" ] && echo true || echo false)"
+
+# The hold before a commit (review-trigger-4, review-trigger-6, review-trigger-7).
+hold_hook="$root/plugins/playbook-agents/hooks/review-before-commit.sh"
+ran_hook="$root/plugins/playbook-agents/hooks/review-ran.sh"
+hold_data="$tmp/hold_data"
+rm -rf "$tmp/hold" "$hold_data"
+mkdir -p "$tmp/hold"
+git_in "$tmp/hold" init -b main
+git_in "$tmp/hold" config user.name Test
+git_in "$tmp/hold" config user.email test@example.com
+git_in "$tmp/hold" config commit.gpgsign false
+printf 'a\n' > "$tmp/hold/a.sh"
+commit_in "$tmp/hold" base
+printf 'b\n' >> "$tmp/hold/a.sh"
+
+# hold_run <session> <cwd> <command as JSON-escaped text>: runs the hold hook.
+hold_run() {
+  out=$(printf '{"session_id":"%s","cwd":"%s","tool_name":"Bash","tool_input":{"command":"%s","description":"d"}}' "$1" "$2" "$3" |
+    CLAUDE_PLUGIN_DATA="$hold_data" sh "$hold_hook" 2>&1)
+  code=$?
+}
+# ran_run <session> <agent type>: runs the mark hook on SubagentStop.
+ran_run() {
+  out=$(printf '{"session_id":"%s","hook_event_name":"SubagentStop","agent_id":"x","agent_type":"%s"}' "$1" "$2" |
+    CLAUDE_PLUGIN_DATA="$hold_data" sh "$ran_hook" 2>&1)
+  code=$?
+}
+# held: one line that denies, with R20 and what the commit changes.
+held() {
+  [ "$code" -eq 0 ] || return 1
+  [ "$(printf '%s\n' "$out" | wc -l | tr -d ' ')" -eq 1 ] || return 1
+  case $out in
+    '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"'*'"}}') ;;
+    *) return 1 ;;
+  esac
+  printf '%s\n' "$out" | grep -Fq 'R20. A change is risky' &&
+    printf '%s\n' "$out" | grep -Fq ' M a.sh' &&
+    printf '%s\n' "$out" | grep -Fq 'run the same commit again'
+}
+passes() { [ -z "$out" ] && [ "$code" -eq 0 ]; }
+# held_any: one line that denies, whatever the changes listed.
+held_any() {
+  [ "$code" -eq 0 ] && printf '%s\n' "$out" | grep -Fq '"permissionDecision":"deny"'
+}
+
+hold_run s1 "$tmp/hold" 'git add -A && git commit -m x'
+check "hold: a commit with no review since the last commit is held, with R20 and the changes" held
+hold_run s1 "$tmp/hold" 'git add -A && git commit -m x'
+check "hold: the same commit on the same HEAD then runs" passes
+hold_run s1 "$tmp/hold" 'git add -A && git commit -m x'
+check "hold: the same commit runs again while HEAD has not moved, as after a failed commit" passes
+hold_run s1 "$tmp/hold" 'git add -A && git commit -m y'
+check "hold: another command is held, not let through by the earlier hold" held
+hold_run s2 "$tmp/hold" 'git add -A && git commit -m y'
+check "hold: a hold of one session does not let another session through" held
+hold_run s3 "$tmp" "git -C $tmp/hold commit -am x"
+check "hold: git -C <dir> commit is held" held
+hold_run s4 "$tmp" "cd $tmp/hold && git commit -am x"
+check "hold: cd <dir> && git commit is held" held
+hold_run s1 "$tmp/hold" 'git add -A && git commit -m y'
+commit_in "$tmp/hold" y
+printf 'c\n' >> "$tmp/hold/a.sh"
+hold_run s1 "$tmp/hold" 'git add -A && git commit -m y'
+check "hold: once HEAD moves, the same command is held again" held
+
+rm -rf "$hold_data"
+hold_run s1 "$tmp/hold" 'git commit -am x'
+ran_run s1 playbook-agents:review
+check "hold: review stopping writes the session's mark and prints nothing" test -z "$out" -a "$code" -eq 0 -a -f "$hold_data/review/s1"
+hold_run s1 "$tmp/hold" 'git commit -am z'
+check "hold: a commit after review runs" passes
+hold_run s1 "$tmp/hold" 'git commit -am z'
+check "hold: a commit after review runs again while HEAD has not moved, as after a failed commit" passes
+commit_in "$tmp/hold" z
+printf 'd\n' >> "$tmp/hold/a.sh"
+hold_run s1 "$tmp/hold" 'git commit -am w'
+check "hold: once HEAD moves, the next commit needs another review" held
+check "hold: the mark is removed once HEAD moves" absent "$hold_data/review/s1"
+git_in "$tmp/hold" worktree add -q "$tmp/hold_wt"
+printf 'e\n' >> "$tmp/hold_wt/a.sh"
+ran_run s11 playbook-agents:review
+hold_run s11 "$tmp/hold" 'git commit -am v'
+hold_run s11 "$tmp/hold_wt" 'git commit -am v'
+check "hold: a mark used in one worktree does not let a commit in another through at the same HEAD" held
+
+ran_run s5 playbook-agents:explore
+check "hold: another agent stopping writes no mark" absent "$hold_data/review/s5"
+ran_run s5 review
+check "hold: an agent named review outside the plugin writes no mark" absent "$hold_data/review/s5"
+ran_run '../s5' playbook-agents:review
+check "hold: a session id with a slash writes nothing" absent "$tmp/s5"
+mkdir -p "$hold_data/review"
+: > "$hold_data/review/old"
+touch -t 202001010000 "$hold_data/review/old"
+mkdir -p "$hold_data/held"
+: > "$hold_data/held/old"
+touch -t 202001010000 "$hold_data/held/old"
+ran_run s6 playbook-agents:review
+check "hold: a mark older than seven days is removed when one is written" absent "$hold_data/review/old"
+check "hold: a held commit older than seven days is removed when a mark is written" absent "$hold_data/held/old"
+
+rm -rf "$tmp/hold_wiki"
+mkdir -p "$tmp/hold_wiki/docs/wiki"
+git_in "$tmp/hold_wiki" init -b main
+git_in "$tmp/hold_wiki" config user.name Test
+git_in "$tmp/hold_wiki" config user.email test@example.com
+git_in "$tmp/hold_wiki" config commit.gpgsign false
+printf 'a\n' > "$tmp/hold_wiki/docs/wiki/README.md"
+printf 'a\n' > "$tmp/hold_wiki/a.sh"
+commit_in "$tmp/hold_wiki" base
+printf 'b\n' >> "$tmp/hold_wiki/docs/wiki/README.md"
+printf 'n\n' > "$tmp/hold_wiki/docs/wiki/new page.md"
+hold_run s12 "$tmp/hold_wiki" 'git add -A && git commit -m w'
+check "hold: a commit that changes only docs/wiki/ runs without being held" passes
+git_in "$tmp/hold_wiki" mv docs/wiki/README.md docs/README.md
+hold_run s12 "$tmp/hold_wiki" 'git add -A && git commit -m w'
+check "hold: a rename out of docs/wiki/ is held" held_any
+git_in "$tmp/hold_wiki" mv docs/README.md docs/wiki/README.md
+git_in "$tmp/hold_wiki" mv a.sh docs/wiki/a.sh
+hold_run s15 "$tmp/hold_wiki" 'git add -A && git commit -m w'
+check "hold: a rename of code into docs/wiki/ is held" held_any
+git_in "$tmp/hold_wiki" mv docs/wiki/a.sh a.sh
+hold_run s16 "$tmp/hold_wiki" 'printf x >> a.sh && git commit -am w'
+check "hold: a wiki commit after a command that may change code is held" held_any
+hold_run s16 "$tmp/hold_wiki" 'git add -f docs/wiki && git commit -m w'
+check "hold: a wiki commit after git add -f is held" held_any
+hold_run s16 "$tmp/hold_wiki" "cd $tmp/hold_wiki && git add docs/wiki && git commit -m w"
+check "hold: a wiki commit after cd and git add runs" passes
+printf 'q\n' > "$tmp/hold_wiki/docs/wiki/x -> y.md"
+hold_run s17 "$tmp/hold_wiki" 'git add -A && git commit -m w'
+check "hold: a wiki file whose name holds an arrow runs" passes
+rm -f "$tmp/hold_wiki/docs/wiki/x -> y.md"
+printf 'b\n' >> "$tmp/hold_wiki/a.sh"
+hold_run s13 "$tmp/hold_wiki" 'git add -A && git commit -m w'
+check "hold: a commit that changes the wiki and code is held" held_any
+printf 'x\n' > "$tmp/hold_wiki/docs/wikipedia.md"
+git_in "$tmp/hold_wiki" checkout -- a.sh
+hold_run s14 "$tmp/hold_wiki" 'git add -A && git commit -m w'
+check "hold: a path that only starts like docs/wiki is held" held_any
+
+hold_run s7 "$tmp/hold" 'git status'
+check "hold: a command with no commit prints nothing" passes
+hold_run s7 "$tmp/hold" 'echo \"git commit -m x\"'
+check "hold: a commit inside a quoted string prints nothing" passes
+hold_run s7 "$tmp" 'git commit -m x'
+check "hold: a directory that is not a repository prints nothing" passes
+hold_run '' "$tmp/hold" 'git commit -m x'
+check "hold: no session id prints nothing" passes
+out=$(printf '{"session_id":"s8","cwd":"%s","tool_input":{"command":"git commit -m x"}}' "$tmp/hold" |
+  env -u CLAUDE_PLUGIN_DATA sh "$hold_hook" 2>&1); code=$?
+check "hold: no CLAUDE_PLUGIN_DATA prints nothing" passes
+out=$(printf 'not json at all' | CLAUDE_PLUGIN_DATA="$hold_data" sh "$hold_hook" 2>&1); code=$?
+check "hold: input that is not JSON prints nothing" passes
+out=$(printf '' | CLAUDE_PLUGIN_DATA="$hold_data" sh "$ran_hook" 2>&1); code=$?
+check "hold: the mark hook on empty input prints nothing" passes
+rm -rf "$tmp/nolib"
+mkdir -p "$tmp/nolib/hooks"
+cp "$hold_hook" "$ran_hook" "$tmp/nolib/hooks/"
+out=$(printf '{"session_id":"s10","cwd":"%s","tool_input":{"command":"git commit -m x"}}' "$tmp/hold" |
+  CLAUDE_PLUGIN_DATA="$hold_data" sh "$tmp/nolib/hooks/review-before-commit.sh" 2>&1); code=$?
+check "hold: a missing hook-lib.sh prints nothing and exits 0" passes
+out=$(printf '{"session_id":"s10","agent_type":"playbook-agents:review"}' |
+  CLAUDE_PLUGIN_DATA="$hold_data" sh "$tmp/nolib/hooks/review-ran.sh" 2>&1); code=$?
+check "hold: the mark hook with a missing hook-lib.sh prints nothing and exits 0" passes
+: > "$tmp/hold_file"
+out=$(printf '{"session_id":"s9","cwd":"%s","tool_input":{"command":"git commit -m x"}}' "$tmp/hold" |
+  CLAUDE_PLUGIN_DATA="$tmp/hold_file" sh "$hold_hook" 2>&1); code=$?
+check "hold: a data folder that cannot be written prints nothing" passes
 
 if [ "$failed" -eq 0 ]; then
   printf 'all cases passed\n'
