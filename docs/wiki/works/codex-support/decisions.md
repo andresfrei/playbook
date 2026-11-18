@@ -16,3 +16,4 @@
 | codex-support-12 | 2026-11-18 | Accept the four units, their acceptance criteria and sequential delivery on feat/codex-support through one pull request. Close stage 5 and open execution. | Andres Frei | “apruebo” | none |
 | codex-support-13 | 2026-11-18 | The public README explains the repository, working method and flow to an agent receiving the repository from a developer. Keep client setup in separate guides. Refines codex-support-7. | Andres Frei | “tiene que tener datos del lo que hace este repo... como trabajo, el flujo, parte de lo qeu tenia antes” | `03-technology/codex.md` |
 | codex-support-14 | 2026-11-18 | Plan a minor release, v2.4.0, after merging Codex support. | Andres Frei | “si” | none |
+| codex-support-15 | 2026-11-18 | Complete delivery of the accepted work, including the post-merge installation check and the approved release. Close execution once all units are accepted and the clean-clone check passes. | Andres Frei | “hazlo tu” | none |

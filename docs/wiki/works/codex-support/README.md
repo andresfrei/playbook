@@ -2,11 +2,11 @@
 
 Bring Playbook to Codex CLI in this repository and provide a simple installer. Andres Frei leads this work.
 
-Status: Open.
+Status: Closed 2026-11-18.
 
 ## Where work stands
 
-The last decision on 2026-11-18 is codex-support-14. Stage 6 is open. All four units in the [execution plan](plan.md) are done. Deliver the branch for review. After merge, verify installation from a clean clone of main, update the release manifests, tag v2.4.0 and publish its GitHub release.
+The last decision on 2026-11-18 is codex-support-15. All six stages are closed. All four units in the [execution plan](plan.md) are done. PR #22 merged into main on 2026-11-18. The three installer tests passed from a clean clone at 9c0b9e4.
 
 | Stage | Status | Closed on |
 |-------|--------|-----------|
@@ -15,7 +15,7 @@ The last decision on 2026-11-18 is codex-support-14. Stage 6 is open. All four u
 | 3 Skills | Closed | 2026-11-18 |
 | 4 Design system | Closed (not applicable) | 2026-11-18 |
 | 5 Plan | Closed | 2026-11-18 |
-| 6 Execution | Open | |
+| 6 Execution | Closed | 2026-11-18 |
 
 | Page | Content | Code it governs |
 |------|---------|-----------------|
