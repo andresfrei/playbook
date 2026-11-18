@@ -10,12 +10,12 @@ Updated 2026-11-17, after review-evidence-16.
 
 Stage 6 Execution is open, on the units of [plan.md](plan.md). Stages 1 to 3 closed with [definition.md](definition.md), [research.md](research.md), [technology.md](technology.md), and [skills.md](skills.md); stage 4 did not apply; stage 5 closed with the plan.
 
-Waiting for the owner: the review of review-evidence-U3, the seeded diffs in [measurements.md](measurements.md); then the ceiling of U4, proposed there.
+Waiting for the owner: the review of review-evidence-U4, the table in [measurements.md](measurements.md); then whether U5 is built.
 
 Next:
 
-1. The owner reviews review-evidence-U3.
-2. review-evidence-U4, the measurement, under the ceiling the owner approves.
+1. The owner reviews review-evidence-U4.
+2. The owner decides U5, the wrapper, on the result of U4.
 
 ## Stage table
 

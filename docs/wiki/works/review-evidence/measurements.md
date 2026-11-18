@@ -135,3 +135,74 @@ Built on 2026-11-17 in `plugins/playbook-agents/evals/review-evidence/`. Each di
 | `clean` | None | The real commit `82ae054`, "fix(doctor): keep the copy of the marker beside it, not in TMPDIR", on its parent `e09c6b0`, with its tests and its record in the wiki | Every finding on it counts as not real unless shown otherwise |
 
 Checked on 2026-11-17: each `fixture.sh`, with and without `--rule`, run in an empty temporary folder, exited 0 and left the two commits with the diff of its seed.
+
+## review-evidence-U4: the measurement
+
+Run on 2026-11-17 with Claude Code 2.1.327, when the owner asked ("si"), under the ceiling proposed in U2:
+
+- The fourteen cases, from `plugins/`: `claude plugin eval . --tag review-evidence --runs 3 --ablation none --scaffold --keep-temp --model opus --allow-tools Bash --max-cost-usd 12 --no-publish --trust-plugin -j 4 --json <file>`. 42 runs, no error, not partial.
+- The 21 runs with the rule: `run-rule.sh` on each diff, three runs, `--max-budget-usd 1` each. All ended in `success`.
+
+Cost, list-price estimates: USD 14.88 in all, under the ceiling of 20.
+
+| Reviewer | Runs | Cost (USD) | Per run |
+|----------|------|-----------|---------|
+| `review-change` | 21 | 4.88 | 0.23 |
+| `/code-review` alone | 21 | 5.19 | 0.25 |
+| `/code-review` with the rule | 21 | 4.80 | 0.23 |
+
+### How the replies were read
+
+As N8 says: seven agents, one per diff, each read the nine replies of its diff against the seeded defect of U3 and against the seeded repository, and judged every other finding real or not real, citing the file and line or the command run on a copy. A finding that follows from the seeded defect, such as a test that now fails, counts as real. A finding about code the change did not touch, a fix suggestion, style, or a case not shown counts as not real. What is under "Not checked" is not a finding.
+
+One verdict was changed after the reading, so every diff is read by the same rule: in `bytes`, the reader marked "no test covers the changed behaviour" not real, because the gap was there before. The change does alter behaviour and no test would fail, which is a defect by the rules of `review-change` and the class of the diff `folder`, so the nine findings count as real.
+
+### Result
+
+Seeded defects found, out of three runs:
+
+| Diff | `review-change` | `/code-review` alone | `/code-review` with the rule |
+|------|-----------------|----------------------|------------------------------|
+| `dash` | 3 | 3 | 3 |
+| `limit` | 3 | 3 | 3 |
+| `bytes` | 3 | 3 | 3 |
+| `truncate` | 3 | 3 | 3 |
+| `language` | 3 | 3 | 3 |
+| `folder` | 3 | 3 | 3 |
+| All | 18 of 18 | 18 of 18 | 18 of 18 |
+
+Other findings, real and not real, over the three runs of each diff:
+
+| Diff | `review-change` | `/code-review` alone | `/code-review` with the rule |
+|------|-----------------|----------------------|------------------------------|
+| `dash` | 0 real, 0 not | 9 real, 1 not | 11 real, 0 not |
+| `limit` | 4 real, 0 not | 17 real, 2 not | 13 real, 0 not |
+| `bytes` | 3 real, 0 not | 16 real, 3 not | 14 real, 1 not |
+| `truncate` | 1 real, 0 not | 5 real, 11 not | 9 real, 5 not |
+| `language` | 4 real, 0 not | 16 real, 4 not | 14 real, 3 not |
+| `folder` | 0 real, 0 not | 3 real, 10 not | 3 real, 11 not |
+| `clean` | 0 real, 1 not | 0 real, 28 not | 0 real, 25 not |
+| All | 12 real, 1 not | 66 real, 59 not | 64 real, 45 not |
+
+Of everything each reviewer reported as wrong, seeded defect included, the share that is real: `review-change` 30 of 31, 97%; `/code-review` alone 84 of 143, 59%; `/code-review` with the rule 82 of 127, 65%.
+
+What the numbers mean:
+
+- Most real findings of `/code-review` are consequences of the seeded defect written as separate findings: the tests that now fail, a stale comment, a page left on the old value. `review-change` writes the same consequences inside its one finding, so its count of other findings stays low. The counts measure how a reviewer reports as much as what it finds.
+- One real finding no run of `review-change` reported as a finding: in `folder`, the wiki's `01-product/style-guide.md` does not list the new rule. `/code-review` reported it in all six runs, alone and with the rule. Two runs of `review-change` saw it and put it under "Not checked".
+- `/code-review` alone also found `limit`, the defect that needs the wiki, in three of three: no `CLAUDE.md` loads in the eval, but the repository holds `docs/wiki/`, and it read the decisions.
+- On `clean`, a real commit that `review` had read before its merge, no reviewer found a real defect. `review-change` reported one finding in one run, an artifact of the seeded repository's history; `/code-review` reported 28 and 25, among them defects of the code before the change and races with no case shown.
+
+### The result by review-evidence-3
+
+- Seeded defects: `review` missed none that `/code-review` found. No gap.
+- Findings that are not real: `review` reported one, in one run of `clean`, below two of three runs. No gap.
+- Runs of `review` on risky changes: it did not run on 27 of the 37 risky commits of U1. Gap shown.
+
+The condition proposed for U5 in [definition.md](definition.md), that `/code-review` with the rule finds at least what `review` finds, holds for the seeded defects: 18 of 18 each. It reports 45 findings that are not real against 1.
+
+### Limits
+
+- Six seeded defects and one clean diff, in shell scripts of one repository. The seeds are one line to a few lines; a larger diff may give other numbers ([research.md](research.md), C6).
+- Each verdict is one agent's reading, with its evidence cited; the owner reviews the table (N8).
+- Two readers used the same scratch folder at the same time, and one removed it while the other worked; the reader of `clean` had finished its runs, and its verdicts cite runs it made in its own copies. A reader started `scripts/verify_test.sh` in the repository itself by a failed `cd` and stopped it; `git status` showed no change.
