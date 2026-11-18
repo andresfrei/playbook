@@ -28,8 +28,8 @@ Anyone who installs `playbook-agents`, the owner first: they rely on `review` to
 - Make the agent `review` read a change R20 calls risky before it is committed, without depending on the writing agent remembering R20 (Decided: review-trigger-1).
 - Count again, as review-evidence-U1 did, how many risky commits had `review` before them (Decided: review-trigger-1).
 - Apply in every project that installs `playbook-agents`, with no list of risky paths of one repository (Decided: review-trigger-2).
-- Let the writing agent judge whether a change is risky: at the commit it is reminded of R20, shown what the commit changes, and told whether `review` ran in the session (Decided: review-trigger-3).
-- Hold the first commit call of a change when `review` has not run in the session, so the reminder comes before the commit; the agent calls `review`, or tries the same commit again and it runs. Never stop the person, and hold the agent once per commit (Decided: review-trigger-4).
+- Let the writing agent judge whether a change is risky: at the commit it is reminded of R20, shown what the commit changes, and told whether `review` ran since the last commit of the session (Decided: review-trigger-3, review-trigger-6).
+- Hold the first commit call of a change when `review` has not run since the last commit of the session (review-trigger-6), so the reminder comes before the commit; the agent calls `review`, or tries the same commit again and it runs. Never stop the person, and hold the agent once per commit (Decided: review-trigger-4).
 
 ## What the work must not do
 
@@ -45,7 +45,7 @@ Decided (review-trigger-5):
 |-------|----------|
 | The problem, and who has it | Covered: above |
 | Who uses it | Covered: the writing agent, which commits; the agent `review`; the owner, who reads the findings |
-| Main flows | Covered: the writing agent tries to commit; with no `review` in the session the call is held with the reminder; the agent calls `review` or tries again; the commit runs (review-trigger-4) |
+| Main flows | Covered: the writing agent tries to commit; with no `review` since the last commit the call is held with the reminder; the agent calls `review` or tries again; the commit runs (review-trigger-4) |
 | What it must do | Covered: review-trigger-1 to -4 |
 | What it must not do | Covered: review-trigger-5 |
 | Qualities | Partly covered: it never blocks a command by its own error, as the hooks of `playbook-wiki` do (review-trigger-5); the cost of a review on each risky commit, Open in Q4 |
