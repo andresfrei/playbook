@@ -1,0 +1,9 @@
+# Decisions of the work review-trigger
+
+| ID | Date | Decision | Who decided | Their words | Shared page |
+|----|------|----------|-------------|-------------|-------------|
+| review-trigger-1 | 2026-11-17 | The work review-trigger is opened to make the agent `review` read a change when R20 calls it risky, without depending on the writing agent remembering R20, and to count again as review-evidence-U1 did. It takes review-evidence-Q4. Its name was chosen from the options offered. Andres Frei leads it. See [definition.md](definition.md). | Andres Frei | si; review-trigger (Recomendado) | none |
+| review-trigger-2 | 2026-11-17 | The change applies in every project that installs `playbook-agents`, not only in this repository, since R20 is a rule of every project. It cannot rely on a list of risky paths of this repository. Answers review-trigger-Q1. | Andres Frei | Todo proyecto (Recomendado) | none |
+| review-trigger-3 | 2026-11-17 | The writing agent judges whether a change is risky. At the commit it is reminded of R20, shown what the commit changes, and told whether `review` ran in the session; it decides whether to call `review`. No list of risky paths. Answers review-trigger-Q2. | Andres Frei | El agente, con aviso (Recomendado) | none |
+| review-trigger-4 | 2026-11-17 | The reminder holds the first commit call of a change when `review` has not run in the session; the agent then calls `review`, or tries the same commit again and it runs. The person is never stopped, and the agent is held once per commit. Answers review-trigger-Q3. | Andres Frei | Frenar una vez (Recomendado) | none |
+| review-trigger-5 | 2026-11-17 | Stage 1 is closed. What [definition.md](definition.md) left Proposed becomes Decided: what the work must not do, the hook never blocking a command by its own error, and no paid run without the owner asking. review-trigger-Q4 stays open; it blocks stage 5. | Andres Frei | si | none |
