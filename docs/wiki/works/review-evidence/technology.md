@@ -42,8 +42,8 @@ The work adds cases, a script for the runs of `claude -p` with the rule, and mea
 
 | Path | What is added | Need |
 |------|---------------|------|
-| `plugins/playbook-agents/evals/review-evidence-*/` | Fourteen cases: seven diffs, each reviewed by `review-change` and by `/code-review`, with a `fixture.sh` and a seeded patch | N4 to N7 |
-| `plugins/playbook-agents/evals/review-evidence-rule.sh` | Builds each diff of the cases with its `fixture.sh`, writes the rule into the clone's `CLAUDE.md`, and runs `/code-review` three times in `claude -p` with an empty `CLAUDE_CONFIG_DIR` | N4 |
+| `plugins/playbook-agents/evals/review-evidence/` | Fourteen cases, tagged `review-evidence`: seven diffs, each reviewed by `review-change` and by `/code-review`; `seeds/` holds each seeded patch, `build.sh`, which builds a diff from the files of a fixed commit and the patch, and `rule.md`, the rule | N4 to N7 |
+| `plugins/playbook-agents/evals/review-evidence/run-rule.sh` | Builds the diff of a case with its `fixture.sh --rule`, which writes the rule into `CLAUDE.md` in the first commit, and runs `/code-review` in `claude -p` with an empty `CLAUDE_CONFIG_DIR` | N4 |
 | `docs/wiki/works/review-evidence/measurements.md` | Recall and precision of each reviewer, and the count for R20 | N8, N9 |
 
 Risks:
