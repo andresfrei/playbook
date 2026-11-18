@@ -8,12 +8,12 @@ Status: Open.
 
 Updated 2026-11-18, after review-trigger-15.
 
-Stage 6, execution, is open: [plan.md](plan.md). review-trigger-U1 is Built. Waiting for the owner: the review of U1.
+Stage 6, execution, is open: [plan.md](plan.md). review-trigger-U1 is Done. Waiting for the owner: the order to run review-trigger-U2, the trial, under its ceiling of USD 2.
 
 Next:
 
-1. The owner reviews review-trigger-U1.
-2. review-trigger-U2, the trial, when the owner asks.
+1. review-trigger-U2, the trial, when the owner asks.
+2. The close of the work: the shared pages and the version.
 
 ## Stage table
 
