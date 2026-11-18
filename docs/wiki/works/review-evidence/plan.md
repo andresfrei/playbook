@@ -8,7 +8,7 @@ Stage 5. The units that answer [definition.md](definition.md) with the technolog
 |----|--------|----------|---------|---------------|
 | review-evidence-U1 | Done | [measurements.md](measurements.md): 108 commits of this repository found in the transcripts, 37 risky by R20 classed by path, 10 of them with a call of `review` before them; 143 commit commands that matched no commit of this repository are listed under its limits. Read with Python and `git`, with nothing paid, on 2026-11-17 | 2026-11-17 | si |
 | review-evidence-U2 | Done | [measurements.md](measurements.md): run when the owner asked, USD 0.64; the three reviewers ran on the diff `dash`; a prompt calls `/code-review` and `review-change` by name; `fixture.sh` finds the repository; the empty configuration folder loads none of the owner's plugins, MCP servers, or memory (`init` event); `--max-budget-usd` was not reached, so its cap is not shown. Ceiling proposed for U4: under USD 20 | 2026-11-17 | |
-| review-evidence-U3 | Not started | | | |
+| review-evidence-U3 | Built | [measurements.md](measurements.md): six diffs beside `dash`, one per class of N7 and a clean one, the real commit `82ae054`; each `fixture.sh`, with and without `--rule`, exited 0 in an empty folder and left its diff; the defects of `truncate`, `bytes`, and `folder` were run and fail as the table says. `bash scripts/verify.sh` exits 0; `claude plugin validate plugins/playbook-agents` passes | | |
 | review-evidence-U4 | Not started | | | |
 | review-evidence-U5 | Not started | | | |
 

@@ -1,0 +1,21 @@
+diff --git a/scripts/set-models.sh b/scripts/set-models.sh
+index cfc61dd..97ae21e 100644
+--- a/scripts/set-models.sh
++++ b/scripts/set-models.sh
+@@ -30,15 +30,11 @@ field() {
+ 
+ # Rewrites the model and effort lines of an agent file.
+ write_file() {
+-  tmp=$(mktemp) || return 1
+   awk -v model="$2" -v effort="$3" '
+     NR == 1 && $0 == "---" { inside = 1; print; next }
+     inside && $0 == "---" { print "model: " model; print "effort: " effort; inside = 0; print; next }
+     inside && (index($0, "model: ") == 1 || index($0, "effort: ") == 1) { next }
+-    { print }' "$1" > "$tmp" && cat "$tmp" > "$1"
+-  status=$?
+-  rm -f "$tmp"
+-  return $status
++    { print }' "$1" > "$1"
+ }
+ 
+ if [ ! -f "$conf" ]; then

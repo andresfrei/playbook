@@ -119,3 +119,19 @@ Total of the trial: USD 0.64. A first eval run loaded no case and a first run wi
 ### Ceiling proposed for U4
 
 Seven diffs, three runs each, at the costs above: about USD 13. Proposed: `--max-cost-usd 12` for the fourteen cases, and `--max-budget-usd 1` for each of the 21 runs with the rule, about USD 6 expected; together under USD 20. The owner approves it before U4 (review-evidence-5).
+
+## review-evidence-U3: the seeded diffs
+
+Built on 2026-11-17 in `plugins/playbook-agents/evals/review-evidence/`. Each diff is the files of a fixed commit as a first commit and one patch of `seeds/<diff>/seed.patch` as the second, built by `seeds/build.sh`; each has a case for `review-change` and one for `/code-review`. This table is what the replies of U4 are read against (N8).
+
+| Diff | Class (N7) | Seeded defect | A case that fails |
+|------|-----------|---------------|-------------------|
+| `dash` | A failing edge case | `plugins/playbook-wiki/merge-step.sh:21`: the arm `-)` is dropped, so `-` matches `-*` and exits 0 | `sh merge-step.sh - <repo>` prints nothing, though `-` is the previous branch (line 7), so `git merge -` is not checked |
+| `limit` | Contradicts a Decided statement | `scripts/verify.sh:15`: the body limit of a skill, L2, goes from 700 to 800 words | A body of 750 words passes; L2 is 700 words in `docs/wiki/01-product/style-guide.md`, and skill-best-practices-1 forbids raising it |
+| `bytes` | Behaviour other than the change means | `scripts/verify.sh:30`: `count_chars` uses `wc -c`, which counts bytes, not characters | The description `a — b` counts 7, not 5; a description of 245 characters with three em dashes fails L3, 250 characters |
+| `truncate` | Data loss | `scripts/set-models.sh`, `write_file`: `awk ... "$1" > "$1"` empties the file before `awk` reads it | `sh scripts/set-models.sh` leaves the three files of `plugins/playbook-agents/agents/` at 0 bytes (run: 1490 bytes before, 0 after) |
+| `language` | A security problem | `plugins/playbook/skills/init/scripts/init.sh`, `apply`: the checks that keep a quote, a backslash, and control characters out of the language are removed | The language `es","x":"y` goes unchecked into the JSON that `configure_language` sends to `claude plugin configure`, which writes another key |
+| `folder` | Changed behaviour with no test | `scripts/verify.sh:200`: a new check fails a skill whose name differs from its folder | `scripts/verify_test.sh` has no case for it (`grep -c "but its folder is"` gives 0), so breaking the check fails no test |
+| `clean` | None | The real commit `82ae054`, "fix(doctor): keep the copy of the marker beside it, not in TMPDIR", on its parent `e09c6b0`, with its tests and its record in the wiki | Every finding on it counts as not real unless shown otherwise |
+
+Checked on 2026-11-17: each `fixture.sh`, with and without `--rule`, run in an empty temporary folder, exited 0 and left the two commits with the diff of its seed.

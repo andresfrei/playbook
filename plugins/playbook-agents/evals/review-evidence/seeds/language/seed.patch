@@ -1,0 +1,16 @@
+diff --git a/plugins/playbook/skills/init/scripts/init.sh b/plugins/playbook/skills/init/scripts/init.sh
+index 3925610..18c60e5 100644
+--- a/plugins/playbook/skills/init/scripts/init.sh
++++ b/plugins/playbook/skills/init/scripts/init.sh
+@@ -287,11 +287,6 @@ apply() {
+   language=${3:-}
+   case $what in wiki | all) ;; *) usage ;; esac
+   case $scope in local | user) ;; *) usage ;; esac
+-  # The language goes into a JSON string and a command line.
+-  case $language in
+-    *\"* | *\\*) bad_language ;;
+-  esac
+-  [ "$(printf '%s' "$language" | tr -d '[:cntrl:]')" = "$language" ] || bad_language
+ 
+   if [ "$what" = wiki ]; then
+     folder=.

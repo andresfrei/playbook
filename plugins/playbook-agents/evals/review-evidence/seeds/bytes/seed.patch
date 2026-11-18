@@ -1,0 +1,14 @@
+diff --git a/scripts/verify.sh b/scripts/verify.sh
+index 1b36c5a..d76561c 100644
+--- a/scripts/verify.sh
++++ b/scripts/verify.sh
+@@ -26,7 +26,8 @@ fail() {
+ }
+ 
+ count_words() { wc -w | tr -d ' '; }
+-count_chars() { wc -m | tr -d ' '; }
++# wc -c counts the same on every platform; wc -m depends on the locale.
++count_chars() { wc -c | tr -d ' '; }
+ 
+ # Prints the lines between the two "---" lines that open a skill file.
+ front_matter() {
