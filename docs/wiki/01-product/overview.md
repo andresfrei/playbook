@@ -1,6 +1,6 @@
 # Overview
 
-How the product is after phase 4. What each phase changed is in the plans named under "Phases".
+How Playbook works in Claude Code and Codex CLI (codex-support-1). What each phase changed is in the plans named under "Phases".
 
 ## What it is
 
@@ -13,7 +13,7 @@ It has two parts with a name each (D168, D182):
 | The core | `playbook-wiki` | Yes, by everyone who works on a project | The contract an agent follows (D175), the format of a project's wiki and its check, the step at the merge (D173), and the skills `prepare-project`, `doctor`, and `write-docs` (TD30) |
 | The owner's agent system | `playbook-agents` | No, each person has their own | The owner's working rules, the agents `explore`, `write`, and `review` with their models, and the skills `keep-minimal`, `review-change`, `write-skill`, and `avoid-generic-design` (TD30). It depends on `playbook-wiki` |
 
-A third plugin, `playbook`, holds only the start command, `/playbook:init` (TD26, TD31). The three are published from this repository's marketplace (TD26).
+In Claude Code, a third plugin, `playbook`, holds only the start command, `/playbook:init` (TD26, TD31). The three are published from this repository's marketplace (TD26).
 
 The project's wiki, in its own repository, is the source of truth that every person on the project shares. It has two layers: the shared pages say how the project is now, and the folder of each work holds its decisions, their reasons, and who decided (D189). A work is what one branch carries from its start to its merge (D171).
 
@@ -44,7 +44,7 @@ The product writes in no `CLAUDE.md`, except the two sentences that send an agen
 
 - Not a place for the rules of one project, product, or client. Those live in that project (D2).
 - Not a workflow engine, a CLI, or a framework (D40).
-- Not for a tool other than Claude Code, for now. Phase 4 removed the support for opencode that phase 3 built; other tools are considered again once the product is well defined (D181, D191).
+- Phase 4 removed opencode support (D191). Codex CLI uses the same wiki contract and optional working agents through a [client-specific installer](../03-technology/codex.md) (codex-support-1, codex-support-2).
 - Not for several products in one repository: one repository is one project with one wiki (D204).
 
 ## Principles

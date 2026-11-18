@@ -2,7 +2,19 @@
 
 Keeps a project's definitions and decisions in a wiki inside the project's repository, `docs/wiki/`, so every person and every agent on the project works from the same source of truth. Before any code, a piece of work is defined and decided with you, one stage at a time; the wiki records who decided what, in their own words.
 
-It is the core of [playbook](https://github.com/andresfrei/playbook), a Claude Code product, and works alone with any agent setup. The format of a wiki is in [format.md](format.md).
+It is the core of [playbook](https://github.com/andresfrei/playbook) and works on its own with your existing agent setup. The format of a wiki is in [format.md](format.md).
+
+## Wiki flow
+
+```mermaid
+flowchart TD
+    start["Start a session"] --> read["Load the contract and read the project wiki"]
+    read --> work["Record decisions and prepare the work"]
+    work --> commit{"Wiki check at commit"}
+    commit -->|Issues found| fix["Repair the reported pages"]
+    fix --> commit
+    commit -->|Pass| compare["Compare branch decisions before merging"]
+```
 
 ## What it holds
 
@@ -13,7 +25,7 @@ It is the core of [playbook](https://github.com/andresfrei/playbook), a Claude C
 | `doctor` | Brings a wiki written in an earlier format to the present one. Only you start it: `/playbook-wiki:doctor` |
 | `check-wiki.sh` | Checks that a wiki follows the format |
 
-## Hooks
+## Claude Code hooks
 
 Each hook prints a file of this folder with `cat`, or runs a POSIX shell script of it that uses only `sh`, `sed`, `awk`, and `git`. None of them connects to a network, and nothing leaves your machine.
 
@@ -50,7 +62,7 @@ claude plugin marketplace add andresfrei/playbook
 claude plugin install playbook-wiki@playbook --scope user
 ```
 
-The full guide, with the start command `/playbook:init`, is in the [repository's README](https://github.com/andresfrei/playbook#install).
+For setup through the wizard, see the [Claude Code guide](../../docs/claude-code.md). In [Codex CLI](../../codex/README.md), choose **wiki only** to use this plugin on its own.
 
 ## Support
 

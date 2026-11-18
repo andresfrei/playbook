@@ -4,6 +4,21 @@ A way of working for building software with an AI coding agent: working rules th
 
 It needs `playbook-wiki`, the core of playbook, which keeps a project's definitions and decisions in a wiki inside the repository. Installing this plugin from its marketplace installs `playbook-wiki` with it; if `claude plugin list` does not show `playbook-wiki`, install it too.
 
+## Agent flow
+
+```mermaid
+flowchart TD
+    start["Start a session with the working rules"] --> task{"What does the change need?"}
+    task -->|Small change| direct["Handle it directly"]
+    task -->|Map a flow| explore["explore finds files and evidence"]
+    task -->|Bounded implementation| write["write builds and tests the unit"]
+    direct --> risk{"Risky change?"}
+    write --> risk
+    risk -->|Yes| review["review reads the diff and reports defects"]
+    risk -->|No| deliver["Deliver with evidence"]
+    review --> deliver
+```
+
 ## What it holds
 
 | Part | What it does |
@@ -17,11 +32,11 @@ It needs `playbook-wiki`, the core of playbook, which keeps a project's definiti
 | `write-skill` | Writes or audits a skill in a fixed format and within size limits |
 | `avoid-generic-design` | Keeps out the generic look AI tools give a page or an interface by default |
 
-The model and effort of each agent are set in [models.conf](models.conf).
+Claude Code takes its models and reasoning effort from [models.conf](models.conf). The [Codex guide](../../codex/README.md) lists the corresponding Codex profiles.
 
 ## Hooks
 
-One hook, when a session starts. It prints [rules.md](rules.md) with `cat`, and then, when you set the option `language`, one line asking the agent to talk to you in that language. It changes no file and no setting, connects to no network, and nothing leaves your machine. The rules are text the agent reads at the start of each session, in every project where the plugin is on.
+At session start the plugin loads [the working rules](rules.md). Claude Code also loads the language preference when configured. When the review agent finishes, a hook records it for the session. Before a code commit, another hook can hold the first attempt and show the changed paths so the agent can assess risk. Wiki-only commits go through the wiki plugin's check. See the [hook definitions](hooks/hooks.json).
 
 ## Examples
 
@@ -46,7 +61,7 @@ claude plugin marketplace add andresfrei/playbook
 claude plugin install playbook-agents@playbook --scope user
 ```
 
-The full guide, with the start command `/playbook:init` and the tools some rules name, is in the [repository's README](https://github.com/andresfrei/playbook#install).
+See the [Claude Code guide](../../docs/claude-code.md) for the wizard and supporting tools. In [Codex CLI](../../codex/README.md), choose **wiki and agents**.
 
 ## Support
 

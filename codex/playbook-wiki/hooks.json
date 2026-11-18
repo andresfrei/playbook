@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "SessionStart": [{
+      "hooks": [{"type": "command", "command": "python3 \"${PLUGIN_ROOT}/session-start.py\""}]
+    }],
+    "SubagentStart": [{
+      "hooks": [{"type": "command", "command": "sh \"${PLUGIN_ROOT}/hooks/contract-for-subagent.sh\""}]
+    }],
+    "PreToolUse": [{
+      "matcher": "^Bash$",
+      "hooks": [
+        {"type": "command", "command": "sh \"${PLUGIN_ROOT}/hooks/commit-check-hook.sh\""},
+        {"type": "command", "command": "python3 \"${PLUGIN_ROOT}/hooks/merge-review.py\""}
+      ]
+    }]
+  }
+}
