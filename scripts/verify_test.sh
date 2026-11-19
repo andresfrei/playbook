@@ -2041,11 +2041,12 @@ init_ok "init: skills prints none for each empty group" \
 # Keep both, and the wiki (setup-commands-5, setup-commands-6, setup-commands-8).
 init_fresh_skills
 mkdir -p "$tmp/init/repo/.claude"
-printf '{"playbook":{"keepBoth":["tools:lint-it"]}}\n' > "$tmp/init/repo/.claude/settings.local.json"
+printf '{"playbook":{"keepBoth":["tools:lint-it","crlf"]}}\n' > "$tmp/init/repo/.claude/settings.local.json"
 printf '{\n  "playbook": {\n    "keepBoth": [\n      "my-review"\n    ]\n  }\n}\n' > "$tmp/init/home/.claude/settings.json"
 FAKE_MARKET=$m init_run skills wiki
 init_has "init: skills marks a skill of another plugin kept in this repository" "  tools:lint-it (kept) — Lint the code."
 init_has "init: skills marks a skill of the person kept for every project" "  my-review (kept) — Review my diff."
+init_has "init: skills marks a skill of the project kept in this repository" "  crlf (kept) — Ends lines with CR."
 init_has "init: skills does not mark a skill that was not kept" "  docs-lite — Write the docs of this project."
 init_has "init: skills prints where the skeleton of a wiki is" "The skeleton of a wiki: $m/plugins/playbook-wiki/skeleton.md"
 

@@ -41,7 +41,7 @@ One key of the playbook in each settings file, at the two scopes of `/playbook:i
 ```
 
 - `models`: per agent, an alias and an effort. An agent missing here keeps the value of `models.conf`. The repository's value of one agent wins over the person's.
-- `keepBoth`: the names of the person's or another plugin's skills whose pair the person settled with "Keep both". `skillOverrides` keeps holding the skills turned off.
+- `keepBoth`: the names of the skills whose pair the person settled with "Keep both": the person's or another plugin's at the scope chosen, the project's in the repository's file (setup-commands-15). `skillOverrides` keeps holding the skills turned off.
 
 ## Outside systems
 

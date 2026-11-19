@@ -16,3 +16,4 @@
 | setup-commands-12 | 2026-11-18 | Accept the working skills in [skills.md](skills.md) and close stage 3 (Skills). Open stage 4 (Design system). | Andres Frei | "aceopto y sigue" | none |
 | setup-commands-13 | 2026-11-18 | Close stage 4 (Design system) as not applicable: the work has no visual interface. Open stage 5 (Plan). | Andres Frei | "si" | none |
 | setup-commands-14 | 2026-11-18 | Accept the five units of [plan.md](plan.md), their acceptance, and their delivery: in order on `feat/setup-commands`, one at a time, to `main` by one pull request. Close stage 5 (Plan) and open stage 6 (Execution). | Andres Frei | "acepto" | none |
+| setup-commands-15 | 2026-11-18 | A "Keep both" with a skill of the project is also remembered in `keepBoth` of `.claude/settings.local.json`, with or without a wiki. Extends setup-commands-8, which covered the person's skills and other plugins'. | Andres Frei | Chose "También en keepBoth local" | none |

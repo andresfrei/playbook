@@ -33,7 +33,7 @@ Do not use it for Claude Code's own `/init`, which writes a `CLAUDE.md`.
 7. Run `sh "${CLAUDE_SKILL_DIR}/scripts/init.sh" apply <wiki|all> <local|user> [language]`, with the answers; leave the language out for none. Show its output.
 8. Then write each choice:
    - A skill of the person turned off: add `"<name>": "off"` under `skillOverrides` in `.claude/settings.local.json` for this repository, or in the `settings.json` of the folder that holds the person's skills folder the script printed, for every project. Create the key or the file when missing, and change nothing else in it.
-   - "Keep both" with a skill of the person or of another plugin: run `sh "${CLAUDE_SKILL_DIR}/scripts/init.sh" keep <local|user> <name>`, at the scope of step 3, with the name as `skills` printed it.
+   - "Keep both": run `sh "${CLAUDE_SKILL_DIR}/scripts/init.sh" keep <local|user> <name>`, with the name as `skills` printed it, at the scope of step 3, or `local` for a skill of the project.
    - A choice about a skill of the project, when `docs/wiki/` exists: a decision with the person's words, in the work this branch carries, as the format the script printed says. Write nothing in `docs/wiki/04-skills/`: it changes when the work closes.
 9. When the scan says "Wiki of this repository: missing", ask whether to add one. On a yes, read the file it names after "The skeleton of a wiki" and do its steps; when it names none, point to `/playbook-wiki:init`.
 10. Tell the person that what was turned on, and a skill turned off, take effect from the next session.

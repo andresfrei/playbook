@@ -18,7 +18,7 @@ What the three commands do for the person who uses them. Each statement is Decid
 
 Decided (setup-commands-1): it starts the playbook only where it is not on yet, and does not redo what is.
 
-Decided (setup-commands-5): run again, it shows what is on and where, and asks "Keep" or "Change". "Keep" ends it; "Change" runs the wizard again and asks only about skill pairs no earlier choice settled. A "Keep both" choice is remembered in the person's settings, under a key of the playbook (setup-commands-8).
+Decided (setup-commands-5): run again, it shows what is on and where, and asks "Keep" or "Change". "Keep" ends it; "Change" runs the wizard again and asks only about skill pairs no earlier choice settled. A "Keep both" choice is remembered in the person's settings, under a key of the playbook (setup-commands-8); with a skill of the project, in the repository's (setup-commands-15).
 
 Decided (setup-commands-6): at its end, in a repository with no wiki, it asks whether to add one and runs `/playbook-wiki:init` only on a yes.
 
