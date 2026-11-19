@@ -2630,8 +2630,8 @@ printf '{"type":"assistant","message":{"content":[{"type":"tool_use","name":"Age
 printf '{"type":"user","message":{"content":"say \\"subagent_type\\": \\"playbook-agents:classify\\""}}\n' > "$cls_t/quoted.jsonl"
 # cls_run <session> <agent type> <transcript> <last message as JSON text> [extra JSON fields]
 cls_run() {
-  out=$(printf '{"session_id":"%s","hook_event_name":"SubagentStop",%s"agent_id":"x","agent_type":"%s","agent_transcript_path":"%s","last_assistant_message":"%s"}' \
-    "$1" "${5:-}" "$2" "$3" "$4" | CLAUDE_PLUGIN_DATA="$hold_data" sh "$ran_hook" 2>&1)
+  out=$(printf '{"session_id":"%s","hook_event_name":"SubagentStop",%s"agent_id":"%s","agent_type":"%s","agent_transcript_path":"%s","last_assistant_message":"%s"}' \
+    "$1" "${5:-}" "${cls_agent-a$1}" "$2" "$3" "$4" | CLAUDE_PLUGIN_DATA="$hold_data" sh "$ran_hook" 2>&1)
   code=$?
 }
 blocked() {
@@ -2677,6 +2677,19 @@ cls_run c8 playbook-agents:review "$cls_t/none.jsonl" ''
 check "classify: an empty last message passes" passes
 cls_run c9 playbook-agents:review "$cls_t/none.jsonl" 'Finding 1: x' '"stop_hook_active" : false,'
 check "classify: stop_hook_active false still blocks" blocked
+cls_run c10 playbook-agents:review "$cls_t/none.jsonl" 'Finding 1: x'
+check "classify: the first stop of a subagent blocks" blocked
+check "classify: the block leaves a mark for that subagent" test -f "$hold_data/classify-asked/ac10"
+cls_run c10 playbook-agents:review "$cls_t/none.jsonl" 'Finding 1: x' '"stop_hook_active" : false,'
+check "classify: a second stop of the same subagent passes, stop_hook_active false" passes
+cls_agent=ac10 cls_run c11 playbook-agents:review "$cls_t/none.jsonl" 'Finding 1: x'
+check "classify: the same subagent in another session passes" passes
+cls_run c12 playbook-agents:review "$cls_t/none.jsonl" 'Finding 1: x'
+check "classify: another subagent still blocks" blocked
+cls_agent='' cls_run c13 playbook-agents:review "$cls_t/none.jsonl" 'Finding 1: x'
+check "classify: no agent_id passes" passes
+cls_agent='a/../b' cls_run c14 playbook-agents:review "$cls_t/none.jsonl" 'Finding 1: x'
+check "classify: an agent_id with a slash passes" passes
 
 rm -rf "$tmp/hold_wiki"
 mkdir -p "$tmp/hold_wiki/docs/wiki"
