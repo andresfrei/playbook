@@ -29,6 +29,6 @@ A person with the playbook who has reviewed changes in a repository before insta
 | Qualities | Open: cost (seed-evidence-Q4) |
 | Limits | Covered: the transcripts exist only on the person's machine |
 | Outside systems | Does not apply |
-| Volume | Open: the measurement of reviews per repository and age |
+| Volume | Covered: [measurements.md](measurements.md) |
 | Who runs and maintains it | Covered: the person, once per repository |
 | Business rules, states, vocabulary | Covered: the vocabulary of repeated-corrections |
