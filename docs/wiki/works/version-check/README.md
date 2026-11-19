@@ -6,16 +6,16 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after version-check-13.
+Updated 2026-11-19, after version-check-15.
 
-Stage 5, Plan, is open. Stage 1 closed with [definition.md](definition.md); stage 2 with [technology.md](technology.md); stage 3 with [skills.md](skills.md); stage 4 as not applicable. [plan.md](plan.md) proposes two units and how the work is delivered.
+Stage 6, Execution, is open. Stage 1 closed with [definition.md](definition.md); stage 2 with [technology.md](technology.md); stage 3 with [skills.md](skills.md); stage 4 as not applicable; stage 5 with [plan.md](plan.md).
 
-Waiting for a decision: the owner's acceptance of [plan.md](plan.md) and its delivery.
+Waiting for a decision: none.
 
 Next steps, in order:
 
-1. The owner accepts the plan and its delivery.
-2. Close stage 5 and build version-check-U1.
+1. Build version-check-U1, then version-check-U2.
+2. Close the work.
 
 ## Stage table
 
@@ -25,8 +25,8 @@ Next steps, in order:
 | 2 Technology | Closed | 2026-11-19 |
 | 3 Skills | Closed | 2026-11-19 |
 | 4 Design system | Closed (not applicable) | 2026-11-19 |
-| 5 Plan | Open | |
-| 6 Execution | Not started | |
+| 5 Plan | Closed | 2026-11-19 |
+| 6 Execution | Open | |
 
 ## Pages
 

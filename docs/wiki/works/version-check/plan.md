@@ -1,6 +1,6 @@
 # Plan of version-check
 
-Stage 5. It builds what [definition.md](definition.md) and [technology.md](technology.md) decide. Proposed.
+Stage 5. It builds what [definition.md](definition.md) and [technology.md](technology.md) decide. Accepted (version-check-14).
 
 ## Progress
 
@@ -20,7 +20,7 @@ U2 follows U1, since both change the SessionStart entries of `hooks.json`.
 
 ## How the work is delivered
 
-Proposed, from this repository's history (`git log --merges --first-parent main`: each work reaches `main` by one pull request from its own branch, as `feat/delegation` in #28) and its only long-lived branch, `main`, which is production:
+Decided (version-check-14), from this repository's history (`git log --merges --first-parent main`: each work reaches `main` by one pull request from its own branch, as `feat/delegation` in #28) and its only long-lived branch, `main`, which is production:
 
 - Tested nowhere apart: the tests of each unit, which build the plugins folder of Claude Code with fake files.
 - The units are built in order, one at a time, on this work's branch.
