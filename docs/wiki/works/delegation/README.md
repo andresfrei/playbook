@@ -10,13 +10,12 @@ Updated 2026-11-19, after delegation-15.
 
 Stage 6, Execution, is open. Stage 1 closed with [definition.md](definition.md) and [measurements.md](measurements.md); stage 2 with [technology.md](technology.md); stage 3 with [skills.md](skills.md); stage 4 as not applicable; stage 5 with [plan.md](plan.md).
 
-Waiting for a decision: the owner's review of delegation-U4 and delegation-U5, accepted by judgement.
+Waiting for a decision: none. Units delegation-U1 to delegation-U6 are Done; this wiki is at format 5.
 
 Next steps, in order:
 
-1. The owner reviews delegation-U4 and delegation-U5; delegation-U1 to delegation-U3 are Done.
-2. Build delegation-U6. This wiki fails the check at format 5 until delegation-U6.
-3. Close the work.
+1. Close the work: write the shared pages, measure and propose delegations (`check-wiki.sh --delegations` prints plan, close-stage, and version), and recommend the version, MAJOR by TD22.
+2. One pull request to `main`, which the owner merges.
 
 ## Stage table
 
