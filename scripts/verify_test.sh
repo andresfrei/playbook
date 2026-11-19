@@ -1385,6 +1385,93 @@ check "format: the hook prints nothing and exits 0 for a wiki at the playbook's 
 out=$(CLAUDE_PLUGIN_ROOT="$root/plugins/playbook-wiki" sh -c 'unset CLAUDE_PROJECT_DIR; '"$hook" 2>&1); code=$?
 check "format: the hook prints nothing and exits 0 when the session names no project" test -z "$out" -a "$code" -eq 0
 
+# The version notice: a hook at session start compares the installed version
+# with the marketplace's local copy, from files under a fake plugins folder.
+version_hook="$root/plugins/playbook-wiki/hooks/version-check.sh"
+check "version: the plugin runs the version notice on startup only" sh -c '
+  [ "$(grep -c "version-check.sh" "$1")" -eq 1 ] &&
+  awk "/\"matcher\":/ { m = \$0 } /version-check.sh/ { found = (m ~ /\"startup\"/) } END { exit !found }" "$1"' sh "$root/plugins/playbook-wiki/hooks/hooks.json"
+
+# vc_layout <installed> <available>: a marketplace from Git, with each version
+# written in its manifest; an empty version writes no manifest.
+vc_layout() {
+  rm -rf "$tmp/vc"
+  vc_root="$tmp/vc/plugins/cache/playbook/playbook-wiki/$1"
+  mkdir -p "$vc_root/.claude-plugin" "$tmp/vc/plugins/marketplaces/playbook/plugins/playbook-wiki/.claude-plugin"
+  printf '{\n  "name": "playbook-wiki",\n  "version": "%s"\n}\n' "$1" > "$vc_root/.claude-plugin/plugin.json"
+  if [ -n "$2" ]; then
+    printf '{\n  "name": "playbook-wiki",\n  "version": "%s"\n}\n' "$2" > "$tmp/vc/plugins/marketplaces/playbook/plugins/playbook-wiki/.claude-plugin/plugin.json"
+  fi
+}
+vc_run() { out=$(CLAUDE_PLUGIN_ROOT="$vc_root" sh "$version_hook" 2>&1); code=$?; }
+vc_silent() { [ -z "$out" ] && [ "$code" -eq 0 ]; }
+vc_json() {
+  printf '%s' "$out" | grep -Eq '^\{"systemMessage":"[^"]+","hookSpecificOutput":\{"hookEventName":"SessionStart","additionalContext":"[^"]+"\}\}$'
+}
+
+vc_layout 2.6.0 3.0.0; vc_run
+check "version: an older installed version gives the notice" sh -c 'printf "%s" "$1" | grep -Fq "The playbook is at 2.6.0, and 3.0.0 is available"' sh "$out"
+check "version: the notice is one JSON object for the person and the agent" vc_json
+check "version: the notice exits 0" [ "$code" -eq 0 ]
+vc_layout 2.9.9 2.10.0; vc_run
+check "version: versions compare number by number, 2.10.0 after 2.9.9" sh -c 'printf "%s" "$1" | grep -Fq "2.10.0 is available"' sh "$out"
+vc_layout 3.0.0 3.0.0; vc_run
+check "version: an equal version prints nothing" vc_silent
+vc_layout 3.1.0 3.0.0; vc_run
+check "version: a newer installed version prints nothing" vc_silent
+vc_layout 3.0.0 2.5.0; vc_run
+check "version: an older copy prints nothing, though one of its numbers is higher" vc_silent
+vc_layout 3.0.0 3.1; vc_run
+check "version: an available version that is not three numbers prints nothing" vc_silent
+vc_layout 3.0 3.0.0; vc_run
+check "version: an installed version that is not three numbers prints nothing" vc_silent
+vc_layout 2.6.0 3.0.0
+sed '/"version"/d' "$vc_root/.claude-plugin/plugin.json" > "$tmp/x" && mv "$tmp/x" "$vc_root/.claude-plugin/plugin.json"; vc_run
+check "version: an installed manifest without a version prints nothing" vc_silent
+vc_layout 2.6.0 3.0.0
+mv "$tmp/vc/plugins/cache/playbook" "$tmp/vc/plugins/cache/my\"mp"
+mv "$tmp/vc/plugins/marketplaces/playbook" "$tmp/vc/plugins/marketplaces/my\"mp"
+vc_root="$tmp/vc/plugins/cache/my\"mp/playbook-wiki/2.6.0"; vc_run
+check "version: a marketplace name with a quote prints nothing" vc_silent
+vc_layout 3.0.0 ""; vc_run
+check "version: a copy without the plugin's manifest prints nothing" vc_silent
+vc_layout 2.6.0 3.0.0; rm -rf "$tmp/vc/plugins/marketplaces"; vc_run
+check "version: no copy and no record of the marketplace prints nothing" vc_silent
+
+# A marketplace from a folder: no copy under marketplaces/, its installLocation
+# recorded in known_marketplaces.json.
+vc_layout 2.0.0 ""
+rm -rf "$tmp/vc/plugins/marketplaces"
+mkdir -p "$tmp/vc/my repo/plugins/playbook-wiki/.claude-plugin"
+printf '{"version": "3.0.0"}\n' > "$tmp/vc/my repo/plugins/playbook-wiki/.claude-plugin/plugin.json"
+cat > "$tmp/vc/plugins/known_marketplaces.json" <<JSON
+{
+  "other": {
+    "source": {"source": "github", "repo": "someone/playbook"},
+    "installLocation": "/nowhere/other"
+  },
+  "playbook": {
+    "source": {
+      "source": "directory",
+      "path": "$tmp/vc/my repo"
+    },
+    "installLocation": "$tmp/vc/my repo",
+    "lastUpdated": "2026-11-17T00:30:45.624Z"
+  }
+}
+JSON
+vc_run
+check "version: a marketplace from a folder is read from its installLocation" sh -c 'printf "%s" "$1" | grep -Fq "The playbook is at 2.0.0, and 3.0.0 is available"' sh "$out"
+printf '{"playbook": "not an object"}\n' > "$tmp/vc/plugins/known_marketplaces.json"; vc_run
+check "version: a record it cannot read prints nothing" vc_silent
+
+vc_layout 2.6.0 3.0.0
+out=$(CLAUDE_PLUGIN_ROOT="$root/plugins/playbook-wiki" sh "$version_hook" 2>&1); code=$?
+check "version: a plugin outside the cache, such as --plugin-dir, prints nothing" vc_silent
+out=$(env -u CLAUDE_PLUGIN_ROOT sh "$version_hook" 2>&1); code=$?
+check "version: no CLAUDE_PLUGIN_ROOT prints nothing" vc_silent
+check "version: the hook connects to no network" sh -c '! grep -Eq "curl|wget|ls-remote|https?://" "$1"' sh "$version_hook"
+
 # The skills an agent preloads.
 fresh
 check "skills: the review agent preloads the review skill" grep -q '^skills: review-change$' "$tmp/repo/plugins/playbook-agents/agents/review.md"

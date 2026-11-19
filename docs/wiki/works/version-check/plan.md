@@ -6,7 +6,7 @@ Stage 5. It builds what [definition.md](definition.md) and [technology.md](techn
 
 | Unit | Status | Evidence | Done on | Owner's words |
 |------|--------|----------|---------|---------------|
-| version-check-U1 | Not started | | | |
+| version-check-U1 | Done | `plugins/playbook-wiki/hooks/version-check.sh`, registered under SessionStart with the matcher `startup`; its row in the README of `playbook-wiki`; 19 cases "version:" in `scripts/verify_test.sh`. Run on 2026-11-19: `sh scripts/verify_test.sh` printed "all cases passed"; `shellcheck` passed; `bash scripts/verify.sh` passed. On this machine's plugins folder, read only, it printed "The playbook is at 2.0.0, and 3.0.0 is available" through a marketplace from a folder. The agent `review` found four tests that passed with the behaviour broken, all fixed and each checked by breaking the hook on purpose | 2026-11-19 | |
 | version-check-U2 | Not started | | | |
 
 ## Units

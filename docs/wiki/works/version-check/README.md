@@ -6,7 +6,7 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after version-check-15.
+Updated 2026-11-19, after version-check-15 and version-check-U1.
 
 Stage 6, Execution, is open. Stage 1 closed with [definition.md](definition.md); stage 2 with [technology.md](technology.md); stage 3 with [skills.md](skills.md); stage 4 as not applicable; stage 5 with [plan.md](plan.md).
 
@@ -14,7 +14,7 @@ Waiting for a decision: none.
 
 Next steps, in order:
 
-1. Build version-check-U1, then version-check-U2.
+1. Build version-check-U2; version-check-U1 is Done.
 2. Close the work.
 
 ## Stage table
