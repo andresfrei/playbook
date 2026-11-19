@@ -56,7 +56,7 @@ Three kinds of content, split by when each one loads (D65):
 | `playbook-wiki` | `PreToolUse` on `Bash(git *)` | The step at the merge, for a `git merge` |
 | `playbook-wiki` | `PreToolUse` on `Bash(git *)` | The check at the commit, for a `git commit` (wiki-check-on-commit-1) |
 | `playbook-agents` | `SessionStart` | Prints the rules, then "Talk to the person in <language>." when the person set a language |
-| `playbook-agents` | `SubagentStart` on `^playbook-agents:(write\|review)$` | `rules-for-subagent.sh`: gives the subagent the rules of level 2 and up from `evidence.sh rules`, as extra context (repeated-corrections-18) |
+| `playbook-agents` | `SubagentStart` on `^playbook-agents:(write\|review)$` | `rules-for-subagent.sh`: gives the subagent the index of the rules of level 2 and up from `evidence.sh index`, one line per kind with when it applies, and the command `evidence.sh rule <kind>` that prints a rule; the subagent reads only the rules whose kind matches its task (repeated-corrections-18, seed-evidence-31) |
 | `playbook-agents` | `SubagentStop` on `^playbook-agents:review$` | Writes the session's mark under `${CLAUDE_PLUGIN_DATA}/review/` (review-trigger-7). Then `review-ran.sh` reads the review's transcript: when the last message has no line that is exactly "No findings.", the transcript holds no call of `playbook-agents:classify`, and the hook did not already block once, it stops the review with `decision: block` and asks for the classifier (repeated-corrections-17). The mark is written first, so the commit hold does not depend on the classifier |
 | `playbook-agents` | `PreToolUse` on `Bash(git *)` | The hold at the commit, for a `git commit` (review-trigger-4) |
 | `playbook-agents` | `PreToolUse` on `Agent` | Adds the person's model and effort to a call of the product's agents (setup-commands-10) |
@@ -65,7 +65,7 @@ Three kinds of content, split by when each one loads (D65):
 
 Findings that repeat become rules the agents keep in mind at the step where they happened (repeated-corrections-1, repeated-corrections-3).
 
-1. At the start of `write` or `review`, the `SubagentStart` hook gives the rules of level 2 and up (repeated-corrections-18).
+1. At the start of `write` or `review`, the `SubagentStart` hook gives the index of the rules of level 2 and up; the subagent reads the rule of each kind that matches its task (repeated-corrections-18, seed-evidence-31).
 2. When `review` ends with findings, it starts `classify` with them. The classifier stores each real finding as a row of evidence under a kind, or under a new kind at level 1 (repeated-corrections-17).
 3. If `review` ended with findings and started no classifier, the `SubagentStop` hook stops it and asks for one (repeated-corrections-17).
 4. At the close of a work, `evidence.sh count` lists the groups with 3 distinct reviews at one kind and level. Each is proposed to the owner as a rule one level up, replacing its rows; when the owner delegated the kind `consolidate`, the agent makes it and says so (repeated-corrections-13, repeated-corrections-28).
