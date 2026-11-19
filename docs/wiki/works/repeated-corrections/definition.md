@@ -26,7 +26,7 @@ The owner, who reads the same finding again; the agent, which repeats the mistak
 
 ## The measurement
 
-Before anything is built: read a sample of about 60 findings of `review` in the transcripts on the owner's machine, from every project and date, group them by type, and count how many repeat. Only types and counts are written here: the repository is public, and the reports of other projects are private. If corrections rarely repeat, the work stops (repeated-corrections-1). Written in `measurements.md` when made.
+Before anything is built: read a sample of about 60 findings of `review` in the transcripts on the owner's machine, from every project and date, group them by type, and count how many repeat. Only types and counts are written here: the repository is public, and the reports of other projects are private. If corrections rarely repeat, the work stops (repeated-corrections-1). Made on 2026-11-19 on a sample: findings repeat, 85% of them in types seen in two projects or more ([measurements.md](measurements.md)).
 
 ## Coverage of the topics
 
@@ -40,6 +40,6 @@ Before anything is built: read a sample of about 60 findings of `review` in the 
 | Qualities: a record of who did what | Covered: each rule cites what it consolidated; git keeps the deleted records (repeated-corrections-5) |
 | Limits | Covered: hooks in POSIX shell, as the plugins' hooks; skills within L2 |
 | Outside systems | Does not apply |
-| Volume | Partly covered: the measurement |
+| Volume | Covered: [measurements.md](measurements.md) |
 | Who runs and maintains it | Covered: the agent keeps the records, a script counts (repeated-corrections-6) |
 | Business rules, states, vocabulary | Partly covered: where the records live (repeated-corrections-Q4) |

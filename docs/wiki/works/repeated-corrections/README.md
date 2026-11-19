@@ -8,15 +8,14 @@ Status: Open.
 
 Updated 2026-11-19, after repeated-corrections-8.
 
-Stage 1, Wiki, is open. [definition.md](definition.md) holds the problem and the shape the owner gave it; four questions are open in [questions.md](questions.md).
+Stage 1, Wiki, is open. [definition.md](definition.md) holds the problem and the shape the owner gave it; four questions are open in [questions.md](questions.md). The measurement showed that findings repeat ([measurements.md](measurements.md)).
 
-Waiting for a decision: none before the measurement.
+Waiting for a decision: repeated-corrections-Q1, who approves a consolidation.
 
 Next steps, in order:
 
-1. Measure a sample of the findings of `review` in the transcripts on the owner's machine; stop the work if they rarely repeat.
-2. Answer repeated-corrections-Q1 to repeated-corrections-Q4.
-3. Close stage 1.
+1. Answer repeated-corrections-Q1 to repeated-corrections-Q4.
+2. Close stage 1.
 
 ## Stage table
 
@@ -34,5 +33,6 @@ Next steps, in order:
 | Page | Content | Code it governs |
 |------|---------|-----------------|
 | [definition.md](definition.md) | The problem, the shape, the measurement, and the coverage of each topic | |
+| [measurements.md](measurements.md) | How often the findings of `review` repeat, from a sample of 60 reports | |
 | [decisions.md](decisions.md) | The decisions of this work | |
 | [questions.md](questions.md) | The open questions | |
