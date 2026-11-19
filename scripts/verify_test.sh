@@ -2407,6 +2407,79 @@ cp "$models_hook" "$tmp/amlib/hooks/"
 out=$(printf '{"tool_input":%s}' "$review_call" | CLAUDE_CONFIG_DIR="$tmp/am/home" sh "$tmp/amlib/hooks/agent-models.sh" 2>&1); code=$?
 check "models hook: a missing hook-lib.sh prints nothing and exits 0" passes
 
+# /playbook-agents:config: its script (setup-commands-4, setup-commands-10).
+config_script="$root/plugins/playbook-agents/skills/config/scripts/config.sh"
+rm -rf "$tmp/cf"
+mkdir -p "$tmp/cf/proj" "$tmp/cf/home"
+# cf_run <arguments>: runs the script in the repository, with its own home.
+cf_run() {
+  out=$(cd "$tmp/cf/proj" && env -u CLAUDE_CODE_EFFORT_LEVEL -u CLAUDE_PROJECT_DIR CLAUDE_CONFIG_DIR="$tmp/cf/home" sh "$config_script" "$@" 2>&1)
+  code=$?
+}
+cf_has() { printf '%s\n' "$out" | grep -Fxq -- "$1"; }
+cf_local="$tmp/cf/proj/.claude/settings.local.json"
+cf_user="$tmp/cf/home/settings.json"
+tab=$(printf '\t')
+
+cf_run show
+check "config: show with nothing set gives each agent's file values" \
+  cf_has "review${tab}opus${tab}high${tab}plugin default"
+cf_run set local review fable low
+check "config: set local creates the repository's file" [ "$code" -eq 0 -a -f "$cf_local" ]
+check "config: the file it creates holds only the value" \
+  [ "$(cat "$cf_local")" = '{"playbook": {"models": {"review": "fable low"}}}' ]
+cf_run set local explore haiku
+check "config: a second agent is added beside the first" \
+  [ "$(cat "$cf_local")" = '{"playbook": {"models": {"explore": "haiku","review": "fable low"}}}' ]
+cf_run set local review opus
+check "config: a value set again is replaced" \
+  [ "$(cat "$cf_local")" = '{"playbook": {"models": {"explore": "haiku","review": "opus"}}}' ]
+printf '{\n  "theme": "dark",\n  "permissions": {"allow": ["Bash(ls)"]},\n  "playbook": {"other": [1, {"a": "b"}]}\n}\n' > "$cf_user"
+cf_run set user write sonnet xhigh
+check "config: set user keeps every other key, in place" \
+  [ "$(cat "$cf_user")" = "$(printf '{\n  "theme": "dark",\n  "permissions": {"allow": ["Bash(ls)"]},\n  "playbook": {"models": {"write": "sonnet xhigh"},"other": [1, {"a": "b"}]}\n}')" ]
+cf_run show
+check "config: show names the repository as the source" cf_has "explore${tab}haiku${tab}medium${tab}this repository"
+check "config: show names every project as the source" cf_has "write${tab}sonnet${tab}xhigh${tab}every project"
+check "config: a model without an effort keeps the file's effort" cf_has "review${tab}opus${tab}high${tab}this repository"
+printf '{"playbook":{"models":{"write":"gpt-6 high"}}}\n' > "$cf_user"
+cf_run show
+check "config: show marks an invalid value as ignored" \
+  cf_has "write${tab}sonnet${tab}medium${tab}plugin default; ignored in every project: \"gpt-6 high\""
+out=$(cd "$tmp/cf/proj" && CLAUDE_CODE_EFFORT_LEVEL=low CLAUDE_PROJECT_DIR="$tmp/cf/proj" CLAUDE_CONFIG_DIR="$tmp/cf/home" sh "$config_script" show 2>&1)
+check "config: show warns when CLAUDE_CODE_EFFORT_LEVEL is set" cf_has "CLAUDE_CODE_EFFORT_LEVEL is set to low and overrides every effort above."
+for bad in 'claude-opus-5-5' 'inherit' 'opus extreme'; do
+  set -f
+  # shellcheck disable=SC2086
+  cf_run set user write $bad
+  set +f
+  check "config: set refuses '$bad'" [ "$code" -eq 2 ]
+done
+cf_run set user nobody opus
+check "config: set refuses an agent that does not exist" [ "$code" -eq 2 ]
+cf_run set elsewhere write opus
+check "config: set refuses a scope that does not exist" [ "$code" -eq 2 ]
+printf '{"playbook":{"models":{"write":"gpt-6"}}}\n' > "$cf_local"
+printf '{"playbook":{"models":{"write":"opus high"}}}\n' > "$cf_user"
+cf_run show
+check "config: an invalid repository value stops at the plugin default, as the hook does" \
+  cf_has "write${tab}sonnet${tab}medium${tab}plugin default; ignored in this repository: \"gpt-6\""
+rm -f "$cf_local"
+mkdir -p "$tmp/cf/proj/src"
+out=$(cd "$tmp/cf/proj/src" && CLAUDE_PROJECT_DIR="$tmp/cf/proj" CLAUDE_CONFIG_DIR="$tmp/cf/home" sh "$config_script" set local review haiku low 2>&1); code=$?
+check "config: set local from a subfolder writes the project's file" \
+  [ "$code" -eq 0 -a -f "$cf_local" -a ! -e "$tmp/cf/proj/src/.claude" ]
+rm -f "$cf_local"
+for text in '[1]' '{"playbook":["x"]}' '{"playbook":{"models":"x"}}' '{"playbook":{"models":{"write":3}}}' '{"a": {"b": 1}' '{"a":1}garbage' '{"a":1}}' '{"a":1} {"b":2}'; do
+  printf '%s\n' "$text" > "$cf_user"
+  cf_run set user write opus
+  check "config: set leaves $text unchanged and exits 3" [ "$code" -eq 3 -a "$(cat "$cf_user")" = "$text" ]
+done
+printf '{"playbook":{"models":{"write":"opus high"}}}\n' > "$cf_user"
+check "config: the hook reads what set wrote" sh -c '
+  printf "{\"cwd\":\"/none\",\"tool_input\":{\"prompt\":\"p\",\"subagent_type\":\"playbook-agents:write\"}}" |
+    CLAUDE_CONFIG_DIR="$1" CLAUDE_PROJECT_DIR=/none sh "$2" | grep -Fq "\"model\":\"opus\",\"effort\":\"high\""' sh "$tmp/cf/home" "$models_hook"
+
 if [ "$failed" -eq 0 ]; then
   printf 'all cases passed\n'
 else

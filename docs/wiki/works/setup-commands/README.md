@@ -12,7 +12,7 @@ Waiting for a decision: nothing; units follow [plan.md](plan.md).
 
 Next steps:
 
-1. Build setup-commands-U2 to setup-commands-U5 in order; setup-commands-U1 is Done.
+1. Build setup-commands-U3 to setup-commands-U5 in order; setup-commands-U1 and setup-commands-U2 are Done.
 
 At the close of the work, setup-commands-2 changes `01-product/skill-set.md` and the `prepare-project` reference `1-wiki.md`.
 
