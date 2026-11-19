@@ -10,7 +10,7 @@ What the work needs from its technology, from [definition.md](definition.md), an
 | N2 | Take the findings of `review` when it ends, in the foreground or the background | repeated-corrections-9, -14 | `review` starts the classifier itself; the `SubagentStop` hook of `review`, which already exists, reads `agent_transcript_path` and, when the review ended with findings and started no classifier, stops it with `decision: block` and asks for one (repeated-corrections-17) | Decided |
 | N3 | Classify the evidence and store it | repeated-corrections-10, -11, -12 | A new agent with the model `sonnet` in `models.conf`, started by `review`; it applies the criteria and adds rows to the page. `review` gets the tool `Agent` and still changes no code (repeated-corrections-17) | Decided |
 | N4 | Keep the kinds, evidence, and rules of a project, and count them | repeated-corrections-6, -15 | `docs/wiki/evidence.md`, an optional file a tool keeps, in Markdown tables; `evidence.sh` in `playbook-agents`, POSIX `sh` and `awk`, checks the page, counts distinct reviews per kind and level, and prints the rules for N1. The wiki's format does not change (repeated-corrections-19) | Decided |
-| N5 | Keep the general rules in the playbook | repeated-corrections-15 | One file in `plugins/playbook-agents/`, read by the hook of N1 with the project's rules | Proposed |
+| N5 | Keep the general rules in the playbook | repeated-corrections-15 | `plugins/playbook-agents/evidence-rules.md`, in the table of rules of the project page; read by `evidence.sh` with the project's rules, shipped with each release (repeated-corrections-20) | Decided |
 
 ## Facts that shape the answers
 
