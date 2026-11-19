@@ -50,7 +50,7 @@ Every person who installed the playbook from its marketplace, and the agent that
 |-------|----------|
 | The problem and who has it | Covered |
 | Who uses it and what they do | Covered: the person reads the notice, the agent recommends what to run (version-check-3) |
-| Main flows | Partly covered: every session while the versions differ (version-check-4); which plugin carries it (version-check-Q5) |
+| Main flows | Covered: `playbook-wiki` checks at the start of every session while the versions differ (version-check-4, version-check-6) |
 | What it must do | Covered (version-check-3, version-check-4, version-check-5) |
 | What it must not do, and what waits | Covered (version-check-1, version-check-2) |
 | Qualities: speed, privacy | Covered: no delay, nothing leaves the machine (version-check-2) |

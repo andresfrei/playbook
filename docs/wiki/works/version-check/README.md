@@ -6,23 +6,24 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after version-check-5.
+Updated 2026-11-19, after version-check-7.
 
-Stage 1, Wiki, is open. [definition.md](definition.md) holds the problem and what exists today; one question is open in [questions.md](questions.md).
+Stage 2, Technology, is open. Stage 1 closed with [definition.md](definition.md), every topic covered and no question open.
 
-Waiting for a decision: version-check-Q5, which plugin carries the check.
+Waiting for a decision: none yet.
 
 Next steps, in order:
 
-1. Answer version-check-Q5.
-2. Close stage 1.
+1. Read in the documentation when automatic update runs, and whether the local copy of the marketplace refreshes by itself (version-check-2).
+2. Try `systemMessage` at the start of a real session (version-check-3).
+3. Write the needs of `technology.md` and close stage 2.
 
 ## Stage table
 
 | Stage | Status | Closed on |
 |-------|--------|-----------|
-| 1 Wiki | Open | |
-| 2 Technology | Not started | |
+| 1 Wiki | Closed | 2026-11-19 |
+| 2 Technology | Open | |
 | 3 Skills | Not started | |
 | 4 Design system | Not started | |
 | 5 Plan | Not started | |
