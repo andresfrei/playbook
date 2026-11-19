@@ -6,15 +6,15 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after repeated-corrections-18.
+Updated 2026-11-19, after repeated-corrections-19.
 
-Stage 1, Wiki, is closed (repeated-corrections-16): [definition.md](definition.md) holds the problem, the cycle, the criteria, the threshold, and where the records live; [measurements.md](measurements.md) shows that findings repeat. Stage 2, Technology, is open: [technology.md](technology.md) holds five needs, three of them decided.
+Stage 1, Wiki, is closed (repeated-corrections-16): [definition.md](definition.md) holds the problem, the cycle, the criteria, the threshold, and where the records live; [measurements.md](measurements.md) shows that findings repeat. Stage 2, Technology, is open: [technology.md](technology.md) holds five needs, four of them decided.
 
-Waiting for a decision: N4, the page and the count script.
+Waiting for a decision: N5, where the playbook's general rules live.
 
 Next steps, in order:
 
-1. Decide N4 and N5.
+1. Decide N5.
 2. Write the architecture page.
 3. Close stage 2.
 
