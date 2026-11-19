@@ -37,6 +37,10 @@ The base of the criteria the subagent applies (repeated-corrections-11):
 5. A consolidated rule covers every record below it, stays concrete with an example inside, says when it applies (which files or which kind of change), and cites its source.
 6. A rule is the project's when understanding it needs the project's business; otherwise it is general.
 
+## The threshold
+
+In the sample, a threshold of 2 distinct reviews is reached by 18 kinds, 17 of them in two projects or more; 3 by 16 kinds, holding 86% of the findings; 5 by only 5 kinds. In 10 kinds, one review listed the same mistake more than once, so reviews are counted, not findings. The threshold is 3 distinct reviews, a value of the script (repeated-corrections-12). How fast a kind reaches it is not measured: the extraction kept no dates.
+
 ## The measurement
 
 Before anything is built: read a sample of about 60 findings of `review` in the transcripts on the owner's machine, from every project and date, group them by type, and count how many repeat. Only types and counts are written here: the repository is public, and the reports of other projects are private. If corrections rarely repeat, the work stops (repeated-corrections-1). Made on 2026-11-19 on a sample: findings repeat, 85% of them in types seen in two projects or more ([measurements.md](measurements.md)).
@@ -48,7 +52,7 @@ Before anything is built: read a sample of about 60 findings of `review` in the 
 | The problem and who has it | Covered |
 | Who uses it and what they do | Partly covered: who approves a consolidation (repeated-corrections-Q1) |
 | Main flows | Partly covered: the steps that query the tool (repeated-corrections-Q3) |
-| What it must do | Partly covered: the threshold N (repeated-corrections-Q2) |
+| What it must do | Covered: 3 distinct reviews, adjustable (repeated-corrections-12) |
 | What it must not do, and what waits | Partly covered: memory and lint wait (repeated-corrections-2) |
 | Qualities: a record of who did what | Covered: each rule cites what it consolidated; git keeps the deleted records (repeated-corrections-5) |
 | Limits | Covered: hooks in POSIX shell, as the plugins' hooks; skills within L2 |
