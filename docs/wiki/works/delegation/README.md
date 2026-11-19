@@ -10,12 +10,7 @@ Updated 2026-11-19, after delegation-19.
 
 The work is closed: units delegation-U1 to delegation-U6 are Done, the shared pages say what it decided, and this wiki is at format 5. Of the kinds `--delegations` proposed, close-stage is delegated (delegation-16); plan and version are not (delegation-17, delegation-18). No decision reached `main` since the work started, so the step at the merge has nothing to compare.
 
-Waiting for a decision: none.
-
-Next steps, in order:
-
-1. The owner merges the pull request into `main` (R14).
-2. After the merge, the release of 3.0.0 (delegation-19): the version in the three manifests, the tag, and the release on GitHub with how to move to format 5.
+PR #28 merged into `main` on 2026-11-19 at b67203c. Version 3.0.0 is set in the three manifests and released as `v3.0.0` (delegation-19).
 
 ## Stage table
 
