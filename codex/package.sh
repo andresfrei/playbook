@@ -23,6 +23,7 @@ for reference in "$source_doctor"/references/*.md; do
   sed 's/CLAUDE\.md/AGENTS.md/g' "$reference" > "$doctor/references/${reference##*/}"
 done
 sed 's/CLAUDE\.md/AGENTS.md/g' "$wiki/format.md" > "$plugin/format.md"
+sed 's/CLAUDE\.md/AGENTS.md/g' "$wiki/skeleton.md" > "$plugin/skeleton.md"
 sed 's| (/playbook-wiki:doctor)| (select doctor in /skills)|' \
   "$source_doctor/scripts/wiki-format.sh" > "$doctor/scripts/wiki-format.sh"
 
@@ -45,6 +46,8 @@ cp "$src/playbook-agents/plugin.json" "$agents/.codex-plugin/plugin.json"
 cp "$src/playbook-agents/hooks.json" "$agents/hooks/hooks.json"
 cp "$src/playbook-agents/session-start.py" "$source_agents/rules.md" "$agents/"
 cp -R "$source_agents/skills" "$agents/skills"
+# /playbook-agents:config sets Claude Code's agents only (setup-commands-7).
+rm -rf "$agents/skills/config"
 sed '/^context: fork$/d; /^agent: playbook-agents:review$/d; /## When to use/i\
 When invoked in the main session, delegate the change to the review agent if delegation is available. Inside review, perform the steps directly.\
 ' "$source_agents/skills/review-change/SKILL.md" > "$agents/skills/review-change/SKILL.md"

@@ -6,10 +6,12 @@ Which job each skill does, and which plugin holds it. One job, one skill (D6, F3
 
 | Job | Skill | Plugin | Loads |
 |-----|-------|--------|-------|
-| Start the product in a repository: what to use, where, and the skills that do the same job | `init`, the command `/playbook:init` (D184, D193, TD31) | `playbook` | Only when the person types it |
+| Start the product in a repository, or change what is on: what to use, where, the skills that do the same job, and a wiki where none exists | `init`, the command `/playbook:init` (D184, D193, TD31, setup-commands-1, setup-commands-5, setup-commands-6) | `playbook` | Only when the person types it (setup-commands-9) |
+| Add only a wiki's skeleton to a repository that has none, with no work | `init`, the command `/playbook-wiki:init` (setup-commands-1, setup-commands-2) | `playbook-wiki` | Only when the person types it (setup-commands-9) |
 | Prepare a project or a work before code, through the six stages | `prepare-project` (D203) | `playbook-wiki` | When a request matches its description |
 | Bring a project's wiki to the present format | `doctor` (D141, D207) | `playbook-wiki` | Only when the person types `/playbook-wiki:doctor` |
 | Write documentation, and record a changed definition | `write-docs` | `playbook-wiki` | When a request matches its description |
+| Set the model and the effort of the agents `explore`, `write`, and `review`, for one repository or every project, in Claude Code only | `config`, the command `/playbook-agents:config` (setup-commands-1, setup-commands-4, setup-commands-7) | `playbook-agents` | Only when the person types it (setup-commands-9) |
 | Keep an implementation minimal, and review a change for excess | `keep-minimal` | `playbook-agents` | When a request matches its description |
 | Review a change for defects, in a separate context on the `review` agent | `review-change` (D66, TD10) | `playbook-agents` | When a request matches its description |
 | Write and audit skills | `write-skill` | `playbook-agents` | When a request matches its description |
@@ -17,7 +19,7 @@ Which job each skill does, and which plugin holds it. One job, one skill (D6, F3
 
 When `prepare-project` closes a work in a project that has a version tag in git, it recommends whether the work needs a new version and which one, by the project's own rule or else Semantic Versioning, and asks; on a yes it records the version and lists the release steps, and makes the release only when asked (version-on-close-1, version-on-close-2, version-on-close-3, version-on-close-5).
 
-A person with `playbook-wiki` alone gets its three skills and none of `playbook-agents` (D182). `review-change` names its agent as `playbook-agents:review`.
+A person with `playbook-wiki` alone gets its four skills and none of `playbook-agents` (D182). `review-change` names its agent as `playbook-agents:review`.
 
 Jobs with no skill: executing a task and committing are rules of `playbook-agents` (D65, D66); splitting large pull requests is dropped (D66); opening a pull request and writing review comments get a skill only when a project needs one (D67); indexing skills is discarded (D52).
 

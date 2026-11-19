@@ -31,12 +31,13 @@ flowchart TD
 | `review-change` | Reviews a change, a diff, or a commit for defects before it is merged |
 | `write-skill` | Writes or audits a skill in a fixed format and within size limits |
 | `avoid-generic-design` | Keeps out the generic look AI tools give a page or an interface by default |
+| `config` | Shows and sets the model and effort of each agent, for one repository or every project. Only you start it: `/playbook-agents:config` |
 
-Claude Code takes its models and reasoning effort from [models.conf](models.conf). The [Codex guide](../../codex/README.md) lists the corresponding Codex profiles.
+The agents' default models and reasoning effort come from [models.conf](models.conf). To choose your own, run `/playbook-agents:config`: it writes your choice under `playbook.models` in your Claude Code settings, so an update of the plugin keeps it, and a hook adds it to each call of the agent. The model is an alias: `haiku`, `sonnet`, `opus`, or `fable`. The [Codex guide](../../codex/README.md) lists the corresponding Codex profiles.
 
 ## Hooks
 
-At session start the plugin loads [the working rules](rules.md). Claude Code also loads the language preference when configured. When the review agent finishes, a hook records it for the session. Before a code commit, another hook can hold the first attempt and show the changed paths so the agent can assess risk. Wiki-only commits go through the wiki plugin's check. See the [hook definitions](hooks/hooks.json).
+At session start the plugin loads [the working rules](rules.md). Claude Code also loads the language preference when configured. When the review agent finishes, a hook records it for the session. Before a code commit, another hook can hold the first attempt and show the changed paths so the agent can assess risk. Wiki-only commits go through the wiki plugin's check. Before each call of `explore`, `write`, or `review`, a hook adds the model and effort you chose with `/playbook-agents:config`; with nothing chosen, it changes nothing. See the [hook definitions](hooks/hooks.json).
 
 ## Examples
 
@@ -50,6 +51,10 @@ Write a skill that prepares the release notes of this repository.
 
 ```text
 Review the landing page in src/pages/index.tsx for a generic AI look.
+```
+
+```text
+/playbook-agents:config
 ```
 
 ## Install
