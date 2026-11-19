@@ -4,7 +4,7 @@ What this work must make true: a person with the playbook installed learns, with
 
 ## The problem
 
-Claude Code does not tell a person that a plugin from a third-party marketplace, such as this one, has a new version: automatic update is off for those marketplaces, and there is no notice. Proposed, recalled from the work `delegation` and to be verified in stage 2.
+Claude Code does not tell a person that a plugin from a third-party marketplace, such as this one, has a new version. Its documentation, read on 2026-11-19 (https://code.claude.com/docs/en/plugins/install.md, "Keep plugins updated"), says automatic update is off for "every other marketplace, including ... third-party marketplaces", and documents a message only after an update: "Plugin updated: <name> · Run /reload-plugins to apply".
 
 So a person keeps an old version without knowing. With 3.0.0, a MAJOR version that moves the wiki to format 5, this matters more: until they update and run the doctor, their agent keeps working on format 4.
 
@@ -14,13 +14,23 @@ What the playbook tells today, read in the repository on 2026-11-19:
 - When the wiki is ahead of the plugin, such as a wiki at format 5 with a plugin at format 4, it prints nothing. That case means the plugin is old, and it is known without a network.
 - No hook compares the installed version with the published one.
 
+## What the documentation says
+
+Read on 2026-11-19 in https://code.claude.com/docs/en/hooks, in part; to check against the live page in stage 2:
+
+- A SessionStart hook's plain stdout is added to Claude's context. No text says the person sees it.
+- `systemMessage`: "Warning message shown to the user"; some events discard it or show it elsewhere, "each event's section says so", and the section of SessionStart does not. Where it shows at the start of a session is not documented.
+- `hookSpecificOutput.additionalContext` adds context for Claude. Whether one output may hold it and `systemMessage` together is not documented.
+- Output is capped at 10,000 characters; SessionStart hooks should be fast, with no timeout of their own documented.
+- Not read yet: when automatic update runs (https://code.claude.com/docs/en/plugins/loading.md), which says whether the local copy of the marketplace, which version-check-2 reads, refreshes by itself.
+
 ## Who has it
 
 Every person who installed the playbook from its marketplace, and the agent that works for them.
 
 ## What it must do
 
-- Proposed: tell the person, at the start of a session, when the installed version is older than the one available, with both versions.
+- Tell the person and the agent, at the start of a session (version-check-3), when the installed version is older than the one available, with both versions.
 - Proposed: say what to run after the update, such as the doctor for a new wiki format.
 - Proposed: tell when the wiki of the project is at a newer format than the plugin, which means the plugin is old.
 
@@ -39,8 +49,8 @@ Every person who installed the playbook from its marketplace, and the agent that
 | Topic | Coverage |
 |-------|----------|
 | The problem and who has it | Covered |
-| Who uses it and what they do | Partly covered: who reads the notice (version-check-Q2) |
-| Main flows | Partly covered (version-check-Q2, version-check-Q3, version-check-Q5) |
+| Who uses it and what they do | Covered: the person reads the notice, the agent recommends what to run (version-check-3) |
+| Main flows | Partly covered (version-check-Q3, version-check-Q5) |
 | What it must do | Partly covered (version-check-Q4) |
 | What it must not do, and what waits | Covered (version-check-1, version-check-2) |
 | Qualities: speed, privacy | Covered: no delay, nothing leaves the machine (version-check-2) |
