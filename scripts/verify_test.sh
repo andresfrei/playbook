@@ -1385,12 +1385,51 @@ check "format: the hook prints nothing and exits 0 for a wiki at the playbook's 
 out=$(CLAUDE_PLUGIN_ROOT="$root/plugins/playbook-wiki" sh -c 'unset CLAUDE_PROJECT_DIR; '"$hook" 2>&1); code=$?
 check "format: the hook prints nothing and exits 0 when the session names no project" test -z "$out" -a "$code" -eq 0
 
+# A notice of a SessionStart hook is one JSON object: systemMessage for the
+# person, additionalContext for the agent.
+# notice_field <person|agent> <text>: the object has that shape, and the field
+# named holds the text.
+notice_field() {
+  printf '%s' "$out" | grep -Eq '^\{"systemMessage":"[^"]+","hookSpecificOutput":\{"hookEventName":"SessionStart","additionalContext":"[^"]+"\}\}$' || return 1
+  case $1 in
+    person) field=$(printf '%s' "$out" | sed -n 's/^{"systemMessage":"\([^"]*\)","hookSpecificOutput".*/\1/p') ;;
+    agent) field=$(printf '%s' "$out" | sed -n 's/.*"additionalContext":"\([^"]*\)"}}$/\1/p') ;;
+  esac
+  printf '%s' "$field" | grep -Fq "$2"
+}
+# startup_only <script>: hooks.json names the script once, in a SessionStart
+# group whose matcher is startup.
+startup_only() {
+  [ "$(grep -c "$1" "$root/plugins/playbook-wiki/hooks/hooks.json")" -eq 1 ] &&
+    awk -v script="$1" '
+      /"matcher":/ { pending = $0 }
+      /"hooks": \[/ { group = pending; pending = "" }
+      index($0, script) { found = (group ~ /"startup"/) }
+      END { exit !found }' "$root/plugins/playbook-wiki/hooks/hooks.json"
+}
+hook_run() { out=$(CLAUDE_PLUGIN_ROOT="$root/plugins/playbook-wiki" CLAUDE_PROJECT_DIR="$tmp/my project" sh -c "$hook" 2>&1); code=$?; }
+check "format: the plugin runs the format notice on startup only" startup_only wiki-format.sh
+rm "$tmp/my project/docs/wiki/.format"; hook_run
+check "format: the person is told the wiki has no format marker" notice_field person "This project's wiki has no format marker"
+check "format: the person is told to run the doctor" notice_field person "Run /playbook-wiki:doctor"
+check "format: the agent gets the line of status and is told not to repair unasked" notice_field agent "The wiki of this project has no format marker"
+check "format: the agent is told not to repair unasked" notice_field agent "Do not repair the wiki unasked"
+check "format: the hook exits 0 with a notice" [ "$code" -eq 0 ]
+printf '3\n' > "$tmp/my project/docs/wiki/.format"; hook_run
+check "format: the person is told both formats of a wiki behind" notice_field person "This project's wiki is at format 3, and the playbook is at $product_format."
+check "format: the agent gets the line of status for a wiki behind" notice_field agent "The wiki of this project is at wiki format 3, and the playbook is at $product_format."
+printf '%s\n' "$((product_format + 1))" > "$tmp/my project/docs/wiki/.format"; hook_run
+check "format: the person is told the playbook is older than a wiki ahead" notice_field person "newer than the playbook's $product_format: the playbook installed is older than the wiki"
+check "format: the agent is told not to mark or migrate a wiki ahead" notice_field agent "Do not mark or migrate the wiki"
+check "format: the hook's notice for a wiki ahead does not send to the doctor" sh -c '! printf "%s" "$1" | grep -Fq "doctor"' sh "$out"
+out=$(sh "$wiki_format" status "$tmp/my project/docs/wiki" 2>&1)
+check "format: status still prints nothing for a wiki ahead" test -z "$out"
+printf '%s\n' "$product_format" > "$tmp/my project/docs/wiki/.format"
+
 # The version notice: a hook at session start compares the installed version
 # with the marketplace's local copy, from files under a fake plugins folder.
 version_hook="$root/plugins/playbook-wiki/hooks/version-check.sh"
-check "version: the plugin runs the version notice on startup only" sh -c '
-  [ "$(grep -c "version-check.sh" "$1")" -eq 1 ] &&
-  awk "/\"matcher\":/ { m = \$0 } /version-check.sh/ { found = (m ~ /\"startup\"/) } END { exit !found }" "$1"' sh "$root/plugins/playbook-wiki/hooks/hooks.json"
+check "version: the plugin runs the version notice on startup only" startup_only version-check.sh
 
 # vc_layout <installed> <available>: a marketplace from Git, with each version
 # written in its manifest; an empty version writes no manifest.
@@ -1405,13 +1444,10 @@ vc_layout() {
 }
 vc_run() { out=$(CLAUDE_PLUGIN_ROOT="$vc_root" sh "$version_hook" 2>&1); code=$?; }
 vc_silent() { [ -z "$out" ] && [ "$code" -eq 0 ]; }
-vc_json() {
-  printf '%s' "$out" | grep -Eq '^\{"systemMessage":"[^"]+","hookSpecificOutput":\{"hookEventName":"SessionStart","additionalContext":"[^"]+"\}\}$'
-}
 
 vc_layout 2.6.0 3.0.0; vc_run
-check "version: an older installed version gives the notice" sh -c 'printf "%s" "$1" | grep -Fq "The playbook is at 2.6.0, and 3.0.0 is available"' sh "$out"
-check "version: the notice is one JSON object for the person and the agent" vc_json
+check "version: the person is told of an older installed version" notice_field person "The playbook is at 2.6.0, and 3.0.0 is available"
+check "version: the agent is told and asked not to update unasked" notice_field agent "Do not update a plugin unasked"
 check "version: the notice exits 0" [ "$code" -eq 0 ]
 vc_layout 2.9.9 2.10.0; vc_run
 check "version: versions compare number by number, 2.10.0 after 2.9.9" sh -c 'printf "%s" "$1" | grep -Fq "2.10.0 is available"' sh "$out"

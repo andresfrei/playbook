@@ -11,8 +11,12 @@
 # status prints nothing when there is no wiki, or when its marker is at the
 # playbook's format or above, and one line when the marker is missing or
 # behind. It always exits 0.
-# hook is status for the project of a Claude Code session, which it reads from
-# CLAUDE_PROJECT_DIR. It prints nothing when that variable is not set.
+# hook is for the project of a Claude Code session, which it reads from
+# CLAUDE_PROJECT_DIR; it prints nothing when that variable is not set. Where
+# status prints a line, it prints one JSON object: systemMessage for the person,
+# and the line of status as additionalContext for the agent. It also does so
+# when the wiki's marker is above the playbook's format, which means the
+# plugins are older than the wiki. It always exits 0.
 # mark writes the marker when the wiki has a column "Code it governs" in a
 # table of its README.md and the check of the wiki passes. It writes the marker
 # first, because the check refuses a wiki whose marker is below the playbook's
@@ -34,8 +38,7 @@ usage='Usage: sh wiki-format.sh status|mark [wiki directory], sh wiki-format.sh 
 Exit codes: 0 done; 1 the check of the wiki failed or was interrupted; 2 a wrong call; 3 the wiki is not ready to be marked; 4 a file could not be copied, written, or removed.'
 if [ "$command" = hook ]; then
   [ -n "${CLAUDE_PROJECT_DIR:-}" ] || exit 0
-  command=status
-  set -- status "$CLAUDE_PROJECT_DIR/docs/wiki"
+  set -- hook "$CLAUDE_PROJECT_DIR/docs/wiki"
 fi
 wiki=${2:-docs/wiki}
 wiki=${wiki%/}
@@ -54,7 +57,28 @@ wiki_format() {
 
 advice='Tell the owner, and recommend running the doctor skill (/playbook-wiki:doctor). Do not repair the wiki unasked.'
 
+# notice <message for the person> <context for the agent>: one JSON object for a
+# SessionStart hook. Both texts are fixed sentences with numbers, so nothing in
+# them needs escaping.
+notice() {
+  printf '{"systemMessage":"%s","hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"%s"}}\n' "$1" "$2"
+}
+
 case $command in
+  hook)
+    [ -f "$wiki/README.md" ] || exit 0
+    current=$(wiki_format)
+    if [ -z "$current" ]; then
+      notice "This project's wiki has no format marker, and the playbook is at wiki format $format. Run /playbook-wiki:doctor to bring it to that format." \
+        "The wiki of this project has no format marker, and the playbook is at wiki format $format. The person was shown this at the start of the session; recommend running the doctor skill (/playbook-wiki:doctor). Do not repair the wiki unasked."
+    elif [ "$current" -lt "$format" ]; then
+      notice "This project's wiki is at format $current, and the playbook is at $format. Run /playbook-wiki:doctor to bring it to that format." \
+        "The wiki of this project is at wiki format $current, and the playbook is at $format. The person was shown this at the start of the session; recommend running the doctor skill (/playbook-wiki:doctor). Do not repair the wiki unasked."
+    elif [ "$current" -gt "$format" ]; then
+      notice "This project's wiki is at format $current, newer than the playbook's $format: the playbook installed is older than the wiki. Update its plugins with /plugin, then start a new session." \
+        "The wiki of this project is at wiki format $current, newer than the wiki format $format of the playbook installed, so its plugins are older than the wiki. The person was shown this at the start of the session. Do not mark or migrate the wiki, and do not update a plugin unasked."
+    fi
+    exit 0 ;;
   status)
     [ -f "$wiki/README.md" ] || exit 0
     current=$(wiki_format)

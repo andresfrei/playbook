@@ -6,16 +6,16 @@
           {
             "type": "command",
             "command": "cat \"${CLAUDE_PLUGIN_ROOT}/contract.md\""
-          },
-          {
-            "type": "command",
-            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/skills/doctor/scripts/wiki-format.sh\" hook"
           }
         ]
       },
       {
         "matcher": "startup",
         "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/skills/doctor/scripts/wiki-format.sh\" hook"
+          },
           {
             "type": "command",
             "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/version-check.sh\""

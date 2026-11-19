@@ -6,16 +6,16 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after version-check-15 and version-check-U1.
+Updated 2026-11-19, after version-check-16.
 
-Stage 6, Execution, is open. Stage 1 closed with [definition.md](definition.md); stage 2 with [technology.md](technology.md); stage 3 with [skills.md](skills.md); stage 4 as not applicable; stage 5 with [plan.md](plan.md).
+Stage 6, Execution, is open. version-check-U1 and version-check-U2 are Done.
 
 Waiting for a decision: none.
 
 Next steps, in order:
 
-1. Build version-check-U2; version-check-U1 is Done.
-2. Close the work.
+1. Close the work: write the shared pages, measure and propose delegations, and recommend the version, MINOR by TD22.
+2. One pull request to `main`, which the owner merges.
 
 ## Stage table
 
