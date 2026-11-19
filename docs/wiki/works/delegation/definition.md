@@ -22,9 +22,12 @@ Three ideas the owner brought on 2026-11-19, kept as concepts:
 
 The owner's framing: a kitchen, where the chef tastes every dish, against a factory, where the standard is set once and a person appears only for exceptions. The work looks for the middle and a way to detect it.
 
+## Decided
+
+- R6 becomes: "R6. Only the owner decides, per case or by a recorded delegation. Every statement is Decided, Proposed, or Open; outside a delegation, a missing definition is asked, never invented." 28 words, 9 more than today; delegation-2 makes room (delegation-3).
+
 ## Proposed
 
-- R6 becomes: "R6. Only the owner decides, per case or by a recorded delegation. Every statement is Decided, Proposed, or Open; outside a delegation, a missing definition is asked, never invented." 28 words, 9 more than today; delegation-2 makes room (delegation-Q1).
 - A delegation is a decision like any other: recorded with the owner's words, scoped to one kind of question in one project, and revoked by a later decision.
 - Within a delegation the agent acts, records the decision citing the delegation, and tells the owner in one line.
 - A short list of decisions is never delegated (delegation-Q3).
@@ -48,7 +51,7 @@ The owner's framing: a kitchen, where the chef tastes every dish, against a fact
 | The problem and who has it | Covered |
 | Who uses it and what they do | Covered: the owner records delegations, the agent acts within them |
 | Main flows | Partly: how a delegation is proposed and revoked (delegation-Q4, delegation-Q5) |
-| What it must do | Partly: R6 and R10 texts (delegation-Q1, delegation-Q2) |
+| What it must do | Partly: R6 decided (delegation-3); R10 text (delegation-Q2) |
 | What it must not do, and what waits | Covered, except the never-delegated list (delegation-Q3) |
 | Qualities: a record of who did what | Partly: how a delegated decision is recorded (delegation-Q6) |
 | Limits | Covered: L1 and L4 of delegation-2 |

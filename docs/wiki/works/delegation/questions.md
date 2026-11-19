@@ -2,7 +2,6 @@
 
 | ID | Question | Recommendation | What it blocks |
 |----|----------|----------------|----------------|
-| delegation-Q1 | What is the new text of R6? | The text proposed in [definition.md](definition.md): "Only the owner decides, per case or by a recorded delegation ...". | Closing stage 1 |
 | delegation-Q2 | Is R10 shortened, now that a unit accepted by evidence is a delegation? | Yes: "R10. Deliver in stages; each unit is accepted by its evidence unless the plan marks it judgement." | Closing stage 1 |
 | delegation-Q3 | Which decisions are never delegated? | A new definition of the product, push and merge into the main branch, any action outside the repository or on the owner's machine, and spending beyond a written ceiling. | Closing stage 1 |
 | delegation-Q4 | How is a delegation proposed? | The agent proposes one when a kind of question in a project has at least 10 recorded answers, at least 80% accepted as is, and none rejected; the owner records it or not. | Closing stage 1 |
