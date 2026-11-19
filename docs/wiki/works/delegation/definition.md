@@ -30,10 +30,10 @@ The owner's framing: a kitchen, where the chef tastes every dish, against a fact
 - At the close of each work the agent measures how the owner answered each kind of question in the project, and proposes once a delegation for a kind with at least 10 answers, at least 80% accepted as is, and no "no" (delegation-6). The measurement of [measurements.md](measurements.md) is its first data.
 - A delegation is a row of the decisions of the work where the owner records it, scoped to one kind of question in that project, revoked by a later decision; a "yes but" or a "no" to a decision taken under it makes the agent propose revoking it (delegation-7).
 - A work's `decisions.md` gets the columns Kind and Answer, and a decision under a delegation names it in "Who decided"; this is wiki format 5, reached with the doctor (delegation-8).
+- The doctor fills Kind and Answer of rows written before format 5 with the agent that runs it, marked estimated, empty when unsure; no outside classifier (delegation-9).
 
 ## Proposed
 
-- How the doctor fills Kind and Answer in rows written before format 5: left empty, estimated by keywords as in [measurements.md](measurements.md), or once by a classifier such as TypeSafe AI's Jev, which returns typed answers with a calibrated confidence. Settled in stage 2.
 - The list of kinds starts from the six of [measurements.md](measurements.md). Settled in stage 2.
 - Read by the agent: since a work's decisions are history once it closes, the delegations in force are listed in one shared page, such as `01-product/delegations.md`, each citing the decision that made it. Settled in stage 2.
 - Within a delegation the agent acts, records the decision citing the delegation, and tells the owner in one line.
@@ -46,6 +46,7 @@ The owner's framing: a kitchen, where the chef tastes every dish, against a fact
 
 ## Later
 
+- An outside classifier for Kind and Answer, optional: TypeSafe AI's Jev with its API key, or an open model on the owner's homelab (delegation-9).
 - The orchestrator and isolated executing agents.
 - Approval by levels of risk with more than one person.
 
