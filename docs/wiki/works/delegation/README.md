@@ -10,7 +10,7 @@ Updated 2026-11-19, after delegation-10.
 
 Stage 2, Technology, is open. Stage 1 closed with [definition.md](definition.md) and [measurements.md](measurements.md).
 
-Waiting for a decision: what stage 2 settles, under Proposed in [definition.md](definition.md).
+Waiting for a decision: the choices N1 to N8 in [technology.md](technology.md).
 
 Next steps, in order:
 
@@ -34,5 +34,6 @@ Next steps, in order:
 |------|---------|-----------------|
 | [definition.md](definition.md) | The problem, where the idea comes from, the proposed rule, and the coverage of each topic | |
 | [measurements.md](measurements.md) | How the owner answered 1063 recorded decisions in nine wikis, by kind of question and by project | |
+| [technology.md](technology.md) | Needs, choices, and the architecture of the change; becomes part of `03-technology/` at the close | |
 | [decisions.md](decisions.md) | The decisions of this work | |
 | [questions.md](questions.md) | The open questions | |
