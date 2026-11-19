@@ -8,10 +8,7 @@ Status: Closed 2026-11-18.
 
 The last decision on 2026-11-18 is setup-commands-16. All six stages are closed, and the five units of the [plan](plan.md) are Done.
 
-Next steps, after the owner's merge of `feat/setup-commands` into `main`:
-
-1. Set the version `2.5.0` in the three manifests (setup-commands-16).
-2. Tag `v2.5.0` and publish the release on GitHub.
+PR #24 merged into `main` on 2026-11-18 at 95c7b4f. Version 2.5.0 is set in the three manifests and released as `v2.5.0` (setup-commands-16).
 
 | Stage | Status | Closed on |
 |-------|--------|-----------|
