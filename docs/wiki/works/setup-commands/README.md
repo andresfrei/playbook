@@ -8,7 +8,7 @@ Status: Open.
 
 The last decision on 2026-11-18 is setup-commands-14. Stage 6 (Execution) is open.
 
-Waiting for a decision: nothing; units follow [plan.md](plan.md).
+Waiting for a decision: the owner's review of setup-commands-U3, in [plan.md](plan.md).
 
 Next steps:
 
