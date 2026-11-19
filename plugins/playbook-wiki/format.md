@@ -110,7 +110,7 @@ One table: ID, date, decision, who decided, their words, shared page, kind, answ
 - Their words are verbatim. When that person chose one of the options offered, write the option chosen.
 - Shared page: the path of the shared page the decision changed, from `docs/wiki/` and as code, such as `01-product/rbac.md`; or "none". That page cites the decision.
 - Kind and Answer are the last two columns, after "Shared page". A cell may be empty.
-- Kind is what the decision was about, one of: `definition`, `technology`, `plan`, `open-work`, `close-stage`, `close-work`, `commit`, `merge-push`, `version`, `other`.
+- Kind is what the decision was about, one of: `definition`, `technology`, `plan`, `open-work`, `close-stage`, `close-work`, `commit`, `merge-push`, `version`, `consolidate`, `other`.
 - Answer is how the owner answered, one of: `as recommended`, `changed`, `rejected`, `delegated`. `delegated` means the agent decided under a delegation and did not ask.
 - Kind and Answer are written as plain text, without backticks.
 - A value may end in exactly one space and `(estimated)`: the doctor wrote it for a row from before format 5, from the decision and its words. What is left after the suffix must be one of the values: `(estimated)` alone or `plan(estimated)` fails the check.

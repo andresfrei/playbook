@@ -918,7 +918,7 @@ kind_case() {
   kind_rows 10 1 "$3" "$4"
   expect_wiki "format 5: $1" "$2" "${5:-}" "$project_wiki"
 }
-for kind in definition technology plan open-work close-stage close-work commit merge-push version other; do
+for kind in definition technology plan open-work close-stage close-work commit merge-push version consolidate other; do
   kind_case "the kind $kind is accepted" pass "$kind" "as recommended"
 done
 kind_case "an unknown kind fails and names the row and the value" fail "made-up" "as recommended" "FAIL works/auth/decisions.md: the kind of auth-10 is made-up"
@@ -1036,6 +1036,18 @@ kind_rows 50 11 definition "as recommended"
 deleg_case "delegations: each kind that qualifies has a line, in the order of the list of kinds" "definition: 11 answers, 100% as recommended, 0 rejected
 close-stage: 10 answers, 100% as recommended, 0 rejected
 commit: 10 answers, 100% as recommended, 0 rejected"
+
+fresh_works
+kind_rows 10 10 consolidate "as recommended"
+deleg_case "delegations: the kind consolidate is counted like the others" "consolidate: 10 answers, 100% as recommended, 0 rejected"
+
+fresh_works
+kind_rows 10 10 close-stage "as recommended"
+kind_rows 30 10 consolidate "as recommended"
+kind_rows 50 10 other "as recommended"
+deleg_case "delegations: consolidate comes before other in the order of the list of kinds" "close-stage: 10 answers, 100% as recommended, 0 rejected
+consolidate: 10 answers, 100% as recommended, 0 rejected
+other: 10 answers, 100% as recommended, 0 rejected"
 
 fresh_works
 kind_rows 10 10 close-stage "as recommended"
