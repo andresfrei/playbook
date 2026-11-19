@@ -93,3 +93,14 @@ Stage 3 of the work `setup-commands`: the skills used to build `/playbook-wiki:i
 | Check Claude Code's hooks, settings, and Agent tool | No skill needed: the sources of [../works/setup-commands/technology.md](../works/setup-commands/technology.md), and the `claude-code-guide` agent | When a behaviour is not documented there |
 | Read the hook and each script that writes a person's settings | `playbook-agents:review-change`, on the `review` agent (R20) | Before each such unit is delivered |
 | Write the wiki and the plugins' `README.md` | `playbook-wiki:write-docs` | At the close |
+
+## Work delivery
+
+Stage 3 of the work `work-delivery`: the skills used to change stages 5 and 6 of `prepare-project` and write two evaluation cases. The owner accepted the list (work-delivery-12). Nothing is installed or written for it.
+
+| Job in this repository | What the agent uses | When |
+|------------------------|---------------------|------|
+| Change `5-plan.md` and `6-execution.md`, and write the two cases | `playbook-agents:write-skill` | Each file written or changed |
+| Keep the step to what was decided | `playbook-agents:keep-minimal` | Each change to the step |
+| Read the change to `prepare-project`, which other projects use | `playbook-agents:review-change`, on the `review` agent (R20) | Before delivery |
+| Write the wiki | `playbook-wiki:write-docs` | At the close |

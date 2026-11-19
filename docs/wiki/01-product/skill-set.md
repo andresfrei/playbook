@@ -21,7 +21,7 @@ When `prepare-project` closes a work in a project that has a version tag in git,
 
 A person with `playbook-wiki` alone gets its four skills and none of `playbook-agents` (D182). `review-change` names its agent as `playbook-agents:review`.
 
-Jobs with no skill: executing a task and committing are rules of `playbook-agents` (D65, D66); splitting large pull requests is dropped (D66); opening a pull request and writing review comments get a skill only when a project needs one (D67); indexing skills is discarded (D52).
+Jobs with no skill: executing a task and committing are rules of `playbook-agents` (D65, D66); splitting large pull requests has no skill: stage 5 of `prepare-project` asks how each work is delivered, and a work branch with a draft tracker pull request is one of the ways it offers (work-delivery-1, work-delivery-5); opening a pull request and writing review comments get a skill only when a project needs one (D67); indexing skills is discarded (D52).
 
 ## Never in the product
 
@@ -64,7 +64,7 @@ The owner's differences with these go in the rules until phase 2.
 
 ### Phase 2 — the product takes over
 
-Every job in the second table except indexing skills, which is discarded (D52), with its own methodology layer (D28). gentle-ai is the source of concepts, not a structure to copy, and its full set of tools is not a requirement (D31). Executing a task is done by short rules in `plugin/rules.md`, not by a skill (D65). Reviewing a change is one plain skill, `review-change`, which runs in a separate context on the `review` agent (D66, TD10), and commits stay as rules R13 and R15 (D66). Splitting large pull requests is dropped (D66). Opening a pull request and writing review comments get no skill until a project needs one (D67). The full table is in [phase-2.md](phase-2.md).
+Every job in the second table except indexing skills, which is discarded (D52), with its own methodology layer (D28). gentle-ai is the source of concepts, not a structure to copy, and its full set of tools is not a requirement (D31). Executing a task is done by short rules in `plugin/rules.md`, not by a skill (D65). Reviewing a change is one plain skill, `review-change`, which runs in a separate context on the `review` agent (D66, TD10), and commits stay as rules R13 and R15 (D66). Splitting large pull requests has no skill: it was dropped (D66), and its moment of asking returned as the delivery step of stage 5 of `prepare-project`, without the size gate (work-delivery-1, D14). Opening a pull request and writing review comments get no skill until a project needs one (D67). The full table is in [phase-2.md](phase-2.md).
 
 ### Outside a phase
 
