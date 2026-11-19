@@ -10,12 +10,7 @@ Updated 2026-11-19, after version-check-17.
 
 The work is closed: version-check-U1 and version-check-U2 are Done, and the shared pages say what it decided (`03-technology/architecture.md`, `03-technology/installation.md`, `04-skills/working-skills.md`). `--delegations` printed only kinds already settled: close-stage delegated, plan and version declined. No decision reached `main` since the work started, so the step at the merge has nothing to compare.
 
-Waiting for a decision: none.
-
-Next steps, in order:
-
-1. The owner merges the pull request into `main` (R14).
-2. After the merge, the release of 3.1.0 (version-check-17): the version in the three manifests, the tag, and the release on GitHub.
+PR #30 merged into `main` on 2026-11-19 at 4fca64a. Version 3.1.0 is set in the three manifests and released as `v3.1.0` (version-check-17).
 
 ## Stage table
 
