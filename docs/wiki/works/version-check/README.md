@@ -6,15 +6,15 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after version-check-1.
+Updated 2026-11-19, after version-check-2.
 
-Stage 1, Wiki, is open. [definition.md](definition.md) holds the problem and what exists today; five questions are open in [questions.md](questions.md).
+Stage 1, Wiki, is open. [definition.md](definition.md) holds the problem and what exists today; four questions are open in [questions.md](questions.md).
 
-Waiting for a decision: version-check-Q1, where the published version comes from.
+Waiting for a decision: version-check-Q2, who reads the notice.
 
 Next steps, in order:
 
-1. Answer version-check-Q1 to version-check-Q5.
+1. Answer version-check-Q2 to version-check-Q5.
 2. Close stage 1.
 
 ## Stage table

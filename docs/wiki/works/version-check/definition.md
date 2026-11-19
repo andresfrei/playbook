@@ -28,7 +28,7 @@ Every person who installed the playbook from its marketplace, and the agent that
 
 - Update a plugin or a marketplace by itself (version-check-1).
 - Stop or noticeably delay the start of a session; on any failure it prints nothing.
-- Proposed: connect to a network (version-check-Q1).
+- Connect to a network: it reads only the local copy of the marketplace and the wiki's format marker, so a version not yet in the local copy is not seen (version-check-2).
 
 ## Later
 
@@ -42,10 +42,10 @@ Every person who installed the playbook from its marketplace, and the agent that
 | Who uses it and what they do | Partly covered: who reads the notice (version-check-Q2) |
 | Main flows | Partly covered (version-check-Q2, version-check-Q3, version-check-Q5) |
 | What it must do | Partly covered (version-check-Q4) |
-| What it must not do, and what waits | Partly covered (version-check-Q1) |
-| Qualities: speed, privacy | Partly covered: no delay; privacy depends on version-check-Q1 |
+| What it must not do, and what waits | Covered (version-check-1, version-check-2) |
+| Qualities: speed, privacy | Covered: no delay, nothing leaves the machine (version-check-2) |
 | Limits | Covered: hooks run `sh`, `sed`, `awk`, and `git` only, as the README of `playbook-wiki` says |
-| Outside systems | Partly covered: GitHub only if version-check-Q1 allows it |
+| Outside systems | Does not apply: no network (version-check-2) |
 | Volume | Does not apply |
 | Who runs and maintains it | Covered: each person on their machine |
 | Business rules, states, vocabulary | Covered: versions by TD22, wiki formats by `format.md` |
