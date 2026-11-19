@@ -25,6 +25,7 @@ The owner's framing: a kitchen, where the chef tastes every dish, against a fact
 ## Decided
 
 - R6 becomes: "R6. Only the owner decides, per case or by a recorded delegation. Every statement is Decided, Proposed, or Open; outside a delegation, a missing definition is asked, never invented." 28 words, 9 more than today; delegation-2 makes room (delegation-3).
+- R10 becomes: "R10. Deliver in stages; each unit is accepted by its evidence unless the plan marks it judgement." (delegation-4).
 
 ## Proposed
 
@@ -32,7 +33,6 @@ The owner's framing: a kitchen, where the chef tastes every dish, against a fact
 - Within a delegation the agent acts, records the decision citing the delegation, and tells the owner in one line.
 - A short list of decisions is never delegated (delegation-Q3).
 - A decision memory proposes delegations from how the owner answered: the measurement of [measurements.md](measurements.md) is its first data (delegation-Q4).
-- R10 is shortened, since a unit accepted by evidence is a delegation (delegation-Q2).
 
 ## What the work must not do
 
@@ -51,7 +51,7 @@ The owner's framing: a kitchen, where the chef tastes every dish, against a fact
 | The problem and who has it | Covered |
 | Who uses it and what they do | Covered: the owner records delegations, the agent acts within them |
 | Main flows | Partly: how a delegation is proposed and revoked (delegation-Q4, delegation-Q5) |
-| What it must do | Partly: R6 decided (delegation-3); R10 text (delegation-Q2) |
+| What it must do | Covered: R6 and R10 (delegation-3, delegation-4) |
 | What it must not do, and what waits | Covered, except the never-delegated list (delegation-Q3) |
 | Qualities: a record of who did what | Partly: how a delegated decision is recorded (delegation-Q6) |
 | Limits | Covered: L1 and L4 of delegation-2 |

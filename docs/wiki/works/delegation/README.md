@@ -6,15 +6,15 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after delegation-3.
+Updated 2026-11-19, after delegation-4.
 
 Stage 1, Wiki, is open. The problem and its measurement are written: [definition.md](definition.md), [measurements.md](measurements.md).
 
-Waiting for a decision: the questions in [questions.md](questions.md), first delegation-Q2, the text of R10.
+Waiting for a decision: the questions in [questions.md](questions.md), first delegation-Q3, what is never delegated.
 
 Next steps, in order:
 
-1. Answer delegation-Q2 to delegation-Q6.
+1. Answer delegation-Q3 to delegation-Q6.
 2. Write the answers in [definition.md](definition.md).
 3. Close stage 1.
 
