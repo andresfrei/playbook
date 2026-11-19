@@ -44,6 +44,7 @@ The transcripts of Claude Code under `~/.claude/projects/` or `$CLAUDE_CONFIG_DI
 |------|-----------------|
 | The transcript shape changes | Tests on lines of the real shape; an empty list says so instead of seeding nothing silently |
 | A review seeded twice | The identifier is the call's date and time; the preview marks reviews already in the page |
+| A review resumed after its session restarted: its notice of the end carries no call identifier, so it is not listed | Known limit, seen on 2026-11-19; its findings, when stored live, are on the page already |
 | A stale finding | The person leaves it out in the preview |
 | Private text reaches a public repository | The page is in the repository where the command runs; `classify` writes one general line per finding |
 

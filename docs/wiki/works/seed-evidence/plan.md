@@ -7,7 +7,7 @@ The units that build [architecture.md](architecture.md), in order.
 | Unit | Status | Evidence | Done on | Owner's words |
 |------|--------|----------|---------|---------------|
 | seed-evidence-U1 | Done | `seed-reviews.sh` with its cases in `scripts/verify_test.sh`, each new case seen to fail with its behaviour broken; on the owner's transcripts, `list` gives the 35 reviews of [measurements.md](measurements.md) plus one made later. Two reviews: nine findings, fixed, stored by `classify` in [../../evidence.md](../../evidence.md) | 2026-11-19 | |
-| seed-evidence-U2 | Not started | | | |
+| seed-evidence-U2 | Done | The skill `seed-evidence` within L2 (L4 unchanged at 620), with three evaluation cases; a real run in this worktree listed 36 reviews and seeded 33 into [../../evidence.md](../../evidence.md): 188 rows, 78 kinds, 15 ready to consolidate, 6.39 dollars. It showed that `classify` dated rows with today, fixed: the skill gives the review's date | 2026-11-19 | Asked "¿Aceptás U2?"; answered "si" |
 
 ## Units
 

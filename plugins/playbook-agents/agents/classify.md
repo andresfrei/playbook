@@ -34,7 +34,7 @@ In what follows `<root>` is that root, `<script>` is `${CLAUDE_PLUGIN_ROOT}/evid
    - Yes for a kind of the page: use that kind, at its current level in Kinds.
    - Yes for a kind of `evidence-rules.md` that the page lacks: add that kind to Kinds at the same level, with its rule copied, Source `evidence-rules.md`, and Scope `general`; then use it at that level.
    - No for every kind: create a kind at level 1, with Rule, Applies when, Source (the review identifier), and Scope filled. Scope is `project` when understanding the rule needs the project's business, otherwise `general`.
-4. Append one row to Evidence per finding: Kind, Level, Review (the identifier given), Date (today, `YYYY-MM-DD`), Finding.
+4. Append one row to Evidence per finding: Kind, Level, Review (the identifier given), Date (the review's date when given, else today, `YYYY-MM-DD`), Finding.
 5. Run `check` again; when it fails, fix your rows. Then run `sh "<script>" count "<root>/docs/wiki"`.
 
 ## Format

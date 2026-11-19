@@ -14,7 +14,7 @@ Waiting for a decision: none.
 
 Next steps, in order:
 
-1. Build seed-evidence-U2, accepted by the owner's judgement.
+1. Close the work: the shared pages, the consolidation of the kinds ready, and the version.
 
 ## Stage table
 
