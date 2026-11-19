@@ -6,17 +6,16 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after delegation-7.
+Updated 2026-11-19, after delegation-8.
 
 Stage 1, Wiki, is open. The problem and its measurement are written: [definition.md](definition.md), [measurements.md](measurements.md).
 
-Waiting for a decision: the questions in [questions.md](questions.md), delegation-Q6, how a decision taken under a delegation is recorded.
+Waiting for a decision: closing stage 1. No question is open; what stage 2 settles is under Proposed in [definition.md](definition.md).
 
 Next steps, in order:
 
-1. Answer delegation-Q6.
-2. Write the answers in [definition.md](definition.md).
-3. Close stage 1.
+1. Close stage 1.
+2. Stage 2: the measurement script, the page of delegations in force, format 5 and the doctor.
 
 ## Stage table
 

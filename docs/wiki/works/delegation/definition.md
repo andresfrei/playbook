@@ -29,9 +29,12 @@ The owner's framing: a kitchen, where the chef tastes every dish, against a fact
 - Never delegated: a new definition of the product; push and merge into the main branch; any action outside the repository or on the owner's machine; spending beyond a written ceiling (delegation-5).
 - At the close of each work the agent measures how the owner answered each kind of question in the project, and proposes once a delegation for a kind with at least 10 answers, at least 80% accepted as is, and no "no" (delegation-6). The measurement of [measurements.md](measurements.md) is its first data.
 - A delegation is a row of the decisions of the work where the owner records it, scoped to one kind of question in that project, revoked by a later decision; a "yes but" or a "no" to a decision taken under it makes the agent propose revoking it (delegation-7).
+- A work's `decisions.md` gets the columns Kind and Answer, and a decision under a delegation names it in "Who decided"; this is wiki format 5, reached with the doctor (delegation-8).
 
 ## Proposed
 
+- How the doctor fills Kind and Answer in rows written before format 5: left empty, estimated by keywords as in [measurements.md](measurements.md), or once by a classifier such as TypeSafe AI's Jev, which returns typed answers with a calibrated confidence. Settled in stage 2.
+- The list of kinds starts from the six of [measurements.md](measurements.md). Settled in stage 2.
 - Read by the agent: since a work's decisions are history once it closes, the delegations in force are listed in one shared page, such as `01-product/delegations.md`, each citing the decision that made it. Settled in stage 2.
 - Within a delegation the agent acts, records the decision citing the delegation, and tells the owner in one line.
 - How the measurement runs at each close: a shell script of `playbook-wiki` counts the rows of the project's `decisions.md` by kind and by answer, and prints only the kinds that qualify; the agent reads that output and proposes. The agent does not read the rows itself. Settled in stage 2.
@@ -55,9 +58,9 @@ The owner's framing: a kitchen, where the chef tastes every dish, against a fact
 | Main flows | Covered: proposed (delegation-6), kept and revoked (delegation-7) |
 | What it must do | Covered: R6 and R10 (delegation-3, delegation-4) |
 | What it must not do, and what waits | Covered (delegation-5) |
-| Qualities: a record of who did what | Partly: how a delegated decision is recorded (delegation-Q6) |
+| Qualities: a record of who did what | Covered (delegation-8) |
 | Limits | Covered: L1 and L4 of delegation-2 |
 | Outside systems | Does not apply |
 | Volume | Does not apply |
 | Who runs and maintains it | Covered: the owner of each project |
-| Business rules, states, vocabulary | Partly: "delegation" enters the glossary at the close |
+| Business rules, states, vocabulary | Covered: the kinds and answers of delegation-8; "delegation" enters the glossary at the close |
