@@ -6,15 +6,15 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after seed-evidence-1.
+Updated 2026-11-19, after seed-evidence-2.
 
-Stage 1, Wiki, is open. [definition.md](definition.md) holds the problem; four questions are open in [questions.md](questions.md); [measurements.md](measurements.md) counts the past reviews.
+Stage 1, Wiki, is open. [definition.md](definition.md) holds the problem; three questions are open in [questions.md](questions.md); [measurements.md](measurements.md) counts the past reviews.
 
-Waiting for a decision: seed-evidence-Q1, how the tool is started.
+Waiting for a decision: seed-evidence-Q2, the preview before writing.
 
 Next steps, in order:
 
-1. Answer seed-evidence-Q1 to seed-evidence-Q4.
+1. Answer seed-evidence-Q2 to seed-evidence-Q4.
 2. Close stage 1.
 
 ## Stage table

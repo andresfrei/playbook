@@ -22,7 +22,7 @@ A person with the playbook who has reviewed changes in a repository before insta
 | Topic | Coverage |
 |-------|----------|
 | The problem and who has it | Covered |
-| Who uses it and what they do | Open: how the tool is started (seed-evidence-Q1) |
+| Who uses it and what they do | Covered: a command the person starts in each repository (seed-evidence-2) |
 | Main flows | Open: preview before writing (seed-evidence-Q2) |
 | What it must do | Open: which reviews it takes (seed-evidence-Q3) |
 | What it must not do, and what waits | Partly covered: it writes only the evidence page of the repository where it runs |
