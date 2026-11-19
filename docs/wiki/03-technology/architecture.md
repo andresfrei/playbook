@@ -21,7 +21,7 @@ Three kinds of content, split by when each one loads (D65):
 |-------|---------|
 | In every session | The contract and the rules, printed by hooks |
 | When a job needs it | Skills |
-| When work is delegated | Agents, each with a fixed model and effort (TD7, TD8) |
+| When work goes to a subagent | Agents, each with a fixed model and effort (TD7, TD8) |
 
 ## Modules
 

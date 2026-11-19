@@ -32,10 +32,10 @@ sequenceDiagram
   You->>CC: a request
   CC->>Wiki: read README.md, then the page that governs the code to change
   opt a new project, phase, or feature
-    CC->>W: prepare-project, six stages, each closed by you
+    CC->>W: prepare-project, six stages, each closed by you or by a delegation
     W->>Wiki: the work's decisions, questions, and plan, under works/
   end
-  opt work is delegated
+  opt work goes to a subagent
     CC->>A: the agent explore, write, or review
     CC->>W: a subagent starts
     W-->>CC: the contract, for the subagent
