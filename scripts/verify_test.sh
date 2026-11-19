@@ -9,6 +9,8 @@
 # be expanded by the shell.
 # shellcheck disable=SC2016
 set -u
+# No case reads or writes the settings of the person running the tests.
+unset CLAUDE_CONFIG_DIR CLAUDE_PROJECT_DIR
 
 root=$(cd "$(dirname "$0")/.." && pwd)
 tmp=$(mktemp -d)
@@ -1712,7 +1714,7 @@ FAKE
 # init_run <arguments of init.sh>: runs it in the repository with the stand-in.
 # Sets init_out and init_code.
 init_run() {
-  init_out=$(cd "$tmp/init/repo" && HOME="$tmp/init/home" FAKE_LOG="$tmp/init/log" \
+  init_out=$(cd "$tmp/init/repo" && env -u CLAUDE_PROJECT_DIR HOME="$tmp/init/home" FAKE_LOG="$tmp/init/log" \
     FAKE_STATE="$tmp/init/state" PATH="$tmp/init/bin:$PATH" sh "$init_script" "$@" 2>&1)
   init_code=$?
 }
@@ -2035,6 +2037,61 @@ rm -rf "$tmp/init/repo/.claude"
 FAKE_MARKET=$tmp/init/empty init_run skills wiki
 init_ok "init: skills prints none for each empty group" \
   "$(printf '%s\n' "$init_out" | grep -c '^  none$' | grep -qx 4 && echo true || echo false)"
+
+# Keep both, and the wiki (setup-commands-5, setup-commands-6, setup-commands-8).
+init_fresh_skills
+mkdir -p "$tmp/init/repo/.claude"
+printf '{"playbook":{"keepBoth":["tools:lint-it"]}}\n' > "$tmp/init/repo/.claude/settings.local.json"
+printf '{\n  "playbook": {\n    "keepBoth": [\n      "my-review"\n    ]\n  }\n}\n' > "$tmp/init/home/.claude/settings.json"
+FAKE_MARKET=$m init_run skills wiki
+init_has "init: skills marks a skill of another plugin kept in this repository" "  tools:lint-it (kept) — Lint the code."
+init_has "init: skills marks a skill of the person kept for every project" "  my-review (kept) — Review my diff."
+init_has "init: skills does not mark a skill that was not kept" "  docs-lite — Write the docs of this project."
+init_has "init: skills prints where the skeleton of a wiki is" "The skeleton of a wiki: $m/plugins/playbook-wiki/skeleton.md"
+
+init_fresh
+init_run keep local my-review
+init_ok "init: keep creates the repository's settings file" \
+  "$([ "$init_code" -eq 0 ] && [ "$(cat "$r/.claude/settings.local.json")" = '{"playbook": {"keepBoth": ["my-review"]}}' ] && echo true || echo false)"
+init_run keep local tools:lint-it
+init_run keep local my-review
+init_ok "init: keep adds a second name first and a name only once" \
+  "$([ "$(cat "$r/.claude/settings.local.json")" = '{"playbook": {"keepBoth": ["tools:lint-it","my-review"]}}' ] && echo true || echo false)"
+mkdir -p "$r/sub"
+init_out=$(cd "$r/sub" && HOME="$tmp/init/home" CLAUDE_PROJECT_DIR="$r" PATH="$tmp/init/bin:$PATH" sh "$init_script" keep local other 2>&1); init_code=$?
+init_ok "init: keep local from a subfolder writes the project's file" \
+  "$([ "$init_code" -eq 0 ] && [ ! -e "$r/sub/.claude" ] && grep -q '"other"' "$r/.claude/settings.local.json" && echo true || echo false)"
+printf '{\n  "theme": "dark",\n  "playbook": {"models": {"review": "opus"}},\n  "skillOverrides": {"x": "off"}\n}\n' > "$tmp/init/home/.claude/settings.json"
+init_run keep user my-review
+init_ok "init: keep user keeps every other key, in place" \
+  "$([ "$(cat "$tmp/init/home/.claude/settings.json")" = "$(printf '{\n  "theme": "dark",\n  "playbook": {"keepBoth": ["my-review"],"models": {"review": "opus"}},\n  "skillOverrides": {"x": "off"}\n}')" ] && echo true || echo false)"
+printf '{"playbook":{"keepBoth":[{"o":1}]}}\n' > "$tmp/init/home/.claude/settings.json"
+init_run keep user z
+init_ok "init: keep adds a comma before an element that is not a string" \
+  "$([ "$(cat "$tmp/init/home/.claude/settings.json")" = '{"playbook":{"keepBoth":["z",{"o":1}]}}' ] && echo true || echo false)"
+for text in '[1]' '{"playbook":"x"}' '{"playbook":{"keepBoth":"x"}}' '{"a":1' '{"a":1}x' '{"a":1,}' '{"a":1]' '{"a":[1}}' '{,"a":1}' '{"a":1,,"b":2}'; do
+  printf '%s\n' "$text" > "$tmp/init/home/.claude/settings.json"
+  init_run keep user z
+  init_ok "init: keep leaves $text unchanged and exits 3" \
+    "$([ "$init_code" -eq 3 ] && [ "$(cat "$tmp/init/home/.claude/settings.json")" = "$text" ] && echo true || echo false)"
+done
+init_run keep user 'a"b'
+init_ok "init: keep refuses a name with a quote" "$([ "$init_code" -eq 2 ] && echo true || echo false)"
+init_run keep elsewhere z
+init_ok "init: keep refuses a scope that does not exist" "$([ "$init_code" -eq 2 ] && echo true || echo false)"
+init_log_is "init: keep runs no claude command" ""
+
+init_fresh
+init_run scan
+init_has "init: scan says the repository has no wiki" "Wiki of this repository: missing"
+FAKE_MARKET=$tmp/init/market init_run scan
+init_has "init: scan names the skeleton when the repository has no wiki" "The skeleton of a wiki: $tmp/init/market/plugins/playbook-wiki/skeleton.md"
+mkdir -p "$r/docs/wiki"
+printf '# Wiki\n' > "$r/docs/wiki/README.md"
+FAKE_MARKET=$tmp/init/market init_run scan
+init_has "init: scan names the wiki the repository has" "Wiki of this repository: $r/docs/wiki/README.md"
+init_ok "init: scan names no skeleton when the repository has a wiki" \
+  "$(printf '%s\n' "$init_out" | grep -q 'skeleton' && echo false || echo true)"
 
 init_fresh
 init_run skills wiki
@@ -2470,7 +2527,7 @@ out=$(cd "$tmp/cf/proj/src" && CLAUDE_PROJECT_DIR="$tmp/cf/proj" CLAUDE_CONFIG_D
 check "config: set local from a subfolder writes the project's file" \
   [ "$code" -eq 0 -a -f "$cf_local" -a ! -e "$tmp/cf/proj/src/.claude" ]
 rm -f "$cf_local"
-for text in '[1]' '{"playbook":["x"]}' '{"playbook":{"models":"x"}}' '{"playbook":{"models":{"write":3}}}' '{"a": {"b": 1}' '{"a":1}garbage' '{"a":1}}' '{"a":1} {"b":2}'; do
+for text in '[1]' '{"playbook":["x"]}' '{"playbook":{"models":"x"}}' '{"playbook":{"models":{"write":3}}}' '{"a": {"b": 1}' '{"a":1}garbage' '{"a":1}}' '{"a":1} {"b":2}' '{"a":1,}' '{"a":1]' '{"a":[1}}' '{"a":[1,]}' '{,"a":1}' '{"a":}'; do
   printf '%s\n' "$text" > "$cf_user"
   cf_run set user write opus
   check "config: set leaves $text unchanged and exits 3" [ "$code" -eq 3 -a "$(cat "$cf_user")" = "$text" ]

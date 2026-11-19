@@ -1,6 +1,6 @@
 # The skeleton of a wiki
 
-The steps that write a wiki's skeleton in a repository that has none (setup-commands-2, setup-commands-3). `/playbook-wiki:init` and `prepare-project`, for a new project, both do them. `<plugin>` is the folder of `playbook-wiki`, two levels above the folder of the skill that reads this file. Run each command from the project's root.
+The steps that write a wiki's skeleton in a repository that has none (setup-commands-2, setup-commands-3). `/playbook-wiki:init` and `prepare-project`, for a new project, both do them. `<plugin>` is the folder of `playbook-wiki`, the folder that holds this file. Run each command from the project's root.
 
 Ask one question at a time, with a recommendation, using AskUserQuestion when available. Ask only what the person's message does not already say.
 

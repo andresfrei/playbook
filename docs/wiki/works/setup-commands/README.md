@@ -8,11 +8,11 @@ Status: Open.
 
 The last decision on 2026-11-18 is setup-commands-14. Stage 6 (Execution) is open.
 
-Waiting for a decision: the owner's review of setup-commands-U3, in [plan.md](plan.md).
+Waiting for a decision: the owner's review of setup-commands-U4 and its open point, in [plan.md](plan.md).
 
 Next steps:
 
-1. Build setup-commands-U3 to setup-commands-U5 in order; setup-commands-U1 and setup-commands-U2 are Done.
+1. Build setup-commands-U4 and setup-commands-U5 in order; setup-commands-U1 to setup-commands-U3 are Done.
 
 At the close of the work, setup-commands-2 changes `01-product/skill-set.md` and the `prepare-project` reference `1-wiki.md`.
 

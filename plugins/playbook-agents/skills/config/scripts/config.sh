@@ -107,21 +107,26 @@ json_set() {
         c = substr(text, p, 1)
         if (c ~ /[ \t\n\r]/) { p++; continue }
         if (done) exit 3
-        if (c == ",") { if (type[depth] == "o") expect[depth] = 1; p++; continue }
-        if (c == ":") { p++; continue }
+        if (c == ",") { if (prev != "value" || depth == 0) exit 3; prev = "comma"; if (type[depth] == "o") expect[depth] = 1; p++; continue }
+        if (c == ":") { prev = "colon"; p++; continue }
+        if ((c == "}" || c == "]") && (prev == "comma" || prev == "colon")) exit 3
         if (c == "{" || c == "[") {
           at = path_at(depth)
           if (!(at in kind)) kind[at] = (c == "{" ? "o" : "a")
           if (c == "{") { open[at] = p; empty[at] = 1 }
           depth++; type[depth] = (c == "{" ? "o" : "a"); expect[depth] = (c == "{"); key[depth] = (c == "{" ? "" : "#")
-          p++; continue
+          prev = "open"; p++; continue
         }
-        if (c == "}" || c == "]") { depth--; if (depth < 0) exit 3; if (depth == 0) done = 1; p++; continue }
+        if (c == "}" || c == "]") {
+          if (depth == 0 || type[depth] != (c == "}" ? "o" : "a")) exit 3
+          depth--; if (depth == 0) done = 1; prev = "value"; p++; continue
+        }
         if (c == "\"") {
           q = p
           if (!readstr(p + 1)) exit 3
           p = pos
-          if (type[depth] == "o" && expect[depth]) { key[depth] = str; expect[depth] = 0; empty[path_at(depth - 1)] = 0; continue }
+          if (type[depth] == "o" && expect[depth]) { key[depth] = str; expect[depth] = 0; empty[path_at(depth - 1)] = 0; prev = "key"; continue }
+          prev = "value"
           at = path_at(depth)
           if (!(at in kind)) kind[at] = "s"
           if (at == want && !found) { found = 1; from = q; to = p }
@@ -129,6 +134,7 @@ json_set() {
         }
         q = p
         while (p <= n && substr(text, p, 1) !~ /[,}\] \t\n\r]/) p++
+        prev = "value"
         at = path_at(depth)
         if (!(at in kind)) kind[at] = "l"
       }
