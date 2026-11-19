@@ -1,6 +1,6 @@
 # Plan of delegation
 
-Stage 5. It builds what [definition.md](definition.md) and [technology.md](technology.md) decide. Proposed: waits for the owner's acceptance.
+Stage 5. It builds what [definition.md](definition.md) and [technology.md](technology.md) decide. Accepted (delegation-15).
 
 ## Progress
 
@@ -28,7 +28,7 @@ The agent `review` reads U1 to U5 before delivery: the contract, the format, the
 
 ## How a unit is delivered
 
-Proposed, from this repository's history (`git log --merges --first-parent main`: each work reaches `main` by one pull request from its own branch, as `feat/work-delivery` in #26) and its only long-lived branch, `main`, which is production:
+Decided (delegation-15), from this repository's history (`git log --merges --first-parent main`: each work reaches `main` by one pull request from its own branch, as `feat/work-delivery` in #26) and its only long-lived branch, `main`, which is production:
 
 - The work is tested nowhere apart: the checks of each unit, and U6, which runs the doctor on this repository's wiki.
 - The units are built in order, one at a time, on this work's branch. U3 reads the format of U2; U4, U5, and U6 read U2 and U3.
