@@ -18,7 +18,7 @@ The units that build [architecture.md](architecture.md), in order.
 
 ## How the work is delivered
 
-As in the works before it (repeated-corrections-25), from this repository's history and its only long-lived branch, `main`, which is production:
+Decided (seed-evidence-10), as in the works before it (repeated-corrections-25), from this repository's history and its only long-lived branch, `main`, which is production:
 
 - Tested by the checks of each unit and the real run of U2.
 - The units are built in order on this work's branch, renamed `feat/seed-evidence`.

@@ -6,16 +6,16 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after seed-evidence-9.
+Updated 2026-11-19, after seed-evidence-13.
 
-Stages 1 and 2 are closed (seed-evidence-6, -9). Stage 3, Skills, is open: [skills.md](skills.md) lists the working skills, and [plan.md](plan.md) is drafted; the owner's acceptance of both is asked.
+Stages 1 to 5 are closed (seed-evidence-6, -9, -11, -12, -13). Stage 6, Execution, is open: the units of [plan.md](plan.md) are built in order.
 
-Waiting for a decision: the owner's acceptance of the skills and the plan.
+Waiting for a decision: none.
 
 Next steps, in order:
 
-1. The owner accepts the skills and the plan.
-2. Close stages 3 to 5.
+1. Build seed-evidence-U1.
+2. Build seed-evidence-U2, accepted by the owner's judgement.
 
 ## Stage table
 
@@ -23,10 +23,10 @@ Next steps, in order:
 |-------|--------|-----------|
 | 1 Wiki | Closed | 2026-11-19 |
 | 2 Technology | Closed | 2026-11-19 |
-| 3 Skills | Open | |
-| 4 Design system | Not started | |
-| 5 Plan | Not started | |
-| 6 Execution | Not started | |
+| 3 Skills | Closed | 2026-11-19 |
+| 4 Design system | Closed, not applicable | 2026-11-19 |
+| 5 Plan | Closed | 2026-11-19 |
+| 6 Execution | Open | |
 
 ## Pages
 
