@@ -22,7 +22,7 @@ Read on 2026-11-19 in https://code.claude.com/docs/en/hooks, in part; to check a
 - `systemMessage`: "Warning message shown to the user"; some events discard it or show it elsewhere, "each event's section says so", and the section of SessionStart does not. Where it shows at the start of a session is not documented.
 - `hookSpecificOutput.additionalContext` adds context for Claude. Whether one output may hold it and `systemMessage` together is not documented.
 - Output is capped at 10,000 characters; SessionStart hooks should be fast, with no timeout of their own documented.
-- Not read yet: when automatic update runs (https://code.claude.com/docs/en/plugins/loading.md), which says whether the local copy of the marketplace, which version-check-2 reads, refreshes by itself.
+- https://code.claude.com/docs/en/plugins/loading.md, "When auto-update runs": only marketplaces with automatic update on are refreshed, after the first message. Otherwise the local copy changes on `claude plugin marketplace update` or on an install or update named `name@marketplace`.
 
 ## Who has it
 
@@ -32,7 +32,8 @@ Every person who installed the playbook from its marketplace, and the agent that
 
 - Tell the person and the agent, at the start of a session (version-check-3), when the installed version is older than the one available, with both versions: in one line, every session while they differ, storing nothing (version-check-4).
 - After the update, check whether the wiki needs the doctor: compare the wiki's format with the plugin's and, when the wiki is behind, recommend the doctor to the person and to the agent. No list of steps per version (version-check-5).
-- Proposed: tell when the wiki of the project is at a newer format than the plugin, which means the plugin is old.
+- Tell when the wiki of the project is at a newer format than the plugin, which means the plugin is old, such as when a teammate updated and moved the wiki (version-check-8).
+- What it can see without a network: a person who installed from GitHub and never refreshes the marketplace is not told of a new version, since Claude Code refreshes a marketplace with automatic update off only when the person asks (version-check-8).
 
 ## What it must not do
 
@@ -42,6 +43,7 @@ Every person who installed the playbook from its marketplace, and the agent that
 
 ## Later
 
+- A check against GitHub, off unless the person turns it on (version-check-8).
 - A notice for Codex: its installer is a separate route (codex-support-8).
 
 ## Coverage of the topics
