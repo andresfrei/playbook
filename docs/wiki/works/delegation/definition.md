@@ -49,6 +49,7 @@ The owner's framing: a kitchen, where the chef tastes every dish, against a fact
 - An outside classifier for Kind and Answer, optional: TypeSafe AI's Jev with its API key, or an open model on the owner's homelab (delegation-9).
 - The orchestrator and isolated executing agents.
 - Approval by levels of risk with more than one person.
+- Outside this work, as the work `version-check`: at session start, tell the person, not only the agent, which version of each plugin is installed and which is published, and what to run first, such as the doctor for format 5; never update by itself. The owner chose a separate work on 2026-11-19: "si, work aparte".
 
 ## Coverage of the topics
 
