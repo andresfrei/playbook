@@ -27,12 +27,13 @@ The owner's framing: a kitchen, where the chef tastes every dish, against a fact
 - R6 becomes: "R6. Only the owner decides, per case or by a recorded delegation. Every statement is Decided, Proposed, or Open; outside a delegation, a missing definition is asked, never invented." 28 words, 9 more than today; delegation-2 makes room (delegation-3).
 - R10 becomes: "R10. Deliver in stages; each unit is accepted by its evidence unless the plan marks it judgement." (delegation-4).
 - Never delegated: a new definition of the product; push and merge into the main branch; any action outside the repository or on the owner's machine; spending beyond a written ceiling (delegation-5).
+- At the close of each work the agent measures how the owner answered each kind of question in the project, and proposes once a delegation for a kind with at least 10 answers, at least 80% accepted as is, and no "no" (delegation-6). The measurement of [measurements.md](measurements.md) is its first data.
 
 ## Proposed
 
 - A delegation is a decision like any other: recorded with the owner's words, scoped to one kind of question in one project, and revoked by a later decision.
 - Within a delegation the agent acts, records the decision citing the delegation, and tells the owner in one line.
-- A decision memory proposes delegations from how the owner answered: the measurement of [measurements.md](measurements.md) is its first data (delegation-Q4).
+- How the measurement runs at each close: a shell script of `playbook-wiki` counts the rows of the project's `decisions.md` by kind and by answer, and prints only the kinds that qualify; the agent reads that output and proposes. The agent does not read the rows itself. Settled in stage 2.
 
 ## What the work must not do
 
@@ -50,7 +51,7 @@ The owner's framing: a kitchen, where the chef tastes every dish, against a fact
 |-------|----------|
 | The problem and who has it | Covered |
 | Who uses it and what they do | Covered: the owner records delegations, the agent acts within them |
-| Main flows | Partly: how a delegation is proposed and revoked (delegation-Q4, delegation-Q5) |
+| Main flows | Partly: proposed (delegation-6); revoked (delegation-Q5) |
 | What it must do | Covered: R6 and R10 (delegation-3, delegation-4) |
 | What it must not do, and what waits | Covered (delegation-5) |
 | Qualities: a record of who did what | Partly: how a delegated decision is recorded (delegation-Q6) |
