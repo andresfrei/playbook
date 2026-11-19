@@ -149,12 +149,26 @@ esac
 # The hooks of playbook-agents that hold a commit until review has read it
 # (review-trigger-7): a mark when review stops, the hold before a git commit.
 agents_hooks="$agents_plugin/hooks/hooks.json"
+agents_start=$(awk '/"SubagentStart"/ { inside = 1 }
+                    /"SessionStart"|"SubagentStop"|"PreToolUse"/ { inside = 0 }
+                    inside' "$agents_hooks" 2>/dev/null)
 agents_stop=$(awk '/"SubagentStop"/ { inside = 1 }
                    /"SessionStart"|"PreToolUse"/ { inside = 0 }
                    inside' "$agents_hooks" 2>/dev/null)
 agents_pre=$(awk '/"PreToolUse"/ { inside = 1 }
                   /"SessionStart"|"SubagentStop"/ { inside = 0 }
                   inside' "$agents_hooks" 2>/dev/null)
+# The rules of the evidence, given to write and review when they start
+# (repeated-corrections-18).
+# shellcheck disable=SC2016
+case $agents_start in
+  *'${CLAUDE_PLUGIN_ROOT}/hooks/rules-for-subagent.sh'*) ;;
+  *) fail "hooks.json of playbook-agents does not run rules-for-subagent.sh under SubagentStart" ;;
+esac
+case $agents_start in
+  *'"matcher": "^playbook-agents:(write|review)$"'*) ;;
+  *) fail "hooks.json of playbook-agents does not set \"matcher\": \"^playbook-agents:(write|review)\$\" under SubagentStart" ;;
+esac
 # shellcheck disable=SC2016
 case $agents_stop in
   *'${CLAUDE_PLUGIN_ROOT}/hooks/review-ran.sh'*) ;;
@@ -179,7 +193,7 @@ case $agents_pre in
   *'"matcher": "Agent"'*'${CLAUDE_PLUGIN_ROOT}/hooks/agent-models.sh'*) ;;
   *) fail "hooks.json of playbook-agents does not run agent-models.sh with \"matcher\": \"Agent\" under PreToolUse" ;;
 esac
-for f in review-ran.sh review-before-commit.sh agent-models.sh hook-lib.sh; do
+for f in review-ran.sh review-before-commit.sh agent-models.sh hook-lib.sh rules-for-subagent.sh; do
   [ -f "$agents_plugin/hooks/$f" ] || fail "hooks/$f of playbook-agents is missing"
 done
 

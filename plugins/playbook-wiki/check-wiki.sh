@@ -32,9 +32,9 @@
 #   are not under works/, and cite the identifier as a whole word;
 # - a decision has a seventh column (Kind) that is not empty and is not one of
 #   definition, technology, plan, open-work, close-stage, close-work, commit,
-#   merge-push, version, other; or an eighth column (Answer) that is not empty
-#   and is not one of as recommended, changed, rejected, delegated. Either
-#   value may end in exactly one space and "(estimated)", which the doctor
+#   merge-push, version, consolidate, other; or an eighth column (Answer) that
+#   is not empty and is not one of as recommended, changed, rejected, delegated.
+#   Either value may end in exactly one space and "(estimated)", which the doctor
 #   writes for a row from before format 5; what is left must still be one of
 #   the values, so "(estimated)" alone or "plan(estimated)" fails. A row with
 #   six columns, or with an empty cell, passes; a row with more than eight
@@ -133,7 +133,7 @@ work_table() {
     function trim(s) { gsub(/^[ \t]+|[ \t]+$/, "", s); return s }
     function fail(msg) { printf "FAIL %s: %s\n", label, msg }
     BEGIN {
-      n = split("definition technology plan open-work close-stage close-work commit merge-push version other", list, " ")
+      n = split("definition technology plan open-work close-stage close-work commit merge-push version consolidate other", list, " ")
       for (i = 1; i <= n; i++) kinds[list[i]] = 1
       n = split("as recommended|changed|rejected|delegated", list, "|")
       for (i = 1; i <= n; i++) answers[list[i]] = 1
@@ -249,7 +249,7 @@ if [ "$mode" = delegations ]; then
       work_table "$dir/decisions.md" "$(basename "$dir")" d "" answers
   done | awk -F '\t' '
     BEGIN {
-      n = split("definition technology plan open-work close-stage close-work commit merge-push version other", order, " ")
+      n = split("definition technology plan open-work close-stage close-work commit merge-push version consolidate other", order, " ")
     }
     $2 != "" && $2 != "delegated" {
       total[$1]++

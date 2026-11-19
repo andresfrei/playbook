@@ -52,7 +52,8 @@ Read a file when its stage is the current one.
 - `references/1-wiki.md` — a new project, and the topics a product definition covers.
 - `references/2-technology.md` — each technology, and the architecture page.
 - `references/3-skills.md` — the skills the agent needs.
-- `references/4-design-system.md` — the visual identity, tokens, and patterns.
+- `references/4-design-system.md` — identity, tokens, patterns.
 - `references/5-plan.md` — the plan, in units, and its delivery.
-- `references/6-execution.md` — building unit by unit, and closing the work.
+- `references/6-execution.md` — building units, and the close.
 - `references/delegation.md` — delegations.
+- `references/evidence.md` — consolidations, at the close.

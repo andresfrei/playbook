@@ -1,6 +1,6 @@
 # ![Playbook](docs/assets/playbook-banner.svg)
 
-Playbook is a set of plugins for building software with a coding agent in Claude Code or Codex CLI. The developer decides what the software should do. The agent records those decisions in the project's Git-backed wiki, uses them to implement changes, and reports how it checked the result. A teammate starting a fresh session can see what was agreed, why it changed, and which question to pick up next.
+Playbook is a set of plugins for building software with a coding agent in Claude Code or Codex CLI. The developer decides what the software should do. The agent records those decisions in the project's Git-backed wiki, uses them to implement changes, and reports how it checked the result. A teammate starting a fresh session can see what was agreed, why it changed, and which question to pick up next. And when reviews keep finding the same kind of mistake, the agent turns it into a rule it applies before the next change.
 
 ## Ask your agent to install Playbook
 
@@ -38,7 +38,7 @@ Playbook is opt-in. You can use the wiki with your own agent setup or add the wo
 |--------|-------------------|
 | [`playbook` — setup](plugins/playbook/README.md) | Use the optional `/playbook:init` wizard in Claude Code to choose components and scope. Codex users make their selection in the installer. |
 | [`playbook-wiki` — project memory](plugins/playbook-wiki/README.md) | Choose this on its own to keep decisions in Git, prepare work in stages, and check wiki changes before commits and merges. |
-| [`playbook-agents` — working rules and agents](plugins/playbook-agents/README.md) | Add this to the wiki when you want the working rules, specialized skills and the `explore`, `write`, and `review` roles. It requires `playbook-wiki`. |
+| [`playbook-agents` — working rules and agents](plugins/playbook-agents/README.md) | Add this to the wiki when you want the working rules, specialized skills and the `explore`, `write`, `review` roles, and in Claude Code `classify`. It requires `playbook-wiki`. |
 
 ```mermaid
 flowchart LR
@@ -57,6 +57,7 @@ flowchart LR
 3. **Build and verify.** The plan divides implementation into units. Each has an observable ending condition: a passing check, for example, or the owner's judgement on a document. The agent records the evidence and updates the work's README with what comes next. A small, already-defined change can be handled directly.
 4. **Commit and merge.** A hook checks changes to a current-format wiki before commit and reports broken links or invalid records. Before merging, the agent brings accepted definitions into the shared pages. If both branches added decisions or changed the same shared page, Playbook lists what the owner and agent need to compare.
 5. **Ask less over time.** Each decision records its kind and how the owner answered. When a work closes, a kind the owner keeps accepting as recommended is proposed as a delegation: the agent then decides it without asking and says so in one line. A "yes but" or a "no" on a delegated decision leads to a proposal to revoke it. A new product definition, a push or merge into the main branch, an action outside the repository, and spending beyond a written ceiling are never delegated.
+6. **Learn from repeated mistakes.** In Claude Code, when `review` finds defects, the `classify` agent records each one as evidence, under a kind of mistake, in `docs/wiki/evidence.md`. When three distinct reviews hit the same kind, the close of a work proposes one concrete rule that covers them, and `write` and `review` receive that rule every time they start. If the mistake comes back anyway, its evidence piles up at the rule's level and is consolidated again, so the level shows how many rules a problem has resisted. A rule that holds for any project can move up to the playbook and reach every project with the next release.
 
 ### What happens during a session
 
@@ -82,6 +83,7 @@ sequenceDiagram
         Agent->>A: Assign a task to explore, write, or review
         W-->>A: Supply the contract to the subagent
         A-->>Agent: Return findings or implementation evidence
+        A->>Repo: Review starts classify, which stores its findings in docs/wiki/evidence.md
     end
     opt Commit changes the wiki
         Agent->>W: Check the wiki before committing

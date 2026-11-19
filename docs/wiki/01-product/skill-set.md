@@ -21,6 +21,8 @@ When `prepare-project` closes a work in a project that has a version tag in git,
 
 Before a question, `prepare-project` reads the delegations in force and, within one, decides, records `agent, by <delegation>`, and tells the owner in one line; it records the kind and the answer of each decision, and at the close of a work runs `check-wiki.sh --delegations` and proposes each kind not yet proposed that qualifies (delegation-6, delegation-7). The doctor brings a wiki to format 5, filling the kind and the answer of earlier decisions as estimated (delegation-8, delegation-9).
 
+At the close of a work, when `docs/wiki/evidence.md` exists, `prepare-project` runs `evidence.sh count` and proposes each consolidation of repeated findings to the owner, or makes it under a delegation of the kind `consolidate`, then proposes the general rules that can go up to the playbook (repeated-corrections-13, repeated-corrections-20, repeated-corrections-28). The criteria for classifying a finding are in the agent `classify`, not in a skill (repeated-corrections-27).
+
 A person with `playbook-wiki` alone gets its four skills and none of `playbook-agents` (D182). `review-change` names its agent as `playbook-agents:review`.
 
 Jobs with no skill: executing a task and committing are rules of `playbook-agents` (D65, D66); splitting large pull requests has no skill: stage 5 of `prepare-project` asks how each work is delivered, and a work branch with a draft tracker pull request is one of the ways it offers (work-delivery-1, work-delivery-5); opening a pull request and writing review comments get a skill only when a project needs one (D67); indexing skills is discarded (D52).

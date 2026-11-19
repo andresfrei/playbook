@@ -128,3 +128,18 @@ Stage 3 of the work `version-check`: the skills used to build the notices at the
 | Read the hooks, which every project with `playbook-wiki` runs | `playbook-agents:review-change`, on the `review` agent (R20) | Before each unit is delivered |
 | Check Claude Code's hooks and plugin files | No skill needed: the sources of [../works/version-check/technology.md](../works/version-check/technology.md), and the `claude-code-guide` agent | When a behaviour is not documented there |
 | Write the wiki and the README of `playbook-wiki` | `playbook-wiki:write-docs` | At the close |
+
+## Learned rules
+
+How the agents keep in mind what repeated findings of `review` taught (repeated-corrections-1). It is not a skill: the criteria live in the instructions of the agent `classify`, since a skill hidden from the session cannot be preloaded and a visible one passes the limit L4 of `playbook-agents` (repeated-corrections-27). The modules are in [../03-technology/architecture.md](../03-technology/architecture.md).
+
+- What is learned is a thing to keep in mind at its step, not a rule loaded always. When a kind keeps repeating with its rule written, a check is proposed where the mistake can be found mechanically (repeated-corrections-3).
+- The first source is the findings of `review`, each with its failing case. Memory and lint come later (repeated-corrections-2). `write` and `review` run the cycle first; the stages of a work and the commits wait (repeated-corrections-14).
+- The cycle of each step (repeated-corrections-9): before building, the subagent gets the rules that bear on what it does; on a failure, the evidence is stored under its kind in the index, or under a new kind; on accumulation, the rule is rebuilt one level up.
+- The evidence page is `docs/wiki/evidence.md` of each project: a table of kinds and a table of evidence, which `evidence.sh` checks and counts (repeated-corrections-15, repeated-corrections-19). The agent `classify` keeps the rows and a script counts, never the model (repeated-corrections-6, repeated-corrections-10).
+- A kind names the mistake, not the place, and the central test decides both the kind and the level: would the rule of this kind have prevented this finding? Kinds are never renamed (repeated-corrections-11).
+- The level is only a statistic: how many consolidations a record went through. A kind with no rule is at level 1. A finding that the rule of level k did not prevent is recorded at level k (repeated-corrections-5, repeated-corrections-11).
+- The threshold is 3 distinct reviews of the same kind and level. One review that lists a mistake several times counts once. The 3 is a value of `evidence.sh`, adjusted with data once the mechanism runs (repeated-corrections-12).
+- Only rules of level 2 and up are given to `write` and `review` at their start. Each says when it applies, and the subagent judges (repeated-corrections-18).
+- Consolidation happens at the close of a work: N records at level k become one rule at level k+1 that covers them, and the level-k records are deleted, git keeping them. The agent proposes it to the owner, or makes it when the owner delegated the kind `consolidate` (repeated-corrections-5, repeated-corrections-13, repeated-corrections-28). The step is the file `references/evidence.md` of `prepare-project`.
+- A rule is the project's when understanding it needs the project's business, and general otherwise. A general rule is proposed to the owner to go up to `plugins/playbook-agents/evidence-rules.md`, which every project reads (repeated-corrections-15, repeated-corrections-20).

@@ -1,0 +1,62 @@
+# Definition of the work repeated-corrections
+
+What this work must make true: a mistake that the agent `review` keeps finding becomes something the agent keeps in mind at the step where it happens, and, when that is not enough, something stronger, without anyone counting by hand (repeated-corrections-1).
+
+## The problem
+
+The same correction is made by hand again and again, and nothing notices it repeats. On 2026-11-19, in the work `version-check`, `review` found tests that passed with the behaviour broken in two units in a row (version-check-U1 and version-check-U2), though R11 already asks for tests with each change. Each time the finding was fixed and forgotten.
+
+Today the findings of `review` are kept only in the session and, for the last two works, as one line of evidence in `plan.md`. Engram keeps lessons, but on one machine, with no type and no count.
+
+Where the idea comes from: the owner's "learning by repetition", one of three ideas of 2026-11-19 recorded in [../delegation/definition.md](../delegation/definition.md). The work `delegation` built the side of answers (repeated answers become a delegation); this work builds the side of corrections.
+
+## Who has it
+
+The owner, who reads the same finding again; the agent, which repeats the mistake; every project with `playbook-agents`, whose `review` produces the findings.
+
+## The shape
+
+- Source: the findings of `review`, each with its failing case (repeated-corrections-2).
+- What is learned is a thing to keep in mind at its step, not a rule loaded always; a check when it keeps repeating and the mistake can be found mechanically (repeated-corrections-3).
+- A tool that hooks call, to query before a step and to pass the evidence of a finding; its data in the repository (repeated-corrections-4).
+- Consolidation by level: N records of the same thing at level k become one rule at level k+1 and are deleted, git keeping them; the level counts the consolidations a problem resisted (repeated-corrections-5). For example, three findings of tests that pass with the code broken, at level 1, become one rule at level 2: "break the code on purpose to check each new test fails". If the mistake comes back, it is recorded at level 2.
+- The agent keeps the records and the index of types; a script counts (repeated-corrections-6).
+- Written criteria keep the judgement the same (repeated-corrections-7), in the instructions of the agent `classify` (repeated-corrections-27).
+- The cycle of each step: consult the index before building, store the evidence of a failure under its kind or a new one, rebuild one level up on accumulation (repeated-corrections-9).
+- A subagent with a smaller model keeps the index; its criteria are written first (repeated-corrections-10).
+- A tool run on one repository builds its first rules from its past findings, as the doctor does for a format; keeping out findings already fixed is open (repeated-corrections-8).
+
+## The criteria
+
+The base of the criteria the subagent applies (repeated-corrections-11):
+
+1. A kind names the mistake, not the place: `test-passes-when-broken`, not `auth-bug`. Its rule fits in one sentence a step can act on.
+2. The central test: would the rule of this kind have prevented this finding? Yes: same kind; if its rule was at level k and did not prevent it, the finding goes to level k. No, for every kind: a new kind.
+3. Borders are settled by the same test: `missing-test` and `test-passes-when-broken` stay apart, because "write the test" does not prevent a test that misses the failure.
+4. Kinds are never renamed; when two are joined, the record says which absorbed which.
+5. A consolidated rule covers every record below it, stays concrete with an example inside, says when it applies (which files or which kind of change), and cites its source.
+6. A rule is the project's when understanding it needs the project's business; otherwise it is general.
+
+## The threshold
+
+In the sample, a threshold of 2 distinct reviews is reached by 18 kinds, 17 of them in two projects or more; 3 by 16 kinds, holding 86% of the findings; 5 by only 5 kinds. In 10 kinds, one review listed the same mistake more than once, so reviews are counted, not findings. The threshold is 3 distinct reviews, a value of the script (repeated-corrections-12). How fast a kind reaches it is not measured: the extraction kept no dates.
+
+## The measurement
+
+Before anything is built: read a sample of about 60 findings of `review` in the transcripts on the owner's machine, from every project and date, group them by type, and count how many repeat. Only types and counts are written here: the repository is public, and the reports of other projects are private. If corrections rarely repeat, the work stops (repeated-corrections-1). Made on 2026-11-19 on a sample: findings repeat, 85% of them in types seen in two projects or more ([measurements.md](measurements.md)).
+
+## Coverage of the topics
+
+| Topic | Coverage |
+|-------|----------|
+| The problem and who has it | Covered |
+| Who uses it and what they do | Covered: the owner approves a consolidation, or delegates the kind `consolidate` (repeated-corrections-13) |
+| Main flows | Covered: `write` and `review` first (repeated-corrections-14) |
+| What it must do | Covered: 3 distinct reviews, adjustable (repeated-corrections-12) |
+| What it must not do, and what waits | Covered: memory and lint wait (repeated-corrections-2); the stages and commits wait (repeated-corrections-14) |
+| Qualities: a record of who did what | Covered: each rule cites what it consolidated; git keeps the deleted records (repeated-corrections-5) |
+| Limits | Covered: hooks in POSIX shell, as the plugins' hooks; skills within L2 |
+| Outside systems | Does not apply |
+| Volume | Covered: [measurements.md](measurements.md) |
+| Who runs and maintains it | Covered: the agent keeps the records, a script counts (repeated-corrections-6) |
+| Business rules, states, vocabulary | Covered: one page per project; general rules go up to the playbook (repeated-corrections-15) |

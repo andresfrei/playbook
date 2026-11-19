@@ -16,6 +16,7 @@ A work is what one branch carries from its start to its merge: a phase with its 
 docs/wiki/
 ├── README.md            # the entry point: the project, its owner, the shared pages
 ├── .format              # the format of the wiki; a script writes it, never by hand
+├── evidence.md          # optional; the kinds and findings of review, kept by evidence.sh of playbook-agents
 ├── 01-product/          # shared pages: overview, glossary, one page per topic
 ├── 02-current-state/    # shared: what existed before, in a project already started
 ├── 03-technology/       # shared
@@ -30,7 +31,7 @@ docs/wiki/
         └── ...          # the work's own pages, when it needs them
 ```
 
-Create a folder or a page only when it has content. One topic per page.
+Create a folder or a page only when it has content. One topic per page. `evidence.md` is optional: `evidence.sh` of `playbook-agents` checks and reads it, its format is in the header of that script, and it does not change the format of the wiki.
 
 A wiki written before format 4 also holds `decisions.md` and the pages of its earlier phases. They are history: they stay as they are, nothing is added to that `decisions.md`, and the check does not read it. Its identifiers, `D#`, `TD#`, `Q#`, and `U#`, are never renumbered.
 
@@ -109,7 +110,7 @@ One table: ID, date, decision, who decided, their words, shared page, kind, answ
 - Their words are verbatim. When that person chose one of the options offered, write the option chosen.
 - Shared page: the path of the shared page the decision changed, from `docs/wiki/` and as code, such as `01-product/rbac.md`; or "none". That page cites the decision.
 - Kind and Answer are the last two columns, after "Shared page". A cell may be empty.
-- Kind is what the decision was about, one of: `definition`, `technology`, `plan`, `open-work`, `close-stage`, `close-work`, `commit`, `merge-push`, `version`, `other`.
+- Kind is what the decision was about, one of: `definition`, `technology`, `plan`, `open-work`, `close-stage`, `close-work`, `commit`, `merge-push`, `version`, `consolidate`, `other`.
 - Answer is how the owner answered, one of: `as recommended`, `changed`, `rejected`, `delegated`. `delegated` means the agent decided under a delegation and did not ask.
 - Kind and Answer are written as plain text, without backticks.
 - A value may end in exactly one space and `(estimated)`: the doctor wrote it for a row from before format 5, from the decision and its words. What is left after the suffix must be one of the values: `(estimated)` alone or `plan(estimated)` fails the check.
