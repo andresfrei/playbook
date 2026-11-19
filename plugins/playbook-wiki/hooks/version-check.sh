@@ -7,9 +7,10 @@
 # Installed: "version" of ${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json, where
 # CLAUDE_PLUGIN_ROOT is <plugins>/cache/<marketplace>/<plugin>/<version>.
 # Available: "version" of plugins/<plugin>/.claude-plugin/plugin.json in the
-# marketplace's copy: <plugins>/marketplaces/<marketplace>, or, for a marketplace
-# from a folder, the installLocation that <plugins>/known_marketplaces.json
-# records for it.
+# marketplace's copy, <plugins>/marketplaces/<marketplace>.
+# A marketplace from a local folder loads the plugin in place, so
+# CLAUDE_PLUGIN_ROOT is not under cache/ and nothing is printed: the folder is
+# already the version that runs.
 
 root=${CLAUDE_PLUGIN_ROOT:-}
 [ -n "$root" ] || exit 0
@@ -31,39 +32,7 @@ case "$marketplace$plugin" in
 esac
 
 copy="$plugins/marketplaces/$marketplace"
-if [ ! -d "$copy" ]; then
-  # The installLocation inside the object that follows the marketplace's key.
-  copy=$(awk -v key="\"$marketplace\"" '
-    { text = text $0 "\n" }
-    END {
-      # The key is the occurrence followed by a colon and an object, not a value.
-      rest = text
-      while ((start = index(rest, key)) > 0) {
-        rest = substr(rest, start + length(key))
-        if (match(rest, /^[ \t\n]*:[ \t\n]*\{/)) break
-      }
-      if (!start) exit
-      rest = substr(rest, RLENGTH)
-      depth = 0; quoted = 0; object = ""
-      for (i = 1; i <= length(rest); i++) {
-        c = substr(rest, i, 1)
-        object = object c
-        if (quoted) {
-          if (c == "\\") { i++; object = object substr(rest, i, 1) }
-          else if (c == "\"") quoted = 0
-        } else if (c == "\"") quoted = 1
-        else if (c == "{") depth++
-        else if (c == "}") { depth--; if (depth == 0) break }
-      }
-      if (match(object, /"installLocation"[ \t\n]*:[ \t\n]*"[^"]*"/)) {
-        value = substr(object, RSTART, RLENGTH)
-        sub(/^"installLocation"[ \t\n]*:[ \t\n]*"/, "", value)
-        sub(/"$/, "", value)
-        print value
-      }
-    }' "$plugins/known_marketplaces.json" 2>/dev/null)
-  [ -n "$copy" ] || exit 0
-fi
+[ -d "$copy" ] || exit 0
 
 installed=$(version_of "$root/.claude-plugin/plugin.json")
 available=$(version_of "$copy/plugins/$plugin/.claude-plugin/plugin.json")

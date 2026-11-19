@@ -1474,36 +1474,16 @@ check "version: a copy without the plugin's manifest prints nothing" vc_silent
 vc_layout 2.6.0 3.0.0; rm -rf "$tmp/vc/plugins/marketplaces"; vc_run
 check "version: no copy and no record of the marketplace prints nothing" vc_silent
 
-# A marketplace from a folder: no copy under marketplaces/, its installLocation
-# recorded in known_marketplaces.json.
-vc_layout 2.0.0 ""
+# A marketplace from Git with no copy under marketplaces/, though Claude Code
+# records it: nothing to compare.
+vc_layout 2.0.0 3.0.0
 rm -rf "$tmp/vc/plugins/marketplaces"
-mkdir -p "$tmp/vc/my repo/plugins/playbook-wiki/.claude-plugin"
-printf '{"version": "3.0.0"}\n' > "$tmp/vc/my repo/plugins/playbook-wiki/.claude-plugin/plugin.json"
-cat > "$tmp/vc/plugins/known_marketplaces.json" <<JSON
-{
-  "other": {
-    "source": {"source": "github", "repo": "someone/playbook"},
-    "installLocation": "/nowhere/other"
-  },
-  "playbook": {
-    "source": {
-      "source": "directory",
-      "path": "$tmp/vc/my repo"
-    },
-    "installLocation": "$tmp/vc/my repo",
-    "lastUpdated": "2026-11-17T00:30:45.624Z"
-  }
-}
-JSON
-vc_run
-check "version: a marketplace from a folder is read from its installLocation" sh -c 'printf "%s" "$1" | grep -Fq "The playbook is at 2.0.0, and 3.0.0 is available"' sh "$out"
-printf '{"playbook": "not an object"}\n' > "$tmp/vc/plugins/known_marketplaces.json"; vc_run
-check "version: a record it cannot read prints nothing" vc_silent
+printf '{"playbook": {"installLocation": "%s"}}\n' "$tmp/vc/elsewhere" > "$tmp/vc/plugins/known_marketplaces.json"; vc_run
+check "version: a copy missing under marketplaces/ prints nothing, whatever the record says" vc_silent
 
 vc_layout 2.6.0 3.0.0
 out=$(CLAUDE_PLUGIN_ROOT="$root/plugins/playbook-wiki" sh "$version_hook" 2>&1); code=$?
-check "version: a plugin outside the cache, such as --plugin-dir, prints nothing" vc_silent
+check "version: a plugin loaded in place, from a folder marketplace or --plugin-dir, prints nothing" vc_silent
 out=$(env -u CLAUDE_PLUGIN_ROOT sh "$version_hook" 2>&1); code=$?
 check "version: no CLAUDE_PLUGIN_ROOT prints nothing" vc_silent
 check "version: the hook connects to no network" sh -c '! grep -Eq "curl|wget|ls-remote|https?://" "$1"' sh "$version_hook"

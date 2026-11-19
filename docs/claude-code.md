@@ -116,7 +116,7 @@ claude plugin update playbook@playbook
 
 Then update each of `playbook-wiki@playbook` and `playbook-agents@playbook` that `claude plugin list` shows, with `--scope local` from inside a repository where it was turned on for that repository only.
 
-From version 3.1.0, a new session shows you one line when the marketplace's copy on your machine holds a newer version than the one installed. It never updates anything and does not check online, so it sees a new release only after `claude plugin marketplace update playbook`. After an update, start a new session: when your wiki is behind the new format, a line tells you to run `/playbook-wiki:doctor`.
+From version 3.1.0, a new session shows you one line when the marketplace's copy on your machine holds a newer version than the one installed. It never updates anything and does not check online, so it sees a new release only after `claude plugin marketplace update playbook`. A marketplace added from a local clone runs the plugins from the clone, so it shows no version notice: pull the clone instead. After an update, start a new session: when your wiki is behind the new format, a line tells you to run `/playbook-wiki:doctor`.
 
 A release reaches you only when its version changes; the releases and their tags are on GitHub. How versions are made is in [CONTRIBUTING.md](../CONTRIBUTING.md#releases).
 
