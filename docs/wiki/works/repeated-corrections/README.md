@@ -2,19 +2,18 @@
 
 Turns a correction that repeats into something the agent keeps in mind at the step where it happens, consolidated by level when it keeps repeating. Andres Frei leads it.
 
-Status: Open.
+Status: Closed on 2026-11-19 (repeated-corrections-30).
 
 ## Where work stands
 
-Updated 2026-11-19, after repeated-corrections-26.
+Updated 2026-11-19, after repeated-corrections-30.
 
-Stage 1, Wiki, is closed (repeated-corrections-16): [definition.md](definition.md) holds the problem, the cycle, the criteria, the threshold, and where the records live; [measurements.md](measurements.md) shows that findings repeat. Stage 2, Technology, is closed (repeated-corrections-21): [technology.md](technology.md) holds five decided needs and [architecture.md](architecture.md) the shape. Stages 3 to 5 are closed (repeated-corrections-23, -24, -26). Stage 6, Execution, is open: the units of [plan.md](plan.md) are built in order; Every unit is Done.
-
-Waiting for a decision: none.
+The work is closed: repeated-corrections-U1 to U5 are Done (see [plan.md](plan.md)), and the shared pages say what it decided (`03-technology/architecture.md`, `04-skills/working-skills.md`, `01-product/glossary.md`, `01-product/delegations.md`, `01-product/overview.md`, `01-product/skill-set.md`). `--delegations` proposed open-work, delegated narrowly (repeated-corrections-29). No decision reached `main` since the work started, so the step at the merge has nothing to compare.
 
 Next steps, in order:
 
-1. Close the work: delegations, shared pages, version.
+1. The owner pushes the branch `feat/repeated-corrections` and merges its pull request (R14).
+2. After the merge: version 3.2.0 in the three manifests, the tag `v3.2.0`, and the release on GitHub (repeated-corrections-30).
 
 ## Stage table
 
@@ -25,7 +24,7 @@ Next steps, in order:
 | 3 Skills | Closed | 2026-11-19 |
 | 4 Design system | Closed, not applicable | 2026-11-19 |
 | 5 Plan | Closed | 2026-11-19 |
-| 6 Execution | Open | |
+| 6 Execution | Closed | 2026-11-19 |
 
 ## Pages
 
