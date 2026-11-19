@@ -32,7 +32,7 @@ Decided (setup-commands-14), as the repository's history delivers: the five unit
 
 | Unit | Status | Evidence | Done on | Owner acceptance |
 |------|--------|----------|---------|------------------|
-| setup-commands-U1 | Not started | | | |
+| setup-commands-U1 | Done | `scripts/verify_test.sh`: all cases passed, 20 for the hook, each case of the ending condition among them; `scripts/verify.sh` and ShellCheck passed. `claude -p` on Claude Code 2.1.327, hook from a settings file, a repository value `explore: sonnet low`: Claude called `playbook-agents:explore` with `model: opus`, the subagent ran on `claude-sonnet-5-5` by its answer and `modelUsage`. So `updatedInput` applies with no `permissionDecision`, and of a key named twice the last wins. `review-change`: no findings; it notes BusyBox awk takes 3.7 s on a 100 KB prompt, against 0.04 s for GNU awk. | 2026-11-18 | |
 | setup-commands-U2 | Not started | | | |
 | setup-commands-U3 | Not started | | | |
 | setup-commands-U4 | Not started | | | |

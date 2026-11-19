@@ -173,7 +173,13 @@ case $agents_pre in
   *'"matcher": "Bash"'*'"if": "Bash(git *)"'*) ;;
   *) fail "hooks.json of playbook-agents does not set \"matcher\": \"Bash\" and an \"if\" of Bash(git *) under PreToolUse" ;;
 esac
-for f in review-ran.sh review-before-commit.sh hook-lib.sh; do
+# The person's model of each agent (setup-commands-10).
+# shellcheck disable=SC2016
+case $agents_pre in
+  *'"matcher": "Agent"'*'${CLAUDE_PLUGIN_ROOT}/hooks/agent-models.sh'*) ;;
+  *) fail "hooks.json of playbook-agents does not run agent-models.sh with \"matcher\": \"Agent\" under PreToolUse" ;;
+esac
+for f in review-ran.sh review-before-commit.sh agent-models.sh hook-lib.sh; do
   [ -f "$agents_plugin/hooks/$f" ] || fail "hooks/$f of playbook-agents is missing"
 done
 

@@ -279,7 +279,17 @@ sed 's/"if": "Bash(git \*)"/"if": "Bash(git commit *)"/' "$tmp/repo/plugins/play
 cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-agents/hooks/hooks.json"
 expect "hooks: a hold hook with a narrower if fails" fail "playbook-agents does not set \"matcher\": \"Bash\" and an"
 
-for f in review-ran.sh review-before-commit.sh hook-lib.sh; do
+fresh
+sed 's/agent-models\.sh/other.sh/' "$tmp/repo/plugins/playbook-agents/hooks/hooks.json" > "$tmp/hooks.json"
+cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-agents/hooks/hooks.json"
+expect "hooks: hooks.json of playbook-agents without the model hook fails" fail "does not run agent-models.sh"
+
+fresh
+sed 's/"matcher": "Agent"/"matcher": "Task"/' "$tmp/repo/plugins/playbook-agents/hooks/hooks.json" > "$tmp/hooks.json"
+cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-agents/hooks/hooks.json"
+expect "hooks: a model hook without the Agent matcher fails" fail "does not run agent-models.sh"
+
+for f in review-ran.sh review-before-commit.sh agent-models.sh hook-lib.sh; do
   fresh
   rm "$tmp/repo/plugins/playbook-agents/hooks/$f"
   expect "hooks: a missing $f of playbook-agents fails" fail "hooks/$f of playbook-agents is missing"
@@ -2338,6 +2348,64 @@ check "hold: the mark hook with a missing hook-lib.sh prints nothing and exits 0
 out=$(printf '{"session_id":"s9","cwd":"%s","tool_input":{"command":"git commit -m x"}}' "$tmp/hold" |
   CLAUDE_PLUGIN_DATA="$tmp/hold_file" sh "$hold_hook" 2>&1); code=$?
 check "hold: a data folder that cannot be written prints nothing" passes
+
+# The person's model of each agent (setup-commands-10).
+models_hook="$root/plugins/playbook-agents/hooks/agent-models.sh"
+rm -rf "$tmp/am"
+mkdir -p "$tmp/am/proj/.claude" "$tmp/am/home"
+# am_run <tool_input as JSON>: runs the model hook on an Agent call.
+am_run() {
+  out=$(printf '{"session_id":"s","cwd":"%s","tool_name":"Agent","tool_input":%s}' "$tmp/am/proj" "$1" |
+    CLAUDE_CONFIG_DIR="$tmp/am/home" CLAUDE_PROJECT_DIR="$tmp/am/proj" sh "$models_hook" 2>&1)
+  code=$?
+}
+# am_gives <updatedInput>: the hook printed exactly that input.
+am_gives() {
+  [ "$code" -eq 0 ] &&
+    [ "$out" = "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"updatedInput\":$1}}" ]
+}
+review_call='{"description":"d","prompt":"say \"hi\" {x} [y]","subagent_type":"playbook-agents:review"}'
+review_inner='"description":"d","prompt":"say \"hi\" {x} [y]","subagent_type":"playbook-agents:review"'
+
+am_run "$review_call"
+check "models hook: nothing set prints nothing" passes
+printf '{"theme":"dark","playbook":{"models":{"review":"opus xhigh","explore":"haiku"}}}\n' > "$tmp/am/home/settings.json"
+am_run "$review_call"
+check "models hook: the person's value is added, every field kept" am_gives "{$review_inner,\"model\":\"opus\",\"effort\":\"xhigh\"}"
+am_run '{"prompt":"p","subagent_type":"playbook-agents:explore"}'
+check "models hook: a model without an effort" am_gives '{"prompt":"p","subagent_type":"playbook-agents:explore","model":"haiku"}'
+am_run '{"prompt":"p","subagent_type":"playbook-agents:write"}'
+check "models hook: an agent the person did not set prints nothing" passes
+am_run '{"prompt":"p","subagent_type":"general-purpose"}'
+check "models hook: another agent prints nothing" passes
+am_run '{"prompt":"p","subagent_type":"playbook-agents:reviewer"}'
+check "models hook: a name that only starts like the agent prints nothing" passes
+printf '{\n  "permissions": {"allow": ["Bash(ls)"]},\n  "playbook": {\n    "models": {\n      "review": "fable low"\n    }\n  }\n}\n' > "$tmp/am/proj/.claude/settings.local.json"
+am_run "$review_call"
+check "models hook: the repository's value wins" am_gives "{$review_inner,\"model\":\"fable\",\"effort\":\"low\"}"
+am_run '{"prompt":"p","subagent_type":"playbook-agents:explore"}'
+check "models hook: an agent the repository does not set takes the person's value" am_gives '{"prompt":"p","subagent_type":"playbook-agents:explore","model":"haiku"}'
+am_run '{"prompt":"p","subagent_type":"playbook-agents:review","model":"sonnet"}'
+check "models hook: a model the call names is followed by the one set" am_gives '{"prompt":"p","subagent_type":"playbook-agents:review","model":"sonnet","model":"fable","effort":"low"}'
+for bad in 'claude-opus-5-5 high' 'inherit' 'opus extreme' 'opus high extra' '*'; do
+  printf '{"playbook":{"models":{"review":"%s"}}}\n' "$bad" > "$tmp/am/proj/.claude/settings.local.json"
+  am_run "$review_call"
+  check "models hook: the value '$bad' is ignored, with the person's not used either" passes
+done
+rm "$tmp/am/proj/.claude/settings.local.json"
+printf '{"playbook":{"models":["review"]},"review":"opus"}\n' > "$tmp/am/home/settings.json"
+am_run "$review_call"
+check "models hook: a review key outside playbook/models is not read" passes
+printf '{"playbook":{"models":{"review":"opus"}}}\n' > "$tmp/am/home/settings.json"
+am_run '{}'
+check "models hook: an input with no agent prints nothing" passes
+out=$(printf 'not json' | CLAUDE_CONFIG_DIR="$tmp/am/home" sh "$models_hook" 2>&1); code=$?
+check "models hook: input that is not JSON prints nothing" passes
+rm -rf "$tmp/amlib"
+mkdir -p "$tmp/amlib/hooks"
+cp "$models_hook" "$tmp/amlib/hooks/"
+out=$(printf '{"tool_input":%s}' "$review_call" | CLAUDE_CONFIG_DIR="$tmp/am/home" sh "$tmp/amlib/hooks/agent-models.sh" 2>&1); code=$?
+check "models hook: a missing hook-lib.sh prints nothing and exits 0" passes
 
 if [ "$failed" -eq 0 ]; then
   printf 'all cases passed\n'

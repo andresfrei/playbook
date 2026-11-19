@@ -1,6 +1,6 @@
 # shellcheck shell=sh disable=SC2154
-# Shared by review-before-commit.sh and review-ran.sh, which source it with
-# ".". Uses only sh, sed, awk, and tr. It expects the hook's JSON in $input and,
+# Shared by review-before-commit.sh, review-ran.sh, and agent-models.sh, which
+# source it with ".". Uses only sh, sed, awk, and tr. It expects the hook's JSON in $input and,
 # for commit_dir, the command in $command and the session's folder in $cwd.
 # json_string and json_lines are copies of those in
 # plugins/playbook-wiki/hooks/git-hook-lib.sh, since a project may install
@@ -135,4 +135,94 @@ json_lines() {
   printf '%s\n' "$1" | LC_ALL=C tr -d '\000-\010\013\014\016-\037' |
     sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' -e "s/$tab/\\\\t/g" -e "s/$cr/\\\\r/g" |
     awk '{ printf "%s%s", sep, $0; sep = "\\n" }'
+}
+
+# The awk function that reads a JSON string, used by json_path and
+# json_object: readstr(p) reads the string whose first character is at p in
+# text, of length n, sets str to it decoded and pos to the position after the
+# closing quote, and returns 0 when the text ends first. \u escapes other than
+# ASCII become "?".
+json_readstr='
+function readstr(p,   out, c, d, hex) {
+  out = ""
+  while (p <= n) {
+    c = substr(text, p, 1)
+    if (c == "\"") { str = out; pos = p + 1; return 1 }
+    if (c == "\\") {
+      p++; d = substr(text, p, 1)
+      if (d == "n") c = "\n"; else if (d == "t") c = "\t"; else if (d == "r") c = "\r"
+      else if (d == "b" || d == "f") c = " "
+      else if (d == "u") {
+        hex = substr(text, p + 1, 4); p += 4
+        c = (hex ~ /^00[2-7][0-9a-fA-F]$/) ? sprintf("%c", index("0123456789abcdef", tolower(substr(hex, 3, 1))) * 16 - 16 + index("0123456789abcdef", tolower(substr(hex, 4, 1))) - 1) : "?"
+      } else c = d
+    }
+    out = out c
+    p++
+  }
+  return 0
+}'
+
+# json_path <file> <path>: the string value at that path of the JSON file,
+# decoded, such as "playbook/models/review"; nothing when the file is missing,
+# the value is not a string, or the path is absent. Keys are joined with "/";
+# an element of an array counts as the key "#".
+json_path() {
+  [ -f "$1" ] || return 0
+  awk -v want="$2" "$json_readstr"'
+    { text = text (NR > 1 ? "\n" : "") $0 }
+    END {
+      n = length(text); p = 1; depth = 0
+      while (p <= n) {
+        c = substr(text, p, 1)
+        if (c == ",") { if (type[depth] == "o") expect[depth] = 1; p++; continue }
+        if (c ~ /[ \t\n\r:]/) { p++; continue }
+        if (c == "{") { depth++; type[depth] = "o"; expect[depth] = 1; key[depth] = ""; p++; continue }
+        if (c == "[") { depth++; type[depth] = "a"; expect[depth] = 0; key[depth] = "#"; p++; continue }
+        if (c == "}" || c == "]") { depth--; p++; continue }
+        if (c == "\"") {
+          if (!readstr(p + 1)) exit
+          p = pos
+          if (type[depth] == "o" && expect[depth]) { key[depth] = str; expect[depth] = 0; continue }
+          path = ""
+          for (i = 1; i <= depth; i++) path = path (i > 1 ? "/" : "") key[i]
+          if (path == want) { printf "%s", str; exit }
+          continue
+        }
+        while (p <= n && substr(text, p, 1) !~ /[,}\] \t\n\r]/) p++
+      }
+    }' "$1"
+}
+
+# json_object <key>: the text of the object that is the value of that key at
+# the top level of the input, as written; nothing when there is none.
+json_object() {
+  printf '%s\n' "$input" | awk -v want="$1" "$json_readstr"'
+    { text = text (NR > 1 ? "\n" : "") $0 }
+    END {
+      n = length(text); p = 1; depth = 0
+      while (p <= n) {
+        c = substr(text, p, 1)
+        if (c == "{" || c == "[") { depth++; p++; continue }
+        if (c == "}" || c == "]") { depth--; p++; continue }
+        if (c != "\"") { p++; continue }
+        if (!readstr(p + 1)) exit
+        k = str; p = pos
+        if (depth != 1 || k != want) continue
+        while (substr(text, p, 1) ~ /[ \t\n\r]/) p++
+        if (substr(text, p, 1) != ":") continue
+        p++
+        while (substr(text, p, 1) ~ /[ \t\n\r]/) p++
+        if (substr(text, p, 1) != "{") exit
+        start = p; d = 0
+        while (p <= n) {
+          c = substr(text, p, 1)
+          if (c == "\"") { if (!readstr(p + 1)) exit; p = pos; continue }
+          if (c == "{" || c == "[") d++
+          if (c == "}" || c == "]") { d--; if (d == 0) { printf "%s", substr(text, start, p - start + 1); exit } }
+          p++
+        }
+        exit
+      }
+    }'
 }
