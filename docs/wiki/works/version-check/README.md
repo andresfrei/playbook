@@ -6,24 +6,25 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after version-check-8.
+Updated 2026-11-19, after version-check-10.
 
-Stage 2, Technology, is open. Stage 1 closed with [definition.md](definition.md). [technology.md](technology.md) proposes N1 to N8 and the architecture; the trial of `systemMessage` passed.
+Stage 3, Skills, is open. Stage 1 closed with [definition.md](definition.md); stage 2 with [technology.md](technology.md). [skills.md](skills.md) lists the skills, none installed or written.
 
-Waiting for a decision: the owner's answer on N1 to N8.
+Waiting for a decision: the owner's acceptance of [skills.md](skills.md).
 
 Next steps, in order:
 
-1. The owner accepts or changes N1 to N8.
-2. Close stage 2.
+1. The owner accepts the skills.
+2. Stage 4, Design system: the work has no visual interface.
+3. Stage 5, Plan.
 
 ## Stage table
 
 | Stage | Status | Closed on |
 |-------|--------|-----------|
 | 1 Wiki | Closed | 2026-11-19 |
-| 2 Technology | Open | |
-| 3 Skills | Not started | |
+| 2 Technology | Closed | 2026-11-19 |
+| 3 Skills | Open | |
 | 4 Design system | Not started | |
 | 5 Plan | Not started | |
 | 6 Execution | Not started | |
@@ -34,5 +35,6 @@ Next steps, in order:
 |------|---------|-----------------|
 | [definition.md](definition.md) | The problem, what exists today, and the coverage of each topic | |
 | [technology.md](technology.md) | Needs, choices, and the architecture; becomes part of `03-technology/` at the close | |
+| [skills.md](skills.md) | The skills used to build the work; becomes part of `04-skills/` at the close | |
 | [decisions.md](decisions.md) | The decisions of this work | |
 | [questions.md](questions.md) | The open questions | |
