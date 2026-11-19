@@ -6,15 +6,15 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after seed-evidence-3.
+Updated 2026-11-19, after seed-evidence-4.
 
-Stage 1, Wiki, is open. [definition.md](definition.md) holds the problem; two questions are open in [questions.md](questions.md); [measurements.md](measurements.md) counts the past reviews.
+Stage 1, Wiki, is open. [definition.md](definition.md) holds the problem; one question is open in [questions.md](questions.md); [measurements.md](measurements.md) counts the past reviews.
 
-Waiting for a decision: seed-evidence-Q3, which reviews by default.
+Waiting for a decision: seed-evidence-Q4, the cost.
 
 Next steps, in order:
 
-1. Answer seed-evidence-Q3 and seed-evidence-Q4.
+1. Answer seed-evidence-Q4.
 2. Close stage 1.
 
 ## Stage table
