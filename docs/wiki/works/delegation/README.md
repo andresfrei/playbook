@@ -6,16 +6,16 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after delegation-13.
+Updated 2026-11-19, after delegation-14.
 
-Stage 4, Design system, is open. Stage 1 closed with [definition.md](definition.md) and [measurements.md](measurements.md); stage 2 with [technology.md](technology.md); stage 3 with [skills.md](skills.md).
+Stage 5, Plan, is open. Stage 1 closed with [definition.md](definition.md) and [measurements.md](measurements.md); stage 2 with [technology.md](technology.md); stage 3 with [skills.md](skills.md).
 
-Waiting for a decision: closing stage 4 as not applicable, since the work has no interface.
+Waiting for a decision: the plan and how the work is delivered, in [plan.md](plan.md).
 
 Next steps, in order:
 
-1. Close stage 4 as not applicable.
-2. Stage 5, Plan.
+1. Accept the plan and close stage 5.
+2. Stage 6, Execution, from delegation-U1.
 
 ## Stage table
 
@@ -24,8 +24,8 @@ Next steps, in order:
 | 1 Wiki | Closed | 2026-11-19 |
 | 2 Technology | Closed | 2026-11-19 |
 | 3 Skills | Closed | 2026-11-19 |
-| 4 Design system | Open | |
-| 5 Plan | Not started | |
+| 4 Design system | Closed (not applicable) | 2026-11-19 |
+| 5 Plan | Open | |
 | 6 Execution | Not started | |
 
 ## Pages
@@ -36,5 +36,6 @@ Next steps, in order:
 | [measurements.md](measurements.md) | How the owner answered 1063 recorded decisions in nine wikis, by kind of question and by project | |
 | [technology.md](technology.md) | Needs, choices, and the architecture of the change; becomes part of `03-technology/` at the close | |
 | [skills.md](skills.md) | The skills used to build the work; becomes part of `04-skills/` at the close | |
+| [plan.md](plan.md) | Units, acceptance, delivery, and progress | |
 | [decisions.md](decisions.md) | The decisions of this work | |
 | [questions.md](questions.md) | The open questions | |
