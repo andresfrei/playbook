@@ -16,6 +16,7 @@ A work is what one branch carries from its start to its merge: a phase with its 
 docs/wiki/
 ├── README.md            # the entry point: the project, its owner, the shared pages
 ├── .format              # the format of the wiki; a script writes it, never by hand
+├── evidence.md          # optional; the kinds and findings of review, kept by evidence.sh of playbook-agents
 ├── 01-product/          # shared pages: overview, glossary, one page per topic
 ├── 02-current-state/    # shared: what existed before, in a project already started
 ├── 03-technology/       # shared
@@ -30,7 +31,7 @@ docs/wiki/
         └── ...          # the work's own pages, when it needs them
 ```
 
-Create a folder or a page only when it has content. One topic per page.
+Create a folder or a page only when it has content. One topic per page. `evidence.md` is optional: `evidence.sh` of `playbook-agents` checks and reads it, its format is in the header of that script, and it does not change the format of the wiki.
 
 A wiki written before format 4 also holds `decisions.md` and the pages of its earlier phases. They are history: they stay as they are, nothing is added to that `decisions.md`, and the check does not read it. Its identifiers, `D#`, `TD#`, `Q#`, and `U#`, are never renumbered.
 

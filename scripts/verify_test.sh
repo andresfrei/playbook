@@ -2792,6 +2792,195 @@ check "config: the hook reads what set wrote" sh -c '
   printf "{\"cwd\":\"/none\",\"tool_input\":{\"prompt\":\"p\",\"subagent_type\":\"playbook-agents:write\"}}" |
     CLAUDE_CONFIG_DIR="$1" CLAUDE_PROJECT_DIR=/none sh "$2" | grep -Fq "\"model\":\"opus\",\"effort\":\"high\""' sh "$tmp/cf/home" "$models_hook"
 
+# The evidence of repeated findings: plugins/playbook-agents/evidence.sh.
+ev_script="$root/plugins/playbook-agents/evidence.sh"
+ev_kh='| Kind | Level | Rule | Applies when | Source | Scope |\n|------|-------|------|--------------|--------|-------|\n'
+ev_eh='| Kind | Level | Review | Date | Finding |\n|------|-------|--------|------|---------|\n'
+ev_krow='| test-passes-when-broken | 2 | Break the code on purpose to see each new test fail. | a change with tests | 3 reviews, 2026-11-19 to 2026-12-02 | general |\n| missing-test | 1 | | a change with no test | | project |\n'
+ev_erow='| missing-test | 1 | u1 | 2026-11-19 | A new function has no test. |\n'
+
+# ev_page <dir> <kind rows> <evidence rows>: writes <dir>/evidence.md.
+ev_page() {
+  mkdir -p "$1"
+  printf '# Evidence\n\n## Kinds\n\n'"$ev_kh"'%b\n## Evidence\n\n'"$ev_eh"'%b' "$2" "$3" > "$1/evidence.md"
+}
+# ev_run <mode> [dir]: runs the script; sets ev_out and ev_code.
+ev_run() {
+  ev_out=$(sh "$ev_script" "$@" 2>&1); ev_code=$?
+}
+# ev_check_case <name> <kind rows> <evidence rows> <expected: pass|text of the FAIL line>
+ev_check_case() {
+  rm -rf "$tmp/ev"
+  ev_page "$tmp/ev" "$2" "$3"
+  ev_run check "$tmp/ev"
+  if [ "$4" = pass ]; then
+    check "evidence check: $1" [ "$ev_code" -eq 0 ] && check "evidence check: $1 (prints a pass line)" sh -c 'printf "%s" "$1" | grep -q "evidence check passed"' sh "$ev_out"
+  else
+    check "evidence check: $1" sh -c '[ "$1" -eq 1 ] && printf "%s" "$2" | grep "^FAIL evidence.md: " | grep -Fq "$3"' sh "$ev_code" "$ev_out" "$4"
+  fi
+}
+
+ev_check_case "a valid page passes" "$ev_krow" "$ev_erow" pass
+ev_check_case "a page with no evidence rows passes" "$ev_krow" "" pass
+ev_check_case "a cell may hold an escaped pipe" '| a-b | 2 | Use x \| y. | a change | none | general |\n' '| a-b | 2 | u1 | 2026-11-19 | One \| two. |\n' pass
+ev_check_case "a duplicate kind fails" "$ev_krow$ev_krow" "" 'kind "missing-test" is repeated'
+ev_check_case "a kind that is not kebab-case fails" '| Missing_Test | 1 | | x | | project |\n' "" 'kind "Missing_Test" is not kebab-case'
+ev_check_case "a level of 0 in Kinds fails" '| a-b | 0 | | x | | project |\n' "" 'has level "0"'
+ev_check_case "a level that is not a number in Kinds fails" '| a-b | two | | x | | project |\n' "" 'has level "two"'
+ev_check_case "a level of 2 with no rule fails" '| a-b | 2 | | x | | project |\n' "" 'is at level 2 and has no rule'
+ev_check_case "a bad level in Evidence fails" "$ev_krow" '| missing-test | 1.5 | u1 | 2026-11-19 | x |\n' 'evidence of "missing-test" has level "1.5"'
+ev_check_case "a bad date fails" "$ev_krow" '| missing-test | 1 | u1 | 19-11-2026 | x |\n' 'has date "19-11-2026"'
+ev_check_case "a date with month 13 fails" "$ev_krow" '| missing-test | 1 | u1 | 2026-13-01 | x |\n' 'has date "2026-13-01"'
+ev_check_case "an unknown kind in Evidence fails" "$ev_krow" '| other-kind | 1 | u1 | 2026-11-19 | x |\n' 'evidence of kind "other-kind" has no row in Kinds'
+ev_check_case "a bad scope fails" '| a-b | 1 | | x | | team |\n' "" 'scope "team"'
+ev_check_case "an evidence row with no review fails" "$ev_krow" '| missing-test | 1 | | 2026-11-19 | x |\n' 'has no review'
+ev_check_case "a row with the wrong number of cells fails" '| a-b | 1 | |\n' "" 'a row of Kinds has 3 cells'
+
+rm -rf "$tmp/ev"; ev_page "$tmp/ev" "$ev_krow" "$ev_erow"
+sed 's/| Applies when |/| When |/' "$tmp/ev/evidence.md" > "$tmp/ev/x" && mv "$tmp/ev/x" "$tmp/ev/evidence.md"
+ev_run check "$tmp/ev"
+check "evidence check: a bad header row of Kinds fails" sh -c '[ "$1" -eq 1 ] && printf "%s" "$2" | grep -Fq "FAIL evidence.md: the header row of Kinds"' sh "$ev_code" "$ev_out"
+rm -rf "$tmp/ev"; ev_page "$tmp/ev" "$ev_krow" "$ev_erow"
+sed 's/| Finding |/| Text |/' "$tmp/ev/evidence.md" > "$tmp/ev/x" && mv "$tmp/ev/x" "$tmp/ev/evidence.md"
+ev_run check "$tmp/ev"
+check "evidence check: a bad header row of Evidence fails" sh -c '[ "$1" -eq 1 ] && printf "%s" "$2" | grep -Fq "FAIL evidence.md: the header row of Evidence"' sh "$ev_code" "$ev_out"
+rm -rf "$tmp/ev"; ev_page "$tmp/ev" "$ev_krow" "$ev_erow"
+sed 's/^## Evidence$/## Findings/' "$tmp/ev/evidence.md" > "$tmp/ev/x" && mv "$tmp/ev/x" "$tmp/ev/evidence.md"
+ev_run check "$tmp/ev"
+check "evidence check: a missing heading fails" sh -c '[ "$1" -eq 1 ] && printf "%s" "$2" | grep -Fq "FAIL evidence.md: missing the heading \"## Evidence\""' sh "$ev_code" "$ev_out"
+rm -rf "$tmp/ev"; mkdir -p "$tmp/ev"
+ev_run check "$tmp/ev"
+check "evidence check: no page says so and passes" sh -c '[ "$1" -eq 0 ] && printf "%s" "$2" | grep -q "no evidence page"' sh "$ev_code" "$ev_out"
+check "evidence check: the playbook's evidence-rules.md passes" sh -c 'sh "$1" check "$2" | grep -q "no evidence page"' sh "$ev_script" "$tmp/ev"
+
+# count: distinct reviews per kind and level.
+ev_e() { printf '| %s | %s | %s | %s | A finding. |\n' "$1" "$2" "$3" "$4"; }
+rm -rf "$tmp/ev"
+ev_page "$tmp/ev" "$ev_krow" "$(ev_e missing-test 1 u1 2026-11-19)\n$(ev_e missing-test 1 u1 2026-11-20)\n$(ev_e missing-test 1 u1 2026-11-21)\n"
+ev_run count "$tmp/ev"
+check "evidence count: one review with the same kind three times counts once" sh -c 'printf "%s" "$1" | grep -Fq "not ready: missing-test (level 1): 1 distinct reviews, last 2026-11-21"' sh "$ev_out"
+ev_page "$tmp/ev" "$ev_krow" "$(ev_e missing-test 1 u1 2026-11-19)\n$(ev_e missing-test 1 u2 2026-11-20)\n"
+ev_run count "$tmp/ev"
+check "evidence count: 2 distinct reviews are not ready" sh -c 'printf "%s" "$1" | grep -Fq "not ready: missing-test (level 1): 2 distinct reviews" && ! printf "%s" "$1" | grep -q "^ready"' sh "$ev_out"
+ev_page "$tmp/ev" "$ev_krow" "$(ev_e missing-test 1 u1 2026-11-19)\n$(ev_e missing-test 1 u2 2026-11-25)\n$(ev_e missing-test 1 u3 2026-11-20)\n$(ev_e missing-test 1 u3 2026-11-22)\n"
+ev_run count "$tmp/ev"
+check "evidence count: 3 distinct reviews are ready, with the last date" sh -c 'printf "%s" "$1" | grep -Fq "ready to consolidate: missing-test (level 1): 3 distinct reviews, last 2026-11-25"' sh "$ev_out"
+check "evidence count: exits 0" [ "$ev_code" -eq 0 ]
+ev_page "$tmp/ev" "$ev_krow" "$(ev_e missing-test 1 u1 2026-11-19)\n$(ev_e missing-test 1 u2 2026-11-20)\n$(ev_e missing-test 2 u3 2026-11-21)\n$(ev_e missing-test 2 u4 2026-11-22)\n$(ev_e missing-test 2 u5 2026-11-23)\n"
+ev_run count "$tmp/ev"
+check "evidence count: groups at different levels are counted apart" sh -c 'printf "%s\n" "$1" | grep -Fq "not ready: missing-test (level 1): 2 distinct" && printf "%s\n" "$1" | grep -Fq "ready to consolidate: missing-test (level 2): 3 distinct" && [ "$(printf "%s\n" "$1" | wc -l)" -eq 2 ]' sh "$ev_out"
+ev_page "$tmp/ev" "$ev_krow" "$(ev_e missing-test 1 u1 2026-11-19)\n$(ev_e test-passes-when-broken 1 u1 2026-11-19)\n$(ev_e test-passes-when-broken 1 u2 2026-11-19)\n"
+ev_run count "$tmp/ev"
+check "evidence count: kinds are counted apart" sh -c 'printf "%s\n" "$1" | grep -Fq "missing-test (level 1): 1 distinct" && printf "%s\n" "$1" | grep -Fq "test-passes-when-broken (level 1): 2 distinct"' sh "$ev_out"
+rm -rf "$tmp/ev"; mkdir -p "$tmp/ev"
+ev_run count "$tmp/ev"
+check "evidence count: no page prints nothing and exits 0" [ "$ev_code" -eq 0 -a -z "$ev_out" ]
+
+# rules: level 2 and up, from the page and from evidence-rules.md next to the script.
+rm -rf "$tmp/evs"; mkdir -p "$tmp/evs"
+cp "$ev_script" "$tmp/evs/evidence.sh"
+printf '%b%b%b' '# Evidence\n\nGeneral rules.\n\n## Kinds\n\n' "$ev_kh" '| vague-name | 3 | Name the mistake, not the place. | a new kind | 4 reviews | general |\n| general-new | 1 | Not yet a rule. | x | | general |\n' > "$tmp/evs/evidence-rules.md"
+rm -rf "$tmp/ev"; ev_page "$tmp/ev" "$ev_krow" ""
+ev_rules() { ev_out=$(sh "$tmp/evs/evidence.sh" rules "$@" 2>&1); ev_code=$?; }
+ev_rules "$tmp/ev"
+check "evidence rules: prints level 2 and up from the page and evidence-rules.md" sh -c '[ "$(printf "%s\n" "$1" | wc -l)" -eq 3 ] && printf "%s\n" "$1" | grep -Fxq -- "- test-passes-when-broken (level 2; applies when: a change with tests): Break the code on purpose to see each new test fail." && printf "%s\n" "$1" | grep -Fxq -- "- vague-name (level 3; applies when: a new kind): Name the mistake, not the place."' sh "$ev_out"
+check "evidence rules: leaves out level 1" sh -c '! printf "%s" "$1" | grep -Eq "missing-test|general-new"' sh "$ev_out"
+check "evidence rules: one heading line first, exit 0" sh -c '[ "$2" -eq 0 ] && printf "%s\n" "$1" | head -n 1 | grep -q "^Rules learned"' sh "$ev_out" "$ev_code"
+rm -rf "$tmp/ev"; ev_page "$tmp/ev" '| a-b | 1 | | x | | project |\n' ""
+sed '/vague-name/d' "$tmp/evs/evidence-rules.md" > "$tmp/evs/x" && mv "$tmp/evs/x" "$tmp/evs/evidence-rules.md"
+ev_rules "$tmp/ev"
+check "evidence rules: prints nothing, no heading, when no kind is above level 1" [ "$ev_code" -eq 0 -a -z "$ev_out" ]
+rm -rf "$tmp/ev"; mkdir -p "$tmp/ev"
+ev_rules "$tmp/ev"
+check "evidence rules: prints nothing with no page and no rules" [ "$ev_code" -eq 0 -a -z "$ev_out" ]
+rm -f "$tmp/evs/evidence-rules.md"
+ev_rules "$tmp/ev"
+check "evidence rules: prints nothing with no files at all" [ "$ev_code" -eq 0 -a -z "$ev_out" ]
+ev_page "$tmp/ev" '| a-b | 2 | Use x \| y. | a change | none | general |\n' ""
+ev_rules "$tmp/ev"
+check "evidence rules: an escaped pipe stays one cell" sh -c 'printf "%s\n" "$1" | grep -Fxq -- "- a-b (level 2; applies when: a change): Use x | y."' sh "$ev_out"
+ev_script_real=$(sh "$ev_script" rules "$tmp/ev" 2>&1)
+check "evidence rules: the playbook's own evidence-rules.md adds no rule yet" sh -c '[ "$(printf "%s\n" "$1" | wc -l)" -eq 2 ]' sh "$ev_script_real"
+
+# Failures found in review: a table that ends early, a missing separator row,
+# an impossible day, the playbook's own file, code blocks, CRLF, the title.
+rm -rf "$tmp/ev"; ev_page "$tmp/ev" "$ev_krow" "$(ev_e missing-test 1 r1 2026-11-19)\n$(ev_e missing-test 1 r2 2026-11-20)\n$(ev_e missing-test 1 r3 2026-11-21)\n\n$(ev_e missing-test 1 r4 2026-11-22)\n"
+ev_run check "$tmp/ev"
+check "evidence check: a row after a blank line ends the table and fails" sh -c '[ "$1" -eq 1 ] && printf "%s\n" "$2" | grep "^FAIL evidence.md: " | grep -Fq "a table row after the table of Evidence ended"' sh "$ev_code" "$ev_out"
+ev_run count "$tmp/ev"
+check "evidence count: a row after a blank line is still counted" sh -c 'printf "%s\n" "$1" | grep -Fxq "ready to consolidate: missing-test (level 1): 4 distinct reviews, last 2026-11-22"' sh "$ev_out"
+rm -rf "$tmp/ev"; ev_page "$tmp/ev" "$ev_krow"'\n| extra-kind | 1 | | x | | project |\n' ""
+ev_run check "$tmp/ev"
+check "evidence check: a row of Kinds after a blank line fails" sh -c '[ "$1" -eq 1 ] && printf "%s\n" "$2" | grep -Fq "a table row after the table of Kinds ended"' sh "$ev_code" "$ev_out"
+
+rm -rf "$tmp/ev"; ev_page "$tmp/ev" "$ev_krow" "$(ev_e missing-test 1 r1 2026-11-19)\n$(ev_e missing-test 1 r2 2026-11-20)\n$(ev_e missing-test 1 r3 2026-11-21)\n"
+sed '/^|------|-------|--------|------|---------|$/d' "$tmp/ev/evidence.md" > "$tmp/ev/x" && mv "$tmp/ev/x" "$tmp/ev/evidence.md"
+ev_run check "$tmp/ev"
+check "evidence check: a missing separator row of Evidence fails" sh -c '[ "$1" -eq 1 ] && printf "%s\n" "$2" | grep -Fq "the second row of Evidence is not the separator row"' sh "$ev_code" "$ev_out"
+ev_run count "$tmp/ev"
+check "evidence count: with no separator row no data row is lost" sh -c 'printf "%s\n" "$1" | grep -Fq "3 distinct reviews"' sh "$ev_out"
+rm -rf "$tmp/ev"; ev_page "$tmp/ev" "$ev_krow" ""
+sed '/^|------|-------|------|--------------|--------|-------|$/d' "$tmp/ev/evidence.md" > "$tmp/ev/x" && mv "$tmp/ev/x" "$tmp/ev/evidence.md"
+ev_run check "$tmp/ev"
+check "evidence check: a missing separator row of Kinds fails" sh -c '[ "$1" -eq 1 ] && printf "%s\n" "$2" | grep -Fq "the second row of Kinds is not the separator row"' sh "$ev_code" "$ev_out"
+
+ev_check_case "a day that the month does not have fails (02-31)" "$ev_krow" '| missing-test | 1 | u1 | 2026-02-31 | x |\n' 'has date "2026-02-31"'
+ev_check_case "a day that the month does not have fails (04-31)" "$ev_krow" '| missing-test | 1 | u1 | 2026-04-31 | x |\n' 'has date "2026-04-31"'
+ev_check_case "29 February of a leap year passes" "$ev_krow" '| missing-test | 1 | u1 | 2028-02-29 | x |\n' pass
+ev_check_case "29 February of a year that is not a leap year fails" "$ev_krow" '| missing-test | 1 | u1 | 2026-02-29 | x |\n' 'has date "2026-02-29"'
+ev_check_case "29 February of 2100 fails and of 2000 passes" "$ev_krow" '| missing-test | 1 | u1 | 2000-02-29 | x |\n| missing-test | 1 | u2 | 2100-02-29 | x |\n' 'has date "2100-02-29"'
+ev_check_case "day 00 fails" "$ev_krow" '| missing-test | 1 | u1 | 2026-05-00 | x |\n' 'has date "2026-05-00"'
+
+# check reads evidence-rules.md next to the script.
+rm -rf "$tmp/evs" "$tmp/ev"; mkdir -p "$tmp/evs" "$tmp/ev"
+cp "$ev_script" "$tmp/evs/evidence.sh"
+printf '%b%b' '# Evidence\n\n## Kinds\n\n' "$ev_kh" > "$tmp/evs/evidence-rules.md"
+out=$(sh "$tmp/evs/evidence.sh" check "$tmp/ev" 2>&1); code=$?
+check "evidence check: a valid evidence-rules.md passes" [ "$code" -eq 0 ]
+printf '%b%b' '# Evidence\n\n## Kinds\n\n' "$ev_kh"'| Bad_Kind | 1 | | x | | general |\n' > "$tmp/evs/evidence-rules.md"
+out=$(sh "$tmp/evs/evidence.sh" check "$tmp/ev" 2>&1); code=$?
+check "evidence check: a broken evidence-rules.md fails with its own name" sh -c '[ "$1" -eq 1 ] && printf "%s\n" "$2" | grep -Fq "FAIL evidence-rules.md: kind \"Bad_Kind\" is not kebab-case"' sh "$code" "$out"
+printf '%b' '## Kinds\n\n' > "$tmp/evs/evidence-rules.md"
+out=$(sh "$tmp/evs/evidence.sh" check "$tmp/ev" 2>&1); code=$?
+check "evidence check: an evidence-rules.md with no title and no table fails" sh -c '[ "$1" -eq 1 ] && printf "%s\n" "$2" | grep -Fq "FAIL evidence-rules.md: missing the heading \"# Evidence\"" && printf "%s\n" "$2" | grep -Fq "FAIL evidence-rules.md: Kinds has no table"' sh "$code" "$out"
+
+# A table inside a code block is not read.
+rm -rf "$tmp/ev"; ev_page "$tmp/ev" "$ev_krow" "$ev_erow"
+printf '\n```text\n| not-a-kind | zero | | nope | |\n| other | 1 | r9 | never | x |\n```\n' >> "$tmp/ev/evidence.md"
+ev_run check "$tmp/ev"
+check "evidence check: a table inside a code block is not read" [ "$ev_code" -eq 0 ]
+ev_run count "$tmp/ev"
+check "evidence count: a table inside a code block is not counted" sh -c '[ "$(printf "%s\n" "$1" | wc -l)" -eq 1 ]' sh "$ev_out"
+
+# A page with CRLF line ends reads as one with LF.
+rm -rf "$tmp/ev"; ev_page "$tmp/ev" "$ev_krow" "$(ev_e missing-test 1 u1 2026-11-19)\n"
+sed 's/$/\r/' "$tmp/ev/evidence.md" > "$tmp/ev/x" && mv "$tmp/ev/x" "$tmp/ev/evidence.md"
+ev_run check "$tmp/ev"
+check "evidence check: a page with CRLF line ends passes" [ "$ev_code" -eq 0 ]
+ev_run count "$tmp/ev"
+check "evidence count: a page with CRLF line ends gives a clean last date" sh -c 'printf "%s\n" "$1" | grep -Fxq "not ready: missing-test (level 1): 1 distinct reviews, last 2026-11-19"' sh "$ev_out"
+
+# Headings and title.
+rm -rf "$tmp/ev"; ev_page "$tmp/ev" "$ev_krow" "$ev_erow"
+sed '/^# Evidence$/d' "$tmp/ev/evidence.md" > "$tmp/ev/x" && mv "$tmp/ev/x" "$tmp/ev/evidence.md"
+ev_run check "$tmp/ev"
+check "evidence check: a missing title fails" sh -c '[ "$1" -eq 1 ] && printf "%s\n" "$2" | grep -Fq "missing the heading \"# Evidence\""' sh "$ev_code" "$ev_out"
+printf '# Evidence\n\n## Kinds\n\n## Evidence\n\n' > "$tmp/ev/evidence.md"
+ev_run check "$tmp/ev"
+check "evidence check: a Kinds heading with no table fails" sh -c '[ "$1" -eq 1 ] && printf "%s\n" "$2" | grep -Fq "Kinds has no table"' sh "$ev_code" "$ev_out"
+check "evidence check: an Evidence heading with no table fails" sh -c 'printf "%s\n" "$1" | grep -Fq "Evidence has no table"' sh "$ev_out"
+
+# The default directory is $CLAUDE_PROJECT_DIR/docs/wiki.
+rm -rf "$tmp/evp"; ev_page "$tmp/evp/docs/wiki" "$ev_krow" "$(ev_e missing-test 1 u1 2026-11-19)\n"
+ev_out=$(CLAUDE_PROJECT_DIR="$tmp/evp" sh "$ev_script" rules 2>&1)
+check "evidence: CLAUDE_PROJECT_DIR sets the default wiki directory" sh -c 'printf "%s" "$1" | grep -q "test-passes-when-broken"' sh "$ev_out"
+ev_out=$(CLAUDE_PROJECT_DIR="$tmp/evp" sh "$ev_script" count 2>&1)
+check "evidence: the default directory is read by count too" sh -c 'printf "%s" "$1" | grep -q "missing-test (level 1): 1 distinct"' sh "$ev_out"
+ev_out=$(cd "$tmp/evp" && sh "$ev_script" count 2>&1)
+check "evidence: with no variable the default is docs/wiki" sh -c 'printf "%s" "$1" | grep -q "missing-test (level 1): 1 distinct"' sh "$ev_out"
+check "evidence: an unknown mode exits 2" sh -c 'sh "$1" frob >/dev/null 2>&1; [ $? -eq 2 ]' sh "$ev_script"
+check "evidence: no file is written" sh -c '[ -z "$(find "$1" -newer "$2" -type f)" ]' sh "$tmp/evp" "$tmp/evp/docs/wiki/evidence.md"
+
 if [ "$failed" -eq 0 ]; then
   printf 'all cases passed\n'
 else

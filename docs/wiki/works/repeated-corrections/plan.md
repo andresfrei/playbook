@@ -6,7 +6,7 @@ The units that build [architecture.md](architecture.md), in order. Each one is a
 
 | Unit | Status | Evidence | Done on | Owner's words |
 |------|--------|----------|---------|---------------|
-| repeated-corrections-U1 | Not started | | | |
+| repeated-corrections-U1 | Done | `sh scripts/verify_test.sh`: all cases passed, 715 ok; `verify.sh`, `shellcheck`, `check-wiki.sh` passed. Each new case was seen to fail with its behaviour broken. `review` found four defects (rows after a blank line lost, separator not checked, impossible dates, six behaviours with no failing test); all fixed and retested | 2026-11-19 | |
 | repeated-corrections-U2 | Not started | | | |
 | repeated-corrections-U3 | Not started | | | |
 | repeated-corrections-U4 | Not started | | | |
