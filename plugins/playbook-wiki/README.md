@@ -33,12 +33,13 @@ Each hook prints a file of this folder with `cat`, or runs a POSIX shell script 
 | When | What it reads | What it does |
 |------|---------------|--------------|
 | A session starts | [contract.md](contract.md) | Prints the contract: the rules an agent follows in a project with a wiki |
-| A session starts | `docs/wiki/.format` of the session's project | Prints one line when the wiki's format is behind the plugin's, recommending `/playbook-wiki:doctor`. Prints nothing otherwise |
+| A new session starts | `docs/wiki/.format` of the session's project | When the wiki's format is behind the plugin's, shows you one line recommending `/playbook-wiki:doctor`, and tells the agent; when it is ahead, which means the plugin is older than the wiki, shows you one line recommending an update. Prints nothing otherwise |
+| A new session starts | The installed plugin's manifest, and the same plugin's manifest in the marketplace's copy on your machine, found through `~/.claude/plugins/known_marketplaces.json` for a marketplace from a folder | When the copy holds a newer version, shows you one line with both versions and how to update, and tells the agent. It never updates anything and does not check online, so it sees a new version only after the marketplace is refreshed. Prints nothing otherwise |
 | A subagent starts | [contract.md](contract.md) | Gives the same contract to the subagent |
 | Before a Bash command that runs `git commit` | The command, and `docs/wiki/` of that repository | When the wiki is at the present format and differs from the last commit, runs `check-wiki.sh`. When the check fails, the commit is stopped and the agent gets the check's output to repair. Prints nothing otherwise. A commit you run in your own terminal is not touched |
 | Before a Bash command that runs `git merge` | The command, and `docs/wiki/` on both branches | When each side added decisions since they diverged, or both changed the same shared page, asks you before the merge, showing the list. Prints nothing otherwise |
 
-The hooks change no file and no setting. The contract and the format notice are text the agent reads at the start of each session, in every project where the plugin is on.
+The hooks change no file and no setting. The contract is text the agent reads at the start of each session, in every project where the plugin is on; the format and version notices show you one line when there is something to do, and tell the agent too.
 
 ## Examples
 

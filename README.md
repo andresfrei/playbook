@@ -67,7 +67,7 @@ sequenceDiagram
     participant W as playbook-wiki
     participant A as playbook-agents
     participant Repo as Project wiki
-    W-->>Agent: Load the contract at session start and flag an outdated wiki
+    W-->>Agent: Load the contract at session start, and flag an outdated wiki or plugin
     opt Working agents enabled
         A-->>Agent: Load the working rules
     end
