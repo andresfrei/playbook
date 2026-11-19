@@ -35,6 +35,12 @@ fresh() {
   cp -R "$root/.claude-plugin" "$root/plugins" "$tmp/repo/"
   mkdir "$tmp/repo/scripts"
   cp "$root/scripts/set-models.sh" "$tmp/repo/scripts/"
+  # The real playbook-agents may sit at its limit of 620 words at session
+  # start. Every case that adds a word of its own needs headroom that does not
+  # depend on the real count, so the copy's description of write-skill is cut
+  # to three words, in the copy only.
+  ws="$tmp/repo/plugins/playbook-agents/skills/write-skill/SKILL.md"
+  sed '3s/.*/description: Write a skill./' "$ws" > "$ws.new" && mv "$ws.new" "$ws"
 }
 
 # add_skill <name> <description> <body words> [extra front matter line]
@@ -2602,6 +2608,63 @@ touch -t 202001010000 "$hold_data/held/old"
 ran_run s6 playbook-agents:review
 check "hold: a mark older than seven days is removed when one is written" absent "$hold_data/review/old"
 check "hold: a held commit older than seven days is removed when a mark is written" absent "$hold_data/held/old"
+
+# The classifier check of the same hook (repeated-corrections-17).
+cls_t="$tmp/cls"
+rm -rf "$cls_t"
+mkdir -p "$cls_t"
+printf '{"type":"assistant","message":{"content":[{"type":"tool_use","name":"Read","input":{"file_path":"a"}}]}}\n' > "$cls_t/none.jsonl"
+printf '{"type":"assistant","message":{"content":[{"type":"tool_use","name":"Agent","input":{"description":"c",  "subagent_type" : "playbook-agents:classify","prompt":"x"}}]}}\n' > "$cls_t/with.jsonl"
+printf '{"type":"user","message":{"content":"say \\"subagent_type\\": \\"playbook-agents:classify\\""}}\n' > "$cls_t/quoted.jsonl"
+# cls_run <session> <agent type> <transcript> <last message as JSON text> [extra JSON fields]
+cls_run() {
+  out=$(printf '{"session_id":"%s","hook_event_name":"SubagentStop",%s"agent_id":"x","agent_type":"%s","agent_transcript_path":"%s","last_assistant_message":"%s"}' \
+    "$1" "${5:-}" "$2" "$3" "$4" | CLAUDE_PLUGIN_DATA="$hold_data" sh "$ran_hook" 2>&1)
+  code=$?
+}
+blocked() {
+  [ "$code" -eq 0 ] || return 1
+  [ "$(printf '%s\n' "$out" | wc -l | tr -d ' ')" -eq 1 ] || return 1
+  case $out in
+    '{"decision":"block","reason":"'*'playbook-agents:classify'*'"}') ;;
+    *) return 1 ;;
+  esac
+  # The reason is a JSON string: no quote inside it but an escaped one.
+  reason=${out#'{"decision":"block","reason":"'}
+  reason=${reason%'"}'}
+  case $(printf '%s' "$reason" | sed 's/\\"//g') in
+    *\"*) return 1 ;;
+  esac
+  printf '%s' "$reason" | grep -Fq "then end with your full report again, findings included"
+}
+rm -rf "$hold_data"
+cls_run c1 playbook-agents:review "$cls_t/none.jsonl" 'Finding 1: a.sh:3 \"quoted\"\nmore.'
+check "classify: findings and no classifier block with a reason" blocked
+check "classify: the mark is written when it blocks" test -f "$hold_data/review/c1"
+cls_run c2 playbook-agents:review "$cls_t/quoted.jsonl" 'Finding 1: x'
+check "classify: a transcript that only quotes the call as text still blocks" blocked
+cls_run c3 playbook-agents:review "$cls_t/none.jsonl" 'Reviewed.\n\nNo findings.'
+check "classify: No findings. passes" passes
+cls_run c3b playbook-agents:review "$cls_t/none.jsonl" 'Commit A: No findings.\n\nCommit B:\nFinding 1: x.sh:3 breaks'
+check "classify: No findings. inside another line, beside findings, still blocks" blocked
+cls_run c3c playbook-agents:review "$cls_t/none.jsonl" 'Reviewed.\n  No findings.  \n'
+check "classify: a line of No findings. with spaces around it passes" passes
+check "classify: the mark is written with No findings." test -f "$hold_data/review/c3"
+cls_run c4 playbook-agents:review "$cls_t/with.jsonl" 'Finding 1: x'
+check "classify: a transcript with the classifier call passes" passes
+check "classify: the mark is written when the classifier ran" test -f "$hold_data/review/c4"
+cls_run c5 playbook-agents:review "$cls_t/none.jsonl" 'Finding 1: x' '"stop_hook_active":true,'
+check "classify: stop_hook_active true passes" passes
+check "classify: the mark is written when stop_hook_active is true" test -f "$hold_data/review/c5"
+cls_run c6 playbook-agents:review "$cls_t/missing.jsonl" 'Finding 1: x'
+check "classify: a missing transcript passes" passes
+check "classify: the mark is written when the transcript is missing" test -f "$hold_data/review/c6"
+cls_run c7 playbook-agents:explore "$cls_t/none.jsonl" 'Finding 1: x'
+check "classify: another agent type passes" passes
+cls_run c8 playbook-agents:review "$cls_t/none.jsonl" ''
+check "classify: an empty last message passes" passes
+cls_run c9 playbook-agents:review "$cls_t/none.jsonl" 'Finding 1: x' '"stop_hook_active" : false,'
+check "classify: stop_hook_active false still blocks" blocked
 
 rm -rf "$tmp/hold_wiki"
 mkdir -p "$tmp/hold_wiki/docs/wiki"
