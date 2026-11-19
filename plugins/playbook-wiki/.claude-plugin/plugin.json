@@ -1,6 +1,6 @@
 {
   "name": "playbook-wiki",
-  "version": "3.1.1",
+  "version": "3.2.0",
   "description": "A project's wiki as its shared source of truth: the method, the format, and the check.",
   "author": {
     "name": "Andres Frei"

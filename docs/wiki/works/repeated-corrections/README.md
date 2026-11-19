@@ -10,10 +10,7 @@ Updated 2026-11-19, after repeated-corrections-30.
 
 The work is closed: repeated-corrections-U1 to U5 are Done (see [plan.md](plan.md)), and the shared pages say what it decided (`03-technology/architecture.md`, `04-skills/working-skills.md`, `01-product/glossary.md`, `01-product/delegations.md`, `01-product/overview.md`, `01-product/skill-set.md`). `--delegations` proposed open-work, delegated narrowly (repeated-corrections-29). No decision reached `main` since the work started, so the step at the merge has nothing to compare.
 
-Next steps, in order:
-
-1. The owner pushes the branch `feat/repeated-corrections` and merges its pull request (R14).
-2. After the merge: version 3.2.0 in the three manifests, the tag `v3.2.0`, and the release on GitHub (repeated-corrections-30).
+PR #34 merged into `main` on 2026-11-19 at f54cd6c. Version 3.2.0 is set in the three manifests and released as `v3.2.0` (repeated-corrections-30).
 
 ## Stage table
 
