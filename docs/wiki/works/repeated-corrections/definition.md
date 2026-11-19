@@ -26,6 +26,17 @@ The owner, who reads the same finding again; the agent, which repeats the mistak
 - A subagent with a smaller model keeps the index; its criteria are written first (repeated-corrections-10).
 - A tool run on one repository builds its first rules from its past findings, as the doctor does for a format; keeping out findings already fixed is open (repeated-corrections-8).
 
+## The criteria
+
+The base of the criteria the subagent applies (repeated-corrections-11):
+
+1. A kind names the mistake, not the place: `test-passes-when-broken`, not `auth-bug`. Its rule fits in one sentence a step can act on.
+2. The central test: would the rule of this kind have prevented this finding? Yes: same kind; if its rule was at level k and did not prevent it, the finding goes to level k. No, for every kind: a new kind.
+3. Borders are settled by the same test: `missing-test` and `test-passes-when-broken` stay apart, because "write the test" does not prevent a test that misses the failure.
+4. Kinds are never renamed; when two are joined, the record says which absorbed which.
+5. A consolidated rule covers every record below it, stays concrete with an example inside, says when it applies (which files or which kind of change), and cites its source.
+6. A rule is the project's when understanding it needs the project's business; otherwise it is general.
+
 ## The measurement
 
 Before anything is built: read a sample of about 60 findings of `review` in the transcripts on the owner's machine, from every project and date, group them by type, and count how many repeat. Only types and counts are written here: the repository is public, and the reports of other projects are private. If corrections rarely repeat, the work stops (repeated-corrections-1). Made on 2026-11-19 on a sample: findings repeat, 85% of them in types seen in two projects or more ([measurements.md](measurements.md)).

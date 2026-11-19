@@ -6,7 +6,7 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after repeated-corrections-10.
+Updated 2026-11-19, after repeated-corrections-11.
 
 Stage 1, Wiki, is open. [definition.md](definition.md) holds the problem and the shape the owner gave it; four questions are open in [questions.md](questions.md). The measurement showed that findings repeat ([measurements.md](measurements.md)).
 
