@@ -88,7 +88,7 @@ Counted for each plugin by `scripts/verify.sh` (D199):
 
 | Plugin | Always-loaded file | What loads at session start |
 |--------|--------------------|-----------------------------|
-| `playbook-wiki` | The contract, at most 250 words | At most 350 words |
+| `playbook-wiki` | The contract, at most 270 words (delegation-2) | At most 370 words (delegation-2) |
 | `playbook-agents` | The rules, at most 400 words | At most 620 words |
 
 ## How it can evolve

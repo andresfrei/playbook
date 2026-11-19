@@ -8,10 +8,10 @@ Limits are counted in words and characters, not tokens, because the verify scrip
 
 | # | What | Limit | Today, measured 2026-11-13 |
 |---|------|-------|-----------------------------|
-| L1 | The file a plugin prints at the start of every session | `playbook-wiki`, the contract: 250 words. `playbook-agents`, the rules: 400 words (D199). It was 500 words for one rules file (D48) | On 2026-11-16 the contract has 249 words and the rules 399. Claude Code cuts what a hook prints at 10,000 characters, about 1,500 words, and measures each hook's text on its own |
+| L1 | The file a plugin prints at the start of every session | `playbook-wiki`, the contract: 270 words (delegation-2). `playbook-agents`, the rules: 400 words (D199). It was 500 words for one rules file (D48), and 250 for the contract (D199) | On 2026-11-16 the contract has 249 words and the rules 399. Claude Code cuts what a hook prints at 10,000 characters, about 1,500 words, and measures each hook's text on its own |
 | L2 | The body of a skill file, without its front matter | 700 words | The installed style guide sets 1,000 tokens, about 750 words. The seven skills the product starts from run from 344 to 664 words |
 | L3 | A skill description | 250 characters | The installed style guide sets 250. The 43 installed skills have a median of 255 and a maximum of 767. Claude Code cuts at 1,536 |
-| L4 | Everything a plugin loads at session start: its file of L1 plus the descriptions of its skills and agents | `playbook-wiki`: 350 words. `playbook-agents`: 620 words (D199). It was 800 words for the whole product (D48) | On 2026-11-16 `playbook-wiki` loads 337 words and `playbook-agents` 609. A person with the whole product loads 946, where the one plugin loaded 790. On 2026-11-13, before the product, about 15,400 words loaded |
+| L4 | Everything a plugin loads at session start: its file of L1 plus the descriptions of its skills and agents | `playbook-wiki`: 370 words (delegation-2). `playbook-agents`: 620 words (D199). `playbook-wiki` was 350 (D199). It was 800 words for the whole product (D48) | On 2026-11-16 `playbook-wiki` loads 337 words and `playbook-agents` 609. A person with the whole product loads 946, where the one plugin loaded 790. On 2026-11-13, before the product, about 15,400 words loaded |
 
 The limits of L4 leave little room on purpose: adding a skill or a rule means removing or shortening something.
 

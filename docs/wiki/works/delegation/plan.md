@@ -6,7 +6,7 @@ Stage 5. It builds what [definition.md](definition.md) and [technology.md](techn
 
 | Unit | Status | Evidence | Done on | Owner's words |
 |------|--------|----------|---------|---------------|
-| delegation-U1 | Not started | | | |
+| delegation-U1 | Done | R6 and R10 of `plugins/playbook-wiki/contract.md` hold the texts of delegation-3 and delegation-4 word for word; the contract has 253 words. `scripts/verify.sh`: L1 270 and L4 370 for `playbook-wiki`; its tests moved to 271/270 and 370 words. Run on 2026-11-19: `bash scripts/verify.sh` printed "verify passed: playbook-wiki loads 341 words at session start, limit 370; playbook-agents loads 615, limit 620"; `sh scripts/verify_test.sh` printed "all cases passed"; `shellcheck` passed. The agent `review` read it and found one fault, fixed: `01-product/rules.md` did not cite delegation-3 and delegation-4 | 2026-11-19 | |
 | delegation-U2 | Not started | | | |
 | delegation-U3 | Not started | | | |
 | delegation-U4 | Not started | | | |

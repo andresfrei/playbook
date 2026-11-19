@@ -14,7 +14,7 @@ Waiting for a decision: none until delegation-U4, accepted by judgement.
 
 Next steps, in order:
 
-1. Build delegation-U1 to delegation-U6 in order, as [plan.md](plan.md) says.
+1. Build delegation-U2 to delegation-U6 in order, as [plan.md](plan.md) says; delegation-U1 is Done.
 2. Close the work.
 
 ## Stage table

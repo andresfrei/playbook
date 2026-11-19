@@ -11,11 +11,11 @@ R1 to R17 are Decided: five by the decision named below, the other twelve by D34
 | R3 | Talking to the owner | Current global instructions | D34 |
 | R4 | Talking to the owner | "Verifica en la documentación actual … no te fíes de lo que recuerdes" | D34 |
 | R5 | Deciding | D8 | D8 |
-| R6 | Deciding | Practice in the owner's project wikis | D34 |
+| R6 | Deciding | Practice in the owner's project wikis; since the work delegation, the owner also decides by a recorded delegation | D34, delegation-3 |
 | R7 | Deciding | Practice in the owner's project wikis | D34 |
 | R8 | Deciding | "Si algo del stack no permite cumplir un requisito, dímelo y propón alternativas en lugar de cambiarlo por tu cuenta", widened from the stack to anything Decided ([wiki-maintenance.md](wiki-maintenance.md)) | D34, D138 |
 | R9 | Building | D4, D19 | D4, D19 |
-| R10 | Building | "entrega y espera mi revisión al final de cada una"; since phase 4, only a unit the plan marks judgement waits for that review | D34, phase-4-1 |
+| R10 | Building | "entrega y espera mi revisión al final de cada una"; since phase 4, only a unit the plan marks judgement waits for that review | D34, phase-4-1, delegation-4 |
 | R11 | Building | Owner's briefs ask for tests with the feature | D34 |
 | R12 | Building | "todo documentaco y ordenado para que cualquier LLM lo pueda entender de forma optima" | D34 |
 | R13 | Delivering | Current global instructions | D34 |

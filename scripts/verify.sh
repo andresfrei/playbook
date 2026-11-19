@@ -10,13 +10,13 @@ plugins="$root/plugins"
 agents_plugin="$plugins/playbook-agents"
 wiki_plugin="$plugins/playbook-wiki"
 
-max_contract_words=250     # L1, the contract of playbook-wiki
+max_contract_words=270     # L1, the contract of playbook-wiki
 max_rules_words=400        # L1, the rules of playbook-agents
 max_skill_body_words=700   # L2
 max_description_chars=250  # L3
 max_name_chars=64          # the name of a skill
 max_reference_lines=100    # a reference file with no section Contents
-max_wiki_startup_words=350    # L4, playbook-wiki
+max_wiki_startup_words=370    # L4, playbook-wiki
 max_agents_startup_words=620  # L4, playbook-agents
 
 failures=0

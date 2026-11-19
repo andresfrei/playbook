@@ -82,11 +82,11 @@ rm "$tmp/repo/plugins/playbook-agents/rules.md"
 expect "L1: missing rules file fails" fail "L1"
 
 fresh
-words 251 > "$tmp/repo/plugins/playbook-wiki/contract.md"
-expect "L1: contract over 250 words fails" fail "L1 contract.md has 251 words"
+words 271 > "$tmp/repo/plugins/playbook-wiki/contract.md"
+expect "L1: contract over 270 words fails" fail "L1 contract.md has 271 words"
 
 fresh
-words 250 > "$tmp/repo/plugins/playbook-wiki/contract.md"
+words 270 > "$tmp/repo/plugins/playbook-wiki/contract.md"
 words 400 > "$tmp/repo/plugins/playbook-agents/rules.md"
 expect "L1: contract and rules at their limits pass" pass
 
@@ -204,7 +204,8 @@ expect "L4: playbook-agents over 620 words at session start fails" fail "L4 play
 
 fresh
 skill_plugin=playbook-wiki add_skill wiki-skill "$(words 40 | cut -c1-200)" 10
-expect "L4: playbook-wiki over 350 words at session start fails" fail "L4 playbook-wiki loads"
+skill_plugin=playbook-wiki add_skill wiki-skill-2 "$(words 40 | cut -c1-200)" 10
+expect "L4: playbook-wiki over 370 words at session start fails" fail "L4 playbook-wiki loads"
 
 fresh
 skill_plugin=playbook-wiki add_skill wiki-skill "$(words 40 | cut -c1-200)" 10 "disable-model-invocation: true"
