@@ -14,8 +14,7 @@ Waiting for a decision: none.
 
 Next steps, in order:
 
-1. Build seed-evidence-U1.
-2. Build seed-evidence-U2, accepted by the owner's judgement.
+1. Build seed-evidence-U2, accepted by the owner's judgement.
 
 ## Stage table
 

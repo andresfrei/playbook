@@ -6,7 +6,7 @@ The units that build [architecture.md](architecture.md), in order.
 
 | Unit | Status | Evidence | Done on | Owner's words |
 |------|--------|----------|---------|---------------|
-| seed-evidence-U1 | Not started | | | |
+| seed-evidence-U1 | Done | `seed-reviews.sh` with its cases in `scripts/verify_test.sh`, each new case seen to fail with its behaviour broken; on the owner's transcripts, `list` gives the 35 reviews of [measurements.md](measurements.md) plus one made later. Two reviews: nine findings, fixed, stored by `classify` in [../../evidence.md](../../evidence.md) | 2026-11-19 | |
 | seed-evidence-U2 | Not started | | | |
 
 ## Units
