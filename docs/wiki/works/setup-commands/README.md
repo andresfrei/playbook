@@ -2,19 +2,16 @@
 
 Three commands to start and configure the playbook: `/playbook:init` that skips what is already on, `/playbook-wiki:init` that adds only a wiki to a repository that has none, and `/playbook-agents:config` that sets the agents' models outside the plugin. Andres Frei leads this work.
 
-Status: Open.
+Status: Closed 2026-11-18.
 
 ## Where work stands
 
-The last decision on 2026-11-18 is setup-commands-15. Stage 6 (Execution) is open.
+The last decision on 2026-11-18 is setup-commands-16. All six stages are closed, and the five units of the [plan](plan.md) are Done.
 
-Waiting for a decision: the owner's review of setup-commands-U4, in [plan.md](plan.md).
+Next steps, after the owner's merge of `feat/setup-commands` into `main`:
 
-Next steps:
-
-1. Build setup-commands-U4 and setup-commands-U5 in order; setup-commands-U1 to setup-commands-U3 are Done.
-
-At the close of the work, setup-commands-2 changes `01-product/skill-set.md` and the `prepare-project` reference `1-wiki.md`.
+1. Set the version `2.5.0` in the three manifests (setup-commands-16).
+2. Tag `v2.5.0` and publish the release on GitHub.
 
 | Stage | Status | Closed on |
 |-------|--------|-----------|
@@ -23,7 +20,7 @@ At the close of the work, setup-commands-2 changes `01-product/skill-set.md` and
 | 3 Skills | Closed | 2026-11-18 |
 | 4 Design system | Closed (not applicable) | 2026-11-18 |
 | 5 Plan | Closed | 2026-11-18 |
-| 6 Execution | Open | |
+| 6 Execution | Closed | 2026-11-18 |
 
 | Page | Content | Code it governs |
 |------|---------|-----------------|
