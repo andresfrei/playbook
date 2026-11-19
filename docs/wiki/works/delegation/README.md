@@ -6,16 +6,16 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after delegation-10.
+Updated 2026-11-19, after delegation-11.
 
 Stage 2, Technology, is open. Stage 1 closed with [definition.md](definition.md) and [measurements.md](measurements.md).
 
-Waiting for a decision: the choices N1 to N8 in [technology.md](technology.md).
+Waiting for a decision: closing stage 2. The technology is accepted (delegation-11).
 
 Next steps, in order:
 
-1. Stage 2: the measurement script, the page of delegations in force, the list of kinds, format 5 and the doctor.
-2. Close stage 2.
+1. Close stage 2.
+2. Stage 3, Skills.
 
 ## Stage table
 
