@@ -26,7 +26,7 @@ A person with the playbook who has reviewed changes in a repository before insta
 | Main flows | Covered: a preview of the reviews, and the person chooses (seed-evidence-3) |
 | What it must do | Covered: every review with findings by default (seed-evidence-4) |
 | What it must not do, and what waits | Partly covered: it writes only the evidence page of the repository where it runs |
-| Qualities | Open: cost (seed-evidence-Q4) |
+| Qualities | Covered: one run per review, in order, the count shown first (seed-evidence-5) |
 | Limits | Covered: the transcripts exist only on the person's machine |
 | Outside systems | Does not apply |
 | Volume | Covered: [measurements.md](measurements.md) |
