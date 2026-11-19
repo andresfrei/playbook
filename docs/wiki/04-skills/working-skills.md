@@ -81,3 +81,15 @@ Nothing is installed or written for this stage. Every skill named is the product
 | Read a risky change before delivery: the wizard's script, which changes a person's settings, the hooks, and the check | Any | `playbook:review-change`, on the `review` agent (R20) | `plugin/skills/review-change/` | Before a risky change is delivered |
 | Prepare and track the work | The six stages | `playbook:prepare-project` | `plugin/skills/prepare-project/` | Each stage and each unit |
 | Execute and commit | The session's instructions | The product's own rules | `plugin/rules.md` | Always |
+
+## Setup commands
+
+Stage 3 of the work `setup-commands`: the skills used to build `/playbook-wiki:init`, `/playbook-agents:config`, the model hook, and the changes to `/playbook:init`. The owner accepted the list (setup-commands-12). Nothing is installed or written for it.
+
+| Job in this repository | What the agent uses | When |
+|------------------------|---------------------|------|
+| Write the three skills and change `prepare-project` | `playbook-agents:write-skill` | Each skill file written or changed |
+| Write the scripts and the hook in POSIX `sh`, `sed`, and `awk` | `playbook-agents:keep-minimal`, `shellcheck`, `scripts/verify_test.sh` | Each change to a script |
+| Check Claude Code's hooks, settings, and Agent tool | No skill needed: the sources of [../works/setup-commands/technology.md](../works/setup-commands/technology.md), and the `claude-code-guide` agent | When a behaviour is not documented there |
+| Read the hook and each script that writes a person's settings | `playbook-agents:review-change`, on the `review` agent (R20) | Before each such unit is delivered |
+| Write the wiki and the plugins' `README.md` | `playbook-wiki:write-docs` | At the close |

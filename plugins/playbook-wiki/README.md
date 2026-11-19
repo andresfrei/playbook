@@ -22,6 +22,7 @@ flowchart TD
 |------|--------------|
 | `prepare-project` | Prepares a new project, phase, or feature in six stages, from the wiki to the plan and its execution. You close each stage |
 | `write-docs` | Writes a README, a guide, or a wiki page that a reader understands without the conversation that produced it |
+| `init` | Adds only a wiki's skeleton to a repository that has none, such as an old project or someone else's: the entry point with the project's owner, the format marker, and, if you agree, two sentences in `CLAUDE.md`. It opens no work. Only you start it: `/playbook-wiki:init` |
 | `doctor` | Brings a wiki written in an earlier format to the present one. Only you start it: `/playbook-wiki:doctor` |
 | `check-wiki.sh` | Checks that a wiki follows the format |
 
@@ -47,6 +48,10 @@ Start a new feature: roles and permissions for the admin panel.
 
 ```text
 Write the README of the billing module.
+```
+
+```text
+/playbook-wiki:init
 ```
 
 ```text

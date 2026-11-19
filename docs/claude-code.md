@@ -79,7 +79,27 @@ Then start a new Claude Code session inside a repository, and run:
 
 It asks two questions: the wiki alone or the whole product, and this repository or every project. For the whole product it also asks the language the agent talks to you in, and tells you which other plugins are on and whether you have a global `CLAUDE.md`, because two agent setups in one session collide. It lists the skills you already have that do the same job as one it turns on, and asks what to do with each. Then a script turns the plugins on with Claude Code's own commands and prints each one. What it turned on is used from the next session.
 
-Run `/playbook:init` again to change what is on, in that repository or in every project. It writes in no `CLAUDE.md`.
+Run `/playbook:init` again to see what is on and keep it or change it, in that repository or in every project. A pair of skills you settled with "Keep both" is not asked again. In a repository with no wiki it offers to add one. It writes in no `CLAUDE.md`, except the two sentences of a new wiki, after asking.
+
+### A wiki in a repository that has none
+
+With the playbook on for every project, open a repository that has no wiki, such as an old project or someone else's, and run:
+
+```text
+/playbook-wiki:init
+```
+
+It asks who the project's owner is and what the project is, writes `docs/wiki/README.md` and the format marker, and asks whether to add two sentences to `CLAUDE.md`. It opens no work: ask the agent to prepare a feature or a phase when you want one.
+
+### The agents' models
+
+The agents `explore`, `write`, and `review` start with the models in [models.conf](../plugins/playbook-agents/models.conf). To choose your own, for this repository or every project, run:
+
+```text
+/playbook-agents:config
+```
+
+Your choice is kept under `playbook.models` in Claude Code's settings, so an update of the plugin keeps it.
 
 ### With an agent
 

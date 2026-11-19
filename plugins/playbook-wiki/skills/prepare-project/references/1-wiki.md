@@ -6,10 +6,8 @@ Every definition of the product is written down and decided before any technolog
 
 A repository is one project with one wiki. A project with a wiki gets a new work, not a second wiki.
 
-1. Ask the owner who the project's owner is, and the name of the first work and what it is for.
-2. Create the project's `README.md` and the folder of the first work, with its stage table, as the format says.
-3. From the project's root, run `sh <this skill's folder>/../doctor/scripts/wiki-format.sh mark docs/wiki`: it writes `docs/wiki/.format`, which says that the wiki is in the playbook's present format.
-4. Ask the owner whether to write the two sentences of the format, under "The project's instruction file", in the project's `CLAUDE.md`. Create it when it is missing.
+1. Write the wiki's skeleton: read `<this skill's folder>/../../skeleton.md` and do its steps. They ask the project's owner, writes the project's `README.md` and `docs/wiki/.format`, and asks about the two sentences in `CLAUDE.md`.
+2. Ask the owner the name of the first work and what it is for, and create its folder with its stage table, as the format says.
 
 Then do the steps below.
 
