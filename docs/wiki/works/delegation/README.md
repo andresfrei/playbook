@@ -6,17 +6,16 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after delegation-12.
+Updated 2026-11-19, after delegation-13.
 
-Stage 3, Skills, is open. Stage 1 closed with [definition.md](definition.md) and [measurements.md](measurements.md); stage 2 with [technology.md](technology.md).
+Stage 4, Design system, is open. Stage 1 closed with [definition.md](definition.md) and [measurements.md](measurements.md); stage 2 with [technology.md](technology.md); stage 3 with [skills.md](skills.md).
 
-Waiting for a decision: the list of skills in [skills.md](skills.md).
+Waiting for a decision: closing stage 4 as not applicable, since the work has no interface.
 
 Next steps, in order:
 
-1. Accept the skills and close stage 3.
-2. Stage 4, Design system, which does not apply: no interface.
-3. Stage 5, Plan.
+1. Close stage 4 as not applicable.
+2. Stage 5, Plan.
 
 ## Stage table
 
@@ -24,8 +23,8 @@ Next steps, in order:
 |-------|--------|-----------|
 | 1 Wiki | Closed | 2026-11-19 |
 | 2 Technology | Closed | 2026-11-19 |
-| 3 Skills | Open | |
-| 4 Design system | Not started | |
+| 3 Skills | Closed | 2026-11-19 |
+| 4 Design system | Open | |
 | 5 Plan | Not started | |
 | 6 Execution | Not started | |
 
