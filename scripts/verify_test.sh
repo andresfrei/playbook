@@ -292,7 +292,17 @@ sed 's/"matcher": "Agent"/"matcher": "Task"/' "$tmp/repo/plugins/playbook-agents
 cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-agents/hooks/hooks.json"
 expect "hooks: a model hook without the Agent matcher fails" fail "does not run agent-models.sh"
 
-for f in review-ran.sh review-before-commit.sh agent-models.sh hook-lib.sh; do
+fresh
+sed 's/rules-for-subagent\.sh/other.sh/' "$tmp/repo/plugins/playbook-agents/hooks/hooks.json" > "$tmp/hooks.json"
+cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-agents/hooks/hooks.json"
+expect "hooks: hooks.json of playbook-agents without the rules hook fails" fail "does not run rules-for-subagent.sh under SubagentStart"
+
+fresh
+sed 's/"\^playbook-agents:(write|review)\$"/"write"/' "$tmp/repo/plugins/playbook-agents/hooks/hooks.json" > "$tmp/hooks.json"
+cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-agents/hooks/hooks.json"
+expect "hooks: a SubagentStart matcher that is not exact fails" fail "under SubagentStart"
+
+for f in review-ran.sh review-before-commit.sh agent-models.sh hook-lib.sh rules-for-subagent.sh; do
   fresh
   rm "$tmp/repo/plugins/playbook-agents/hooks/$f"
   expect "hooks: a missing $f of playbook-agents fails" fail "hooks/$f of playbook-agents is missing"
@@ -2980,6 +2990,72 @@ ev_out=$(cd "$tmp/evp" && sh "$ev_script" count 2>&1)
 check "evidence: with no variable the default is docs/wiki" sh -c 'printf "%s" "$1" | grep -q "missing-test (level 1): 1 distinct"' sh "$ev_out"
 check "evidence: an unknown mode exits 2" sh -c 'sh "$1" frob >/dev/null 2>&1; [ $? -eq 2 ]' sh "$ev_script"
 check "evidence: no file is written" sh -c '[ -z "$(find "$1" -newer "$2" -type f)" ]' sh "$tmp/evp" "$tmp/evp/docs/wiki/evidence.md"
+
+# The rules at the start of write and review (repeated-corrections-18):
+# plugins/playbook-agents/hooks/rules-for-subagent.sh.
+rs_hook="$root/plugins/playbook-agents/hooks/rules-for-subagent.sh"
+rs_krow='| quoted-path | 2 | Write "stop" and C:\\dir with care. | a change that writes paths | 3 reviews | project |\n| low-kind | 1 | | a change | | project |\n'
+rs_proj="$tmp/rs project"
+rm -rf "$rs_proj"
+ev_page "$rs_proj/docs/wiki" "$rs_krow" ""
+# rs_run <agent type> <set|unset> <project>: runs the hook, with
+# CLAUDE_PROJECT_DIR set to the project, or unset and the project as the cwd
+# of the input.
+rs_run() {
+  if [ "$2" = set ]; then
+    rs_out=$(printf '{"session_id":"s","cwd":"/nonexistent","hook_event_name":"SubagentStart","agent_id":"x","agent_type":"%s"}' "$1" |
+      CLAUDE_PROJECT_DIR="$3" sh "$rs_hook" 2>&1); rs_code=$?
+  else
+    rs_out=$(printf '{"session_id":"s","cwd":"%s","hook_event_name":"SubagentStart","agent_id":"x","agent_type":"%s"}' "$3" "$1" |
+      sh "$rs_hook" 2>&1); rs_code=$?
+  fi
+}
+rs_shape() {
+  [ "$(printf '%s\n' "$rs_out" | wc -l | tr -d ' ')" -eq 1 ] &&
+    [ "${rs_out#"$frame_start"}" != "$rs_out" ] && [ "${rs_out%"$frame_end"}" != "$rs_out" ]
+}
+rs_silent() { [ -z "$rs_out" ] && [ "$rs_code" -eq 0 ]; }
+rs_decoded_has() { printf '%s\n' "$rs_out" | decode | grep -Fq -- "$1"; }
+rs_no_low() { ! printf '%s' "$rs_out" | grep -q low-kind; }
+rs_no_bare_quote() { printf '%s\n' "$rs_out" > "$tmp/rs.out"; no_bare_quote "$tmp/rs.out"; }
+rs_same_as_evidence() {
+  [ "$(printf '%s\n' "$rs_out" | decode)" = "$(sh "$ev_script" rules "$rs_proj/docs/wiki")" ]
+}
+
+for rs_agent in playbook-agents:write playbook-agents:review; do
+  rs_run "$rs_agent" set "$rs_proj"
+  check "rules hook: $rs_agent gets one line in the frame" rs_shape
+  check "rules hook: $rs_agent gets the rule with its quotes and backslash decoded" rs_decoded_has 'Write "stop" and C:\dir with care.'
+  check "rules hook: $rs_agent gets the kind and when it applies" rs_decoded_has 'applies when: a change that writes paths'
+  check "rules hook: $rs_agent does not get a kind of level 1" rs_no_low
+  check "rules hook: no quote is left unescaped for $rs_agent" rs_no_bare_quote
+  check "rules hook: the text for $rs_agent is what evidence.sh rules prints" rs_same_as_evidence
+done
+
+rs_run playbook-agents:write unset "$rs_proj"
+check "rules hook: without CLAUDE_PROJECT_DIR the cwd of the input gives the wiki" rs_decoded_has 'Write "stop" and C:\dir with care.'
+rs_run playbook-agents:write unset "$tmp/rs none"
+check "rules hook: the cwd of the input with no page gets nothing" rs_silent
+
+rs_run playbook-agents:explore set "$rs_proj"
+check "rules hook: playbook-agents:explore gets nothing" rs_silent
+rs_run general-purpose set "$rs_proj"
+check "rules hook: another agent gets nothing" rs_silent
+rs_run "" set "$rs_proj"
+check "rules hook: an input with no agent type gets nothing" rs_silent
+rs_run playbook-agents:write-more set "$rs_proj"
+check "rules hook: an agent type that only starts like write gets nothing" rs_silent
+
+rm -rf "$tmp/rs none"
+mkdir -p "$tmp/rs none"
+rs_run playbook-agents:write set "$tmp/rs none"
+check "rules hook: a project with no evidence page gets nothing" rs_silent
+rm -rf "$tmp/rs low"
+ev_page "$tmp/rs low/docs/wiki" '| low-kind | 1 | | a change | | project |\n' ""
+rs_run playbook-agents:review set "$tmp/rs low"
+check "rules hook: a page with no rule of level 2 or up gets nothing" rs_silent
+rs_out=$(printf '' | CLAUDE_PROJECT_DIR="$rs_proj" sh "$rs_hook" 2>&1); rs_code=$?
+check "rules hook: empty input prints nothing and exits 0" rs_silent
 
 if [ "$failed" -eq 0 ]; then
   printf 'all cases passed\n'

@@ -8,14 +8,14 @@ Status: Open.
 
 Updated 2026-11-19, after repeated-corrections-26.
 
-Stage 1, Wiki, is closed (repeated-corrections-16): [definition.md](definition.md) holds the problem, the cycle, the criteria, the threshold, and where the records live; [measurements.md](measurements.md) shows that findings repeat. Stage 2, Technology, is closed (repeated-corrections-21): [technology.md](technology.md) holds five decided needs and [architecture.md](architecture.md) the shape. Stages 3 to 5 are closed (repeated-corrections-23, -24, -26). Stage 6, Execution, is open: the units of [plan.md](plan.md) are built in order; U1 is Done.
+Stage 1, Wiki, is closed (repeated-corrections-16): [definition.md](definition.md) holds the problem, the cycle, the criteria, the threshold, and where the records live; [measurements.md](measurements.md) shows that findings repeat. Stage 2, Technology, is closed (repeated-corrections-21): [technology.md](technology.md) holds five decided needs and [architecture.md](architecture.md) the shape. Stages 3 to 5 are closed (repeated-corrections-23, -24, -26). Stage 6, Execution, is open: the units of [plan.md](plan.md) are built in order; U1 and U2 are Done.
 
 Waiting for a decision: none.
 
 Next steps, in order:
 
-1. Build repeated-corrections-U2.
-2. Build U3 to U5, in order.
+1. Build repeated-corrections-U3, accepted by the owner's judgement.
+2. Build U4 and U5, in order.
 
 ## Stage table
 
