@@ -2,20 +2,20 @@
 
 Lets the owner decide a kind of question once, as a recorded delegation, so the agent stops asking the questions the owner answers with an automatic yes, and keeps asking those whose answer can change something. Andres Frei leads it.
 
-Status: Open.
+Status: Closed on 2026-11-19 (delegation-19).
 
 ## Where work stands
 
-Updated 2026-11-19, after delegation-15.
+Updated 2026-11-19, after delegation-19.
 
-Stage 6, Execution, is open. Stage 1 closed with [definition.md](definition.md) and [measurements.md](measurements.md); stage 2 with [technology.md](technology.md); stage 3 with [skills.md](skills.md); stage 4 as not applicable; stage 5 with [plan.md](plan.md).
+The work is closed: units delegation-U1 to delegation-U6 are Done, the shared pages say what it decided, and this wiki is at format 5. Of the kinds `--delegations` proposed, close-stage is delegated (delegation-16); plan and version are not (delegation-17, delegation-18). No decision reached `main` since the work started, so the step at the merge has nothing to compare.
 
-Waiting for a decision: none. Units delegation-U1 to delegation-U6 are Done; this wiki is at format 5.
+Waiting for a decision: none.
 
 Next steps, in order:
 
-1. Close the work: write the shared pages, measure and propose delegations (`check-wiki.sh --delegations` prints plan, close-stage, and version), and recommend the version, MAJOR by TD22.
-2. One pull request to `main`, which the owner merges.
+1. The owner merges the pull request into `main` (R14).
+2. After the merge, the release of 3.0.0 (delegation-19): the version in the three manifests, the tag, and the release on GitHub with how to move to format 5.
 
 ## Stage table
 
@@ -26,7 +26,7 @@ Next steps, in order:
 | 3 Skills | Closed | 2026-11-19 |
 | 4 Design system | Closed (not applicable) | 2026-11-19 |
 | 5 Plan | Closed | 2026-11-19 |
-| 6 Execution | Open | |
+| 6 Execution | Closed | 2026-11-19 |
 
 ## Pages
 

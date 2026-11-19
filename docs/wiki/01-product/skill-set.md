@@ -19,6 +19,8 @@ Which job each skill does, and which plugin holds it. One job, one skill (D6, F3
 
 When `prepare-project` closes a work in a project that has a version tag in git, it recommends whether the work needs a new version and which one, by the project's own rule or else Semantic Versioning, and asks; on a yes it records the version and lists the release steps, and makes the release only when asked (version-on-close-1, version-on-close-2, version-on-close-3, version-on-close-5).
 
+Before a question, `prepare-project` reads the delegations in force and, within one, decides, records `agent, by <delegation>`, and tells the owner in one line; it records the kind and the answer of each decision, and at the close of a work runs `check-wiki.sh --delegations` and proposes each kind not yet proposed that qualifies (delegation-6, delegation-7). The doctor brings a wiki to format 5, filling the kind and the answer of earlier decisions as estimated (delegation-8, delegation-9).
+
 A person with `playbook-wiki` alone gets its four skills and none of `playbook-agents` (D182). `review-change` names its agent as `playbook-agents:review`.
 
 Jobs with no skill: executing a task and committing are rules of `playbook-agents` (D65, D66); splitting large pull requests has no skill: stage 5 of `prepare-project` asks how each work is delivered, and a work branch with a draft tracker pull request is one of the ways it offers (work-delivery-1, work-delivery-5); opening a pull request and writing review comments get a skill only when a project needs one (D67); indexing skills is discarded (D52).
