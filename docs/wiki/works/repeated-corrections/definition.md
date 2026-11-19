@@ -22,6 +22,8 @@ The owner, who reads the same finding again; the agent, which repeats the mistak
 - Consolidation by level: N records of the same thing at level k become one rule at level k+1 and are deleted, git keeping them; the level counts the consolidations a problem resisted (repeated-corrections-5). For example, three findings of tests that pass with the code broken, at level 1, become one rule at level 2: "break the code on purpose to check each new test fails". If the mistake comes back, it is recorded at level 2.
 - The agent keeps the records and the index of types; a script counts (repeated-corrections-6).
 - A skill of criteria keeps the judgement the same (repeated-corrections-7).
+- The cycle of each step: consult the index before building, store the evidence of a failure under its kind or a new one, rebuild one level up on accumulation (repeated-corrections-9).
+- A subagent with a smaller model keeps the index; its criteria are written first (repeated-corrections-10).
 - A tool run on one repository builds its first rules from its past findings, as the doctor does for a format; keeping out findings already fixed is open (repeated-corrections-8).
 
 ## The measurement
