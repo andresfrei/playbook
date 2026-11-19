@@ -104,3 +104,15 @@ Stage 3 of the work `work-delivery`: the skills used to change stages 5 and 6 of
 | Keep the step to what was decided | `playbook-agents:keep-minimal` | Each change to the step |
 | Read the change to `prepare-project`, which other projects use | `playbook-agents:review-change`, on the `review` agent (R20) | Before delivery |
 | Write the wiki | `playbook-wiki:write-docs` | At the close |
+
+## Delegation
+
+Stage 3 of the work `delegation`: the skills used to change the contract, the format, the check, the doctor, and `prepare-project`. The owner accepted the list (delegation-13). Nothing is installed or written for it.
+
+| Job in this repository | What the agent uses | When |
+|------------------------|---------------------|------|
+| Write `prepare-project`'s `references/delegation.md` and the doctor's `references/format-5.md` | `playbook-agents:write-skill` | Each file written or changed |
+| Keep the change to what was decided | `playbook-agents:keep-minimal` | Each change |
+| Change `check-wiki.sh` and its tests | No skill needed: `shellcheck` and `scripts/verify_test.sh` | Each change to the check |
+| Read the contract, the format, the check, and the skills, which every project uses | `playbook-agents:review-change`, on the `review` agent (R20) | Before each unit is delivered |
+| Write the wiki | `playbook-wiki:write-docs` | At the close |

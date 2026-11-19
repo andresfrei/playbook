@@ -24,6 +24,7 @@ Every statement is one of:
 | [01-product/phase-3.md](01-product/phase-3.md) | The product definition for phase 3, support for opencode 2.x: what is decided, proposed, and open | |
 | [01-product/wiki-maintenance.md](01-product/wiki-maintenance.md) | How a project's wiki stays small and current, and how a changed definition reaches the next session: what was measured, the changes proposed, and the order of the work | `plugins/playbook-wiki/skills/doctor/`, `plugins/playbook-wiki/check-wiki.sh`, `plugins/playbook-wiki/skills/prepare-project/references/1-wiki.md` |
 | [01-product/wiki-format-3.md](01-product/wiki-format-3.md) | A proposal for the next format of a project's wiki: the page table says which code each page governs, the page is read before the code is changed, the code left on an old definition is listed, and the check enforces it | `plugins/playbook-wiki/skills/doctor/references/format-3.md` |
+| [01-product/delegations.md](01-product/delegations.md) | The kinds of decision the agent decides without asking, and those revoked | |
 | [01-product/glossary.md](01-product/glossary.md) | Vocabulary, with Spanish | |
 | [01-product/open-questions.md](01-product/open-questions.md) | Questions that block closing this stage | |
 | [03-technology/codex.md](03-technology/codex.md) | Codex installation, agent profiles and workflow guides | `codex/` |

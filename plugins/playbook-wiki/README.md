@@ -20,11 +20,11 @@ flowchart TD
 
 | Part | What it does |
 |------|--------------|
-| `prepare-project` | Prepares a new project, phase, or feature in six stages, from the wiki to the plan and its execution. You close each stage |
+| `prepare-project` | Prepares a new project, phase, or feature in six stages, from the wiki to the plan and its execution. You close each stage, unless you delegated that. When a work closes, it proposes delegating the kinds of question you keep accepting as recommended, and asks no question a delegation in force covers |
 | `write-docs` | Writes a README, a guide, or a wiki page that a reader understands without the conversation that produced it |
 | `init` | Adds only a wiki's skeleton to a repository that has none, such as an old project or someone else's: the entry point with the project's owner, the format marker, and, if you agree, two sentences in `CLAUDE.md`. It opens no work. Only you start it: `/playbook-wiki:init` |
 | `doctor` | Brings a wiki written in an earlier format to the present one. Only you start it: `/playbook-wiki:doctor` |
-| `check-wiki.sh` | Checks that a wiki follows the format |
+| `check-wiki.sh` | Checks that a wiki follows the format. With `--delegations`, prints each kind of decision you accepted as recommended at least 10 times, at least 80% of the time, and never rejected |
 
 ## Claude Code hooks
 

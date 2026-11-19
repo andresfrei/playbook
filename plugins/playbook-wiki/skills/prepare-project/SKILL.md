@@ -15,15 +15,15 @@ Do not use it for a small change in an existing repository that has no wiki. Do 
 
 - Read the format of a wiki, `<this skill's folder>/../../format.md`, before you write in the wiki.
 - A work is prepared in six stages, in this order: 1 wiki, 2 technology, 3 skills, 4 design system, 5 plan, 6 execution.
-- Work on one stage at a time: the first one in the work's stage table that is not closed. Never start a stage before the owner closes the one before it.
-- Only the owner closes a stage, also one that does not apply, as not applicable. Never skip one.
+- Work on one stage at a time: the first one in the work's stage table that is not closed. Never start a stage before the one before it is closed.
+- Only the owner closes a stage, also as not applicable, or a delegation does. Never skip one.
 - No code before stage 6. In stages 1 to 5, do not write the product's code, generate a scaffold, or add a dependency.
 - For a project already started, also follow "Project already started" in each reference file.
 - What is in progress lives in the work's folder: its decisions, questions, plan, and the pages of each stage. The shared pages change only when the work closes.
 - Mark every statement Decided, Proposed, or Open. Decided means a row of the work's `decisions.md`.
 - When a decision changes a shared page that existed before the work, say so, name the project's owner from `docs/wiki/README.md`, and ask who decides. Record the name given; do not enforce it.
-- Record each decision with its date, in the decider's language.
-- Ask one question at a time, with a recommendation, then stop and wait. Use `AskUserQuestion` when available, recommended option first, with what each option costs.
+- Record each decision with its date, in the decider's language; its kind and answer exactly as `format.md` lists them.
+- Before asking, read `references/delegation.md`. Ask one question at a time, with a recommendation, then stop and wait. Use `AskUserQuestion` when available, recommended option first, with what each option costs.
 - "Stage" names only the six stages. One step of the work plan is a "unit". Never use one word for both.
 
 ## Gotchas
@@ -37,8 +37,8 @@ Do not use it for a small change in an existing repository that has no wiki. Do 
 3. The current stage is the first one in the work's stage table that is not closed. Tell the owner which one it is, in one line.
 4. Read the reference file of the current stage and do its steps.
 5. Write each result in the work's folder when it is produced, with the `write-docs` skill. Then rewrite "Where work stands" in the work's `README.md`.
-6. When the closing condition of the stage holds and `sh <this skill's folder>/../../check-wiki.sh docs/wiki` passes, list what it leaves Decided, Proposed, and Open, and ask the owner to close it.
-7. When the owner closes it, record that as a decision. In the stage table, set the stage to Closed with the date and the next stage to Open.
+6. When the closing condition of the stage holds and `sh <this skill's folder>/../../check-wiki.sh docs/wiki` passes, list what it leaves Decided, Proposed, and Open, and ask the owner to close it, unless delegated.
+7. When it is closed, record that as a decision. In the stage table, set the stage to Closed with the date and the next stage to Open.
 
 ## Output
 
@@ -53,5 +53,6 @@ Read a file when its stage is the current one.
 - `references/2-technology.md` — each technology, and the architecture page.
 - `references/3-skills.md` — the skills the agent needs.
 - `references/4-design-system.md` — the visual identity, tokens, and patterns.
-- `references/5-plan.md` — the work plan, in units, and how the work is delivered.
-- `references/6-execution.md` — building the plan unit by unit, and closing the work.
+- `references/5-plan.md` — the plan, in units, and its delivery.
+- `references/6-execution.md` — building unit by unit, and closing the work.
+- `references/delegation.md` — delegations.

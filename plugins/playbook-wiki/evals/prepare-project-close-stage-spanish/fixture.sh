@@ -1,5 +1,5 @@
 #!/bin/bash
-# Builds a repository whose wiki is at format 4, with an open work
+# Builds a repository whose wiki is at format 5, with an open work
 # `notifications` at stage 3: stages 1 and 2 closed, every technology has a row
 # in the skills table, and the owner approved the table. The closing condition
 # of stage 3 holds, and the owner has not closed it.
@@ -8,7 +8,7 @@ git init -q -b main .
 git config user.email eval@example.com
 git config user.name "Laura Gómez"
 mkdir -p docs/wiki/01-product docs/wiki/works/notifications src
-printf '4\n' > docs/wiki/.format
+printf '5\n' > docs/wiki/.format
 cat > docs/wiki/README.md <<'MD'
 # Invoicing app
 
@@ -72,12 +72,12 @@ The skill for each technology of the work. Decided (notifications-4).
 | SendGrid | No skill needed | | |
 MD
 cat > docs/wiki/works/notifications/decisions.md <<'MD'
-| ID | Date | Decision | Who decided | Their words | Shared page |
-|----|------|----------|-------------|-------------|-------------|
-| notifications-1 | 2026-11-08 | Email on issue and at 7 days overdue; see [product.md](product.md). | Laura Gómez | "Yes, those two emails." | none |
-| notifications-2 | 2026-11-09 | Node.js 22, BullMQ, PostgreSQL 16, and SendGrid; see [technology.md](technology.md). | Laura Gómez | "Go with that stack." | none |
-| notifications-3 | 2026-11-10 | Stages 1 and 2 are closed. | Laura Gómez | "Close both." | none |
-| notifications-4 | 2026-11-11 | No skill is needed for any of the four technologies; see [skills.md](skills.md). | Laura Gómez | "No skills, the table is fine." | none |
+| ID | Date | Decision | Who decided | Their words | Shared page | Kind | Answer |
+|----|------|----------|-------------|-------------|-------------|------|--------|
+| notifications-1 | 2026-11-08 | Email on issue and at 7 days overdue; see [product.md](product.md). | Laura Gómez | "Yes, those two emails." | none | other | as recommended |
+| notifications-2 | 2026-11-09 | Node.js 22, BullMQ, PostgreSQL 16, and SendGrid; see [technology.md](technology.md). | Laura Gómez | "Go with that stack." | none | other | as recommended |
+| notifications-3 | 2026-11-10 | Stages 1 and 2 are closed. | Laura Gómez | "Close both." | none | close-stage | as recommended |
+| notifications-4 | 2026-11-11 | No skill is needed for any of the four technologies; see [skills.md](skills.md). | Laura Gómez | "No skills, the table is fine." | none | close-stage | as recommended |
 MD
 printf 'export const app = {};\n' > src/app.js
 git add -A

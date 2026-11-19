@@ -12,6 +12,7 @@ The plan is built unit by unit. A unit is accepted as the plan says: by its evid
    - A unit accepted by judgement: set it to Built and ask the owner to review it. When the owner accepts it, set it to Done, with the date and the owner's words.
 5. The acceptance of a unit is not a row of the work's `decisions.md`.
 6. When every unit is Done, close the work before its last merge:
+   - Measure and propose delegations, as the skill's file on delegation says for the close of a work.
    - Rewrite the shared pages to say what the work decided, each statement citing its decision. Create a shared page when none covers it, and add it to the table of pages of the project's `README.md`.
    - In each row of the work's `decisions.md`, name the shared page it changed, or "none".
    - When git has a tag that is a version, such as `v1.2.0` or `1.2.0`, recommend whether the work needs a new version and which one, and ask the owner. Follow the project's own written rule of versions; without one, Semantic Versioning: MAJOR when the work breaks what users have, MINOR when it adds without breaking, PATCH for a fix, none when nothing reaches users. On a yes, record the version as a decision and list the release steps as next steps: the version in the project's files, the tag, and the release on the forge. Make the release only when asked.

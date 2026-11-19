@@ -3,6 +3,7 @@
 # Usage: sh check-wiki.sh [wiki directory]    (default: docs/wiki)
 #        sh check-wiki.sh --column [wiki directory]
 #        sh check-wiki.sh --decisions [wiki directory]
+#        sh check-wiki.sh --delegations [wiki directory]
 #        sh check-wiki.sh --format
 # It fails at once, with one line and without running the other rules, when
 # the marker $wiki/.format is missing, is not a number, or is below the format
@@ -28,7 +29,16 @@
 # - a decision in decisions.md has more than 60 words of text, has fewer than
 #   six columns, or has a sixth column (the shared page) that is neither
 #   "none" nor code spans of paths, relative to the wiki, of pages that exist,
-#   are not under works/, and cite the identifier as a whole word.
+#   are not under works/, and cite the identifier as a whole word;
+# - a decision has a seventh column (Kind) that is not empty and is not one of
+#   definition, technology, plan, open-work, close-stage, close-work, commit,
+#   merge-push, version, other; or an eighth column (Answer) that is not empty
+#   and is not one of as recommended, changed, rejected, delegated. Either
+#   value may end in exactly one space and "(estimated)", which the doctor
+#   writes for a row from before format 5; what is left must still be one of
+#   the values, so "(estimated)" alone or "plan(estimated)" fails. A row with
+#   six columns, or with an empty cell, passes; a row with more than eight
+#   columns fails.
 # The README.md of the project keeps no state: it fails when it has no line
 # "Project owner: <name>", or a heading "Where work stands" or a table whose
 # first header cell is "Stage" outside its section "## Phases before format 4".
@@ -38,6 +48,13 @@
 # With --decisions it prints each decision of each work, one per line, as
 # "<date> <identifier> <decision>", ordered by date, then work, then number,
 # and checks nothing. A wiki without works prints nothing.
+# With --delegations it reads the marker of no wiki and checks nothing. For
+# each Kind it counts the rows of every work's decisions.md whose Answer is not
+# empty, with " (estimated)" taken off and the Answer "delegated" left out,
+# since the owner was not asked. It prints one line for each Kind that has at
+# least 10 such rows, at least 80% "as recommended", and no "rejected", such
+# as "close-stage: 14 answers, 92% as recommended, 0 rejected", in the order
+# of the list of kinds. It prints nothing when none qualifies, and exits 0.
 # Not checked: reference-style links ([text][id]); a link whose target holds a
 # space, a parenthesis, or a percent-encoded character; and a table cell or a
 # code span that holds the character "|".
@@ -47,12 +64,13 @@ set -u
 # The format of a wiki the playbook is at, held here and nowhere else. Raise it
 # only together with a new skills/doctor/references/format-<number>.md that
 # says how a wiki reaches it.
-present_format=4
+present_format=5
 
 mode=check
 case ${1:-} in
   --column) mode=column; shift ;;
   --decisions) mode=decisions; shift ;;
+  --delegations) mode=delegations; shift ;;
   --format) printf '%s\n' "$present_format"; exit 0 ;;
 esac
 wiki=${1:-docs/wiki}
@@ -61,7 +79,7 @@ max_state_words=250
 max_decision_words=60
 tab=$(printf '\t')
 
-if [ "$mode" != decisions ] && [ ! -f "$wiki/README.md" ]; then
+if [ "$mode" != decisions ] && [ "$mode" != delegations ] && [ ! -f "$wiki/README.md" ]; then
   printf 'FAIL %s has no README.md\n' "$wiki"
   exit 1
 fi
@@ -107,11 +125,19 @@ fences='{ sub(/\r$/, "") }
 # each rule that a row breaks, and for each path that a decision names as its
 # shared page a line "SHARED<tab><identifier><tab><path>", which the caller
 # checks. With <what> "list" it prints one line for each decision:
-# date, work, number, identifier, and text, separated by tabs.
+# date, work, number, identifier, and text, separated by tabs. With <what>
+# "answers" it prints, for each decision whose Kind is not empty, a line with
+# the Kind and the Answer, separated by a tab, without " (estimated)".
 work_table() {
   awk -v work="$2" -v kind="$3" -v label="$4" -v what="$5" -v max="$max_decision_words" "$fences"'
     function trim(s) { gsub(/^[ \t]+|[ \t]+$/, "", s); return s }
     function fail(msg) { printf "FAIL %s: %s\n", label, msg }
+    BEGIN {
+      n = split("definition technology plan open-work close-stage close-work commit merge-push version other", list, " ")
+      for (i = 1; i <= n; i++) kinds[list[i]] = 1
+      n = split("as recommended|changed|rejected|delegated", list, "|")
+      for (i = 1; i <= n; i++) answers[list[i]] = 1
+    }
     fenced { next }
     /^[ \t]*\|/ {
       line = $0
@@ -134,6 +160,15 @@ work_table() {
       }
       want = (kind == "q") ? "Q" : (kind == "p") ? "U" : ""
       valid = (prefix ~ /^[a-z0-9]+(-[a-z0-9]+)*$/ && num ~ /^[1-9][0-9]*$/)
+      if (what == "answers") {
+        if (valid && prefix == work && letter == "" && cells >= 7) {
+          k = trim(c[7]); a = (cells >= 8) ? trim(c[8]) : ""
+          sub(/ \(estimated\)$/, "", k)
+          sub(/ \(estimated\)$/, "", a)
+          if (k != "") printf "%s\t%s\n", k, a
+        }
+        next
+      }
       if (what == "list") {
         if (valid && prefix == work && letter == "")
         {
@@ -156,7 +191,18 @@ work_table() {
       if (!ok || kind != "d") next
       words = split(c[3], word, " ")
       if (words > max) fail(sprintf("the decision of %s has %d words, limit %d", id, words, max))
+      if (cells > 8) { fail("the row of " id " has " cells " columns, more than the eight of the format: id, date, decision, who, words, shared page, kind, answer"); next }
       if (cells < 6) { fail("the row of " id " has " cells " columns and no shared-page column, the sixth"); next }
+      if (cells >= 7) {
+        k = trim(c[7]); sub(/ \(estimated\)$/, "", k)
+        if (k != "" && !(k in kinds))
+          fail("the kind of " id " is " trim(c[7]) ", which is not in the list of kinds")
+      }
+      if (cells >= 8) {
+        a = trim(c[8]); sub(/ \(estimated\)$/, "", a)
+        if (a != "" && !(a in answers))
+          fail("the answer of " id " is " trim(c[8]) ", which is not in the list of answers")
+      }
       shared = trim(c[6])
       if (tolower(shared) == "none") next
       found = 0
@@ -189,6 +235,34 @@ if [ "$mode" = decisions ]; then
       work_table "$dir/decisions.md" "$(basename "$dir")" d "" list
   done | LC_ALL=C sort -t "$tab" -k1,1 -k2,2 -k3,3n |
     awk -F '\t' '{ printf "%s %s %s\n", $1, $4, $5 }'
+  exit 0
+fi
+
+if [ "$mode" = delegations ]; then
+  if [ ! -d "$wiki" ]; then
+    printf 'FAIL %s is not a directory\n' "$wiki"
+    exit 1
+  fi
+  [ -d "$wiki/works" ] || exit 0
+  work_dirs | while IFS= read -r dir; do
+    [ -f "$dir/decisions.md" ] &&
+      work_table "$dir/decisions.md" "$(basename "$dir")" d "" answers
+  done | awk -F '\t' '
+    BEGIN {
+      n = split("definition technology plan open-work close-stage close-work commit merge-push version other", order, " ")
+    }
+    $2 != "" && $2 != "delegated" {
+      total[$1]++
+      if ($2 == "as recommended") yes[$1]++
+      if ($2 == "rejected") no[$1]++
+    }
+    END {
+      for (i = 1; i <= n; i++) {
+        k = order[i]
+        if (total[k] >= 10 && yes[k] * 100 >= 80 * total[k] && no[k] == 0)
+          printf "%s: %d answers, %d%% as recommended, %d rejected\n", k, total[k], int(yes[k] * 100 / total[k]), no[k]
+      }
+    }'
   exit 0
 fi
 

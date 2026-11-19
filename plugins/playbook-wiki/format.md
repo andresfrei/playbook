@@ -1,6 +1,6 @@
 # The format of a wiki
 
-Format 4. The files of a project's wiki, `docs/wiki/`, and what each one holds. The skills of `playbook-wiki` write and repair a wiki to this format, and its check verifies it.
+Format 5. The files of a project's wiki, `docs/wiki/`, and what each one holds. The skills of `playbook-wiki` write and repair a wiki to this format, and its check verifies it.
 
 ## Two layers
 
@@ -103,11 +103,19 @@ Each counter starts at 1 and is never reused.
 
 ## A work's `decisions.md`
 
-One table: ID, date, decision, who decided, their words, shared page.
+One table: ID, date, decision, who decided, their words, shared page, kind, answer.
 
 - Who decided: the person who leads the work, or the project's owner for a decision that changes a definition other works share.
 - Their words are verbatim. When that person chose one of the options offered, write the option chosen.
 - Shared page: the path of the shared page the decision changed, from `docs/wiki/` and as code, such as `01-product/rbac.md`; or "none". That page cites the decision.
+- Kind and Answer are the last two columns, after "Shared page". A cell may be empty.
+- Kind is what the decision was about, one of: `definition`, `technology`, `plan`, `open-work`, `close-stage`, `close-work`, `commit`, `merge-push`, `version`, `other`.
+- Answer is how the owner answered, one of: `as recommended`, `changed`, `rejected`, `delegated`. `delegated` means the agent decided under a delegation and did not ask.
+- Kind and Answer are written as plain text, without backticks.
+- A value may end in exactly one space and `(estimated)`: the doctor wrote it for a row from before format 5, from the decision and its words. What is left after the suffix must be one of the values: `(estimated)` alone or `plan(estimated)` fails the check.
+- A row has at most eight columns.
+- Under a delegation, "Who decided" is `agent, by <decision id of the delegation>`, such as `agent, by auth-7`.
+- A row from before format 5 may have only six columns. The check accepts it.
 - A decision that replaces an earlier one names it, in this work or in another.
 - A decision is a choice made between alternatives, or a rule set. That includes an authorization given before an action, the closing of a stage, and the acceptance of a plan.
 - Not a row: the acceptance of a unit, which goes in the plan's progress table, and something done after a decision, such as a push or a cleanup.
@@ -124,6 +132,8 @@ A shared page says only the definition in force. Each statement that a decision 
 When a definition changes and code stays on the old one, the page lists that code under the heading `## Code on the old definition`: one table with the path, the decision that changed the definition, and what was chosen, "changed when next touched" or "debt". Remove a row when its code is changed, and the heading when the table is empty.
 
 Write the path in the first column, as code. The check fails on a path that does not exist.
+
+`01-product/delegations.md` lists the delegations in force: one row per delegation, with its kind and the decision that made it, each citing that decision, such as `(auth-7)`. A decision that revokes a delegation moves its row to a second table, of delegations revoked, citing the decision that revoked it. Create the page with the first delegation.
 
 `01-product/glossary.md` holds each term and its one meaning. Use the same word for the same thing in every page.
 
