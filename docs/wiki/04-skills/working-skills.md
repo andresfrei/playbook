@@ -116,3 +116,15 @@ Stage 3 of the work `delegation`: the skills used to change the contract, the fo
 | Change `check-wiki.sh` and its tests | No skill needed: `shellcheck` and `scripts/verify_test.sh` | Each change to the check |
 | Read the contract, the format, the check, and the skills, which every project uses | `playbook-agents:review-change`, on the `review` agent (R20) | Before each unit is delivered |
 | Write the wiki | `playbook-wiki:write-docs` | At the close |
+
+## Version check
+
+Stage 3 of the work `version-check`: the skills used to build the notices at the start of a session. The owner accepted the list (version-check-11). Nothing is installed or written for it.
+
+| Job in this repository | What the agent uses | When |
+|------------------------|---------------------|------|
+| Write `hooks/version-check.sh`, change `wiki-format.sh`, and their tests | No skill needed: `shellcheck`, `scripts/verify_test.sh`, and `scripts/verify.sh` | Each change |
+| Keep the change to what was decided | `playbook-agents:keep-minimal` | Each change |
+| Read the hooks, which every project with `playbook-wiki` runs | `playbook-agents:review-change`, on the `review` agent (R20) | Before each unit is delivered |
+| Check Claude Code's hooks and plugin files | No skill needed: the sources of [../works/version-check/technology.md](../works/version-check/technology.md), and the `claude-code-guide` agent | When a behaviour is not documented there |
+| Write the wiki and the README of `playbook-wiki` | `playbook-wiki:write-docs` | At the close |

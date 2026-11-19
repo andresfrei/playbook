@@ -26,7 +26,7 @@ sequenceDiagram
   participant Wiki as docs/wiki/
   You->>CC: start a session
   CC->>W: session starts
-  W-->>CC: the contract, and a notice when the wiki's format is behind
+  W-->>CC: the contract, and a notice to you when the wiki's format is behind or ahead, or a newer playbook is in the marketplace
   CC->>A: session starts
   A-->>CC: the rules, and the language
   You->>CC: a request

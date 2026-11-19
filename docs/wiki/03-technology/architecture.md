@@ -48,7 +48,7 @@ Three kinds of content, split by when each one loads (D65):
 
 | Plugin | Event | What runs |
 |--------|-------|-----------|
-| `playbook-wiki` | `SessionStart` | Prints the contract, then the notice of the wiki's format when it is behind (`skills/doctor/scripts/wiki-format.sh hook`) |
+| `playbook-wiki` | `SessionStart` | Prints the contract on every start. On `startup` only, two notices, each one JSON object with `systemMessage` for the person and `additionalContext` for the agent: the wiki's format when it is behind, recommending the doctor, or ahead of the plugin, recommending an update (`skills/doctor/scripts/wiki-format.sh hook`; its `status` mode is unchanged); and a newer version of `playbook-wiki` in the marketplace's local copy than the one installed (`hooks/version-check.sh`) (version-check-3, version-check-5, version-check-9, version-check-16) |
 | `playbook-wiki` | `SubagentStart` | Gives the contract to each subagent as extra context (TD29) |
 | `playbook-wiki` | `PreToolUse` on `Bash(git *)` | The step at the merge, for a `git merge` |
 | `playbook-wiki` | `PreToolUse` on `Bash(git *)` | The check at the commit, for a `git commit` (wiki-check-on-commit-1) |
