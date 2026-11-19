@@ -26,7 +26,7 @@ Units in order: each depends on the one before it.
 
 ## How the work is delivered
 
-As in the works before it (version-check-14), from this repository's history (`git log --merges --first-parent main`: each work reaches `main` by one pull request from its own branch) and its only long-lived branch, `main`, which is production:
+Decided (repeated-corrections-25), as in the works before it (version-check-14), from this repository's history (`git log --merges --first-parent main`: each work reaches `main` by one pull request from its own branch) and its only long-lived branch, `main`, which is production:
 
 - Tested nowhere apart: the tests and checks of each unit, and the real session of U4.
 - The units are built in order, one at a time, on this work's branch.
