@@ -53,5 +53,5 @@ Read a file when its stage is the current one.
 - `references/2-technology.md` — each technology, and the architecture page.
 - `references/3-skills.md` — the skills the agent needs.
 - `references/4-design-system.md` — the visual identity, tokens, and patterns.
-- `references/5-plan.md` — the work plan, in units, and how a unit is delivered.
+- `references/5-plan.md` — the work plan, in units, and how the work is delivered.
 - `references/6-execution.md` — building the plan unit by unit, and closing the work.
