@@ -2,20 +2,20 @@
 
 Tells the person which version of the playbook is installed and which is available, and what to run after updating, without updating anything by itself. Andres Frei leads it.
 
-Status: Open.
+Status: Closed on 2026-11-19 (version-check-17).
 
 ## Where work stands
 
-Updated 2026-11-19, after version-check-16.
+Updated 2026-11-19, after version-check-17.
 
-Stage 6, Execution, is open. version-check-U1 and version-check-U2 are Done.
+The work is closed: version-check-U1 and version-check-U2 are Done, and the shared pages say what it decided (`03-technology/architecture.md`, `03-technology/installation.md`, `04-skills/working-skills.md`). `--delegations` printed only kinds already settled: close-stage delegated, plan and version declined. No decision reached `main` since the work started, so the step at the merge has nothing to compare.
 
 Waiting for a decision: none.
 
 Next steps, in order:
 
-1. Close the work: write the shared pages, measure and propose delegations, and recommend the version, MINOR by TD22.
-2. One pull request to `main`, which the owner merges.
+1. The owner merges the pull request into `main` (R14).
+2. After the merge, the release of 3.1.0 (version-check-17): the version in the three manifests, the tag, and the release on GitHub.
 
 ## Stage table
 
@@ -26,7 +26,7 @@ Next steps, in order:
 | 3 Skills | Closed | 2026-11-19 |
 | 4 Design system | Closed (not applicable) | 2026-11-19 |
 | 5 Plan | Closed | 2026-11-19 |
-| 6 Execution | Open | |
+| 6 Execution | Closed | 2026-11-19 |
 
 ## Pages
 
