@@ -39,3 +39,4 @@ Do not use it to write, extend, or reorganize a wiki for any other reason.
 - `references/format-2.md` — how a wiki reaches format 2: a state section that says only the current state.
 - `references/format-3.md` — how a wiki reaches format 3: a table of pages that says which code each page governs.
 - `references/format-4.md` — how a wiki reaches format 4: works, and a project's `README.md` with no state.
+- `references/format-5.md` — how a wiki reaches format 5: the kind and the answer of each decision.

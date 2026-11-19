@@ -133,7 +133,7 @@ When a definition changes and code stays on the old one, the page lists that cod
 
 Write the path in the first column, as code. The check fails on a path that does not exist.
 
-`01-product/delegations.md` lists the delegations in force: one row per delegation, with its kind and the decision that made it, each citing that decision, such as `(auth-7)`. A decision that revokes a delegation removes its row. Create the page with the first delegation.
+`01-product/delegations.md` lists the delegations in force: one row per delegation, with its kind and the decision that made it, each citing that decision, such as `(auth-7)`. A decision that revokes a delegation moves its row to a second table, of delegations revoked, citing the decision that revoked it. Create the page with the first delegation.
 
 `01-product/glossary.md` holds each term and its one meaning. Use the same word for the same thing in every page.
 

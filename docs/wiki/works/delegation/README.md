@@ -10,12 +10,13 @@ Updated 2026-11-19, after delegation-15.
 
 Stage 6, Execution, is open. Stage 1 closed with [definition.md](definition.md) and [measurements.md](measurements.md); stage 2 with [technology.md](technology.md); stage 3 with [skills.md](skills.md); stage 4 as not applicable; stage 5 with [plan.md](plan.md).
 
-Waiting for a decision: none until delegation-U4, accepted by judgement.
+Waiting for a decision: the owner's review of delegation-U4 and delegation-U5, accepted by judgement.
 
 Next steps, in order:
 
-1. Build delegation-U4 to delegation-U6 in order, as [plan.md](plan.md) says; delegation-U1 to delegation-U3 are Done. This wiki fails the check at format 5 until delegation-U6.
-2. Close the work.
+1. The owner reviews delegation-U4 and delegation-U5; delegation-U1 to delegation-U3 are Done.
+2. Build delegation-U6. This wiki fails the check at format 5 until delegation-U6.
+3. Close the work.
 
 ## Stage table
 
