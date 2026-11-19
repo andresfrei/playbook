@@ -1,6 +1,6 @@
 {
   "name": "playbook-agents",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "Working rules, skills, and agents for building software with an AI coding agent.",
   "author": {
     "name": "Andres Frei"
