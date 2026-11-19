@@ -3420,6 +3420,37 @@ check "seed-reviews list: a report that quotes </task-notification> is whole (tw
 sr_show "$sr_repo" "$sr_n"
 check "seed-reviews show: a report that quotes </task-notification> ends with its last line" sh -c 'printf "%s\n" "$1" | tail -n 1 | grep -Fqx "2. last item"' sh "$sr_out"
 
+# --from <old path>: the transcript folders of a repository's old path
+# (seed-evidence-14). The old paths do not exist on disk.
+mkdir -p "$tmp/sr/newrepo"
+sr_call "$(sr_dir "$tmp/sr/newrepo")/n1.jsonl" FRn00001 playbook-agents:review 2026-12-01T10:00:00Z
+sr_fg "$(sr_dir "$tmp/sr/newrepo")/n1.jsonl" FRn00001 'Found one.\n\n1. new'
+sr_call "$(sr_dir "$tmp/sr/old1")/o1.jsonl" FRo00002 playbook-agents:review 2026-12-02T10:00:00Z
+sr_fg "$(sr_dir "$tmp/sr/old1")/o1.jsonl" FRo00002 'Found one.\n\n1. old'
+sr_call "$(sr_dir "$tmp/sr/old1/.claude/worktrees/s1")/o3.jsonl" FRo00003 playbook-agents:review 2026-12-03T10:00:00Z
+sr_fg "$(sr_dir "$tmp/sr/old1/.claude/worktrees/s1")/o3.jsonl" FRo00003 'Found one.\n\n1. old session'
+sr_call "$(sr_dir "$tmp/sr/old2")/o2.jsonl" FRo00004 playbook-agents:review 2026-12-04T10:00:00Z
+sr_fg "$(sr_dir "$tmp/sr/old2")/o2.jsonl" FRo00004 'Found one.\n\n1. other old'
+sr_call "$(sr_dir "$tmp/sr/old1b")/b1.jsonl" FRb00005 playbook-agents:review 2026-12-05T10:00:00Z
+sr_fg "$(sr_dir "$tmp/sr/old1b")/b1.jsonl" FRb00005 'Found one.\n\n1. sibling of the old path'
+sr_list "$tmp/sr/newrepo"
+check "seed-reviews --from: without it the folder of an old path is not read" sh -c 'printf "%s\n" "$1" | grep -q "2026-12-01" && ! printf "%s\n" "$1" | grep -Eq "2026-12-0[2345]"' sh "$sr_out"
+sr_list --from "$tmp/sr/old1" "$tmp/sr/newrepo"
+check "seed-reviews --from: the folder of the old path is read, though the path does not exist" sh -c '[ ! -e "$1" ] && printf "%s\n" "$2" | grep -q "2026-12-02 10:00:00  1 finding"' sh "$tmp/sr/old1" "$sr_out"
+check "seed-reviews --from: the .claude/worktrees sessions of the old path are read" sr_has "2026-12-03 10:00:00  1 finding"
+check "seed-reviews --from: the reviews of the new path are still listed, oldest first" sh -c 'printf "%s\n" "$1" | sed -n 1p | grep -q "^1  2026-12-01"' sh "$sr_out"
+check "seed-reviews --from: a sibling whose name starts like the old path is not read" sr_lacks "2026-12-05"
+check "seed-reviews --from: a folder of another old path is not read" sr_lacks "2026-12-04"
+sr_list --from "$tmp/sr/old1" --from "$tmp/sr/old2/" "$tmp/sr/newrepo"
+check "seed-reviews --from: two of them read both old paths (a trailing slash is dropped)" sh -c 'printf "%s\n" "$1" | grep -q "2026-12-02" && printf "%s\n" "$1" | grep -q "2026-12-04" && ! printf "%s\n" "$1" | grep -q "2026-12-05"' sh "$sr_out"
+sr_n=$(printf '%s\n' "$sr_out" | awk '/2026-12-04 10:00:00/ { print $1 }')
+sr_show --from "$tmp/sr/old1" --from "$tmp/sr/old2" "$tmp/sr/newrepo" "$sr_n"
+check "seed-reviews --from: show with the same options gives the review that list numbered" sh -c '[ "$(printf "%s\n" "$1" | sed -n 1p)" = "2026-12-04 10:00:00" ] && printf "%s\n" "$1" | grep -Fq "1. other old"' sh "$sr_out"
+sr_list --from relative/path "$tmp/sr/newrepo"
+check "seed-reviews --from: a path that is not absolute is a usage error" sh -c '[ "$1" -eq 2 ]' sh "$sr_code"
+sr_list --from
+check "seed-reviews --from: with no path after it is a usage error" sh -c '[ "$1" -eq 2 ]' sh "$sr_code"
+
 if [ "$failed" -eq 0 ]; then
   printf 'all cases passed\n'
 else

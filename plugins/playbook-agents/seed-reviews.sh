@@ -3,8 +3,14 @@
 # transcripts (seed-evidence-7, N1 and N2 of the work seed-evidence). It never
 # writes a file and never calls a model. POSIX sh and awk, with sed for names
 # and date for the time zone; no JSON parser.
-# Usage: sh seed-reviews.sh list <repository root> [evidence page]
-#        sh seed-reviews.sh show <repository root> N
+# Usage: sh seed-reviews.sh list [--from <old path>]... <repository root> [evidence page]
+#        sh seed-reviews.sh show [--from <old path>]... <repository root> N
+# --from <old path>, which can be repeated (seed-evidence-14), is for a
+# repository that was moved: it also reads the transcript folder named after
+# that absolute path, by the same name rule, and its --claude-worktrees-*
+# session folders, and no other folder (a sibling whose name starts the same is
+# not read). The old path need not exist on disk. Its reviews are listed like
+# the others. show must be given the same options as list to number the same.
 # - list: one line per review, oldest first: its number, its identifier, and
 #   "N findings" or "No findings.", plus "already seeded" (see below). N is an
 #   estimate: the lines of the report that start with a number and a dot,
@@ -52,28 +58,57 @@
 # with characters outside ASCII may not match what Claude Code made.
 
 usage() {
-  printf 'usage: sh seed-reviews.sh list <repository root> [evidence page]\n       sh seed-reviews.sh show <repository root> N\n' >&2
+  printf 'usage: sh seed-reviews.sh list [--from <old path>]... <repository root> [evidence page]\n       sh seed-reviews.sh show [--from <old path>]... <repository root> N\n' >&2
   exit 2
 }
 
 mode=${1:-}
 case $mode in
-  list) [ $# -ge 2 ] && [ $# -le 3 ] || usage ;;
-  show) [ $# -eq 3 ] || usage ;;
+  list | show) shift ;;
   *) usage ;;
 esac
-root=$2
+froms=
+npos=0
+p1=
+p2=
+while [ $# -gt 0 ]; do
+  case $1 in
+    --from)
+      [ $# -ge 2 ] || usage
+      case $2 in
+        /?*) ;;
+        *) printf 'seed-reviews: --from needs an absolute path, not "%s"\n' "$2" >&2; exit 2 ;;
+      esac
+      froms="$froms
+$2"
+      shift 2 ;;
+    -*) usage ;;
+    *)
+      npos=$((npos + 1))
+      case $npos in
+        1) p1=$1 ;;
+        2) p2=$1 ;;
+        *) usage ;;
+      esac
+      shift ;;
+  esac
+done
+case $mode in
+  list) [ "$npos" -ge 1 ] || usage ;;
+  show) [ "$npos" -eq 2 ] || usage ;;
+esac
+root=$p1
 [ -d "$root" ] || { printf 'seed-reviews: %s is not a directory\n' "$root" >&2; exit 2; }
 root_l=$(cd "$root" && pwd)
 root_p=$(cd "$root" && pwd -P)
 if [ "$mode" = show ]; then
-  case $3 in
+  case $p2 in
     '' | *[!0-9]*) printf 'seed-reviews: N must be a number\n' >&2; exit 2 ;;
   esac
-  want=$3
+  want=$p2
 else
   want=0
-  page=${3:-$root_l/docs/wiki/evidence.md}
+  page=${p2:-$root_l/docs/wiki/evidence.md}
 fi
 
 projects=${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects
@@ -107,6 +142,11 @@ if [ -n "$top" ] && top=$(cd "$top" 2>/dev/null && pwd -P) && [ "$top" = "$root_
 fi
 [ -z "$wt" ] || paths="$paths
 $wt"
+# The old paths of --from need not exist: their folders are read too, by the
+# same name rule, with their .claude/worktrees sessions, and nothing else.
+froms=$(printf '%s\n' "$froms" | sed 's|//*$||')
+[ -z "$froms" ] || paths="$paths
+$froms"
 # Without a here-document, a path with a space stays whole: one path per line.
 oldifs=$IFS
 IFS='
