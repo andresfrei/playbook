@@ -14,7 +14,7 @@ Waiting for a decision: none until delegation-U4, accepted by judgement.
 
 Next steps, in order:
 
-1. Build delegation-U2 to delegation-U6 in order, as [plan.md](plan.md) says; delegation-U1 is Done.
+1. Build delegation-U4 to delegation-U6 in order, as [plan.md](plan.md) says; delegation-U1 to delegation-U3 are Done. This wiki fails the check at format 5 until delegation-U6.
 2. Close the work.
 
 ## Stage table

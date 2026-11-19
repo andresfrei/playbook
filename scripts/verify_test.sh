@@ -457,7 +457,7 @@ fresh_wiki() {
     printf '# Wiki\n\nProject owner: Ana.\n\n## Pages\n\n| Page | Content | Code it governs |\n|---|---|---|\n'
     printf '| [Overview](01-product/overview.md) | The product | |\n'
   } > "$tmp/wiki/README.md"
-  printf '4\n' > "$tmp/wiki/.format"
+  printf '5\n' > "$tmp/wiki/.format"
   printf '# Overview\n\nBack to the [entry point](../README.md).\n' > "$tmp/wiki/01-product/overview.md"
 }
 
@@ -629,7 +629,7 @@ decisions() {
 fresh_wiki
 decisions
 { decision D1 200; decision TD1 90; } >> "$tmp/wiki/decisions.md"
-printf '4\n' > "$tmp/wiki/.format"
+printf '5\n' > "$tmp/wiki/.format"
 expect_wiki "decisions: the rows of the top-level decisions.md are history and are not read" pass
 
 # The works of a wiki: a folder for each work, with identifiers that carry the
@@ -883,9 +883,159 @@ check "works: --decisions needs no README.md" test "$(sh "$check_wiki" --decisio
 
 fresh_works
 
+
+# Format 5: the columns Kind and Answer, at the end of a row of decisions.md.
+# kind_rows <first number> <count> <kind> <answer>: appends rows of the work
+# auth, in its decisions.md, with a seventh and an eighth cell. A cell given
+# as - is left empty.
+kind_rows() {
+  awk -v first="$1" -v count="$2" -v kind="$3" -v answer="$4" 'BEGIN {
+    if (kind == "-") kind = ""
+    if (answer == "-") answer = ""
+    for (i = 0; i < count; i++)
+      printf "| auth-%d | 2026-04-01 | Row %d | Ana | \"yes\" | none | %s | %s |\n", first + i, first + i, kind, answer
+  }' >> "$project_wiki/works/auth/decisions.md"
+}
+# kind_case <case name> <pass|fail> <kind> <answer> [text the output must contain]
+kind_case() {
+  fresh_works
+  kind_rows 10 1 "$3" "$4"
+  expect_wiki "format 5: $1" "$2" "${5:-}" "$project_wiki"
+}
+for kind in definition technology plan open-work close-stage close-work commit merge-push version other; do
+  kind_case "the kind $kind is accepted" pass "$kind" "as recommended"
+done
+kind_case "an unknown kind fails and names the row and the value" fail "made-up" "as recommended" "FAIL works/auth/decisions.md: the kind of auth-10 is made-up"
+kind_case "a kind in capitals fails" fail "Definition" "as recommended" "the kind of auth-10 is Definition"
+for answer in "as recommended" changed rejected delegated; do
+  kind_case "the answer $answer is accepted" pass definition "$answer"
+done
+kind_case "an unknown answer fails and names the row and the value" fail definition "approved" "FAIL works/auth/decisions.md: the answer of auth-10 is approved"
+kind_case "an estimated kind and answer are accepted" pass "plan (estimated)" "changed (estimated)"
+kind_case "an estimated unknown kind fails" fail "made-up (estimated)" "changed" "the kind of auth-10 is made-up (estimated)"
+kind_case "an estimated answer that is not a value fails" fail "plan (estimated)" "approved (estimated)" "the answer of auth-10 is approved (estimated)"
+kind_case "a suffix with no space before it fails" fail "plan(estimated)" "changed" "the kind of auth-10 is plan(estimated)"
+kind_case "the suffix alone fails" fail "(estimated)" "changed" "the kind of auth-10 is (estimated)"
+kind_case "the suffix alone as an answer fails" fail plan "(estimated)" "the answer of auth-10 is (estimated)"
+kind_case "a suffix after two spaces fails" fail "plan  (estimated)" "changed" "the kind of auth-10 is plan  (estimated)"
+kind_case "empty kind and answer are accepted" pass - -
+kind_case "an empty answer with a kind is accepted" pass commit -
+kind_case "an empty kind with an answer is accepted" pass - rejected
+fresh_works
+printf '| auth-10 | 2026-04-01 | Row ten | Ana | "yes" | none | plan |\n' >> "$project_wiki/works/auth/decisions.md"
+expect_wiki "format 5: a row with seven columns passes" pass "" "$project_wiki"
+fresh_works
+printf '| auth-10 | 2026-04-01 | Row ten | Ana | "yes" | none |\n' >> "$project_wiki/works/auth/decisions.md"
+expect_wiki "format 5: a row with six columns passes" pass "" "$project_wiki"
+fresh_works
+printf '| auth-10 | 2026-04-01 | Row ten | agent, by auth-7 | "yes" | none | close-stage | delegated |\n' >> "$project_wiki/works/auth/decisions.md"
+expect_wiki "format 5: a decision of the agent under a delegation passes" pass "" "$project_wiki"
+
+fresh_works
+printf '| auth-10 | 2026-04-01 | Row ten | Ana | "yes" | none | plan | changed | extra |\n' >> "$project_wiki/works/auth/decisions.md"
+expect_wiki "format 5: a row with nine columns fails and says so" fail "the row of auth-10 has 9 columns, more than the eight" "$project_wiki"
+
+# The measurement: sh check-wiki.sh --delegations.
+# deleg_case <case name> <expected output>: the output of the mode on the
+# wiki in $project_wiki, which must exit 0.
+deleg_case() {
+  out=$(sh "$check_wiki" --delegations "$project_wiki" 2>&1)
+  code=$?
+  if [ "$code" -eq 0 ] && [ "$out" = "$2" ]; then
+    printf 'ok    %s\n' "$1"
+  else
+    printf 'FAIL  %s (exit %s)\n%s\n' "$1" "$code" "$out"
+    failed=$((failed + 1))
+  fi
+}
+fresh_works
+kind_rows 10 13 close-stage "as recommended"
+kind_rows 30 1 close-stage changed
+deleg_case "delegations: a kind with 14 answers and 92% as recommended qualifies" "close-stage: 14 answers, 92% as recommended, 0 rejected"
+
+fresh_works
+kind_rows 10 10 close-stage "as recommended"
+deleg_case "delegations: a kind with exactly 10 answers, all as recommended, qualifies" "close-stage: 10 answers, 100% as recommended, 0 rejected"
+
+fresh_works
+kind_rows 10 9 close-stage "as recommended"
+deleg_case "delegations: a kind with 9 answers does not qualify" ""
+
+fresh_works
+kind_rows 10 8 plan "as recommended"
+kind_rows 30 2 plan changed
+deleg_case "delegations: a kind at exactly 80% qualifies" "plan: 10 answers, 80% as recommended, 0 rejected"
+
+fresh_works
+kind_rows 10 7 plan "as recommended"
+kind_rows 30 3 plan changed
+deleg_case "delegations: a kind at 70% does not qualify" ""
+
+fresh_works
+kind_rows 10 20 commit "as recommended"
+kind_rows 40 1 commit rejected
+deleg_case "delegations: a kind with one rejected does not qualify" ""
+
+fresh_works
+kind_rows 10 8 definition "as recommended (estimated)"
+kind_rows 30 4 definition "as recommended"
+kind_rows 40 5 definition -
+kind_rows 50 3 other -
+deleg_case "delegations: estimated answers count and empty answers are skipped" "definition: 12 answers, 100% as recommended, 0 rejected"
+
+fresh_works
+kind_rows 10 10 plan "as recommended (estimated)"
+deleg_case "delegations: the suffix is taken off the answer" "plan: 10 answers, 100% as recommended, 0 rejected"
+
+fresh_works
+kind_rows 10 10 "plan (estimated)" "as recommended (estimated)"
+kind_rows 30 1 "plan (estimated)" "changed"
+deleg_case "delegations: the suffix is taken off the kind, so it joins its plain kind" "plan: 11 answers, 90% as recommended, 0 rejected"
+
+fresh_works
+kind_rows 10 199 commit "as recommended"
+kind_rows 300 1 commit changed
+deleg_case "delegations: the percentage is rounded down, 199 of 200 is 99%" "commit: 200 answers, 99% as recommended, 0 rejected"
+
+fresh_works
+kind_rows 10 10 technology "as recommended"
+kind_rows 30 40 technology delegated
+deleg_case "delegations: the answer delegated is not counted" "technology: 10 answers, 100% as recommended, 0 rejected"
+
+fresh_works
+kind_rows 10 9 version "as recommended"
+kind_rows 30 5 version delegated
+deleg_case "delegations: delegated rows do not complete the count of 10" ""
+
+fresh_works
+kind_rows 10 6 plan "as recommended"
+mkwork billing 2026-02-01 2026-03-05
+printf '| billing-10 | 2026-04-01 | Row | Ana | "yes" | none | plan | as recommended |\n| billing-11 | 2026-04-01 | Row | Ana | "yes" | none | plan | as recommended |\n| billing-12 | 2026-04-01 | Row | Ana | "yes" | none | plan | as recommended |\n| billing-13 | 2026-04-01 | Row | Ana | "yes" | none | plan | as recommended |\n' >> "$project_wiki/works/billing/decisions.md"
+deleg_case "delegations: the rows of every work are counted together" "plan: 10 answers, 100% as recommended, 0 rejected"
+
+fresh_works
+kind_rows 10 10 close-stage "as recommended"
+kind_rows 30 10 commit "as recommended"
+kind_rows 50 11 definition "as recommended"
+deleg_case "delegations: each kind that qualifies has a line, in the order of the list of kinds" "definition: 11 answers, 100% as recommended, 0 rejected
+close-stage: 10 answers, 100% as recommended, 0 rejected
+commit: 10 answers, 100% as recommended, 0 rejected"
+
+fresh_works
+kind_rows 10 10 close-stage "as recommended"
+rm "$project_wiki/README.md" "$project_wiki/.format"
+deleg_case "delegations: it needs no README.md and no marker" "close-stage: 10 answers, 100% as recommended, 0 rejected"
+
+fresh_project
+deleg_case "delegations: a wiki without works prints nothing" ""
+
+fresh_works
+deleg_case "delegations: works with rows of six columns print nothing" ""
+
+check "delegations: a missing directory fails" sh -c '! sh "$1" --delegations "$2" >/dev/null 2>&1' sh "$check_wiki" "$tmp/no-such-wiki"
 # The gate of the check, the format the playbook is at, and the passed message.
 present=$(sh "$check_wiki" --format)
-check "gate: --format prints 4" test "$present" = 4
+check "gate: --format prints 5" test "$present" = 5
 check "gate: --format exits 0 and takes no wiki" sh -c 'sh "$1" --format >/dev/null' sh "$check_wiki"
 
 # expect_gate <case name> <marker content as printf format, or NONE> <expected found>
@@ -897,7 +1047,7 @@ expect_gate() {
   if [ "$2" = NONE ]; then rm -f "$tmp/wiki/.format"; else printf "$2" > "$tmp/wiki/.format"; fi
   out=$(sh "$check_wiki" "$tmp/wiki" 2>&1)
   code=$?
-  want="FAIL $tmp/wiki is at wiki format $3, and the playbook is at 4. Bring it there with the doctor (/playbook-wiki:doctor)."
+  want="FAIL $tmp/wiki is at wiki format $3, and the playbook is at 5. Bring it there with the doctor (/playbook-wiki:doctor)."
   if [ "$code" -eq 1 ] && [ "$out" = "$want" ]; then
     printf 'ok    %s\n' "$1"
   else
@@ -912,12 +1062,12 @@ expect_gate "gate: an empty marker reads as none" '' none
 expect_gate "gate: a marker that ends in a carriage return is read" '3\r\n' 3
 
 fresh_wiki
-printf '5\n' > "$tmp/wiki/.format"
+printf '6\n' > "$tmp/wiki/.format"
 expect_wiki "gate: a marker above the playbook's format passes the gate" pass "check-wiki passed"
 
 fresh_wiki
 printf 'See [b](gone.md).\n' >> "$tmp/wiki/01-product/overview.md"
-printf '5\n' > "$tmp/wiki/.format"
+printf '6\n' > "$tmp/wiki/.format"
 expect_wiki "gate: past the gate the other checks run" fail "links to gone.md"
 
 fresh_wiki
@@ -926,9 +1076,9 @@ check "gate: --column does not read the marker" sh "$check_wiki" --column "$tmp/
 check "gate: --decisions does not read the marker" sh "$check_wiki" --decisions "$tmp/wiki"
 
 fresh_project
-expect_wiki "passed: a wiki without works says 0 works" pass "check-wiki passed: wiki format 4, 0 works" "$project_wiki"
+expect_wiki "passed: a wiki without works says 0 works" pass "check-wiki passed: wiki format 5, 0 works" "$project_wiki"
 fresh_works
-expect_wiki "passed: a wiki with two works says 2 works" pass "check-wiki passed: wiki format 4, 2 works" "$project_wiki"
+expect_wiki "passed: a wiki with two works says 2 works" pass "check-wiki passed: wiki format 5, 2 works" "$project_wiki"
 
 # The README.md of the project at format 4: an owner, no state, no stage table.
 readme_case() {
@@ -989,11 +1139,11 @@ expect_format "format: the notice says not to repair unasked" status 0 "Do not r
 
 fresh_wiki
 printf '3\n' > "$tmp/wiki/.format"
-expect_format "format: a marker at 3 gets the behind line with both numbers" status 0 "is at wiki format 3, and the playbook is at 4"
+expect_format "format: a marker at 3 gets the behind line with both numbers" status 0 "is at wiki format 3, and the playbook is at 5"
 expect_format "format: the behind line names the doctor" status 0 "/playbook-wiki:doctor"
 
 fresh_wiki
-expect_format "format: a marker at 4 gets no notice" status 0 ""
+expect_format "format: a marker at 5 gets no notice" status 0 ""
 
 fresh_wiki
 printf '%s\n' "$((product_format + 1))" > "$tmp/wiki/.format"
@@ -1024,7 +1174,7 @@ check "format: a failed mark leaves no copy of the marker" absent "$tmp/wiki/.fo
 
 fresh_wiki
 printf '3\n' > "$tmp/wiki/.format"
-expect_format "format: mark brings a wiki at 3 that passes to 4" mark 0 "marked $tmp/wiki as wiki format $product_format"
+expect_format "format: mark brings a wiki at 3 that passes to 5" mark 0 "marked $tmp/wiki as wiki format $product_format"
 check "format: the marker holds the playbook's format" test "$(cat "$tmp/wiki/.format")" = "$product_format"
 expect_format "format: after mark there is no notice" status 0 ""
 
@@ -1037,7 +1187,7 @@ printf '2\n' > "$tmp/wiki/.unchecked-decisions"
 cp "$tmp/wiki/decisions.md" "$tmp/decisions-before"
 expect_format "format: mark succeeds on a wiki of format 3 with long rows in decisions.md" mark 0 "as wiki format $product_format"
 check "format: mark deletes .unchecked-decisions" absent "$tmp/wiki/.unchecked-decisions"
-check "format: the marker is 4 after mark" test "$(cat "$tmp/wiki/.format")" = 4
+check "format: the marker is 5 after mark" test "$(cat "$tmp/wiki/.format")" = 5
 check "format: decisions.md is byte-identical after mark" cmp -s "$tmp/decisions-before" "$tmp/wiki/decisions.md"
 
 fresh_wiki
@@ -1071,20 +1221,20 @@ expect_format "format: mark fails when the marker cannot be written" mark 4 "cou
 
 fresh_wiki
 out=$(TMPDIR="$tmp/no-such-dir" sh "$wiki_format" mark "$tmp/wiki" 2>&1); code=$?
-check "format: mark works when the temporary folder cannot be written" sh -c 'test "$1" -eq 0 && test "$(cat "$2")" = 4' sh "$code" "$tmp/wiki/.format"
+check "format: mark works when the temporary folder cannot be written" sh -c 'test "$1" -eq 0 && test "$(cat "$2")" = 5' sh "$code" "$tmp/wiki/.format"
 check "format: mark leaves no copy of the marker in the wiki" absent "$tmp/wiki/.format.saved"
 
 fresh_wiki
 printf '3\n' > "$tmp/wiki/.format"
 printf 'stale\n' > "$tmp/wiki/.format.saved"
 sh "$wiki_format" mark "$tmp/wiki" >/dev/null 2>&1; code=$?
-check "format: mark replaces a copy left by an earlier run, and deletes it" sh -c 'test "$1" -eq 0 && test "$(cat "$2")" = 4 && test ! -e "$3"' sh "$code" "$tmp/wiki/.format" "$tmp/wiki/.format.saved"
+check "format: mark replaces a copy left by an earlier run, and deletes it" sh -c 'test "$1" -eq 0 && test "$(cat "$2")" = 5 && test ! -e "$3"' sh "$code" "$tmp/wiki/.format" "$tmp/wiki/.format.saved"
 
 fresh_wiki
 rm "$tmp/wiki/.format"
 printf 'stale\n' > "$tmp/wiki/.format.saved"
 sh "$wiki_format" mark "$tmp/wiki" >/dev/null 2>&1; code=$?
-check "format: mark deletes a copy left by an earlier run when there is no marker" sh -c 'test "$1" -eq 0 && test "$(cat "$2")" = 4 && test ! -e "$3"' sh "$code" "$tmp/wiki/.format" "$tmp/wiki/.format.saved"
+check "format: mark deletes a copy left by an earlier run when there is no marker" sh -c 'test "$1" -eq 0 && test "$(cat "$2")" = 5 && test ! -e "$3"' sh "$code" "$tmp/wiki/.format" "$tmp/wiki/.format.saved"
 
 fresh_wiki
 printf '3\n' > "$tmp/wiki/.format"
@@ -1158,12 +1308,12 @@ mkdir -p "$tmp/wiki/works/skills"
 } > "$readme"
 expect_format "doctor: mark succeeds once the steps are applied" mark 0 "as wiki format $product_format"
 expect_format "doctor: the wiki has no notice after mark" status 0 ""
-check "doctor: the marker is 4" test "$(cat "$tmp/wiki/.format")" = 4
+check "doctor: the marker is 5" test "$(cat "$tmp/wiki/.format")" = 5
 check "doctor: .unchecked-decisions is gone" absent "$tmp/wiki/.unchecked-decisions"
 check "doctor: decisions.md is byte-identical" cmp -s "$tmp/decisions-before" "$tmp/wiki/decisions.md"
 check "doctor: the state moved to the work" grep -q 'Stage 3 is open' "$tmp/wiki/works/skills/README.md"
 check "doctor: the project README no longer holds the state" sh -c '! grep -q "Where work stands" "$1"' sh "$readme"
-expect_wiki "doctor: the brought-up wiki passes the check with one work" pass "wiki format 4, 1 works"
+expect_wiki "doctor: the brought-up wiki passes the check with one work" pass "wiki format 5, 1 works"
 
 
 # An interrupted mark puts the old marker back. The check is a stand-in, in a
@@ -1174,7 +1324,7 @@ mkdir -p "$standin/skills/doctor/scripts" "$standin/tmpdir"
 cp "$wiki_format" "$standin/skills/doctor/scripts/wiki-format.sh"
 cat > "$standin/check-wiki.sh" <<'STANDIN'
 case ${1:-} in
-  --format) echo 4 ;;
+  --format) echo 5 ;;
   --column) exit 0 ;;
   *) kill -TERM "$PPID"; sleep 1; exit 0 ;;
 esac
@@ -1194,7 +1344,7 @@ fresh_wiki
 rm "$tmp/wiki/.format"
 TMPDIR="$standin/tmpdir" sh "$interrupted" mark "$tmp/wiki" >/dev/null 2>&1
 check "interrupt: when there was no marker, the new one is removed" absent "$tmp/wiki/.format"
-check "interrupt: the stand-in alone writes a marker when it is not interrupted" sh -c 'sed "s/kill -TERM \"\$PPID\"; //" "$1/check-wiki.sh" > "$1/ok.sh" && cp "$1/ok.sh" "$1/check-wiki.sh" && sh "$2" mark "$3" >/dev/null && test "$(cat "$3/.format")" = 4' sh "$standin" "$interrupted" "$tmp/wiki"
+check "interrupt: the stand-in alone writes a marker when it is not interrupted" sh -c 'sed "s/kill -TERM \"\$PPID\"; //" "$1/check-wiki.sh" > "$1/ok.sh" && cp "$1/ok.sh" "$1/check-wiki.sh" && sh "$2" mark "$3" >/dev/null && test "$(cat "$3/.format")" = 5' sh "$standin" "$interrupted" "$tmp/wiki"
 
 # A marker that is a symbolic link is not written through.
 fresh_wiki

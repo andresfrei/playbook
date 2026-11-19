@@ -1,12 +1,12 @@
 #!/bin/bash
-# Builds a repository whose wiki is at format 4, with an open work
+# Builds a repository whose wiki is at format 5, with an open work
 # `export-csv` at stage 2: stage 1 closed, no technology decided yet.
 set -eu
 git init -q -b main .
 git config user.email eval@example.com
 git config user.name "Laura Gómez"
 mkdir -p docs/wiki/01-product docs/wiki/works/export-csv src
-printf '4\n' > docs/wiki/.format
+printf '5\n' > docs/wiki/.format
 cat > docs/wiki/README.md <<'MD'
 # Invoicing app
 
@@ -51,10 +51,10 @@ cat > docs/wiki/works/export-csv/product.md <<'MD'
 A customer can download all their invoices of one year as a CSV file with one row per invoice (export-csv-1).
 MD
 cat > docs/wiki/works/export-csv/decisions.md <<'MD'
-| ID | Date | Decision | Who decided | Their words | Shared page |
-|----|------|----------|-------------|-------------|-------------|
-| export-csv-1 | 2026-11-11 | One CSV per customer and year, one row per invoice; see [product.md](product.md). | Laura Gómez | "One file per year." | none |
-| export-csv-2 | 2026-11-12 | Stage 1 is closed. | Laura Gómez | "Close the wiki stage." | none |
+| ID | Date | Decision | Who decided | Their words | Shared page | Kind | Answer |
+|----|------|----------|-------------|-------------|-------------|------|--------|
+| export-csv-1 | 2026-11-11 | One CSV per customer and year, one row per invoice; see [product.md](product.md). | Laura Gómez | "One file per year." | none | other | as recommended |
+| export-csv-2 | 2026-11-12 | Stage 1 is closed. | Laura Gómez | "Close the wiki stage." | none | close-stage | as recommended |
 MD
 printf 'export const app = {};\n' > src/app.js
 git add -A
