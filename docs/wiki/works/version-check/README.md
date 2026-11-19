@@ -6,15 +6,15 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after version-check-4.
+Updated 2026-11-19, after version-check-5.
 
-Stage 1, Wiki, is open. [definition.md](definition.md) holds the problem and what exists today; two questions are open in [questions.md](questions.md).
+Stage 1, Wiki, is open. [definition.md](definition.md) holds the problem and what exists today; one question is open in [questions.md](questions.md).
 
-Waiting for a decision: version-check-Q4, where "what to run first" comes from.
+Waiting for a decision: version-check-Q5, which plugin carries the check.
 
 Next steps, in order:
 
-1. Answer version-check-Q4 and version-check-Q5.
+1. Answer version-check-Q5.
 2. Close stage 1.
 
 ## Stage table

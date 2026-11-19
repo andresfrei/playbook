@@ -31,7 +31,7 @@ Every person who installed the playbook from its marketplace, and the agent that
 ## What it must do
 
 - Tell the person and the agent, at the start of a session (version-check-3), when the installed version is older than the one available, with both versions: in one line, every session while they differ, storing nothing (version-check-4).
-- Proposed: say what to run after the update, such as the doctor for a new wiki format.
+- After the update, check whether the wiki needs the doctor: compare the wiki's format with the plugin's and, when the wiki is behind, recommend the doctor to the person and to the agent. No list of steps per version (version-check-5).
 - Proposed: tell when the wiki of the project is at a newer format than the plugin, which means the plugin is old.
 
 ## What it must not do
@@ -51,7 +51,7 @@ Every person who installed the playbook from its marketplace, and the agent that
 | The problem and who has it | Covered |
 | Who uses it and what they do | Covered: the person reads the notice, the agent recommends what to run (version-check-3) |
 | Main flows | Partly covered: every session while the versions differ (version-check-4); which plugin carries it (version-check-Q5) |
-| What it must do | Partly covered (version-check-Q4) |
+| What it must do | Covered (version-check-3, version-check-4, version-check-5) |
 | What it must not do, and what waits | Covered (version-check-1, version-check-2) |
 | Qualities: speed, privacy | Covered: no delay, nothing leaves the machine (version-check-2) |
 | Limits | Covered: hooks run `sh`, `sed`, `awk`, and `git` only, as the README of `playbook-wiki` says |
