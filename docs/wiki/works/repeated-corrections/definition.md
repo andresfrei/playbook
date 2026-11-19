@@ -51,9 +51,9 @@ Before anything is built: read a sample of about 60 findings of `review` in the 
 |-------|----------|
 | The problem and who has it | Covered |
 | Who uses it and what they do | Covered: the owner approves a consolidation, or delegates the kind `consolidate` (repeated-corrections-13) |
-| Main flows | Partly covered: the steps that query the tool (repeated-corrections-Q3) |
+| Main flows | Covered: `write` and `review` first (repeated-corrections-14) |
 | What it must do | Covered: 3 distinct reviews, adjustable (repeated-corrections-12) |
-| What it must not do, and what waits | Partly covered: memory and lint wait (repeated-corrections-2) |
+| What it must not do, and what waits | Covered: memory and lint wait (repeated-corrections-2); the stages and commits wait (repeated-corrections-14) |
 | Qualities: a record of who did what | Covered: each rule cites what it consolidated; git keeps the deleted records (repeated-corrections-5) |
 | Limits | Covered: hooks in POSIX shell, as the plugins' hooks; skills within L2 |
 | Outside systems | Does not apply |
