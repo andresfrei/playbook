@@ -6,11 +6,11 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after repeated-corrections-12.
+Updated 2026-11-19, after repeated-corrections-13.
 
-Stage 1, Wiki, is open. [definition.md](definition.md) holds the problem and the shape the owner gave it; three questions are open in [questions.md](questions.md). The measurement showed that findings repeat ([measurements.md](measurements.md)).
+Stage 1, Wiki, is open. [definition.md](definition.md) holds the problem and the shape the owner gave it; two questions are open in [questions.md](questions.md). The measurement showed that findings repeat ([measurements.md](measurements.md)).
 
-Waiting for a decision: repeated-corrections-Q1, who approves a consolidation.
+Waiting for a decision: repeated-corrections-Q3, which steps consult the index.
 
 Next steps, in order:
 

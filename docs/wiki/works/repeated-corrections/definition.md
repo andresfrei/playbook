@@ -50,7 +50,7 @@ Before anything is built: read a sample of about 60 findings of `review` in the 
 | Topic | Coverage |
 |-------|----------|
 | The problem and who has it | Covered |
-| Who uses it and what they do | Partly covered: who approves a consolidation (repeated-corrections-Q1) |
+| Who uses it and what they do | Covered: the owner approves a consolidation, or delegates the kind `consolidate` (repeated-corrections-13) |
 | Main flows | Partly covered: the steps that query the tool (repeated-corrections-Q3) |
 | What it must do | Covered: 3 distinct reviews, adjustable (repeated-corrections-12) |
 | What it must not do, and what waits | Partly covered: memory and lint wait (repeated-corrections-2) |
