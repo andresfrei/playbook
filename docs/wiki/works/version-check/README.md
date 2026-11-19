@@ -12,6 +12,8 @@ The work is closed: version-check-U1 and version-check-U2 are Done, and the shar
 
 PR #30 merged into `main` on 2026-11-19 at 4fca64a. Version 3.1.0 is set in the three manifests and released as `v3.1.0` (version-check-17).
 
+After the release: a marketplace from a local folder runs the plugin in place, so the version notice is silent for it; the reading of `known_marketplaces.json` is removed, for 3.1.1 (version-check-18).
+
 ## Stage table
 
 | Stage | Status | Closed on |
