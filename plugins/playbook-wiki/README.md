@@ -20,7 +20,7 @@ flowchart TD
 
 | Part | What it does |
 |------|--------------|
-| `prepare-project` | Prepares a new project, phase, or feature in six stages, from the wiki to the plan and its execution. You close each stage, unless you delegated that. When a work closes, it proposes delegating the kinds of question you keep accepting as recommended, and asks no question a delegation in force covers |
+| `prepare-project` | Prepares a new project, phase, or feature in six stages, from the wiki to the plan and its execution. You close each stage, unless you delegated that. When a work closes, it proposes delegating the kinds of question you keep accepting as recommended, and asks no question a delegation in force covers. At the close, when your project has `docs/wiki/evidence.md`, it proposes turning repeated findings of `review` into a rule, which you approve, or the agent makes when you delegated the kind `consolidate` |
 | `write-docs` | Writes a README, a guide, or a wiki page that a reader understands without the conversation that produced it |
 | `init` | Adds only a wiki's skeleton to a repository that has none, such as an old project or someone else's: the entry point with the project's owner, the format marker, and, if you agree, two sentences in `CLAUDE.md`. It opens no work. Only you start it: `/playbook-wiki:init` |
 | `doctor` | Brings a wiki written in an earlier format to the present one. Only you start it: `/playbook-wiki:doctor` |

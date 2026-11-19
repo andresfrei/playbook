@@ -38,7 +38,7 @@ Playbook is opt-in. You can use the wiki with your own agent setup or add the wo
 |--------|-------------------|
 | [`playbook` — setup](plugins/playbook/README.md) | Use the optional `/playbook:init` wizard in Claude Code to choose components and scope. Codex users make their selection in the installer. |
 | [`playbook-wiki` — project memory](plugins/playbook-wiki/README.md) | Choose this on its own to keep decisions in Git, prepare work in stages, and check wiki changes before commits and merges. |
-| [`playbook-agents` — working rules and agents](plugins/playbook-agents/README.md) | Add this to the wiki when you want the working rules, specialized skills and the `explore`, `write`, and `review` roles. It requires `playbook-wiki`. |
+| [`playbook-agents` — working rules and agents](plugins/playbook-agents/README.md) | Add this to the wiki when you want the working rules, specialized skills and the `explore`, `write`, `review` roles, and in Claude Code `classify`. It requires `playbook-wiki`. |
 
 ```mermaid
 flowchart LR
@@ -82,6 +82,7 @@ sequenceDiagram
         Agent->>A: Assign a task to explore, write, or review
         W-->>A: Supply the contract to the subagent
         A-->>Agent: Return findings or implementation evidence
+        A->>Repo: Review starts classify, which stores its findings in docs/wiki/evidence.md
     end
     opt Commit changes the wiki
         Agent->>W: Check the wiki before committing

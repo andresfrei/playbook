@@ -11,7 +11,7 @@ flowchart LR
   init -. "turns on, when you choose<br/>the whole product" .-> agents["playbook-agents<br/>the owner's agent system"]
   agents -- "needs" --> wiki
   wiki --- wikiHolds["the contract<br/>the wiki format<br/>and its check<br/>the check at the commit<br/>the step at the merge<br/>prepare-project<br/>write-docs<br/>doctor"]
-  agents --- agentsHolds["18 rules<br/>the language you chose<br/>the agents<br/>explore, write, review<br/>keep-minimal<br/>review-change<br/>write-skill<br/>avoid-generic-design"]
+  agents --- agentsHolds["18 rules<br/>the language you chose<br/>the agents<br/>explore, write, review, classify<br/>keep-minimal<br/>review-change<br/>write-skill<br/>avoid-generic-design"]
   wiki -- "reads and writes" --> repo[("docs/wiki/<br/>in your project")]
 ```
 
@@ -37,6 +37,7 @@ sequenceDiagram
   end
   opt work goes to a subagent
     CC->>A: the agent explore, write, or review
+    A->>Wiki: review starts classify, which adds its findings to evidence.md
     CC->>W: a subagent starts
     W-->>CC: the contract, for the subagent
   end
@@ -93,13 +94,17 @@ It asks who the project's owner is and what the project is, writes `docs/wiki/RE
 
 ### The agents' models
 
-The agents `explore`, `write`, and `review` start with the models in [models.conf](../plugins/playbook-agents/models.conf). To choose your own, for this repository or every project, run:
+The agents `explore`, `write`, and `review` start with the models in [models.conf](../plugins/playbook-agents/models.conf), and `classify` with its line there. To choose your own for the first three, for this repository or every project, run:
 
 ```text
 /playbook-agents:config
 ```
 
 Your choice is kept under `playbook.models` in Claude Code's settings, so an update of the plugin keeps it.
+
+### What you see: learned rules
+
+When `review` finds mistakes, it starts `classify`, which adds them to `docs/wiki/evidence.md` in your project's wiki, a page you can read and commit. When a kind of mistake shows up in 3 distinct reviews, the agent proposes, at the close of a work, to turn those findings into one rule, and asks you; `write` and `review` then get that rule when they start. Nothing is stored if you set `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1`. Details: [playbook-agents](../plugins/playbook-agents/README.md#learned-rules).
 
 ### With an agent
 

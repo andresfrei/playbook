@@ -1,6 +1,6 @@
 # playbook-agents
 
-A way of working for building software with an AI coding agent: working rules the agent follows in every project, three agents to delegate to, and four skills. It is the agent system of [playbook](https://github.com/andresfrei/playbook)'s author, shared for whoever wants it.
+A way of working for building software with an AI coding agent: working rules the agent follows in every project, four agents to delegate to, and five skills. It is the agent system of [playbook](https://github.com/andresfrei/playbook)'s author, shared for whoever wants it.
 
 It needs `playbook-wiki`, the core of playbook, which keeps a project's definitions and decisions in a wiki inside the repository. Installing this plugin from its marketplace installs `playbook-wiki` with it; if `claude plugin list` does not show `playbook-wiki`, install it too.
 
@@ -16,7 +16,9 @@ flowchart TD
     write --> risk
     risk -->|Yes| review["review reads the diff and reports defects"]
     risk -->|No| deliver["Deliver with evidence"]
-    review --> deliver
+    review -->|Findings| classify["review starts classify, which stores the findings as evidence"]
+    classify --> deliver
+    review -->|No findings| deliver
 ```
 
 ## What it holds
@@ -26,7 +28,10 @@ flowchart TD
 | [rules.md](rules.md) | The working rules: how the agent talks to you, decides, builds, delegates, and delivers |
 | `explore` | An agent that maps where something lives across many files, without changing them |
 | `write` | An agent that builds one bounded unit of work with its tests |
-| `review` | An agent that reads a risky change in a separate context and returns findings |
+| `review` | An agent that reads a risky change in a separate context and returns findings. With findings, it starts `classify` |
+| `classify` | An agent that stores each real finding of a review as a row of evidence on the project's `docs/wiki/evidence.md`, under a kind of mistake. It only adds rows |
+| [evidence.sh](evidence.sh) | A script, in `sh` and `awk`, that checks the evidence page, counts distinct reviews per kind and level, and prints the rules of level 2 and up. It never writes a file |
+| [evidence-rules.md](evidence-rules.md) | The playbook's general rules, learned from repeated findings; empty at first |
 | `keep-minimal` | Keeps an implementation the simplest one that solves the current problem |
 | `review-change` | Reviews a change, a diff, or a commit for defects before it is merged |
 | `write-skill` | Writes or audits a skill in a fixed format and within size limits |
@@ -37,7 +42,11 @@ The agents' default models and reasoning effort come from [models.conf](models.c
 
 ## Hooks
 
-At session start the plugin loads [the working rules](rules.md). Claude Code also loads the language preference when configured. When the review agent finishes, a hook records it for the session. Before a code commit, another hook can hold the first attempt and show the changed paths so the agent can assess risk. Wiki-only commits go through the wiki plugin's check. Before each call of `explore`, `write`, or `review`, a hook adds the model and effort you chose with `/playbook-agents:config`; with nothing chosen, it changes nothing. See the [hook definitions](hooks/hooks.json).
+At session start the plugin loads [the working rules](rules.md). Claude Code also loads the language preference when configured. When the review agent finishes, a hook records it for the session, and, when the review ended with findings and started no `classify`, stops it and asks for one. Before a code commit, another hook can hold the first attempt and show the changed paths so the agent can assess risk. Wiki-only commits go through the wiki plugin's check. Before each call of `explore`, `write`, or `review`, a hook adds the model and effort you chose with `/playbook-agents:config`; with nothing chosen, it changes nothing. When `write` or `review` starts, a hook gives it the rules of level 2 and up of the project's evidence page and of [evidence-rules.md](evidence-rules.md), as extra context; it reads the page of the directory where the session started. See the [hook definitions](hooks/hooks.json).
+
+## Learned rules
+
+When `review` finds the same kind of mistake in several reviews, you should not have to correct it by hand each time. `classify` stores each finding in `docs/wiki/evidence.md` of your project, under a kind such as `test-passes-when-broken`. A kind reaches the threshold at 3 distinct reviews; at the close of a work, the agent proposes to replace those rows with one rule, one level up, and you approve or reject it. From level 2, `write` and `review` get the rule when they start. Evidence is stored only when a subagent may start a subagent, which Claude Code allows by default: with `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1`, nothing is stored. The design is in the [architecture page](../../docs/wiki/03-technology/architecture.md).
 
 ## Examples
 
