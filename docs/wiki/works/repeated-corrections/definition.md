@@ -59,4 +59,4 @@ Before anything is built: read a sample of about 60 findings of `review` in the 
 | Outside systems | Does not apply |
 | Volume | Covered: [measurements.md](measurements.md) |
 | Who runs and maintains it | Covered: the agent keeps the records, a script counts (repeated-corrections-6) |
-| Business rules, states, vocabulary | Partly covered: where the records live (repeated-corrections-Q4) |
+| Business rules, states, vocabulary | Covered: one page per project; general rules go up to the playbook (repeated-corrections-15) |

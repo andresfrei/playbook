@@ -6,23 +6,23 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after repeated-corrections-14.
+Updated 2026-11-19, after repeated-corrections-16.
 
-Stage 1, Wiki, is open. [definition.md](definition.md) holds the problem and the shape the owner gave it; one question is open in [questions.md](questions.md). The measurement showed that findings repeat ([measurements.md](measurements.md)).
+Stage 1, Wiki, is closed (repeated-corrections-16): [definition.md](definition.md) holds the problem, the cycle, the criteria, the threshold, and where the records live; [measurements.md](measurements.md) shows that findings repeat. Stage 2, Technology, is open.
 
-Waiting for a decision: repeated-corrections-Q4, where the records live.
+Waiting for a decision: none.
 
 Next steps, in order:
 
-1. Answer repeated-corrections-Q1 to repeated-corrections-Q4.
-2. Close stage 1.
+1. Write `technology.md`: the tool, the hooks on `write` and `review`, the subagent and its model, the page format.
+2. Close stage 2.
 
 ## Stage table
 
 | Stage | Status | Closed on |
 |-------|--------|-----------|
-| 1 Wiki | Open | |
-| 2 Technology | Not started | |
+| 1 Wiki | Closed | 2026-11-19 |
+| 2 Technology | Open | |
 | 3 Skills | Not started | |
 | 4 Design system | Not started | |
 | 5 Plan | Not started | |
