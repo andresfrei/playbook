@@ -8,13 +8,7 @@ At the close of a work, when `docs/wiki/evidence.md` exists. Skip silently other
 
 ## Steps
 
-1. Find the script `evidence.sh` of the sibling plugin `playbook-agents`. Run:
-
-   ```sh
-   cd "<this skill's folder>" && for p in ../../../playbook-agents/evidence.sh $(ls -d ../../../../playbook-agents/*/evidence.sh 2>/dev/null | awk -F/ '{ print $(NF-1) "\t" $0 }' | sort -t. -k1,1n -k2,2n -k3,3n | tail -n 1 | cut -f2); do [ -f "$p" ] && (cd "$(dirname "$p")" && echo "$(pwd)/evidence.sh"); done | tail -n 1
-   ```
-
-   It prints the absolute path found: a marketplace from a folder, or the highest version of an installed cache. When it prints nothing, tell the owner that `playbook-agents` is missing, and skip the rest. Run the next steps from the project's root.
+1. Locate `evidence.sh` using the client's working-agent instructions. If the agents plugin is unavailable, tell the owner and skip the rest of this file. Run subsequent commands from the project root with the quoted absolute script path.
 2. Run `sh <script> count docs/wiki`. Each line "ready to consolidate: <kind> (level N): R distinct reviews, last DATE" is one group: kind K at level k. With no such line, go to step 7.
 3. For each group, write one rule of level k+1 that covers every level-k Evidence row of K:
    - concrete, with an example inside;

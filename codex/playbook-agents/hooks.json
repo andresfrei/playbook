@@ -9,7 +9,7 @@
     }],
     "SubagentStop": [{
       "matcher": "^review$",
-      "hooks": [{"type": "command", "command": "sh \"${PLUGIN_ROOT}/hooks/review-ran.sh\""}]
+      "hooks": [{"type": "command", "command": "sh \"${PLUGIN_ROOT}/hooks/review-ran.sh\" --mark-only"}]
     }]
   }
 }

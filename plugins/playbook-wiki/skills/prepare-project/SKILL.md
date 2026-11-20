@@ -47,14 +47,15 @@ Do not use it for a small change in an existing repository that has no wiki. Do 
 
 ## References
 
-Read a file when its stage is the current one.
+Read the current stage's references.
 
-- `references/1-wiki.md` — a new project, and its topics.
-- `references/2-technology.md` — technologies and architecture.
-- `references/3-skills.md` — the skills the agent needs.
+- `references/1-wiki.md` — project topics.
+- `references/2-technology.md` — technology and architecture.
+- `references/3-skills.md` — required skills.
 - `references/4-design-system.md` — identity, tokens, patterns.
-- `references/5-plan.md` — the plan and its delivery.
-- `references/6-execution.md` — building units and the close.
+- `references/5-plan.md` — plan and delivery.
+- `references/6-execution.md` — execution and close.
 - `references/delegation.md` — delegations.
-- `references/evidence.md` — consolidations, at the close.
-- `references/tasks.md` — agents for repeated tasks, at the close.
+- `references/evidence.md` — consolidation at close.
+- `references/tasks.md` — recurring tasks at close.
+- `references/working-agents.md` — review findings during execution, scripts and task profiles at close.

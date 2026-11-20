@@ -8,13 +8,7 @@ At the close of a work, when the sibling plugin `playbook-agents` is installed. 
 
 ## Steps
 
-1. Find the script `tasks.sh` of the sibling plugin `playbook-agents`. Run:
-
-   ```sh
-   cd "<this skill's folder>" && for p in ../../../playbook-agents/tasks.sh $(ls -d ../../../../playbook-agents/*/tasks.sh 2>/dev/null | awk -F/ '{ print $(NF-1) "\t" $0 }' | sort -t. -k1,1n -k2,2n -k3,3n | tail -n 1 | cut -f2); do [ -f "$p" ] && (cd "$(dirname "$p")" && echo "$(pwd)/tasks.sh"); done | tail -n 1
-   ```
-
-   It prints the absolute path found. When it prints nothing, skip the rest of this file, silently. Run every later command from the project's root, with `docs/wiki` as the last argument. When `add` or `set-agent` exits non-zero, show the script's message and skip the rest of this file.
+1. Locate `tasks.sh` using the client's working-agent instructions. If the agents plugin is unavailable, skip the rest of this file silently. Run subsequent commands from the project root with the quoted absolute script path. If `add` or `set-agent` fails, show its message and stop this procedure.
 2. Record the tasks. Read the git log since the previous work's close, so steps done after it show, such as the previous work's release (task-agents-18). The previous close is the last merge of a pull request, or the last squashed commit ending in `(#N)`, that is not a release; with none, the whole log:
 
    ```sh
@@ -28,20 +22,15 @@ At the close of a work, when the sibling plugin `playbook-agents` is installed. 
 
    Run `sh <script> check docs/wiki`, and show the owner the names recorded.
 3. Run `sh <script> count docs/wiki`. Each line "ready: <task>: N works, last DATE" is a task ready. With no such line, skip the rest of this file.
-4. Judge the weight of each task ready from its steps (task-agents-5):
-   - mechanical steps with fixed commands: `haiku`, effort `low`;
-   - steps that write text or judge a small change: `sonnet`, effort `medium`;
-   - steps that decide, design, or touch R14 or R20 stay in the main session.
-
-   A task whose steps all stay is not proposed.
+4. Choose the model and effort for each ready task using the client's working-agent instructions (task-agents-5). Keep decisions, design, and steps touching R14 or R20 in the main session. If every step stays there, skip the proposal.
 5. Propose one task at a time. Ask the owner as the skill says, even when a delegation of kind `other` is in force; write no agent file before the owner answers. Give:
    - its steps and the works that hold it;
    - the model and the effort;
    - the steps that stay in the main session, such as the tag, the push, or the release notes;
-   - that the agent goes in the project's `.claude/agents/`, not in the playbook (task-agents-6).
+   - the project-local profile path from the client's working-agent instructions (task-agents-6).
 6. On a yes:
-   - write `.claude/agents/<task>.md`: front matter with `name`, a one-line `description` that says when to use it, `tools`, `model`, and `effort`; then, as instructions, only the steps that do not stay in the main session, and a line naming the steps left to the main session, after which the agent stops;
-   - run `sh <script> set-agent <task> <task> docs/wiki`, then `sh <script> check docs/wiki`;
+   - create the profile in the format from the client's working-agent instructions. Include only the delegated steps and end by naming the steps left to the main session;
+   - after verifying that the project contains the approved profile, run `sh <script> set-agent <task> <task> docs/wiki`, then `sh <script> check docs/wiki`. A failed write or unresolved name collision leaves the task pending;
    - record a decision of kind `other` in the work's `decisions.md`; its shared page is "none";
    - when the task would serve every project, tell the owner it can go up to the playbook, as a proposal the owner carries.
 7. On a no, run `sh <script> set-agent <task> declined docs/wiki` and `sh <script> check docs/wiki`, and record a decision of kind `other`, so the task is not proposed again.

@@ -37,6 +37,7 @@ sed 's/Use `AskUserQuestion` when available/Ask in the conversation or use the a
 for reference in "$source_prepare"/references/*.md; do
   sed 's/CLAUDE\.md/AGENTS.md/g' "$reference" > "$prepare/references/${reference##*/}"
 done
+cp "$src/playbook-wiki/working-agents.md" "$prepare/references/working-agents.md"
 cp "$wiki/skills/write-docs/SKILL.md" "$plugin/skills/write-docs/"
 
 agents=$dest/plugins/playbook-agents
@@ -45,9 +46,13 @@ mkdir -p "$agents/.codex-plugin" "$agents/hooks"
 cp "$src/playbook-agents/plugin.json" "$agents/.codex-plugin/plugin.json"
 cp "$src/playbook-agents/hooks.json" "$agents/hooks/hooks.json"
 cp "$src/playbook-agents/session-start.py" "$source_agents/rules.md" "$agents/"
-cp -R "$source_agents/skills" "$agents/skills"
-# /playbook-agents:config sets Claude Code's agents only (setup-commands-7).
-rm -rf "$agents/skills/config"
+cp "$source_agents/evidence.sh" "$source_agents/evidence-rules.md" "$source_agents/tasks.sh" "$agents/"
+sed '1,/^---$/d; s/[$]{CLAUDE_PLUGIN_ROOT}/<agents plugin root>/g' \
+  "$source_agents/agents/classify.md" > "$agents/record-findings.md"
+mkdir "$agents/skills"
+for skill in avoid-generic-design keep-minimal review-change write-skill; do
+  cp -R "$source_agents/skills/$skill" "$agents/skills/"
+done
 sed '/^context: fork$/d; /^agent: playbook-agents:review$/d; /## When to use/i\
 When invoked in the main session, delegate the change to the review agent if delegation is available. Inside review, perform the steps directly.\
 ' "$source_agents/skills/review-change/SKILL.md" > "$agents/skills/review-change/SKILL.md"
