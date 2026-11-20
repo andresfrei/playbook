@@ -8,7 +8,7 @@ The units that build [architecture.md](architecture.md), in order.
 |------|--------|----------|---------|---------------|
 | seed-evidence-U1 | Done | `seed-reviews.sh` with its cases in `scripts/verify_test.sh`, each new case seen to fail with its behaviour broken; on the owner's transcripts, `list` gives the 35 reviews of [measurements.md](measurements.md) plus one made later. Two reviews: nine findings, fixed, stored by `classify` in [../../evidence.md](../../evidence.md) | 2026-11-19 | |
 | seed-evidence-U2 | Done | The skill `seed-evidence` within L2 (L4 unchanged at 620), with three evaluation cases; a real run in this worktree listed 36 reviews and seeded 33 into [../../evidence.md](../../evidence.md): 188 rows, 78 kinds, 15 ready to consolidate, 6.39 dollars. It showed that `classify` dated rows with today, fixed: the skill gives the review's date | 2026-11-19 | Asked "¿Aceptás U2?"; answered "si" |
-| seed-evidence-U3 | Not started | | | |
+| seed-evidence-U3 | Done | `evidence.sh index` and `rule`, and the hook giving the index with the absolute command, with cases in `scripts/verify_test.sh`, seven breaks each caught. On this worktree the index has 272 words against 1511 for the rules. A real `write` subagent, given a task to add a test, read the rule of `test-passes-when-broken` only, and said why it skipped the others | 2026-11-19 | |
 
 ## Units
 

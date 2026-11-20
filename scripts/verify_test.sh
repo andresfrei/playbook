@@ -2987,6 +2987,37 @@ check "evidence rules: an escaped pipe stays one cell" sh -c 'printf "%s\n" "$1"
 ev_script_real=$(sh "$ev_script" rules "$tmp/ev" 2>&1)
 check "evidence rules: the playbook's own evidence-rules.md adds no rule yet" sh -c '[ "$(printf "%s\n" "$1" | wc -l)" -eq 2 ]' sh "$ev_script_real"
 
+# index and rule (seed-evidence-31): the index of level 2 and up, and one rule.
+printf '%b%b%b' '# Evidence\n\nGeneral rules.\n\n## Kinds\n\n' "$ev_kh" '| vague-name | 3 | Name the mistake, not the place. | a new kind | 4 reviews | general |\n| general-new | 1 | Not yet a rule. | x | | general |\n' > "$tmp/evs/evidence-rules.md"
+rm -rf "$tmp/ev"; ev_page "$tmp/ev" "$ev_krow" ""
+ev_idx() { ev_out=$(sh "$tmp/evs/evidence.sh" index "$@" 2>&1); ev_code=$?; }
+ev_idx "$tmp/ev"
+check "evidence index: one line per kind of level 2 and up, page first then evidence-rules.md" sh -c '[ "$1" = "- test-passes-when-broken (level 2): a change with tests
+- vague-name (level 3): a new kind" ]' sh "$ev_out"
+check "evidence index: leaves out level 1 and the rule text, exit 0" sh -c '[ "$2" -eq 0 ] && ! printf "%s" "$1" | grep -Eq "missing-test|general-new|Break the code"' sh "$ev_out" "$ev_code"
+ev_rule() { ev_out=$(sh "$tmp/evs/evidence.sh" rule "$@" 2>"$tmp/ev.err"); ev_code=$?; }
+ev_rule test-passes-when-broken "$tmp/ev"
+check "evidence rule: a kind of the page prints level, rule, applies when, and source" sh -c '[ "$2" -eq 0 ] && [ "$1" = "kind: test-passes-when-broken
+level: 2
+rule: Break the code on purpose to see each new test fail.
+applies when: a change with tests
+source: 3 reviews, 2026-11-19 to 2026-12-02" ]' sh "$ev_out" "$ev_code"
+ev_rule vague-name "$tmp/ev"
+check "evidence rule: a kind of evidence-rules.md prints its rule" sh -c '[ "$2" -eq 0 ] && printf "%s\n" "$1" | grep -Fxq "level: 3" && printf "%s\n" "$1" | grep -Fxq "rule: Name the mistake, not the place."' sh "$ev_out" "$ev_code"
+ev_rule missing-test "$tmp/ev"
+check "evidence rule: a kind of level 1 prints its level" sh -c '[ "$2" -eq 0 ] && printf "%s\n" "$1" | grep -Fxq "level: 1"' sh "$ev_out" "$ev_code"
+ev_rule no-such-kind "$tmp/ev"
+check "evidence rule: a kind that is not found exits 1 with a message on stderr and nothing on stdout" sh -c '[ "$2" -eq 1 ] && [ -z "$1" ] && grep -Fq "no kind \"no-such-kind\"" "$3"' sh "$ev_out" "$ev_code" "$tmp/ev.err"
+rm -rf "$tmp/ev"; ev_page "$tmp/ev" '| a-b | 1 | | x | | project |\n' ""
+rm -f "$tmp/evs/evidence-rules.md"
+ev_idx "$tmp/ev"
+check "evidence index: prints nothing when no kind is above level 1" [ "$ev_code" -eq 0 -a -z "$ev_out" ]
+rm -rf "$tmp/ev"; mkdir -p "$tmp/ev"
+ev_idx "$tmp/ev"
+check "evidence index: prints nothing with no files" [ "$ev_code" -eq 0 -a -z "$ev_out" ]
+ev_rule a-b "$tmp/ev"
+check "evidence rule: with no page and no file exits 1" [ "$ev_code" -eq 1 ]
+
 # Failures found in review: a table that ends early, a missing separator row,
 # an impossible day, the playbook's own file, code blocks, CRLF, the title.
 rm -rf "$tmp/ev"; ev_page "$tmp/ev" "$ev_krow" "$(ev_e missing-test 1 r1 2026-11-19)\n$(ev_e missing-test 1 r2 2026-11-20)\n$(ev_e missing-test 1 r3 2026-11-21)\n\n$(ev_e missing-test 1 r4 2026-11-22)\n"
@@ -3064,12 +3095,13 @@ check "evidence: the default directory is read by count too" sh -c 'printf "%s" 
 ev_out=$(cd "$tmp/evp" && sh "$ev_script" count 2>&1)
 check "evidence: with no variable the default is docs/wiki" sh -c 'printf "%s" "$1" | grep -q "missing-test (level 1): 1 distinct"' sh "$ev_out"
 check "evidence: an unknown mode exits 2" sh -c 'sh "$1" frob >/dev/null 2>&1; [ $? -eq 2 ]' sh "$ev_script"
+check "evidence: rule with no kind exits 2" sh -c 'sh "$1" rule >/dev/null 2>&1; [ $? -eq 2 ]' sh "$ev_script"
 check "evidence: no file is written" sh -c '[ -z "$(find "$1" -newer "$2" -type f)" ]' sh "$tmp/evp" "$tmp/evp/docs/wiki/evidence.md"
 
 # The rules at the start of write and review (repeated-corrections-18):
 # plugins/playbook-agents/hooks/rules-for-subagent.sh.
 rs_hook="$root/plugins/playbook-agents/hooks/rules-for-subagent.sh"
-rs_krow='| quoted-path | 2 | Write "stop" and C:\\dir with care. | a change that writes paths | 3 reviews | project |\n| low-kind | 1 | | a change | | project |\n'
+rs_krow='| quoted-path | 2 | Write "stop" and C:\\dir with care. | a change that writes "paths" or C:\\dir | 3 reviews | project |\n| low-kind | 1 | | a change | | project |\n'
 rs_proj="$tmp/rs project"
 rm -rf "$rs_proj"
 ev_page "$rs_proj/docs/wiki" "$rs_krow" ""
@@ -3091,24 +3123,27 @@ rs_shape() {
 }
 rs_silent() { [ -z "$rs_out" ] && [ "$rs_code" -eq 0 ]; }
 rs_decoded_has() { printf '%s\n' "$rs_out" | decode | grep -Fq -- "$1"; }
+rs_no_rule_text() { ! printf '%s\n' "$rs_out" | decode | grep -Fq -- 'Write "stop"'; }
 rs_no_low() { ! printf '%s' "$rs_out" | grep -q low-kind; }
 rs_no_bare_quote() { printf '%s\n' "$rs_out" > "$tmp/rs.out"; no_bare_quote "$tmp/rs.out"; }
-rs_same_as_evidence() {
-  [ "$(printf '%s\n' "$rs_out" | decode)" = "$(sh "$ev_script" rules "$rs_proj/docs/wiki")" ]
+rs_has_index() {
+  printf '%s\n' "$rs_out" | decode | grep -Fxq -- "$(sh "$ev_script" index "$rs_proj/docs/wiki")"
 }
+rs_command="sh \"$root/plugins/playbook-agents/evidence.sh\" rule <kind> \"$rs_proj/docs/wiki\""
 
 for rs_agent in playbook-agents:write playbook-agents:review; do
   rs_run "$rs_agent" set "$rs_proj"
   check "rules hook: $rs_agent gets one line in the frame" rs_shape
-  check "rules hook: $rs_agent gets the rule with its quotes and backslash decoded" rs_decoded_has 'Write "stop" and C:\dir with care.'
-  check "rules hook: $rs_agent gets the kind and when it applies" rs_decoded_has 'applies when: a change that writes paths'
+  check "rules hook: $rs_agent gets the kind and when it applies, with quotes and backslash decoded" rs_decoded_has '- quoted-path (level 2): a change that writes "paths" or C:\dir'
+  check "rules hook: $rs_agent does not get the rule text" rs_no_rule_text
+  check "rules hook: $rs_agent gets the command with the absolute plugin path and wiki dir, quoted" rs_decoded_has "$rs_command"
   check "rules hook: $rs_agent does not get a kind of level 1" rs_no_low
   check "rules hook: no quote is left unescaped for $rs_agent" rs_no_bare_quote
-  check "rules hook: the text for $rs_agent is what evidence.sh rules prints" rs_same_as_evidence
+  check "rules hook: the text for $rs_agent holds what evidence.sh index prints" rs_has_index
 done
 
 rs_run playbook-agents:write unset "$rs_proj"
-check "rules hook: without CLAUDE_PROJECT_DIR the cwd of the input gives the wiki" rs_decoded_has 'Write "stop" and C:\dir with care.'
+check "rules hook: without CLAUDE_PROJECT_DIR the cwd of the input gives the wiki" rs_decoded_has "$rs_command"
 rs_run playbook-agents:write unset "$tmp/rs none"
 check "rules hook: the cwd of the input with no page gets nothing" rs_silent
 

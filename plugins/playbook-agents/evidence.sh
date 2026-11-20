@@ -2,7 +2,8 @@
 # Keeps the evidence of repeated findings of review (repeated-corrections-4,
 # -6): checks the page docs/wiki/evidence.md of a project, counts its evidence,
 # and prints its rules. It never writes a file.
-# Usage: sh evidence.sh check|count|rules [wiki directory]
+# Usage: sh evidence.sh check|count|rules|index [wiki directory]
+#        sh evidence.sh rule <kind> [wiki directory]
 # The wiki directory is "$CLAUDE_PROJECT_DIR/docs/wiki" when that variable is
 # set, else docs/wiki. The playbook's general rules are in evidence-rules.md,
 # next to this script.
@@ -20,7 +21,13 @@
 #   "ready". With no page it prints nothing.
 # - rules: the rules of level 2 and up, of the page and of evidence-rules.md,
 #   one per line under one heading; nothing at all when there are none.
-# count and rules exit 0 always. A cell may hold "|" written as "\|". Not
+# - index: one line per kind of level 2 and up, same sources and order as
+#   rules: "- <kind> (level N): <applies when>"; nothing when there are none.
+#   The SubagentStart hook gives this index, not the rules (seed-evidence-31).
+# - rule <kind>: the level, rule, applies when, and source of that kind, at any
+#   level, from the page first and then evidence-rules.md; when the kind is in
+#   neither, a message on stderr and exit 1 (seed-evidence-31).
+# count, rules, and index exit 0 always. A cell may hold "|" written as "\|". Not
 # read: a table inside a code block. A row after a line that ends the table
 # (a blank line, for one) is still read, and check fails on it.
 
@@ -28,13 +35,21 @@
 # repeated-corrections-12. Reviews are counted, not findings; adjustable.
 threshold=3
 
+usage='usage: sh evidence.sh check|count|rules|index [wiki directory]
+       sh evidence.sh rule <kind> [wiki directory]'
 mode=${1:-}
+want=
 case $mode in
-  check | count | rules) ;;
-  *) printf 'usage: sh evidence.sh check|count|rules [wiki directory]\n' >&2; exit 2 ;;
+  check | count | rules | index) dirarg=${2:-} ;;
+  rule)
+    want=${2:-}
+    [ -n "$want" ] || { printf '%s\n' "$usage" >&2; exit 2; }
+    dirarg=${3:-}
+    ;;
+  *) printf '%s\n' "$usage" >&2; exit 2 ;;
 esac
-if [ $# -ge 2 ]; then
-  wiki=$2
+if [ -n "$dirarg" ]; then
+  wiki=$dirarg
 elif [ -n "${CLAUDE_PROJECT_DIR:-}" ]; then
   wiki=$CLAUDE_PROJECT_DIR/docs/wiki
 else
@@ -45,7 +60,7 @@ general="$(cd "$(dirname "$0")" 2>/dev/null && pwd)/evidence-rules.md"
 
 # run_awk <file> <label>: reads one page in the mode of this run.
 run_awk() {
-  awk -v mode="$mode" -v file="$2" -v threshold="$threshold" '
+  awk -v mode="$mode" -v want="$want" -v file="$2" -v threshold="$threshold" '
   function trim(s) { sub(/^[ \t]+/, "", s); sub(/[ \t\r]+$/, "", s); return s }
   function fail(msg) { bad = 1; if (mode == "check") print "FAIL " file ": " msg }
   # Splits a table row into cells[1..ncell], with "\|" kept as "|".
@@ -91,6 +106,7 @@ run_awk() {
       if (k !~ /^[a-z0-9]+(-[a-z0-9]+)*$/) fail("kind \"" k "\" is not kebab-case")
       if (k in kind) fail("kind \"" k "\" is repeated in Kinds")
       kind[k] = 1
+      na++; ak[na] = k; al[na] = lv; ar[na] = cell[3]; aw[na] = cell[4]; asrc[na] = cell[5]
       if (lv !~ /^[1-9][0-9]*$/) fail("kind \"" k "\" has level \"" lv "\", not a positive integer")
       else if (lv + 0 >= 2 && cell[3] == "") fail("kind \"" k "\" is at level " lv " and has no rule")
       if (cell[6] != "general" && cell[6] != "project") fail("kind \"" k "\" has scope \"" cell[6] "\", not general or project")
@@ -134,6 +150,17 @@ run_awk() {
       }
       exit 0
     }
+    if (mode == "index") {
+      for (i = 1; i <= nr; i++) printf "- %s (level %s): %s\n", rk[i], rl[i], ra[i]
+      exit 0
+    }
+    if (mode == "rule") {
+      for (i = 1; i <= na; i++) if (ak[i] == want) {
+        printf "kind: %s\nlevel: %s\nrule: %s\napplies when: %s\nsource: %s\n", ak[i], al[i], ar[i], aw[i], asrc[i]
+        exit 0
+      }
+      exit 0
+    }
     for (i = 1; i <= nr; i++) printf "- %s (level %s; applies when: %s): %s\n", rk[i], rl[i], ra[i], rr[i]
   }' "$1"
 }
@@ -168,5 +195,21 @@ case $mode in
     done
     [ -z "$out" ] || printf 'Rules learned from repeated findings; apply those whose "applies when" matches your task:\n%s' "$out"
     exit 0
+    ;;
+  index)
+    for f in "$page" "$general"; do
+      [ -f "$f" ] || continue
+      run_awk "$f" "$(basename "$f")" 2>/dev/null
+    done
+    exit 0
+    ;;
+  rule)
+    for f in "$page" "$general"; do
+      [ -f "$f" ] || continue
+      r=$(run_awk "$f" "$(basename "$f")" 2>/dev/null)
+      [ -z "$r" ] || { printf '%s\n' "$r"; exit 0; }
+    done
+    printf 'evidence.sh: no kind "%s" in %s or %s\n' "$want" "$page" "$general" >&2
+    exit 1
     ;;
 esac
