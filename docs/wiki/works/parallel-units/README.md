@@ -6,16 +6,17 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-20, after parallel-units-18.
+Updated 2026-11-20, after parallel-units-20.
 
-Stages 1 to 4 are closed (parallel-units-10, -16, -17, -18). Stage 5, Plan, is open: [plan.md](plan.md) is written and waits for the owner.
+Stages 1 to 5 are closed. Stage 6, Execution, is open: batch 1, U1 and U2, is being built in parallel; see [plan.md](plan.md).
 
-Waiting for a decision: the owner accepts the plan.
+Waiting for a decision: none.
 
 Next steps, in order:
 
-1. The owner accepts the plan.
-2. Build batch 1, U1 and U2, in parallel.
+1. Merge U1 and U2 into `feat/parallel-units` when their checks pass, after `review`.
+2. The owner reviews U1 and U2.
+3. Close the work.
 
 ## Stage table
 
@@ -25,8 +26,8 @@ Next steps, in order:
 | 2 Technology | Closed | 2026-11-20 |
 | 3 Skills | Closed | 2026-11-20 |
 | 4 Design system | Closed (not applicable) | 2026-11-20 |
-| 5 Plan | Open | |
-| 6 Execution | Not started | |
+| 5 Plan | Closed | 2026-11-20 |
+| 6 Execution | Open | |
 
 ## Pages
 
