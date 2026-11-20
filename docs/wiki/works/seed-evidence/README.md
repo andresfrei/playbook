@@ -14,8 +14,7 @@ Waiting for a decision: none.
 
 Next steps, in order:
 
-1. The owner merges the pull request.
-2. After the merge: the version in the three manifests, the tag, and the release on GitHub.
+PR #38 merged into `main` on 2026-11-19 at d6910a1f536c4f4f6efefb8ae8b275391776f051. Version 3.3.0 is set in the three manifests and released as `v3.3.0` (seed-evidence-33).
 
 ## Stage table
 

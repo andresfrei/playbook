@@ -58,7 +58,7 @@ Finished:
 Waiting for the owner since before format 4:
 
 - Six proposals to spend fewer tokens, P1 to P6: 02-current-state/token-economy.md (kept in the private archive).
-- The work [works/seed-evidence/README.md](works/seed-evidence/README.md), which builds a repository's first evidence page from its past reviews, is closed for version 3.3.0 (seed-evidence-33) and waits for the owner to merge its pull request.
+- The work [works/seed-evidence/README.md](works/seed-evidence/README.md), which builds a repository's first evidence page from its past reviews, is closed and released as 3.3.0 (seed-evidence-33).
 - The plugin's version: an installation from GitHub gets wiki format 3 only when the owner raises it (TD22). Phase 4 raises it to `2.0.0` (TD32).
 
 Phase 3 (D104):
