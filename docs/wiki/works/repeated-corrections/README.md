@@ -12,6 +12,8 @@ The work is closed: repeated-corrections-U1 to U5 are Done (see [plan.md](plan.m
 
 PR #34 merged into `main` on 2026-11-19 at f54cd6c. Version 3.2.0 is set in the three manifests and released as `v3.2.0` (repeated-corrections-30).
 
+After the release: the check of the classifier blocks a review once per subagent, as `stop_hook_active` was not set on repeated stops (repeated-corrections-31). PR #36 merged at 47c84a4, released as `v3.2.1`.
+
 ## Stage table
 
 | Stage | Status | Closed on |
