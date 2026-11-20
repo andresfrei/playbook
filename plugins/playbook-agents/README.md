@@ -33,12 +33,14 @@ flowchart TD
 | [evidence.sh](evidence.sh) | A script, in `sh` and `awk`, that checks the evidence page, counts distinct reviews per kind and level, prints the rules of level 2 and up, their index of kinds and when each applies, and the rule of one kind. It never writes a file |
 | [evidence-rules.md](evidence-rules.md) | The playbook's general rules, learned from repeated findings: 15 of level 2 |
 | [seed-reviews.sh](seed-reviews.sh) | A script, in `sh` and `awk`, that lists the past reviews of a repository from your Claude Code transcripts and prints one review's text. `--from <old path>` also reads the folder of a moved repository. It never writes a file |
+| [protect.sh](protect.sh) | A script, in `sh` and `awk`, that lists the secret files of a repository by name (`scan`, skipping `.git` and `node_modules`, never reading a file) and adds the rules you choose to a Claude Code settings file (`apply`): `Read` denials and sandbox read denials for secret files, `ask` rules for deleting and resetting, the sandbox on, and unsandboxed commands off. It adds only what is missing, changes no other key, and leaves a file that is not a JSON object untouched |
 | `keep-minimal` | Keeps an implementation the simplest one that solves the current problem |
 | `review-change` | Reviews a change, a diff, or a commit for defects before it is merged |
 | `write-skill` | Writes or audits a skill in a fixed format and within size limits |
 | `avoid-generic-design` | Keeps out the generic look AI tools give a page or an interface by default |
 | `config` | Shows and sets the model and effort of each agent, for one repository or every project. Only you start it: `/playbook-agents:config` |
 | `seed-evidence` | Seeds the repository's evidence page from its past reviews: shows them, you choose, and `classify` stores each one. Only you start it: `/playbook-agents:seed-evidence`. A review resumed after a restart is not listed; a moved repository needs `--from <old path>`; transcripts are kept about 30 days (recalled, not verified) |
+| `protect` | Protects this repository: offers to keep Claude Code from reading its secret files, to ask before deletes and history resets, and to turn on the sandbox, and writes your choice to `.claude/settings.json` or `.claude/settings.local.json`. Only you start it: `/playbook-agents:protect` |
 
 The agents' default models and reasoning effort come from [models.conf](models.conf). To choose your own, run `/playbook-agents:config`: it writes your choice under `playbook.models` in your Claude Code settings, so an update of the plugin keeps it, and a hook adds it to each call of the agent. The model is an alias: `haiku`, `sonnet`, `opus`, or `fable`. The [Codex guide](../../codex/README.md) lists the corresponding Codex profiles.
 
@@ -70,6 +72,10 @@ Review the landing page in src/pages/index.tsx for a generic AI look.
 
 ```text
 /playbook-agents:seed-evidence
+```
+
+```text
+/playbook-agents:protect
 ```
 
 ## Install

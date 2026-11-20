@@ -7,6 +7,7 @@ The kinds of decision the agent decides in this project without asking the owner
 | Kind | What the agent decides | Decision |
 |------|------------------------|----------|
 | close-stage | Closes a stage when its closing condition holds and the check passes, records it as `agent, by delegation-16`, and tells the owner in one line | delegation-16 |
+| consolidate | At the close of a work, consolidates each group of repeated findings that `evidence.sh count` marks ready into a rule one level up, records it as `agent, by ask-before-irreversible-22`, and tells the owner in one line | ask-before-irreversible-22 |
 | open-work | When the owner asks for a work in their own words, opens it without asking, records those words as its origin, and tells the owner its name and scope in one line. Narrow: a work the agent proposes unasked is still asked | repeated-corrections-29 |
 
 ## Revoked

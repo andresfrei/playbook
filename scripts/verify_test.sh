@@ -289,6 +289,16 @@ cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-agents/hooks/hooks.json"
 expect "hooks: a hold hook with a narrower if fails" fail "playbook-agents does not set \"matcher\": \"Bash\" and an"
 
 fresh
+sed 's/ask-before-delivery\.sh/other.sh/' "$tmp/repo/plugins/playbook-agents/hooks/hooks.json" > "$tmp/hooks.json"
+cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-agents/hooks/hooks.json"
+expect "hooks: hooks.json of playbook-agents without the delivery hook fails" fail "does not run ask-before-delivery.sh"
+
+fresh
+sed 's/"matcher": "Bash"/"matcher": "Read"/' "$tmp/repo/plugins/playbook-agents/hooks/hooks.json" > "$tmp/hooks.json"
+cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-agents/hooks/hooks.json"
+expect "hooks: a delivery hook without the Bash matcher fails" fail "does not run ask-before-delivery.sh"
+
+fresh
 sed 's/agent-models\.sh/other.sh/' "$tmp/repo/plugins/playbook-agents/hooks/hooks.json" > "$tmp/hooks.json"
 cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-agents/hooks/hooks.json"
 expect "hooks: hooks.json of playbook-agents without the model hook fails" fail "does not run agent-models.sh"
@@ -308,7 +318,7 @@ sed 's/"\^playbook-agents:(write|review)\$"/"write"/' "$tmp/repo/plugins/playboo
 cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-agents/hooks/hooks.json"
 expect "hooks: a SubagentStart matcher that is not exact fails" fail "under SubagentStart"
 
-for f in review-ran.sh review-before-commit.sh agent-models.sh hook-lib.sh rules-for-subagent.sh; do
+for f in review-ran.sh review-before-commit.sh ask-before-delivery.sh agent-models.sh hook-lib.sh rules-for-subagent.sh; do
   fresh
   rm "$tmp/repo/plugins/playbook-agents/hooks/$f"
   expect "hooks: a missing $f of playbook-agents fails" fail "hooks/$f of playbook-agents is missing"
@@ -2621,6 +2631,110 @@ ran_run s6 playbook-agents:review
 check "hold: a mark older than seven days is removed when one is written" absent "$hold_data/review/old"
 check "hold: a held commit older than seven days is removed when a mark is written" absent "$hold_data/held/old"
 
+# The delivery hook (ask-before-irreversible-12, ask-before-irreversible-13).
+deliv_hook="$root/plugins/playbook-agents/hooks/ask-before-delivery.sh"
+# deliv_run <command as raw text>: runs the hook on a Bash call with that command.
+deliv_run() {
+  esc=$(printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
+  out=$(printf '{"session_id":"s","cwd":"/tmp","tool_name":"Bash","tool_input":{"command":"%s"}}' "$esc" | sh "$deliv_hook" 2>&1)
+  code=$?
+}
+# asks: exactly one line that asks, with R14 as the reason.
+asks() {
+  [ "$code" -eq 0 ] || return 1
+  [ "$(printf '%s\n' "$out" | wc -l | tr -d ' ')" -eq 1 ] || return 1
+  [ "$out" = '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"ask","permissionDecisionReason":"R14: push, pull requests, merges, and releases are the owner'"'"'s decisions. Confirm this one."}}' ]
+}
+deliv_asks() {
+  deliv_run "$1"
+  check "delivery hook: asks on $1" asks
+}
+deliv_silent() {
+  deliv_run "$1"
+  check "delivery hook: silent on $1" passes
+}
+deliv_asks 'git push'
+deliv_asks 'git -C /x push origin HEAD'
+deliv_asks 'cd x && git push'
+deliv_asks 'FOO=1 git push'
+deliv_asks 'git push --tags'
+deliv_asks 'git push --delete origin b'
+deliv_asks 'git -c a=b push'
+deliv_asks 'git --git-dir=/x/.git push'
+deliv_asks 'gh pr create --fill'
+deliv_asks 'gh pr merge 3'
+deliv_asks 'gh release create v1'
+deliv_asks 'gh release edit v1'
+deliv_asks 'gh release delete v1'
+deliv_asks "sh -c 'git push'"
+deliv_asks 'bash -c "gh pr merge 1"'
+deliv_asks 'eval git push'
+deliv_asks 'git status; git push'
+deliv_asks 'git status
+git push'
+deliv_asks "bash -c 'gh release create v1'"
+# Shell keywords and wrappers before the command word.
+deliv_asks 'for r in a b; do git push "$r" main; done'
+deliv_asks 'if ! git push; then echo f; fi'
+deliv_asks '! git push'
+deliv_asks '{ git push; }'
+deliv_asks 'time git push'
+deliv_asks 'env GIT_SSH_COMMAND=x git push'
+deliv_asks 'env -u X git push'
+deliv_asks 'sudo git push'
+deliv_asks 'sudo -u bob git push'
+deliv_asks 'nohup git push'
+deliv_asks 'command git push'
+deliv_asks 'exec git push'
+# The aliases of gh.
+deliv_asks 'gh pr new'
+deliv_asks 'gh release new v1'
+# Options of the shell before -c, and of gh and git before the subcommand.
+deliv_asks "bash -lc 'git push'"
+deliv_asks "bash -o pipefail -c 'git push'"
+deliv_asks "bash -euo pipefail -c 'git push'"
+deliv_asks 'gh -R o/r pr merge 1'
+deliv_asks 'git --git-dir /x/.git push'
+# Each action inside each wrapper.
+for deliv_action in 'git -C /x push' 'gh pr merge 1' 'gh release delete v1'; do
+  deliv_asks "sh -c '$deliv_action'"
+  deliv_asks "bash -c \"$deliv_action\""
+  deliv_asks "eval $deliv_action"
+done
+# Known gap, accepted (architecture.md): the body of a heredoc is read as
+# commands, so a line that looks like one asks. A false ask, never a missed one.
+deliv_asks "git commit -F - <<'EOF'
+subject
+gh pr merge now asks
+EOF"
+deliv_silent 'git commit -m "push it"'
+deliv_silent 'sudo git log'
+deliv_silent 'env FOO=1 git log'
+deliv_silent 'if true; then git status; fi'
+deliv_silent 'echo git push'
+deliv_silent 'git log'
+deliv_silent 'git status'
+deliv_silent 'gh pr view 1'
+deliv_silent 'gh pr list'
+deliv_silent 'gh release list'
+deliv_silent 'gh release view v1'
+deliv_silent 'git stash push'
+deliv_silent 'ls'
+deliv_silent "sh -c 'git log'"
+out=$(printf '{"tool_input":{"command":""}}' | sh "$deliv_hook" 2>&1); code=$?
+check "delivery hook: an empty command prints nothing" passes
+out=$(printf '' | sh "$deliv_hook" 2>&1); code=$?
+check "delivery hook: empty input prints nothing" passes
+out=$(printf 'not json at all' | sh "$deliv_hook" 2>&1); code=$?
+check "delivery hook: input that is not JSON asks" asks
+out=$(printf '{"cwd":"/tmp","tool_input":{"description":"d"}}' | sh "$deliv_hook" 2>&1); code=$?
+check "delivery hook: input without a command field asks" asks
+rm -rf "$tmp/nolib2"
+mkdir -p "$tmp/nolib2/hooks"
+cp "$deliv_hook" "$tmp/nolib2/hooks/"
+out=$(printf '{"tool_input":{"command":"ls"}}' | sh "$tmp/nolib2/hooks/ask-before-delivery.sh" 2>&1); code=$?
+check "delivery hook: a missing hook-lib.sh asks" asks
+
 # The classifier check of the same hook (repeated-corrections-17).
 cls_t="$tmp/cls"
 rm -rf "$cls_t"
@@ -3505,6 +3619,171 @@ sr_list --from relative/path "$tmp/sr/newrepo"
 check "seed-reviews --from: a path that is not absolute is a usage error" sh -c '[ "$1" -eq 2 ]' sh "$sr_code"
 sr_list --from
 check "seed-reviews --from: with no path after it is a usage error" sh -c '[ "$1" -eq 2 ]' sh "$sr_code"
+
+# The protect script: plugins/playbook-agents/protect.sh, scan and apply
+# (ask-before-irreversible-9, -10, -14, -15).
+pr_script="$root/plugins/playbook-agents/protect.sh"
+rm -rf "$tmp/pr"
+mkdir -p "$tmp/pr/repo/.git" "$tmp/pr/repo/a/node_modules" "$tmp/pr/repo/sub dir" "$tmp/pr/empty"
+for f in .env .env.local k.pem a/x.key id_rsa id_rsa.pub my-credentials.json c.p12 secrets.yml "sub dir/.env" \
+         README.md keyboard.txt environment.md notes.pem.txt .git/hooks.pem .git/credentials a/node_modules/y.key; do
+  : > "$tmp/pr/repo/$f"
+done
+: > "$tmp/pr/repo/"'q"uote.pem'
+pr_out=$(sh "$pr_script" scan "$tmp/pr/repo" 2>"$tmp/pr/err"); pr_code=$?
+printf '%s\n' ".env" ".env.local" "a/x.key" "c.p12" "id_rsa" "id_rsa.pub" "k.pem" "my-credentials.json" "secrets.yml" "sub dir/.env" > "$tmp/pr/expected"
+printf '%s\n' "$pr_out" > "$tmp/pr/actual"
+check "protect scan: finds each name of N4, relative to the folder, sorted, and nothing else" cmp -s "$tmp/pr/expected" "$tmp/pr/actual"
+check "protect scan: exits 0" test "$pr_code" -eq 0
+check "protect scan: does not list README.md, keyboard.txt, environment.md, or notes.pem.txt" sh -c '! grep -Eq "README|keyboard|environment|notes" "$1"' sh "$tmp/pr/actual"
+check "protect scan: skips .git and node_modules" sh -c '! grep -Eq "\.git|node_modules" "$1"' sh "$tmp/pr/actual"
+check "protect scan: a name with a double quote is not listed and is reported on stderr" sh -c '! grep -q "uote" "$1" && grep -q "skipped" "$2" && grep -q "q\"uote.pem" "$2"' sh "$tmp/pr/actual" "$tmp/pr/err"
+pr_out=$(sh "$pr_script" scan "$tmp/pr/empty" 2>&1); pr_code=$?
+check "protect scan: with none found prints nothing and exits 0" sh -c 'test -z "$1" && test "$2" -eq 0' sh "$pr_out" "$pr_code"
+pr_out=$(cd "$tmp/pr/repo/a" && sh "$pr_script" scan 2>&1); pr_code=$?
+check "protect scan: with no folder it scans the current folder when it is not in git" sh -c 'test "$1" = "x.key" && test "$2" -eq 0' sh "$pr_out" "$pr_code"
+sh "$pr_script" scan "$tmp/pr/no-such-folder" >/dev/null 2>&1; pr_code=$?
+check "protect scan: a folder that does not exist exits 2" test "$pr_code" -eq 2
+
+# pr_valid <file>: the file is JSON.
+pr_valid() {
+  if command -v python3 >/dev/null 2>&1; then
+    python3 -I -c 'import json, sys; json.load(open(sys.argv[1]))' "$1"
+  else
+    sh "$pr_script" apply "$1" sandbox >/dev/null
+  fi
+}
+
+pr_file="$tmp/pr/new/.claude/settings.json"
+# shellcheck disable=SC2086
+pr_out=$(sh "$pr_script" apply "$pr_file" secret:.env secret:./sub\ dir/.env deletes sandbox no-unsandboxed 2>&1); pr_code=$?
+check "protect apply: a missing file and its folder are created, exit 0" sh -c 'test "$1" -eq 0 && test -f "$2"' sh "$pr_code" "$pr_file"
+check "protect apply: the new file is valid JSON" pr_valid "$pr_file"
+check "protect apply: a secret goes to permissions.deny as Read(./path) and to sandbox.filesystem.denyRead as ./path" sh -c 'grep -qF "\"deny\": [" "$1" && grep -qF "\"Read(./.env)\"" "$1" && grep -qF "\"denyRead\": [" "$1" && grep -qF "\"./.env\"" "$1" && grep -qF "Read(./sub dir/.env)" "$1" && grep -qF "\"./sub dir/.env\"" "$1"' sh "$pr_file"
+check "protect apply: deletes adds the five ask rules" sh -c 'for r in "Bash(rm -r *)" "Bash(rm -rf *)" "Bash(git reset --hard *)" "Bash(git branch -D *)" "Bash(git clean *)"; do grep -qF "\"$r\"" "$1" || exit 1; done; grep -qF "\"ask\"" "$1"' sh "$pr_file"
+check "protect apply: sandbox sets enabled true and no-unsandboxed sets allowUnsandboxedCommands false" sh -c 'grep -qF "\"enabled\": true" "$1" && grep -qF "\"allowUnsandboxedCommands\": false" "$1"' sh "$pr_file"
+check "protect apply: it prints one line for each thing added or set" test "$(printf '%s\n' "$pr_out" | grep -c '^added: \|^set: ')" -eq 11
+cp "$pr_file" "$tmp/pr/once"
+# shellcheck disable=SC2086
+pr_out=$(sh "$pr_script" apply "$pr_file" secret:.env secret:sub\ dir/.env deletes sandbox no-unsandboxed 2>&1); pr_code=$?
+check "protect apply: a second run adds nothing, exits 0, and leaves the file byte-identical" sh -c 'test "$1" -eq 0 && cmp -s "$2" "$3"' sh "$pr_code" "$tmp/pr/once" "$pr_file"
+check "protect apply: a second run says \"already there\" for each and adds none" sh -c 'test "$(printf "%s\n" "$1" | grep -c "^already there")" -eq 11 && ! printf "%s\n" "$1" | grep -q "^added\|^set"' sh "$pr_out"
+check "protect apply: no rule is in the file twice" sh -c 'test "$(grep -oF "Bash(rm -r *)" "$1" | wc -l | tr -d " ")" -eq 1 && test "$(grep -oF "Read(./.env)" "$1" | wc -l | tr -d " ")" -eq 1' sh "$pr_file"
+
+pr_file="$tmp/pr/keep.json"
+printf '%s\n' '{' '  "model": "opus",' '  "permissions": { "allow": ["Bash(ls)"], "deny": ["Read(./other)"] },' '  "sandbox": { "network": { "x": 1 } }' '}' > "$pr_file"
+sh "$pr_script" apply "$pr_file" secret:.env deletes sandbox >/dev/null 2>&1; pr_code=$?
+check "protect apply: on a file with other keys it exits 0 and the file is valid JSON" sh -c 'test "$1" -eq 0' sh "$pr_code"
+check "protect apply: the file with other keys is valid JSON" pr_valid "$pr_file"
+check "protect apply: other keys stay as they were (model, allow, an existing deny, another sandbox key)" sh -c 'grep -qF "\"model\": \"opus\"," "$1" && grep -qF "\"allow\": [\"Bash(ls)\"]" "$1" && grep -qF "\"Read(./other)\"" "$1" && grep -qF "\"network\": { \"x\": 1 }" "$1"' sh "$pr_file"
+check "protect apply: the rule is added to the array that already exists" sh -c 'grep -qF "\"deny\": [\"Read(./.env)\",\"Read(./other)\"]" "$1"' sh "$pr_file"
+
+pr_file="$tmp/pr/bool.json"
+printf '%s\n' '{"sandbox": {"enabled": false, "allowUnsandboxedCommands": true, "other": 1}}' > "$pr_file"
+sh "$pr_script" apply "$pr_file" sandbox no-unsandboxed >/dev/null 2>&1; pr_code=$?
+check "protect apply: it replaces an existing false with true and an existing true with false" sh -c 'test "$1" -eq 0 && test "$(cat "$2")" = "{\"sandbox\": {\"enabled\": true, \"allowUnsandboxedCommands\": false, \"other\": 1}}"' sh "$pr_code" "$pr_file"
+printf '%s\n' '{"sandbox": {"enabled": true}}' > "$pr_file"
+pr_out=$(sh "$pr_script" apply "$pr_file" sandbox 2>&1)
+check "protect apply: a boolean already set to the value is \"already there\" and the file is the same" sh -c 'printf "%s" "$1" | grep -q "^already there" && test "$(cat "$2")" = "{\"sandbox\": {\"enabled\": true}}"' sh "$pr_out" "$pr_file"
+
+for pr_text in '[]' 'not json {' '{"a": 1' '' '"text"'; do
+  pr_file="$tmp/pr/bad.json"
+  printf '%s' "$pr_text" > "$pr_file"; cp "$pr_file" "$tmp/pr/bad.before"
+  sh "$pr_script" apply "$pr_file" secret:.env sandbox >/dev/null 2>&1; pr_code=$?
+  check "protect apply: a file holding [$pr_text] exits 3 and is byte-identical" sh -c 'test "$1" -eq 3 && cmp -s "$2" "$3"' sh "$pr_code" "$tmp/pr/bad.before" "$pr_file"
+done
+for pr_text in '{"permissions": {"deny": "x"}}' '{"permissions": []}' '{"sandbox": {"enabled": "yes"}}' '{"sandbox": {"filesystem": 3}}'; do
+  pr_file="$tmp/pr/type.json"
+  printf '%s\n' "$pr_text" > "$pr_file"; cp "$pr_file" "$tmp/pr/type.before"
+  sh "$pr_script" apply "$pr_file" sandbox secret:.env deletes >/dev/null 2>&1; pr_code=$?
+  check "protect apply: $pr_text, a part with another type, exits 3 and is byte-identical" sh -c 'test "$1" -eq 3 && cmp -s "$2" "$3"' sh "$pr_code" "$tmp/pr/type.before" "$pr_file"
+done
+printf '%s\n' '{"model": "opus"}' > "$tmp/pr/late.json"; cp "$tmp/pr/late.json" "$tmp/pr/late.before"
+printf '%s\n' '{"model": "opus", "sandbox": {"enabled": "yes"}}' > "$tmp/pr/mid.json"; cp "$tmp/pr/mid.json" "$tmp/pr/mid.before"
+sh "$pr_script" apply "$tmp/pr/mid.json" secret:.env deletes sandbox >/dev/null 2>&1; pr_code=$?
+check "protect apply: when a later item fails, the earlier items are not written either" sh -c 'test "$1" -eq 3 && cmp -s "$2" "$3"' sh "$pr_code" "$tmp/pr/mid.before" "$tmp/pr/mid.json"
+check "protect apply: nothing is left beside the file after a failure" test -z "$(find "$tmp/pr" -name '*.protect.*')"
+
+printf '%s\n' '{"model": "opus"}' > "$tmp/pr/unk.json"; cp "$tmp/pr/unk.json" "$tmp/pr/unk.before"
+sh "$pr_script" apply "$tmp/pr/unk.json" sandbox bogus >/dev/null 2>&1; pr_code=$?
+check "protect apply: an unknown item exits 2 and writes nothing, not even the items before it" sh -c 'test "$1" -eq 2 && cmp -s "$2" "$3"' sh "$pr_code" "$tmp/pr/unk.before" "$tmp/pr/unk.json"
+sh "$pr_script" apply "$tmp/pr/unk.json" 'secret:a"b' >/dev/null 2>&1; pr_code=$?
+check "protect apply: a secret path with a double quote exits 2" test "$pr_code" -eq 2
+sh "$pr_script" apply "$tmp/pr/unk.json" 'secret:a\b' >/dev/null 2>&1; pr_code=$?
+check "protect apply: a secret path with a backslash exits 2" test "$pr_code" -eq 2
+sh "$pr_script" apply "$tmp/pr/unk.json" secret:/etc/passwd >/dev/null 2>&1; pr_code=$?
+check "protect apply: an absolute secret path exits 2" test "$pr_code" -eq 2
+sh "$pr_script" apply "$tmp/pr/unk.json" >/dev/null 2>&1; pr_code=$?
+check "protect apply: with no item exits 2" test "$pr_code" -eq 2
+sh "$pr_script" >/dev/null 2>&1; pr_code=$?
+check "protect: with no command exits 2" test "$pr_code" -eq 2
+sh "$pr_script" bogus >/dev/null 2>&1; pr_code=$?
+check "protect: an unknown command exits 2" test "$pr_code" -eq 2
+
+# Review findings on protect.sh: strict JSON, keys, symbolic links, the mode,
+# wildcards, and the guards.
+for pr_text in '{"a" 1}' '{"a": tru}' '{"a": 1 "b": 2}' '{"a": 01}' '{"a": [1 2]}' '{"a":: 1}' '{:"a"}' '{"a": 1,}' '{"a": [1,]}'; do
+  pr_file="$tmp/pr/strict.json"
+  printf '%s\n' "$pr_text" > "$pr_file"; cp "$pr_file" "$tmp/pr/strict.before"
+  sh "$pr_script" apply "$pr_file" secret:.env sandbox >/dev/null 2>&1; pr_code=$?
+  check "protect apply: $pr_text is not JSON, exits 3 and is byte-identical" sh -c 'test "$1" -eq 3 && cmp -s "$2" "$3"' sh "$pr_code" "$tmp/pr/strict.before" "$pr_file"
+done
+pr_file="$tmp/pr/strict.json"
+printf '%s\n' '{"a": [1, -2.5e+3, true, false, null, {"b": 0}], "c": "x"}' > "$pr_file"
+sh "$pr_script" apply "$pr_file" sandbox >/dev/null 2>&1; pr_code=$?
+check "protect apply: valid JSON with every kind of literal is accepted" test "$pr_code" -eq 0
+
+for pr_text in '{"permissions/deny": []}' '{"permissions": {"d\u0065ny": []}}' '{"permissions": {"de\ny": []}}'; do
+  pr_file="$tmp/pr/key.json"
+  printf '%s\n' "$pr_text" > "$pr_file"; cp "$pr_file" "$tmp/pr/key.before"
+  sh "$pr_script" apply "$pr_file" secret:.env >/dev/null 2>&1; pr_code=$?
+  check "protect apply: the key in $pr_text has a slash or an escape, exits 3 and is byte-identical" sh -c 'test "$1" -eq 3 && cmp -s "$2" "$3"' sh "$pr_code" "$tmp/pr/key.before" "$pr_file"
+done
+
+rm -rf "$tmp/pr/link"; mkdir -p "$tmp/pr/link/real"
+: > "$tmp/pr/link/real/target"; ln -s real/target "$tmp/pr/link/.env"; ln -s real "$tmp/pr/link/dirlink.key"
+: > "$tmp/pr/link/real/secrets.txt"; : > "$tmp/pr/link/real/x.pem"
+pr_out=$(sh "$pr_script" scan "$tmp/pr/link" 2>/dev/null)
+check "protect scan: a symbolic link named .env is listed" sh -c 'printf "%s\n" "$1" | grep -qx "\.env"' sh "$pr_out"
+check "protect scan: a folder link is not followed" sh -c '! printf "%s\n" "$1" | grep -q "dirlink.key/"' sh "$pr_out"
+
+rm -rf "$tmp/pr/wild"; mkdir -p "$tmp/pr/wild"
+for f in 'cert[prod].pem' 'a*.key' 'q?.pem' 'ok.pem'; do : > "$tmp/pr/wild/$f"; done
+pr_out=$(sh "$pr_script" scan "$tmp/pr/wild" 2>"$tmp/pr/err"); pr_code=$?
+check "protect scan: names with a wildcard are not listed, a plain one is, exit 0" sh -c 'test "$1" = "ok.pem" && test "$2" -eq 0' sh "$pr_out" "$pr_code"
+check "protect scan: each name with a wildcard is reported on stderr" sh -c 'test "$(grep -c skipped "$1")" -eq 3 && grep -qF "cert[prod].pem" "$1"' sh "$tmp/pr/err"
+
+printf '%s\n' '{"model": "opus"}' > "$tmp/pr/g.json"; cp "$tmp/pr/g.json" "$tmp/pr/g.before"
+for pr_item in 'secret:cert[prod].pem' 'secret:.' 'secret:*' 'secret:a?b' 'secret:a]' 'secret:./.' 'secret:a/./b' 'secret:a/.' 'secret:..' 'secret:a/../../x' 'secret:../x' 'secret:a/..'; do
+  sh "$pr_script" apply "$tmp/pr/g.json" "$pr_item" >/dev/null 2>&1; pr_code=$?
+  check "protect apply: $pr_item exits 2 and writes nothing" sh -c 'test "$1" -eq 2 && cmp -s "$2" "$3"' sh "$pr_code" "$tmp/pr/g.before" "$tmp/pr/g.json"
+done
+
+rm -rf "$tmp/pr/sym"; mkdir -p "$tmp/pr/sym"
+printf '%s\n' '{"model": "opus"}' > "$tmp/pr/sym/real.json"; cp "$tmp/pr/sym/real.json" "$tmp/pr/sym/real.before"
+ln -s real.json "$tmp/pr/sym/settings.json"
+sh "$pr_script" apply "$tmp/pr/sym/settings.json" sandbox >/dev/null 2>"$tmp/pr/err"; pr_code=$?
+check "protect apply: a symbolic link as the settings file exits 4 and names the file on stderr" sh -c 'test "$1" -eq 4 && grep -qF "settings.json" "$2"' sh "$pr_code" "$tmp/pr/err"
+check "protect apply: the link and its target stay as they were" sh -c 'test -L "$1/settings.json" && cmp -s "$1/real.json" "$1/real.before"' sh "$tmp/pr/sym"
+
+pr_file="$tmp/pr/mode.json"
+printf '%s\n' '{"model": "opus"}' > "$pr_file"; chmod 600 "$pr_file"
+sh "$pr_script" apply "$pr_file" sandbox >/dev/null 2>&1; pr_code=$?
+check "protect apply: a file at mode 600 is still 600 after the rewrite" sh -c 'test "$1" -eq 0 && test "$(ls -l "$2" | cut -c1-10)" = "-rw-------" && grep -q sandbox "$2"' sh "$pr_code" "$pr_file"
+chmod 640 "$pr_file"
+sh "$pr_script" apply "$pr_file" deletes >/dev/null 2>&1
+check "protect apply: a file at mode 640 is still 640 after the rewrite" sh -c 'test "$(ls -l "$1" | cut -c1-10)" = "-rw-r-----"' sh "$pr_file"
+
+if [ "$(id -u)" -eq 0 ]; then
+  printf 'skip  protect apply: a write into a read-only folder (running as root)\n'
+else
+  rm -rf "$tmp/pr/ro"; mkdir -p "$tmp/pr/ro"
+  printf '%s\n' '{"model": "opus"}' > "$tmp/pr/ro/settings.json"; cp "$tmp/pr/ro/settings.json" "$tmp/pr/ro.before"
+  chmod 555 "$tmp/pr/ro"
+  sh "$pr_script" apply "$tmp/pr/ro/settings.json" sandbox >/dev/null 2>&1; pr_code=$?
+  chmod 755 "$tmp/pr/ro"
+  check "protect apply: a write into a read-only folder exits 4, the file is byte-identical, nothing is left" sh -c 'test "$1" -eq 4 && cmp -s "$2" "$3/settings.json" && test "$(ls -A "$3" | wc -l | tr -d " ")" -eq 1' sh "$pr_code" "$tmp/pr/ro.before" "$tmp/pr/ro"
+fi
 
 if [ "$failed" -eq 0 ]; then
   printf 'all cases passed\n'

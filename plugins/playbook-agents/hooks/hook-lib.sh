@@ -50,51 +50,61 @@ json_string() {
     }'
 }
 
+# The awk text that splits a Bash command into tokens, shared by commit_dir and
+# ask-before-delivery.sh (ask-before-irreversible-12). It defines
+# tokenize(text): fills tok[1..nt] with the tokens, outside quoted text, and
+# sep[k] is 1 where tok[k] marks a separator (& ; | ( ) or a newline) between
+# segments. Backslash, single quotes, and double quotes follow the shell;
+# nothing is expanded. It decides nothing about what a token means.
+shell_tokens='
+function add(t, s) { nt++; tok[nt] = t; sep[nt] = s }
+function tokenize(text,   n, cur, have, i, c, d) {
+  nt = 0; split("", tok); split("", sep)
+  n = length(text); cur = ""; have = 0; i = 1
+  while (i <= n) {
+    c = substr(text, i, 1)
+    if (c == "\\") {
+      d = substr(text, i + 1, 1)
+      if (d != "\n") { cur = cur d; have = 1 }
+      i += 2; continue
+    }
+    if (c == "\047") {
+      i++; have = 1
+      while (i <= n && substr(text, i, 1) != "\047") { cur = cur substr(text, i, 1); i++ }
+      i++; continue
+    }
+    if (c == "\"") {
+      i++; have = 1
+      while (i <= n && substr(text, i, 1) != "\"") {
+        c = substr(text, i, 1)
+        if (c == "\\" && substr(text, i + 1, 1) ~ /["\\$`]/) { i++; c = substr(text, i, 1) }
+        cur = cur c; i++
+      }
+      i++; continue
+    }
+    if (c == " " || c == "\t" || c == "\n" || c == "&" || c == ";" || c == "|" || c == "(" || c == ")") {
+      if (have) { add(cur, 0); cur = ""; have = 0 }
+      if (c != " " && c != "\t") add("", 1)
+      i++; continue
+    }
+    cur = cur c; have = 1; i++
+  }
+  if (have) add(cur, 0)
+}'
+
 # commit_dir: the repository directory of the first "git ... commit" in the
 # command, following "cd <dir>" and "git -C <dir>"; nothing when there is none.
 # A second line says "alone" when every segment before the commit is a "cd" or
 # a "git add" without -f or --force, so nothing else changes the repository
 # before the commit runs, and "other" when not.
 commit_dir() {
-  printf '%s' "$command" | awk -v cwd="$cwd" -v home="${HOME:-}" '
+  printf '%s' "$command" | awk -v cwd="$cwd" -v home="${HOME:-}" "$shell_tokens"'
   function join(base, d) {
     if (d == "~" || substr(d, 1, 2) == "~/") d = home substr(d, 2)
     return substr(d, 1, 1) == "/" ? d : base "/" d
   }
-  function add(t, s) { nt++; tok[nt] = t; sep[nt] = s }
   BEGIN { RS = "\001" }
-  {
-    text = $0; n = length(text); cur = ""; have = 0; i = 1
-    while (i <= n) {
-      c = substr(text, i, 1)
-      if (c == "\\") {
-        d = substr(text, i + 1, 1)
-        if (d != "\n") { cur = cur d; have = 1 }
-        i += 2; continue
-      }
-      if (c == "\047") {
-        i++; have = 1
-        while (i <= n && substr(text, i, 1) != "\047") { cur = cur substr(text, i, 1); i++ }
-        i++; continue
-      }
-      if (c == "\"") {
-        i++; have = 1
-        while (i <= n && substr(text, i, 1) != "\"") {
-          c = substr(text, i, 1)
-          if (c == "\\" && substr(text, i + 1, 1) ~ /["\\$`]/) { i++; c = substr(text, i, 1) }
-          cur = cur c; i++
-        }
-        i++; continue
-      }
-      if (c == " " || c == "\t" || c == "\n" || c == "&" || c == ";" || c == "|" || c == "(" || c == ")") {
-        if (have) { add(cur, 0); cur = ""; have = 0 }
-        if (c != " " && c != "\t") add("", 1)
-        i++; continue
-      }
-      cur = cur c; have = 1; i++
-    }
-    if (have) add(cur, 0)
-  }
+  { tokenize($0) }
   END {
     repo = cwd; alone = 1; i = 1
     while (i <= nt) {
