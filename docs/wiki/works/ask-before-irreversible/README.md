@@ -2,21 +2,20 @@
 
 Makes Claude Code ask the person before a delivery action that cannot be undone, such as a push, a merge, or a release, so rule R14 is enforced and not only written. Andres Frei leads it.
 
-Status: Open.
+Status: Closed.
 
 ## Where work stands
 
-Updated 2026-11-20, after ask-before-irreversible-21.
+Updated 2026-11-20, after ask-before-irreversible-25.
 
-Stage 6, Execution, is open. ask-before-irreversible-U1, -U2, and -U3 are Done; the work is ready to close; see [plan.md](plan.md).
+Stages 1 to 5 are closed (ask-before-irreversible-6, -11, -16, -17, -18, -20). Stage 6, Execution, is closed: units U1, U2, and U3 of [plan.md](plan.md) are Done, and the shared pages are written. The kind consolidate is delegated (ask-before-irreversible-22). The work closes for version 3.4.0 (ask-before-irreversible-25).
 
 Waiting for a decision: none.
 
 Next steps, in order:
 
-1. Build ask-before-irreversible-U2, the protect script.
-2. Build U3, the protect command, and ask the owner to review it.
-3. Close the work.
+1. The owner pushes `feat/ask-before-irreversible`, opens the pull request, and merges it (R14).
+2. After the merge: version 3.4.0 in the three manifests, the tag `v3.4.0`, and the release on GitHub (ask-before-irreversible-25).
 
 ## Stage table
 
@@ -27,7 +26,7 @@ Next steps, in order:
 | 3 Skills | Closed | 2026-11-19 |
 | 4 Design system | Closed (not applicable) | 2026-11-19 |
 | 5 Plan | Closed | 2026-11-19 |
-| 6 Execution | Open | |
+| 6 Execution | Closed | 2026-11-20 |
 
 ## Pages
 
