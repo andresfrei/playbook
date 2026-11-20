@@ -6,24 +6,25 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-20, after parallel-units-10.
+Updated 2026-11-20, after parallel-units-16.
 
-Stage 1, Wiki, is closed (parallel-units-10). Stage 2, Technology, is open.
+Stages 1 and 2 are closed (parallel-units-10, -16). Stage 3, Skills, is open.
 
 Waiting for a decision: none.
 
 Next steps, in order:
 
-1. Check what Claude Code offers for worktrees: running `write` in its own worktree, copying ignored files such as `.env` into it, and how the review hold behaves across worktrees (parallel-units-9).
-2. Write the work's technology and architecture pages.
+1. List the skills the agent needs to build the work.
+2. Stage 4, Design system: the work has no interface.
+3. Stage 5, Plan.
 
 ## Stage table
 
 | Stage | Status | Closed on |
 |-------|--------|-----------|
 | 1 Wiki | Closed | 2026-11-20 |
-| 2 Technology | Open | |
-| 3 Skills | Not started | |
+| 2 Technology | Closed | 2026-11-20 |
+| 3 Skills | Open | |
 | 4 Design system | Not started | |
 | 5 Plan | Not started | |
 | 6 Execution | Not started | |
@@ -34,4 +35,6 @@ Next steps, in order:
 |------|---------|-----------------|
 | [definition.md](definition.md) | The problem, an example, what is known, and the coverage of each topic | |
 | [questions.md](questions.md) | The open questions | |
+| [technology.md](technology.md) | What the work needs from its technology, and the answers | |
+| [architecture.md](architecture.md) | The shape, modules, data, and risks | |
 | [decisions.md](decisions.md) | The decisions of this work | |
