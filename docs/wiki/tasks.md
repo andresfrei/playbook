@@ -23,3 +23,8 @@
 | record-decision | 2026-11-20 | plugin-icons | append a row to decisions.md with the owner's words, kind, and answer, keep the text under 60 words, update the pages it changes, run check-wiki | declined |
 | build-unit | 2026-11-20 | plugin-icons | build the unit on the work branch, run its ending checks, record its evidence in plan.md, commit | write |
 | write-shared-pages | 2026-11-20 | plugin-icons | write what the work decided in the shared pages citing its decisions, name each decision's shared page, run check-wiki | write-shared-pages |
+| open-work | 2026-11-20 | claude-code-versions | create the work branch and worktree, write the work folder, record the origin decision, run check-wiki |  |
+| close-stage | 2026-11-20 | claude-code-versions | check the closing condition, record the close-stage decision, set the stage table and the work README, run check-wiki |  |
+| record-decision | 2026-11-20 | claude-code-versions | append a row to decisions.md with the owner's words, kind, and answer, keep the text under 60 words, update the pages it changes, run check-wiki |  |
+| write-shared-pages | 2026-11-20 | claude-code-versions | write what the work decided in the shared pages citing its decisions, name each decision's shared page, run check-wiki |  |
+| write-skill | 2026-11-20 | claude-code-versions | write a skill with write-skill: job, triggers, SKILL.md within limits, cases, checks |  |
