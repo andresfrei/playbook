@@ -9,13 +9,16 @@
 #   current directory, else the current directory), sorted, of the files named
 #   .env, .env.*, *.pem, *.key, id_rsa*, *credentials*, *.p12, or secrets.*,
 #   tracked by git or not, skipping every .git and node_modules folder. A name
-#   with a double quote, a backslash, or a control character is not listed and
-#   is reported on standard error. Nothing found is not an error.
+#   with a double quote, a backslash, a control character, or a wildcard
+#   (* ? [ ]) is not listed and is reported on standard error. A symbolic link
+#   with such a name is listed; a folder link is not followed. Nothing found is not an error.
 # - apply: the items are
 #     secret:<path>    Read(./<path>) in permissions.deny, and ./<path> in
 #                      sandbox.filesystem.denyRead. The path is relative to
 #                      the project root, where the person runs apply, so both
-#                      forms stay relative.
+#                      forms stay relative. A path with a wildcard (* ? [ ]), a
+#                      quote, a backslash, or a . or .. component is refused
+#                      (exit 2), since the rule is a gitignore pattern.
 #     deletes          in permissions.ask: Bash(rm -r *), Bash(rm -rf *),
 #                      Bash(git reset --hard *), Bash(git branch -D *),
 #                      Bash(git clean *)
@@ -26,9 +29,11 @@
 #   other key changes. Every item is applied to a temporary copy, and the file
 #   is replaced only when all succeeded and something changed. It prints one
 #   line per thing added or set, and "already there" for what it skipped.
-# Exit codes: 0 done; 2 bad arguments or an unknown item; 3 the file is not a
-# JSON object, or a part of a path has another type (the file is untouched);
-# 4 a file or folder could not be written.
+# Exit codes: 0 done; 2 bad arguments or an unknown item; 3 the file is not
+# valid JSON, is not an object, has an object key with a slash or an escape,
+# or a part of a path has another type (the file is untouched); 4 a file or
+# folder could not be written, or the settings file is a symbolic link. A
+# rewrite keeps the mode of the file.
 # Decisions: ask-before-irreversible-9 (what is protected, chosen item by
 # item), -10 (the file is the person's choice, and nothing else changes), -14
 # (find by name, json_add, no new dependency), -15 (the rules of each item).
@@ -37,16 +42,18 @@
 # plugins/playbook/skills/init/scripts/init.sh, since playbook-agents may be
 # installed without the playbook plugin; this copy of json_walk also keeps
 # where each literal starts and ends (lstart, lend) and its text (lit), for
-# json_set_bool. Keep the copies alike.
+# json_set_bool. This copy of json_walk is also strict (see its comment) where
+# the one in init.sh is not; keep the rest of the copies alike.
 set -u
 
 json_readstr='
 function readstr(p,   out, c, d, hex) {
-  out = ""
+  out = ""; esc = 0
   while (p <= n) {
     c = substr(text, p, 1)
     if (c == "\"") { str = out; pos = p + 1; return 1 }
     if (c == "\\") {
+      esc = 1
       p++; d = substr(text, p, 1)
       if (d == "n") c = "\n"; else if (d == "t") c = "\t"; else if (d == "r") c = "\r"
       else if (d == "b" || d == "f") c = " "
@@ -59,45 +66,59 @@ function readstr(p,   out, c, d, hex) {
   return 0
 }'
 
+# The walker is strict: a colon after each key, a comma between members and
+# elements, only true, false, null, and JSON numbers as literals. A key with a
+# slash or an escape is refused (bad), since a path is its keys joined by a
+# slash. The state of each open level is st[depth]: in an object, 0 expects a
+# key or the end, 1 a colon, 2 a value, 3 a comma or the end, 4 a key; in an
+# array, 0 expects a value or the end, 3 a comma or the end, 4 a value.
 json_walk="$json_readstr"'
 function path_at(d,   i, s) { s = ""; for (i = 1; i <= d; i++) s = s (i > 1 ? "/" : "") key[i]; return s }
-function walk(   c, q, at, done, prev) {
-  n = length(text); p = 1; depth = 0; done = 0; bad = 0; prev = ""
+function fin() { if (depth == 0) done = 1; else st[depth] = 3 }
+function walk(   c, q, at, t, s, lt) {
+  n = length(text); p = 1; depth = 0; done = 0; bad = 0; st[0] = 2
   while (p <= n) {
     c = substr(text, p, 1)
     if (c ~ /[ \t\n\r]/) { p++; continue }
     if (done) { bad = 1; return }
-    if (c == ",") { if (prev != "value" || depth == 0) { bad = 1; return }; prev = "comma"; if (type[depth] == "o") expect[depth] = 1; p++; continue }
-    if (c == ":") { prev = "colon"; p++; continue }
-    if ((c == "}" || c == "]") && (prev == "comma" || prev == "colon")) { bad = 1; return }
-    if (c != "}" && c != "]" && type[depth] == "a") empty[path_at(depth - 1)] = 0
+    t = type[depth]; s = st[depth]
+    if (c == ",") { if (depth == 0 || s != 3) { bad = 1; return }; st[depth] = 4; p++; continue }
+    if (c == ":") { if (t != "o" || s != 1) { bad = 1; return }; st[depth] = 2; p++; continue }
+    if (c == "}" || c == "]") {
+      if (depth == 0 || t != (c == "}" ? "o" : "a") || (s != 0 && s != 3)) { bad = 1; return }
+      depth--; fin(); p++; continue
+    }
+    if (c == "\"" && t == "o" && (s == 0 || s == 4)) {
+      if (!readstr(p + 1)) { bad = 1; return }
+      p = pos
+      if (esc || index(str, "/") > 0) { bad = 1; return }
+      key[depth] = str; st[depth] = 1; empty[path_at(depth - 1)] = 0
+      continue
+    }
+    if (!(depth == 0 || (t == "o" && s == 2) || (t == "a" && (s == 0 || s == 4)))) { bad = 1; return }
+    if (t == "a") empty[path_at(depth - 1)] = 0
     if (c == "{" || c == "[") {
       at = path_at(depth)
       if (!(at in kind)) { kind[at] = (c == "{" ? "o" : "a"); open[at] = p; empty[at] = 1 }
       else if (open[at] == "") open[at] = p
-      depth++; type[depth] = (c == "{" ? "o" : "a"); expect[depth] = (c == "{"); key[depth] = (c == "{" ? "" : "#")
-      prev = "open"; p++; continue
-    }
-    if (c == "}" || c == "]") {
-      if (depth == 0 || type[depth] != (c == "}" ? "o" : "a")) { bad = 1; return }
-      depth--; if (depth == 0) done = 1; prev = "value"; p++; continue
+      depth++; type[depth] = (c == "{" ? "o" : "a"); st[depth] = 0; key[depth] = (c == "{" ? "" : "#")
+      p++; continue
     }
     if (c == "\"") {
-      q = p
       if (!readstr(p + 1)) { bad = 1; return }
       p = pos
-      if (type[depth] == "o" && expect[depth]) { key[depth] = str; expect[depth] = 0; empty[path_at(depth - 1)] = 0; prev = "key"; continue }
-      prev = "value"
       at = path_at(depth)
       if (!(at in kind)) kind[at] = "s"
       if (at == want) strings[++count] = str
-      continue
+      fin(); continue
     }
     q = p
     while (p <= n && substr(text, p, 1) !~ /[,}\] \t\n\r]/) p++
-    prev = "value"
+    lt = substr(text, q, p - q)
+    if (lt != "true" && lt != "false" && lt != "null" && lt !~ /^-?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?$/) { bad = 1; return }
     at = path_at(depth)
-    if (!(at in kind)) { kind[at] = "l"; lstart[at] = q; lend[at] = p; lit[at] = substr(text, q, p - q) }
+    if (!(at in kind)) { kind[at] = "l"; lstart[at] = q; lend[at] = p; lit[at] = lt }
+    fin()
   }
   if (depth != 0 || !done) bad = 1
 }'
@@ -188,17 +209,19 @@ Usage: protect.sh scan [dir]
        protect.sh apply <settings file> <item>...
 Items: secret:<path>, deletes, sandbox, no-unsandboxed
 Exit codes: 0 done; 2 bad arguments or an unknown item; 3 the file is not a
-JSON object, or a part of a path has another type; 4 a write failed.
+valid JSON object, or a part of a path has another type; 4 a write failed or
+the file is a symbolic link.
 USAGE
 }
 
-# unsafe_name <text>: succeeds when it holds a double quote, a backslash, or a
-# control character, which a JSON string would need to escape.
+# unsafe_name <text>: succeeds when it holds a double quote, a backslash, a
+# control character, or a wildcard (* ? [ ]), which a JSON string would need to
+# escape or a gitignore pattern would read as a pattern.
 unsafe_name() {
   _bs=$(printf '\134')
   _q='"'
   case $1 in
-    *"$_q"*|*"$_bs"*|*[[:cntrl:]]*) return 0 ;;
+    *"$_q"*|*"$_bs"*|*[[:cntrl:]]*|*\**|*\?*|*\[*|*\]*) return 0 ;;
   esac
   return 1
 }
@@ -211,7 +234,7 @@ scan() {
   fi
   [ -d "$dir" ] || { printf 'protect.sh: not a folder: %s\n' "$dir" >&2; exit 2; }
   cd "$dir" || exit 2
-  find . \( -name .git -o -name node_modules \) -prune -o -type f \
+  find . \( -name .git -o -name node_modules \) -prune -o \( -type f -o -type l \) \
     \( -name .env -o -name '.env.*' -o -name '*.pem' -o -name '*.key' \
        -o -name 'id_rsa*' -o -name '*credentials*' -o -name '*.p12' \
        -o -name 'secrets.*' \) -exec sh -c '
@@ -219,8 +242,8 @@ scan() {
       f=${f#./}
       bs=$(printf "\\\\")
       case $f in
-        *\"*|*"$bs"*|*[[:cntrl:]]*)
-          printf "protect.sh: skipped, the name has a quote, a backslash, or a control character: %s\n" \
+        *\"*|*"$bs"*|*[[:cntrl:]]*|*\**|*\?*|*\[*|*\]*)
+          printf "protect.sh: skipped, the name has a quote, a backslash, a control character, or a wildcard (* ? [ ]): %s\n" \
             "$(printf %s "$f" | tr -c "[:print:]" "?")" >&2 ;;
         *) printf "%s\n" "$f" ;;
       esac
@@ -230,6 +253,10 @@ scan() {
 apply() {
   [ $# -ge 2 ] || { usage; exit 2; }
   file=$1; shift
+  if [ -L "$file" ]; then
+    printf 'protect.sh: %s is a symbolic link: not written; give the file it points to\n' "$file" >&2
+    exit 4
+  fi
   # Check every item before touching anything.
   for item in "$@"; do
     case $item in
@@ -237,10 +264,10 @@ apply() {
         p=${item#secret:}
         while :; do case $p in ./*) p=${p#./} ;; *) break ;; esac; done
         case $p in
-          ''|/*|..|../*|*/..|*/../*) printf 'protect.sh: not a path inside the project: %s\n' "$item" >&2; exit 2 ;;
+          ''|/*|.|./*|*/.|*/./*|..|../*|*/..|*/../*) printf 'protect.sh: not a path inside the project: %s\n' "$item" >&2; exit 2 ;;
         esac
         if unsafe_name "$p"; then
-          printf 'protect.sh: the path has a quote, a backslash, or a control character: %s\n' "$item" >&2
+          printf 'protect.sh: the path has a quote, a backslash, a control character, or a wildcard (* ? [ ]): %s\n' "$item" >&2
           exit 2
         fi ;;
       deletes|sandbox|no-unsandboxed) ;;
@@ -318,7 +345,12 @@ apply() {
   fi
   dir=$(dirname "$file")
   mkdir -p "$dir" || { printf 'protect.sh: could not make %s\n' "$dir" >&2; exit 4; }
-  cp "$work" "$file.protect.$$" || { rm -f "$file.protect.$$"; exit 4; }
+  # The copy keeps the mode and owner of an existing file; a new file gets the
+  # mode the umask gives.
+  if [ -e "$file" ]; then
+    cp -p "$file" "$file.protect.$$" || { rm -f "$file.protect.$$"; exit 4; }
+  fi
+  cat "$work" > "$file.protect.$$" || { rm -f "$file.protect.$$"; exit 4; }
   mv "$file.protect.$$" "$file" || { rm -f "$file.protect.$$"; exit 4; }
   cat "$msgs"
 }

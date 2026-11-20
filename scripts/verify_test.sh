@@ -3720,6 +3720,71 @@ check "protect: with no command exits 2" test "$pr_code" -eq 2
 sh "$pr_script" bogus >/dev/null 2>&1; pr_code=$?
 check "protect: an unknown command exits 2" test "$pr_code" -eq 2
 
+# Review findings on protect.sh: strict JSON, keys, symbolic links, the mode,
+# wildcards, and the guards.
+for pr_text in '{"a" 1}' '{"a": tru}' '{"a": 1 "b": 2}' '{"a": 01}' '{"a": [1 2]}' '{"a":: 1}' '{:"a"}' '{"a": 1,}' '{"a": [1,]}'; do
+  pr_file="$tmp/pr/strict.json"
+  printf '%s\n' "$pr_text" > "$pr_file"; cp "$pr_file" "$tmp/pr/strict.before"
+  sh "$pr_script" apply "$pr_file" secret:.env sandbox >/dev/null 2>&1; pr_code=$?
+  check "protect apply: $pr_text is not JSON, exits 3 and is byte-identical" sh -c 'test "$1" -eq 3 && cmp -s "$2" "$3"' sh "$pr_code" "$tmp/pr/strict.before" "$pr_file"
+done
+pr_file="$tmp/pr/strict.json"
+printf '%s\n' '{"a": [1, -2.5e+3, true, false, null, {"b": 0}], "c": "x"}' > "$pr_file"
+sh "$pr_script" apply "$pr_file" sandbox >/dev/null 2>&1; pr_code=$?
+check "protect apply: valid JSON with every kind of literal is accepted" test "$pr_code" -eq 0
+
+for pr_text in '{"permissions/deny": []}' '{"permissions": {"d\u0065ny": []}}' '{"permissions": {"de\ny": []}}'; do
+  pr_file="$tmp/pr/key.json"
+  printf '%s\n' "$pr_text" > "$pr_file"; cp "$pr_file" "$tmp/pr/key.before"
+  sh "$pr_script" apply "$pr_file" secret:.env >/dev/null 2>&1; pr_code=$?
+  check "protect apply: the key in $pr_text has a slash or an escape, exits 3 and is byte-identical" sh -c 'test "$1" -eq 3 && cmp -s "$2" "$3"' sh "$pr_code" "$tmp/pr/key.before" "$pr_file"
+done
+
+rm -rf "$tmp/pr/link"; mkdir -p "$tmp/pr/link/real"
+: > "$tmp/pr/link/real/target"; ln -s real/target "$tmp/pr/link/.env"; ln -s real "$tmp/pr/link/dirlink.key"
+: > "$tmp/pr/link/real/secrets.txt"; : > "$tmp/pr/link/real/x.pem"
+pr_out=$(sh "$pr_script" scan "$tmp/pr/link" 2>/dev/null)
+check "protect scan: a symbolic link named .env is listed" sh -c 'printf "%s\n" "$1" | grep -qx "\.env"' sh "$pr_out"
+check "protect scan: a folder link is not followed" sh -c '! printf "%s\n" "$1" | grep -q "dirlink.key/"' sh "$pr_out"
+
+rm -rf "$tmp/pr/wild"; mkdir -p "$tmp/pr/wild"
+for f in 'cert[prod].pem' 'a*.key' 'q?.pem' 'ok.pem'; do : > "$tmp/pr/wild/$f"; done
+pr_out=$(sh "$pr_script" scan "$tmp/pr/wild" 2>"$tmp/pr/err"); pr_code=$?
+check "protect scan: names with a wildcard are not listed, a plain one is, exit 0" sh -c 'test "$1" = "ok.pem" && test "$2" -eq 0' sh "$pr_out" "$pr_code"
+check "protect scan: each name with a wildcard is reported on stderr" sh -c 'test "$(grep -c skipped "$1")" -eq 3 && grep -qF "cert[prod].pem" "$1"' sh "$tmp/pr/err"
+
+printf '%s\n' '{"model": "opus"}' > "$tmp/pr/g.json"; cp "$tmp/pr/g.json" "$tmp/pr/g.before"
+for pr_item in 'secret:cert[prod].pem' 'secret:.' 'secret:*' 'secret:a?b' 'secret:a]' 'secret:./.' 'secret:a/./b' 'secret:a/.' 'secret:..' 'secret:a/../../x' 'secret:../x' 'secret:a/..'; do
+  sh "$pr_script" apply "$tmp/pr/g.json" "$pr_item" >/dev/null 2>&1; pr_code=$?
+  check "protect apply: $pr_item exits 2 and writes nothing" sh -c 'test "$1" -eq 2 && cmp -s "$2" "$3"' sh "$pr_code" "$tmp/pr/g.before" "$tmp/pr/g.json"
+done
+
+rm -rf "$tmp/pr/sym"; mkdir -p "$tmp/pr/sym"
+printf '%s\n' '{"model": "opus"}' > "$tmp/pr/sym/real.json"; cp "$tmp/pr/sym/real.json" "$tmp/pr/sym/real.before"
+ln -s real.json "$tmp/pr/sym/settings.json"
+sh "$pr_script" apply "$tmp/pr/sym/settings.json" sandbox >/dev/null 2>"$tmp/pr/err"; pr_code=$?
+check "protect apply: a symbolic link as the settings file exits 4 and names the file on stderr" sh -c 'test "$1" -eq 4 && grep -qF "settings.json" "$2"' sh "$pr_code" "$tmp/pr/err"
+check "protect apply: the link and its target stay as they were" sh -c 'test -L "$1/settings.json" && cmp -s "$1/real.json" "$1/real.before"' sh "$tmp/pr/sym"
+
+pr_file="$tmp/pr/mode.json"
+printf '%s\n' '{"model": "opus"}' > "$pr_file"; chmod 600 "$pr_file"
+sh "$pr_script" apply "$pr_file" sandbox >/dev/null 2>&1; pr_code=$?
+check "protect apply: a file at mode 600 is still 600 after the rewrite" sh -c 'test "$1" -eq 0 && test "$(ls -l "$2" | cut -c1-10)" = "-rw-------" && grep -q sandbox "$2"' sh "$pr_code" "$pr_file"
+chmod 640 "$pr_file"
+sh "$pr_script" apply "$pr_file" deletes >/dev/null 2>&1
+check "protect apply: a file at mode 640 is still 640 after the rewrite" sh -c 'test "$(ls -l "$1" | cut -c1-10)" = "-rw-r-----"' sh "$pr_file"
+
+if [ "$(id -u)" -eq 0 ]; then
+  printf 'skip  protect apply: a write into a read-only folder (running as root)\n'
+else
+  rm -rf "$tmp/pr/ro"; mkdir -p "$tmp/pr/ro"
+  printf '%s\n' '{"model": "opus"}' > "$tmp/pr/ro/settings.json"; cp "$tmp/pr/ro/settings.json" "$tmp/pr/ro.before"
+  chmod 555 "$tmp/pr/ro"
+  sh "$pr_script" apply "$tmp/pr/ro/settings.json" sandbox >/dev/null 2>&1; pr_code=$?
+  chmod 755 "$tmp/pr/ro"
+  check "protect apply: a write into a read-only folder exits 4, the file is byte-identical, nothing is left" sh -c 'test "$1" -eq 4 && cmp -s "$2" "$3/settings.json" && test "$(ls -A "$3" | wc -l | tr -d " ")" -eq 1' sh "$pr_code" "$tmp/pr/ro.before" "$tmp/pr/ro"
+fi
+
 if [ "$failed" -eq 0 ]; then
   printf 'all cases passed\n'
 else
