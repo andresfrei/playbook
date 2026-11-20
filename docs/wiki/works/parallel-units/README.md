@@ -2,20 +2,20 @@
 
 After the plan of a work is accepted, a step organizes its units into batches that several `write` agents can build at the same time, so a work takes less time without units stepping on each other. Andres Frei leads it.
 
-Status: Open.
+Status: Closed.
 
 ## Where work stands
 
-Updated 2026-11-20, after parallel-units-24.
+Updated 2026-11-20, after parallel-units-25.
 
-Stage 6, Execution, is open. U1 and U2 are Built, merged into `feat/parallel-units`, and wait for the owner's judgement; see [plan.md](plan.md).
+Stages 1 to 5 are closed (parallel-units-10, -16, -17, -18, -20). Stage 6, Execution, is closed: units U1 and U2 of [plan.md](plan.md) are Done, built in parallel as the work defines, and the shared pages are written. The work closes for version 3.5.0 (parallel-units-25).
 
-Waiting for a decision: the owner reviews U1 and U2.
+Waiting for a decision: none.
 
 Next steps, in order:
 
-1. The owner reviews U1 and U2.
-2. Close the work.
+1. The owner pushes `feat/parallel-units`, opens the pull request, and merges it (R14).
+2. After the merge: version 3.5.0 in the three manifests, the tag `v3.5.0`, and the release on GitHub (parallel-units-25).
 
 ## Stage table
 
@@ -26,7 +26,7 @@ Next steps, in order:
 | 3 Skills | Closed | 2026-11-20 |
 | 4 Design system | Closed (not applicable) | 2026-11-20 |
 | 5 Plan | Closed | 2026-11-20 |
-| 6 Execution | Open | |
+| 6 Execution | Closed | 2026-11-20 |
 
 ## Pages
 
