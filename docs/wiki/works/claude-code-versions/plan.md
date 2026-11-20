@@ -4,8 +4,8 @@
 
 | Unit | Status | Evidence | Done on | Owner's words |
 |------|--------|----------|---------|---------------|
-| claude-code-versions-U1 | Done | A new headless session in the worktree lists `evaluate-cli-releases` (control: a made-up name, and the main checkout without the skill, both answer no); with the record at 2.1.330 the commands stop as equal; at 2.1.324, a number Claude Code skipped, they stop as missing; at 2.1.325 they keep 2.1.326 to 2.1.330, 973 lines; body 402 words of 700, description 198 characters of 250; `check-wiki` passes | 2026-11-20 | |
-| claude-code-versions-U2 | Not started | | | |
+| claude-code-versions-U1 | Done | A new headless session in the worktree lists `evaluate-cli-releases` (control: a made-up name, and the main checkout without the skill, both answer no); with the record at 2.1.330 the commands stop as equal; at 2.1.324, a number Claude Code skipped, they stop as missing; at 2.1.325 they keep 2.1.326 to 2.1.330, 973 lines; body 402 words of 700 (566 after the review's fixes, whose cut was run for five version pairs: 2.1.325→2.1.330, 2.1.326→2.1.328, equal, a skipped recorded version, and an installed version not yet in the changelog), description 198 characters of 250; `check-wiki` passes | 2026-11-20 | |
+| claude-code-versions-U2 | Done | The report of 2.1.326 to 2.1.330: 10 entries from `explore`, each checked against its file, none left as a proposal; the record says 2.1.330 | 2026-11-20 | "si" |
 
 ## Units
 

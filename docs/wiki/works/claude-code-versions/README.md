@@ -2,21 +2,20 @@
 
 Gives this repository a record of the Claude Code version it was last evaluated against, and an evaluation the owner asks for that reads the changelog since then and shows what to optimize or check. Andres Frei leads it.
 
-Status: Open.
+Status: Closed 2026-11-20.
 
 ## Where work stands
 
-Updated 2026-11-20, after claude-code-versions-9.
+Updated 2026-11-20, after claude-code-versions-16.
 
-Stages 1 to 4 are closed (claude-code-versions-6 to -9; stage 4 does not apply). Stage 5, Plan, is open: [plan.md](plan.md) holds two units, the skill with its record, and the first evaluation.
+All stages are closed. U1 built the project skill `evaluate-cli-releases` (claude-code-versions-11) and the record `03-technology/claude-code-versions.md`; U2 ran the first evaluation, 2.1.326 to 2.1.330, with no proposal left, and the record says 2.1.330 (claude-code-versions-12). The agent `write-shared-pages` wrote the shared page at the close. The pre-merge review's six findings were fixed in the skill (claude-code-versions-14), and `decided-behaviour-changed-without-decision` went to level 3 and up to `evidence-rules.md` (claude-code-versions-15, -16). No new version (claude-code-versions-13).
 
-Waiting for a decision: the owner's acceptance of [plan.md](plan.md) and its delivery.
+Waiting for a decision: none.
 
 Next steps, in order:
 
-1. Accept the plan.
-2. Build U1, then run U2 with the owner.
-3. Close the work.
+1. The owner merges the pull request of `feat/claude-code-versions` into `main`.
+2. Remove the worktree `../playbook-claude-code-versions` and the branch.
 
 ## Stage table
 
@@ -27,7 +26,7 @@ Next steps, in order:
 | 3 Skills | Closed | 2026-11-20 |
 | 4 Design system | Closed | 2026-11-20 |
 | 5 Plan | Closed | 2026-11-20 |
-| 6 Execution | Open | |
+| 6 Execution | Closed | 2026-11-20 |
 
 ## Pages
 

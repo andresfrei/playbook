@@ -19,26 +19,30 @@ Do not use it to update Claude Code, to answer how a Claude Code feature works, 
 ## Gotchas
 
 - Claude Code skips version numbers, such as 2.1.324: compare the recorded version with the changelog's headings, never by counting.
-- `awk` prints the whole changelog when the recorded heading is missing: check that the heading exists first.
+- `awk` prints the whole changelog when the recorded heading is missing, and a shell variable does not survive between calls: run step 3 as one call and print the file it writes.
 
 ## Steps
 
-1. Read the record, `docs/wiki/03-technology/claude-code-versions.md`: the line `Last version evaluated: X.Y.Z`.
-2. Run `claude --version`. When it prints the recorded version, say there is nothing new and stop.
-3. Fetch and cut the changelog. Do not change these commands:
+1. Read the record, `docs/wiki/03-technology/claude-code-versions.md`: the line `Last version evaluated: X.Y.Z`, and the rows under Pending.
+2. Run `claude --version`. When it prints the recorded version and Pending is empty, say there is nothing new and stop.
+3. Cut the changelog from the version after the record up to the installed one. Run this as one call, with the two versions filled in, and do not change it:
 
    ```sh
-   f=$(mktemp) && curl -fsSL https://raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md -o "$f"
-   grep -qx "## <recorded>" "$f" || echo "missing"
-   awk -v from="<recorded>" '/^## /{ if ($2 == from) exit } { print }' "$f" > "$f.new"
+   rec=<recorded>; inst=<installed>; f="${TMPDIR:-/tmp}/cli-changelog.md"
+   curl -fsSL https://raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md -o "$f" || { echo "fetch failed"; exit 1; }
+   grep -qx "## $rec" "$f" || { echo "recorded $rec missing"; exit 1; }
+   grep -qx "## $inst" "$f" || { echo "installed $inst missing"; exit 1; }
+   awk -v from="$rec" -v to="$inst" '/^## /{ if ($2 == from) exit; if ($2 == to) on = 1 } on' "$f" > "$f.new"
+   grep "^## " "$f.new"; echo "$f.new"
    ```
 
-   When `curl` fails or the heading is missing, say so, leave the record as it is, and stop.
-4. Give `explore` the file `$f.new` and these paths: `plugins/*/hooks/`, `plugins/*/.claude-plugin/`, `.claude-plugin/marketplace.json`, `plugins/*/agents/`, `plugins/*/skills/`, `plugins/*/commands/`, `.claude/`, `codex/`, `docs/wiki/03-technology/`. Ask for one row per changelog entry that touches one of them: version, change, the file it touches, and a proposal, optimize or check, with one line of why. Entries that touch nothing are left out.
-5. Verify each row by reading the file it names. Drop a row whose file does not use what the entry changes.
-6. Show the table, newest version first, and the versions read, such as "2.1.326 to 2.1.330".
-7. Ask each proposal: do it, leave it for later, or drop it.
-8. Write the record: set `Last version evaluated` to the newest version read, add a row to Evaluations, and add each proposal left for later to Pending. Remove from Pending what the owner answered. Run `sh plugins/playbook-wiki/check-wiki.sh docs/wiki`.
+   When it prints an error, or no `## ` line when the record is behind, say why, leave the record as it is, and stop.
+4. When the cut holds more than 10 versions, keep the 10 oldest and say the range left for the next run.
+5. Give `explore` the cut file and these paths: `plugins/*/hooks/`, `plugins/*/.claude-plugin/`, `.claude-plugin/marketplace.json`, `plugins/*/agents/`, `plugins/*/skills/`, `plugins/*/commands/`, `.claude/`, `codex/`, `docs/wiki/03-technology/`. Ask for one row per changelog entry that touches one of them: version, change, the file it touches, a proposal, optimize or check, and one line of why. Entries that touch nothing are left out.
+6. Verify each row by reading the file it names. A row whose file does not use what the entry changes, or that the change already favours, becomes "nothing", with one line of why.
+7. Show the table, newest version first: the rows to optimize or check, then the rows that became nothing, and the range read, such as "2.1.326 to 2.1.330".
+8. Ask, one at a time, each optimize or check row and each Pending row: do it, leave it for later, or drop it.
+9. Write the record: set `Last version evaluated` to the newest version read; add a row to Evaluations, whose Where each went names, for each proposal, the work or fix it became, "pending", or "dropped"; add the proposals left for later to Pending, and remove the Pending rows answered. Run `sh plugins/playbook-wiki/check-wiki.sh docs/wiki`.
 
 ## Output
 
