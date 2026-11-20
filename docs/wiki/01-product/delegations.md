@@ -15,4 +15,4 @@ The kinds of decision the agent decides in this project without asking the owner
 | Kind | Decision that made it | Decision that revoked it |
 |------|-----------------------|--------------------------|
 
-Proposed and declined, not proposed again: plan (delegation-17) and version (delegation-18).
+Proposed and declined, not proposed again: plan (delegation-17), version (delegation-18), and other (readme-redesign-21).
