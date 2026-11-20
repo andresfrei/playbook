@@ -6,17 +6,16 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-20, after parallel-units-16.
+Updated 2026-11-20, after parallel-units-18.
 
-Stages 1 and 2 are closed (parallel-units-10, -16). Stage 3, Skills, is open.
+Stages 1 to 4 are closed (parallel-units-10, -16, -17, -18). Stage 5, Plan, is open: [plan.md](plan.md) is written and waits for the owner.
 
-Waiting for a decision: none.
+Waiting for a decision: the owner accepts the plan.
 
 Next steps, in order:
 
-1. List the skills the agent needs to build the work.
-2. Stage 4, Design system: the work has no interface.
-3. Stage 5, Plan.
+1. The owner accepts the plan.
+2. Build batch 1, U1 and U2, in parallel.
 
 ## Stage table
 
@@ -24,9 +23,9 @@ Next steps, in order:
 |-------|--------|-----------|
 | 1 Wiki | Closed | 2026-11-20 |
 | 2 Technology | Closed | 2026-11-20 |
-| 3 Skills | Open | |
-| 4 Design system | Not started | |
-| 5 Plan | Not started | |
+| 3 Skills | Closed | 2026-11-20 |
+| 4 Design system | Closed (not applicable) | 2026-11-20 |
+| 5 Plan | Open | |
 | 6 Execution | Not started | |
 
 ## Pages
@@ -37,4 +36,6 @@ Next steps, in order:
 | [questions.md](questions.md) | The open questions | |
 | [technology.md](technology.md) | What the work needs from its technology, and the answers | |
 | [architecture.md](architecture.md) | The shape, modules, data, and risks | |
+| [skills.md](skills.md) | The skills used to build the work | |
+| [plan.md](plan.md) | The units, the batches, and how the work is delivered | |
 | [decisions.md](decisions.md) | The decisions of this work | |
