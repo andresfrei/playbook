@@ -8,7 +8,7 @@ The units that build the README of [definition.md](definition.md), with the desi
 |------|--------|----------|---------|---------------|
 | readme-redesign-U1 | Done | All 50 non-empty lines of the current README, from the plugin flowchart to the end of the session diagram, are in `docs/how-it-works.md`, with "What happens during a session" raised to a section; 2 Mermaid blocks; its one relative link, `../README.md`, resolves | 2026-11-20 | |
 | readme-redesign-U2 | Done | `sh docs/assets/render-demo.sh` writes `docs/assets/demo.webp`, 1200 × 600 px, 43,666 bytes; the image shows rate-limit-Q1 with its recommendation, the answer "yes, 100 per minute", and the row rate-limit-1 with its words, in IBM Plex Mono and the brand's colours | 2026-11-20 | "si, esta bien" |
-| readme-redesign-U3 | Not started | | | |
+| readme-redesign-U3 | Built | Every relative link and image resolves; the anchors `#claude-code-prompt` and `#codex-cli-prompt`, linked from `docs/claude-code.md` and `codex/README.md`, are kept; the four install commands match `docs/claude-code.md` and `codex/README.md`; `avoid-generic-design` found no generic pattern; 833 words, down from 1284. Rendering on GitHub waits for the owner | | |
 
 ## Units
 

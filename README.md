@@ -1,12 +1,59 @@
-# ![Playbook](docs/assets/playbook-banner.svg)
+[![Playbook: your coding agent, with a method](docs/assets/playbook-banner.png)](https://playbook.neuralmind.lat/)
 
-Playbook is a set of plugins for building software with a coding agent in Claude Code or Codex CLI. The developer decides what the software should do. The agent records those decisions in the project's Git-backed wiki, uses them to implement changes, and reports how it checked the result. A teammate starting a fresh session can see what was agreed, why it changed, and which question to pick up next. And when reviews keep finding the same kind of mistake, the agent turns it into a rule it applies before the next change.
+# Playbook
 
-## Ask your agent to install Playbook
+[![Latest release](https://img.shields.io/github/v/release/andresfrei/playbook?label=release&color=ff5a1f)](https://github.com/andresfrei/playbook/releases)
+[![License: MIT](https://img.shields.io/github/license/andresfrei/playbook?color=ffb020)](LICENSE)
 
-Copy the prompt for your client into a session. You choose whether to use the wiki alone or add the working agents.
+**[playbook.neuralmind.lat](https://playbook.neuralmind.lat/)** · Claude Code · Codex CLI · by [NeuralMind](https://neuralmind.lat/)
+
+Playbook is a set of free plugins for Claude Code and Codex CLI. You decide what the software should do; the agent records each decision in your repository's wiki, builds from it, shows how it checked the result, and turns repeated mistakes into rules.
+
+![A Playbook session: the agent asks one question with its recommendation and records the answer as a decision](docs/assets/demo.webp)
+
+## Agents forget. Your repository should not.
+
+- **Decisions vanish in the chat.** What you agreed with the agent lives in a session that ends. Next week nobody knows why the code is the way it is.
+- **Every session starts from zero.** A teammate, or the agent itself tomorrow, cannot see what was decided, what changed, or which question is still open.
+- **The same mistakes come back.** Reviews catch the same kind of bug again and again, because nothing turns a lesson into a rule the agent follows.
+
+## Six stages before any code. You close each one.
+
+Every new feature or phase is a work with its own folder in `docs/wiki/`. The agent proposes, asks one question at a time, and records your answer word for word.
+
+| Stage | What gets decided |
+|-------|-------------------|
+| 1. Wiki | What the product must do and must not do, who uses it, and every open question |
+| 2. Technology | The stack, the limits, and what each choice costs, checked against current docs |
+| 3. Skills | Which agent skills the work needs, and which ones exist already |
+| 4. Design system | Tokens, components, and patterns, before a single screen is built |
+| 5. Plan | Units of work, each with the paths it touches and how it will be accepted |
+| 6. Execution | The agent builds unit by unit, records the evidence, and asks you to accept |
+
+## Repeated mistakes become rules
+
+A review agent reads every risky change from a fresh context. Each defect it finds is stored as evidence under a kind of mistake. When three reviews hit the same kind, Playbook proposes one rule, and the agents that write and review code get it every time they start.
+
+**review finds a defect** → **classify stores it as evidence** → **three hits on one kind** → **a rule every agent follows**
+
+## Three plugins
+
+Take the wiki alone, or add the team. `playbook-agents` requires `playbook-wiki`.
+
+| Plugin | What it gives you |
+|--------|-------------------|
+| [`playbook`](plugins/playbook/README.md) | The setup wizard, `/playbook:init`: choose the components and their scope |
+| [`playbook-wiki`](plugins/playbook-wiki/README.md) | Project memory: decisions kept in Git, each work prepared in six stages, checks on the wiki before commits and merges |
+| [`playbook-agents`](plugins/playbook-agents/README.md) | A working team: `explore` maps code, `write` builds, `review` reviews, `classify` stores findings as evidence. Plus working rules and skills |
+
+## Install
+
+Paste one prompt into a session and your agent does the rest. Then run `/playbook:init` in your project.
 
 ### Claude Code prompt
+
+<details>
+<summary>Show the prompt</summary>
 
 ```text
 Install Playbook for Claude Code from https://github.com/andresfrei/playbook.
@@ -17,7 +64,12 @@ Then tell me how to start a fresh Claude Code session in my project and run
 /playbook:init so I can choose the components and scope.
 ```
 
+</details>
+
 ### Codex CLI prompt
+
+<details>
+<summary>Show the prompt</summary>
 
 ```text
 Install Playbook for Codex CLI from https://github.com/andresfrei/playbook.
@@ -30,89 +82,37 @@ Show me which hooks to review in /hooks, then how to start a fresh Codex
 session in my project.
 ```
 
-## Choose your plugins
+</details>
 
-Playbook is opt-in. You can use the wiki with your own agent setup or add the working agents. Each plugin guide shows its workflow.
+### Or by hand
 
-| Plugin | When to choose it |
-|--------|-------------------|
-| [`playbook` — setup](plugins/playbook/README.md) | Use the optional `/playbook:init` wizard in Claude Code to choose components and scope. Codex users make their selection in the installer. |
-| [`playbook-wiki` — project memory](plugins/playbook-wiki/README.md) | Choose this on its own to keep decisions in Git, prepare work in stages, and check wiki changes before commits and merges. |
-| [`playbook-agents` — working rules and agents](plugins/playbook-agents/README.md) | Add this to the wiki when you want the working rules, specialized skills and the `explore`, `write`, `review` roles, and in Claude Code `classify`. It requires `playbook-wiki`. |
+Claude Code:
 
-```mermaid
-flowchart LR
-    claude["Claude Code<br/>/playbook:init"] --> choice{"Which setup?"}
-    codex["Codex CLI<br/>python3 codex/install.py"] --> choice
-    choice -->|Wiki only| wiki["playbook-wiki"]
-    choice -->|Wiki with agents| agents["playbook-agents<br/>explore · write · review"]
-    agents -->|Requires| wiki
-    wiki -->|Reads and checks| repo[("Project repository<br/>docs/wiki/")]
+```sh
+claude plugin marketplace add andresfrei/playbook
+claude plugin install playbook@playbook --scope user
 ```
 
-## How a change moves through Playbook
+Then start a fresh session in your project and run `/playbook:init`.
 
-1. **Read the project.** At session start, the wiki plugin gives the agent its working contract. Before editing a file, the agent opens `docs/wiki/README.md` and follows the entry for the code it will touch. Shared wiki pages describe the product as it stands.
-2. **Define the work.** For a new project, phase, or feature that needs definition, the agent opens a work folder under `docs/wiki/works/`. It distinguishes proposals from open questions and records each decision with the owner's words. The work moves through six stages: wiki and product definition, technology, skills, design system, plan, and execution. The owner closes each one, or a delegation does; a stage can be closed as inapplicable.
-3. **Build and verify.** The plan divides implementation into units. Each has an observable ending condition: a passing check, for example, or the owner's judgement on a document. The agent records the evidence and updates the work's README with what comes next. A small, already-defined change can be handled directly.
-4. **Commit and merge.** A hook checks changes to a current-format wiki before commit and reports broken links or invalid records. Before merging, the agent brings accepted definitions into the shared pages. If both branches added decisions or changed the same shared page, Playbook lists what the owner and agent need to compare.
-5. **Ask less over time.** Each decision records its kind and how the owner answered. When a work closes, a kind the owner keeps accepting as recommended is proposed as a delegation: the agent then decides it without asking and says so in one line. A "yes but" or a "no" on a delegated decision leads to a proposal to revoke it. A new product definition, a push or merge into the main branch, an action outside the repository, and spending beyond a written ceiling are never delegated.
-6. **Learn from repeated mistakes.** In Claude Code, when `review` finds defects, the `classify` agent records each one as evidence, under a kind of mistake, in `docs/wiki/evidence.md`. When three distinct reviews hit the same kind, the close of a work proposes one concrete rule that covers them, and `write` and `review` receive that rule every time they start. If the mistake comes back anyway, its evidence piles up at the rule's level and is consolidated again, so the level shows how many rules a problem has resisted. A rule that holds for any project can move up to the playbook and reach every project with the next release. To start a repository's evidence from the reviews it already had, run `/playbook-agents:seed-evidence`: it lists them from your Claude Code transcripts, you choose, and `classify` stores each one.
+Codex CLI, from a clone of this repository:
 
-### What happens during a session
-
-```mermaid
-sequenceDiagram
-    actor Owner
-    participant Agent as Claude Code or Codex
-    participant W as playbook-wiki
-    participant A as playbook-agents
-    participant Repo as Project wiki
-    W-->>Agent: Load the contract at session start, and flag an outdated wiki or plugin
-    opt Working agents enabled
-        A-->>Agent: Load the working rules
-    end
-    Owner->>Agent: Request a change
-    Agent->>Repo: Read the index and the page governing the affected code
-    opt The work needs definition
-        Agent->>Owner: Propose a decision or ask an open question
-        Owner-->>Agent: Decide, and close each stage unless delegated
-        Agent->>Repo: Record decisions and the plan under works/
-    end
-    opt Work goes to a subagent
-        Agent->>A: Assign a task to explore, write, or review
-        W-->>A: Supply the contract to the subagent
-        A-->>Agent: Return findings or implementation evidence
-        A->>Repo: Review starts classify, which stores its findings in docs/wiki/evidence.md
-    end
-    opt Commit changes the wiki
-        Agent->>W: Check the wiki before committing
-        W-->>Agent: Allow the commit or report what to repair
-    end
-    opt Branches have decisions or shared edits to compare
-        Agent->>W: Check the branches before merging
-        W-->>Owner: Show the decisions or pages to compare
-    end
+```sh
+python3 codex/install.py --check
+python3 codex/install.py
 ```
 
-## Set up your client
+Choose wiki only or wiki and agents, then review the hooks in `/hooks`.
 
-| Client | Start here |
-|--------|------------|
-| Claude Code | Install the marketplace and run `/playbook:init` to choose your setup. [Claude Code guide](docs/claude-code.md) |
-| Codex CLI | From a local clone, run `python3 codex/install.py`, choose your setup, and review the hooks in `/hooks`. [Codex CLI guide](codex/README.md) |
+## Documentation
 
-## Explore this repository
+- [How Playbook works](docs/how-it-works.md): how a change moves from a request to a merge, step by step, with diagrams.
+- [Claude Code guide](docs/claude-code.md) and [Codex CLI guide](codex/README.md): setup, updates, and models.
+- [What is new](https://github.com/andresfrei/playbook/releases): the notes of every release.
+- [The project wiki](docs/wiki/README.md): this repository builds Playbook with Playbook. Every decision is there, with the owner's words.
 
-This repository contains the plugins and uses Playbook for its own development. For a concrete example, follow the [Codex support work](docs/wiki/works/codex-support/README.md) from the owner's decisions through model trials, the installer design, and the implementation plan.
+## Contributing
 
-Start with the [project wiki](docs/wiki/README.md). Its page table connects product definitions to the code they govern. Then follow the part relevant to your task:
-
-| To understand | Read |
-|---------------|------|
-| What an agent must do, and what it writes in the wiki | [Working contract](plugins/playbook-wiki/contract.md) and [wiki format](plugins/playbook-wiki/format.md) |
-| Where the behaviour is implemented | [Wiki plugin](plugins/playbook-wiki/), [working agents](plugins/playbook-agents/), and [Codex adaptation](codex/) |
-| Why a change was made and how it was verified | The relevant [work folder](docs/wiki/works/), starting with its README |
-| How to test or contribute a change | [Contributing guide](CONTRIBUTING.md) |
+Issues and pull requests are welcome. Read the [contributing guide](CONTRIBUTING.md) first, and report vulnerabilities as [SECURITY.md](SECURITY.md) says.
 
 Playbook is available under the [MIT License](LICENSE).

@@ -8,13 +8,13 @@ Status: Open.
 
 Updated 2026-11-20, after readme-redesign-18.
 
-Stage 6, Execution, is open. U1 of [plan.md](plan.md) is Done; U2, the demo image, is Done. The demo is a designed console, not a recording (readme-redesign-18).
+Stage 6, Execution, is open. U1 of [plan.md](plan.md) is Done; U2, the demo image, is Done. U3, the README, is Built. The demo is a designed console, not a recording (readme-redesign-18).
 
-Waiting for a decision: none.
+Waiting for a decision: the owner's review of the README rendered on GitHub, light and dark themes.
 
 Next steps, in order:
 
-1. Build U3, the README, and have the owner judge it on GitHub.
+1. The owner judges U3 on the pushed branch.
 2. Close the work: shared pages, version, pull request.
 
 ## Stage table
