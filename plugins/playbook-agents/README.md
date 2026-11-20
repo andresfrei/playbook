@@ -30,19 +30,21 @@ flowchart TD
 | `write` | An agent that builds one bounded unit of work with its tests |
 | `review` | An agent that reads a risky change in a separate context and returns findings. With findings, it starts `classify` |
 | `classify` | An agent that stores each real finding of a review as a row of evidence on the project's `docs/wiki/evidence.md`, under a kind of mistake. It only adds rows |
-| [evidence.sh](evidence.sh) | A script, in `sh` and `awk`, that checks the evidence page, counts distinct reviews per kind and level, and prints the rules of level 2 and up. It never writes a file |
-| [evidence-rules.md](evidence-rules.md) | The playbook's general rules, learned from repeated findings; empty at first |
+| [evidence.sh](evidence.sh) | A script, in `sh` and `awk`, that checks the evidence page, counts distinct reviews per kind and level, prints the rules of level 2 and up, their index of kinds and when each applies, and the rule of one kind. It never writes a file |
+| [evidence-rules.md](evidence-rules.md) | The playbook's general rules, learned from repeated findings: 15 of level 2 |
+| [seed-reviews.sh](seed-reviews.sh) | A script, in `sh` and `awk`, that lists the past reviews of a repository from your Claude Code transcripts and prints one review's text. `--from <old path>` also reads the folder of a moved repository. It never writes a file |
 | `keep-minimal` | Keeps an implementation the simplest one that solves the current problem |
 | `review-change` | Reviews a change, a diff, or a commit for defects before it is merged |
 | `write-skill` | Writes or audits a skill in a fixed format and within size limits |
 | `avoid-generic-design` | Keeps out the generic look AI tools give a page or an interface by default |
 | `config` | Shows and sets the model and effort of each agent, for one repository or every project. Only you start it: `/playbook-agents:config` |
+| `seed-evidence` | Seeds the repository's evidence page from its past reviews: shows them, you choose, and `classify` stores each one. Only you start it: `/playbook-agents:seed-evidence`. A review resumed after a restart is not listed; a moved repository needs `--from <old path>`; transcripts are kept about 30 days (recalled, not verified) |
 
 The agents' default models and reasoning effort come from [models.conf](models.conf). To choose your own, run `/playbook-agents:config`: it writes your choice under `playbook.models` in your Claude Code settings, so an update of the plugin keeps it, and a hook adds it to each call of the agent. The model is an alias: `haiku`, `sonnet`, `opus`, or `fable`. The [Codex guide](../../codex/README.md) lists the corresponding Codex profiles.
 
 ## Hooks
 
-At session start the plugin loads [the working rules](rules.md). Claude Code also loads the language preference when configured. When the review agent finishes, a hook records it for the session, and, when the review ended with findings and started no `classify`, stops it once and asks for one. Before a code commit, another hook can hold the first attempt and show the changed paths so the agent can assess risk. Wiki-only commits go through the wiki plugin's check. Before each call of `explore`, `write`, or `review`, a hook adds the model and effort you chose with `/playbook-agents:config`; with nothing chosen, it changes nothing. When `write` or `review` starts, a hook gives it the rules of level 2 and up of the project's evidence page and of [evidence-rules.md](evidence-rules.md), as extra context; it reads the page of the directory where the session started. See the [hook definitions](hooks/hooks.json).
+At session start the plugin loads [the working rules](rules.md). Claude Code also loads the language preference when configured. When the review agent finishes, a hook records it for the session, and, when the review ended with findings and started no `classify`, stops it once and asks for one. Before a code commit, another hook can hold the first attempt and show the changed paths so the agent can assess risk. Wiki-only commits go through the wiki plugin's check. Before each call of `explore`, `write`, or `review`, a hook adds the model and effort you chose with `/playbook-agents:config`; with nothing chosen, it changes nothing. When `write` or `review` starts, a hook gives it an index of the rules of level 2 and up of the project's evidence page and of [evidence-rules.md](evidence-rules.md), one line per kind with when it applies, as extra context, with the command that prints one rule; it reads the page of the directory where the session started. See the [hook definitions](hooks/hooks.json).
 
 ## Learned rules
 
@@ -64,6 +66,10 @@ Review the landing page in src/pages/index.tsx for a generic AI look.
 
 ```text
 /playbook-agents:config
+```
+
+```text
+/playbook-agents:seed-evidence
 ```
 
 ## Install

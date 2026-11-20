@@ -104,7 +104,7 @@ Your choice is kept under `playbook.models` in Claude Code's settings, so an upd
 
 ### What you see: learned rules
 
-When `review` finds mistakes, it starts `classify`, which adds them to `docs/wiki/evidence.md` in your project's wiki, a page you can read and commit. When a kind of mistake shows up in 3 distinct reviews, the agent proposes, at the close of a work, to turn those findings into one rule, and asks you; `write` and `review` then get that rule when they start. Nothing is stored if you set `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1`. Details: [playbook-agents](../plugins/playbook-agents/README.md#learned-rules).
+When `review` finds mistakes, it starts `classify`, which adds them to `docs/wiki/evidence.md` in your project's wiki, a page you can read and commit. When a kind of mistake shows up in 3 distinct reviews, the agent proposes, at the close of a work, to turn those findings into one rule, and asks you; `write` and `review` then get that rule when they start. Nothing is stored if you set `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1`. To start a repository's page from the reviews it already had, run `/playbook-agents:seed-evidence` inside it: it lists them from your Claude Code transcripts, you choose, and `classify` stores each one. Details: [playbook-agents](../plugins/playbook-agents/README.md#learned-rules).
 
 ### With an agent
 

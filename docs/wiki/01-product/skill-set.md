@@ -12,6 +12,7 @@ Which job each skill does, and which plugin holds it. One job, one skill (D6, F3
 | Bring a project's wiki to the present format | `doctor` (D141, D207) | `playbook-wiki` | Only when the person types `/playbook-wiki:doctor` |
 | Write documentation, and record a changed definition | `write-docs` | `playbook-wiki` | When a request matches its description |
 | Set the model and the effort of the agents `explore`, `write`, and `review`, for one repository or every project, in Claude Code only | `config`, the command `/playbook-agents:config` (setup-commands-1, setup-commands-4, setup-commands-7) | `playbook-agents` | Only when the person types it (setup-commands-9) |
+| Seed a repository's evidence page from its past reviews in the person's Claude Code transcripts, with a preview and a choice, in Claude Code only | `seed-evidence`, the command `/playbook-agents:seed-evidence` (seed-evidence-2, seed-evidence-3, seed-evidence-5) | `playbook-agents` | Only when the person types it (seed-evidence-2) |
 | Keep an implementation minimal, and review a change for excess | `keep-minimal` | `playbook-agents` | When a request matches its description |
 | Review a change for defects, in a separate context on the `review` agent | `review-change` (D66, TD10) | `playbook-agents` | When a request matches its description |
 | Write and audit skills | `write-skill` | `playbook-agents` | When a request matches its description |
@@ -21,7 +22,7 @@ When `prepare-project` closes a work in a project that has a version tag in git,
 
 Before a question, `prepare-project` reads the delegations in force and, within one, decides, records `agent, by <delegation>`, and tells the owner in one line; it records the kind and the answer of each decision, and at the close of a work runs `check-wiki.sh --delegations` and proposes each kind not yet proposed that qualifies (delegation-6, delegation-7). The doctor brings a wiki to format 5, filling the kind and the answer of earlier decisions as estimated (delegation-8, delegation-9).
 
-At the close of a work, when `docs/wiki/evidence.md` exists, `prepare-project` runs `evidence.sh count` and proposes each consolidation of repeated findings to the owner, or makes it under a delegation of the kind `consolidate`, then proposes the general rules that can go up to the playbook (repeated-corrections-13, repeated-corrections-20, repeated-corrections-28). The criteria for classifying a finding are in the agent `classify`, not in a skill (repeated-corrections-27).
+At the close of a work, when `docs/wiki/evidence.md` exists, `prepare-project` runs `evidence.sh count` and proposes each consolidation of repeated findings to the owner, or makes it under a delegation of the kind `consolidate`, then proposes the general rules that can go up to the playbook (repeated-corrections-13, repeated-corrections-20, repeated-corrections-28). The criteria for classifying a finding are in the agent `classify`, not in a skill (repeated-corrections-27). `seed-evidence` only reads the person's transcripts and starts `classify` once per review chosen; it writes nothing itself (seed-evidence-5).
 
 A person with `playbook-wiki` alone gets its four skills and none of `playbook-agents` (D182). `review-change` names its agent as `playbook-agents:review`.
 

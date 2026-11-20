@@ -1,0 +1,33 @@
+# Plan of the work seed-evidence
+
+The units that build [architecture.md](architecture.md), in order.
+
+## Progress
+
+| Unit | Status | Evidence | Done on | Owner's words |
+|------|--------|----------|---------|---------------|
+| seed-evidence-U1 | Done | `seed-reviews.sh` with its cases in `scripts/verify_test.sh`, each new case seen to fail with its behaviour broken; on the owner's transcripts, `list` gives the 35 reviews of [measurements.md](measurements.md) plus one made later. Two reviews: nine findings, fixed, stored by `classify` in [../../evidence.md](../../evidence.md) | 2026-11-19 | |
+| seed-evidence-U2 | Done | The skill `seed-evidence` within L2 (L4 unchanged at 620), with three evaluation cases; a real run in this worktree listed 36 reviews and seeded 33 into [../../evidence.md](../../evidence.md): 188 rows, 78 kinds, 15 ready to consolidate, 6.39 dollars. It showed that `classify` dated rows with today, fixed: the skill gives the review's date | 2026-11-19 | Asked "¿Aceptás U2?"; answered "si" |
+| seed-evidence-U3 | Done | `evidence.sh index` and `rule`, and the hook giving the index with the absolute command, with cases in `scripts/verify_test.sh`, seven breaks each caught. On this worktree the index has 272 words against 1511 for the rules. A real `write` subagent, given a task to add a test, read the rule of `test-passes-when-broken` only, and said why it skipped the others | 2026-11-19 | |
+
+## Units
+
+| ID | Unit | What it delivers | When it ends | Accepted by |
+|----|------|------------------|--------------|-------------|
+| seed-evidence-U1 | The reader of transcripts | `seed-reviews.sh` in `playbook-agents`: `list <repo> [page]`, numbered reviews with date, time, and findings or "No findings.", marking those already on the page; `show <repo> N`, the text of review N and its identifier. It finds the folders of the repository and its worktrees under `$CLAUDE_CONFIG_DIR/projects/` or `~/.claude/projects/` (N1, N2) | `scripts/verify_test.sh` passes cases on lines shaped as real transcripts: a review in the foreground; one in the background, its start notice left out; "No findings."; escaped quotes and newlines in the text; a review already on the page marked; a worktree's folder found; another repository's folder not found; no folder, an empty list and a message. Each new case seen to fail with its behaviour broken. Run on the owner's transcripts, `list` agrees with [measurements.md](measurements.md) | Evidence |
+| seed-evidence-U2 | The command | The skill `seed-evidence` (`disable-model-invocation: true`): runs `list`, shows the preview with the count of runs, asks, starts `classify` once per chosen review in order with `show`'s text, the tree root, and the identifier, and ends with `evidence.sh count` (N3) | `verify.sh` passes (L2, L4 unchanged); a real run in this repository's worktree seeds its page from its own past reviews, and the page passes `evidence.sh check` | Judgement: the flow the person sees |
+| seed-evidence-U3 | The index of rules (seed-evidence-31) | `evidence.sh index` prints one line per kind of level 2 and up, its name and "applies when", from the project's page and the general rules; `evidence.sh rule <kind>` prints that kind's rule, level, and source. `rules-for-subagent.sh` gives the index with the absolute command to read a rule | `verify_test.sh` passes cases for both modes and the hook, each seen to fail broken; on this worktree the index is far shorter than the rules; a real `write` subagent reads the rule of a kind that matches its task and not of one that does not | Evidence |
+
+## How the work is delivered
+
+Decided (seed-evidence-10), as in the works before it (repeated-corrections-25), from this repository's history and its only long-lived branch, `main`, which is production:
+
+- Tested by the checks of each unit and the real run of U2.
+- The units are built in order on this work's branch, renamed `feat/seed-evidence`.
+- It reaches `main` by one pull request, which the owner merges (R14).
+
+## Left out
+
+- Codex transcripts.
+- Seeding the owner's other repositories: each is run by the owner, in that repository, after the release.
+- The version: at the close; it adds a command and a script and breaks nothing, a MINOR by TD22.

@@ -2998,7 +2998,40 @@ ev_page "$tmp/ev" '| a-b | 2 | Use x \| y. | a change | none | general |\n' ""
 ev_rules "$tmp/ev"
 check "evidence rules: an escaped pipe stays one cell" sh -c 'printf "%s\n" "$1" | grep -Fxq -- "- a-b (level 2; applies when: a change): Use x | y."' sh "$ev_out"
 ev_script_real=$(sh "$ev_script" rules "$tmp/ev" 2>&1)
-check "evidence rules: the playbook's own evidence-rules.md adds no rule yet" sh -c '[ "$(printf "%s\n" "$1" | wc -l)" -eq 2 ]' sh "$ev_script_real"
+ev_general_n=$(grep -cE '^\| [a-z0-9-]+ \| [2-9][0-9]* \|' "$root/plugins/playbook-agents/evidence-rules.md")
+check "evidence rules: the playbook's own evidence-rules.md adds each of its rules" sh -c '[ "$(printf "%s\n" "$1" | wc -l)" -eq $((2 + $2)) ] && [ "$2" -gt 0 ]' sh "$ev_script_real" "$ev_general_n"
+check "evidence rules: the playbook's own evidence-rules.md passes check" sh "$root/plugins/playbook-agents/evidence.sh" check "$tmp/ev"
+
+# index and rule (seed-evidence-31): the index of level 2 and up, and one rule.
+printf '%b%b%b' '# Evidence\n\nGeneral rules.\n\n## Kinds\n\n' "$ev_kh" '| vague-name | 3 | Name the mistake, not the place. | a new kind | 4 reviews | general |\n| general-new | 1 | Not yet a rule. | x | | general |\n' > "$tmp/evs/evidence-rules.md"
+rm -rf "$tmp/ev"; ev_page "$tmp/ev" "$ev_krow" ""
+ev_idx() { ev_out=$(sh "$tmp/evs/evidence.sh" index "$@" 2>&1); ev_code=$?; }
+ev_idx "$tmp/ev"
+check "evidence index: one line per kind of level 2 and up, page first then evidence-rules.md" sh -c '[ "$1" = "- test-passes-when-broken (level 2): a change with tests
+- vague-name (level 3): a new kind" ]' sh "$ev_out"
+check "evidence index: leaves out level 1 and the rule text, exit 0" sh -c '[ "$2" -eq 0 ] && ! printf "%s" "$1" | grep -Eq "missing-test|general-new|Break the code"' sh "$ev_out" "$ev_code"
+ev_rule() { ev_out=$(sh "$tmp/evs/evidence.sh" rule "$@" 2>"$tmp/ev.err"); ev_code=$?; }
+ev_rule test-passes-when-broken "$tmp/ev"
+check "evidence rule: a kind of the page prints level, rule, applies when, and source" sh -c '[ "$2" -eq 0 ] && [ "$1" = "kind: test-passes-when-broken
+level: 2
+rule: Break the code on purpose to see each new test fail.
+applies when: a change with tests
+source: 3 reviews, 2026-11-19 to 2026-12-02" ]' sh "$ev_out" "$ev_code"
+ev_rule vague-name "$tmp/ev"
+check "evidence rule: a kind of evidence-rules.md prints its rule" sh -c '[ "$2" -eq 0 ] && printf "%s\n" "$1" | grep -Fxq "level: 3" && printf "%s\n" "$1" | grep -Fxq "rule: Name the mistake, not the place."' sh "$ev_out" "$ev_code"
+ev_rule missing-test "$tmp/ev"
+check "evidence rule: a kind of level 1 prints its level" sh -c '[ "$2" -eq 0 ] && printf "%s\n" "$1" | grep -Fxq "level: 1"' sh "$ev_out" "$ev_code"
+ev_rule no-such-kind "$tmp/ev"
+check "evidence rule: a kind that is not found exits 1 with a message on stderr and nothing on stdout" sh -c '[ "$2" -eq 1 ] && [ -z "$1" ] && grep -Fq "no kind \"no-such-kind\"" "$3"' sh "$ev_out" "$ev_code" "$tmp/ev.err"
+rm -rf "$tmp/ev"; ev_page "$tmp/ev" '| a-b | 1 | | x | | project |\n' ""
+rm -f "$tmp/evs/evidence-rules.md"
+ev_idx "$tmp/ev"
+check "evidence index: prints nothing when no kind is above level 1" [ "$ev_code" -eq 0 -a -z "$ev_out" ]
+rm -rf "$tmp/ev"; mkdir -p "$tmp/ev"
+ev_idx "$tmp/ev"
+check "evidence index: prints nothing with no files" [ "$ev_code" -eq 0 -a -z "$ev_out" ]
+ev_rule a-b "$tmp/ev"
+check "evidence rule: with no page and no file exits 1" [ "$ev_code" -eq 1 ]
 
 # Failures found in review: a table that ends early, a missing separator row,
 # an impossible day, the playbook's own file, code blocks, CRLF, the title.
@@ -3077,12 +3110,18 @@ check "evidence: the default directory is read by count too" sh -c 'printf "%s" 
 ev_out=$(cd "$tmp/evp" && sh "$ev_script" count 2>&1)
 check "evidence: with no variable the default is docs/wiki" sh -c 'printf "%s" "$1" | grep -q "missing-test (level 1): 1 distinct"' sh "$ev_out"
 check "evidence: an unknown mode exits 2" sh -c 'sh "$1" frob >/dev/null 2>&1; [ $? -eq 2 ]' sh "$ev_script"
+check "evidence: rule with no kind exits 2" sh -c 'sh "$1" rule >/dev/null 2>&1; [ $? -eq 2 ]' sh "$ev_script"
 check "evidence: no file is written" sh -c '[ -z "$(find "$1" -newer "$2" -type f)" ]' sh "$tmp/evp" "$tmp/evp/docs/wiki/evidence.md"
 
 # The rules at the start of write and review (repeated-corrections-18):
 # plugins/playbook-agents/hooks/rules-for-subagent.sh.
-rs_hook="$root/plugins/playbook-agents/hooks/rules-for-subagent.sh"
-rs_krow='| quoted-path | 2 | Write "stop" and C:\\dir with care. | a change that writes paths | 3 reviews | project |\n| low-kind | 1 | | a change | | project |\n'
+# A copy of the plugin whose general rules file has no rule, so each case sees
+# only the rules of its test project.
+rm -rf "$tmp/rsplug"
+cp -R "$root/plugins/playbook-agents" "$tmp/rsplug"
+sed -n '1,/^|------/p' "$root/plugins/playbook-agents/evidence-rules.md" > "$tmp/rsplug/evidence-rules.md"
+rs_hook="$tmp/rsplug/hooks/rules-for-subagent.sh"
+rs_krow='| quoted-path | 2 | Write "stop" and C:\\dir with care. | a change that writes "paths" or C:\\dir | 3 reviews | project |\n| low-kind | 1 | | a change | | project |\n'
 rs_proj="$tmp/rs project"
 rm -rf "$rs_proj"
 ev_page "$rs_proj/docs/wiki" "$rs_krow" ""
@@ -3104,24 +3143,27 @@ rs_shape() {
 }
 rs_silent() { [ -z "$rs_out" ] && [ "$rs_code" -eq 0 ]; }
 rs_decoded_has() { printf '%s\n' "$rs_out" | decode | grep -Fq -- "$1"; }
+rs_no_rule_text() { ! printf '%s\n' "$rs_out" | decode | grep -Fq -- 'Write "stop"'; }
 rs_no_low() { ! printf '%s' "$rs_out" | grep -q low-kind; }
 rs_no_bare_quote() { printf '%s\n' "$rs_out" > "$tmp/rs.out"; no_bare_quote "$tmp/rs.out"; }
-rs_same_as_evidence() {
-  [ "$(printf '%s\n' "$rs_out" | decode)" = "$(sh "$ev_script" rules "$rs_proj/docs/wiki")" ]
+rs_has_index() {
+  printf '%s\n' "$rs_out" | decode | grep -Fxq -- "$(sh "$ev_script" index "$rs_proj/docs/wiki")"
 }
+rs_command="sh \"$(cd "$tmp/rsplug" && pwd)/evidence.sh\" rule <kind> \"$rs_proj/docs/wiki\""
 
 for rs_agent in playbook-agents:write playbook-agents:review; do
   rs_run "$rs_agent" set "$rs_proj"
   check "rules hook: $rs_agent gets one line in the frame" rs_shape
-  check "rules hook: $rs_agent gets the rule with its quotes and backslash decoded" rs_decoded_has 'Write "stop" and C:\dir with care.'
-  check "rules hook: $rs_agent gets the kind and when it applies" rs_decoded_has 'applies when: a change that writes paths'
+  check "rules hook: $rs_agent gets the kind and when it applies, with quotes and backslash decoded" rs_decoded_has '- quoted-path (level 2): a change that writes "paths" or C:\dir'
+  check "rules hook: $rs_agent does not get the rule text" rs_no_rule_text
+  check "rules hook: $rs_agent gets the command with the absolute plugin path and wiki dir, quoted" rs_decoded_has "$rs_command"
   check "rules hook: $rs_agent does not get a kind of level 1" rs_no_low
   check "rules hook: no quote is left unescaped for $rs_agent" rs_no_bare_quote
-  check "rules hook: the text for $rs_agent is what evidence.sh rules prints" rs_same_as_evidence
+  check "rules hook: the text for $rs_agent holds what evidence.sh index prints" rs_has_index
 done
 
 rs_run playbook-agents:write unset "$rs_proj"
-check "rules hook: without CLAUDE_PROJECT_DIR the cwd of the input gives the wiki" rs_decoded_has 'Write "stop" and C:\dir with care.'
+check "rules hook: without CLAUDE_PROJECT_DIR the cwd of the input gives the wiki" rs_decoded_has "$rs_command"
 rs_run playbook-agents:write unset "$tmp/rs none"
 check "rules hook: the cwd of the input with no page gets nothing" rs_silent
 
@@ -3144,6 +3186,325 @@ rs_run playbook-agents:review set "$tmp/rs low"
 check "rules hook: a page with no rule of level 2 or up gets nothing" rs_silent
 rs_out=$(printf '' | CLAUDE_PROJECT_DIR="$rs_proj" sh "$rs_hook" 2>&1); rs_code=$?
 check "rules hook: empty input prints nothing and exits 0" rs_silent
+
+# The reader of past reviews: plugins/playbook-agents/seed-reviews.sh, on
+# synthetic transcripts shaped as the real ones (seed-evidence-U1).
+sr_script="$root/plugins/playbook-agents/seed-reviews.sh"
+sr_cfg="$tmp/sr/cfg"
+sr_repo="$tmp/sr/repo"
+mkdir -p "$sr_repo" "$sr_cfg/projects"
+git -C "$sr_repo" init -q
+git -C "$sr_repo" -c user.name=t -c user.email=t@example.com commit -q --allow-empty -m first
+git -C "$sr_repo" worktree add -q "$tmp/sr/repo-wt" -b sr-wt
+mkdir -p "$tmp/sr/repo2"
+# sr_dir <path>: the transcript folder of a path, made by the rule of Claude Code.
+sr_dir() { printf '%s/projects/%s' "$sr_cfg" "$(printf '%s' "$1" | sed 's/[^A-Za-z0-9]/-/g')"; }
+# sr_call <file> <id> <subagent type> <timestamp>: an assistant line with a call.
+sr_call() {
+  mkdir -p "$(dirname "$1")"
+  printf '{"parentUuid":"p","type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"go"},{"type":"tool_use","id":"toolu_%s","name":"%s","input":{"description":"d","subagent_type":"%s","prompt":"p"}}]},"timestamp":"%s"}\n' "$2" "${5:-Agent}" "$3" "$4" >> "$1"
+}
+# sr_fg <file> <id> <escaped text>: the result of a call in the foreground.
+# sr_ts <timestamp>: the timestamp field of a line, or nothing with no timestamp.
+sr_ts() { [ -z "$1" ] || printf ',"timestamp":"%s"' "$1"; }
+sr_fg() {
+  printf '{"type":"user","message":{"role":"user","content":[{"tool_use_id":"toolu_%s","type":"tool_result","content":[{"type":"text","text":"%s"}]}]}%s}\n' "$2" "$3" "$(sr_ts "${4:-}")" >> "$1"
+}
+# sr_fgstr <file> <id> <escaped text>: the same, with the content as a string.
+sr_fgstr() {
+  printf '{"type":"user","message":{"role":"user","content":[{"tool_use_id":"toolu_%s","type":"tool_result","content":"%s"}]}}\n' "$2" "$3" >> "$1"
+}
+# sr_start <file> <id>: the notice of a call in the background.
+sr_start() {
+  printf '{"type":"user","message":{"role":"user","content":[{"tool_use_id":"toolu_%s","type":"tool_result","content":[{"type":"text","text":"Async agent launched successfully.\\nagentId: a1"}]}]}}\n' "$2" >> "$1"
+}
+# sr_notice <file> <id> <escaped text>: the task notification, as a queued line.
+sr_notice() {
+  printf '{"type":"queue-operation","operation":"enqueue"%s,"content":"<task-notification>\\n<task-id>a1</task-id>\\n<tool-use-id>toolu_%s</tool-use-id>\\n<status>completed</status>\\n<result>%s</result>\\n</task-notification>"}\n' "$(sr_ts "${4:-}")" "$2" "$3" >> "$1"
+}
+sr_list() { sr_out=$(TZ="${sr_tz:-UTC}" CLAUDE_CONFIG_DIR="$sr_cfg" sh "$sr_script" list "$@" 2>&1); sr_code=$?; }
+sr_show() { sr_out=$(TZ="${sr_tz:-UTC}" CLAUDE_CONFIG_DIR="$sr_cfg" sh "$sr_script" show "$@" 2>&1); sr_code=$?; }
+sr_has() { printf '%s\n' "$sr_out" | grep -Fq -- "$1"; }
+sr_lacks() { ! printf '%s\n' "$sr_out" | grep -Fq -- "$1"; }
+
+sr_list "$sr_repo"
+check "seed-reviews: no transcript folder says so and exits 0" sh -c '[ "$1" -eq 0 ] && printf "%s" "$2" | grep -q "No Claude Code transcript folder"' sh "$sr_code" "$sr_out"
+
+# The folder of the repository: the newest review is written first.
+sr_f="$(sr_dir "$sr_repo")/s1.jsonl"
+sr_call "$sr_f" NEW1 playbook-agents:review 2026-11-12T10:30:00.500Z
+sr_fg "$sr_f" NEW1 'Found two.\n\n1. late finding'
+sr_call "$sr_f" GP1 general-purpose 2026-11-09T07:00:00Z
+sr_fg "$sr_f" GP1 'Found one: not a review.'
+sr_call "$sr_f" FG1 playbook:review 2026-11-10T08:00:00Z
+sr_fgstr "$sr_f" FG1 'Found one.\n\n1. a finding'
+sr_call "$sr_f" BG1 playbook-agents:review 2026-11-11T09:15:30Z
+sr_start "$sr_f" BG1
+sr_notice "$sr_f" BG1 'Found three.\n\n1. background finding'
+sr_notice "$sr_f" BG1 'Found three.\n\n1. background finding'
+sr_call "$sr_f" CLEAN1 playbook-agents:review 2026-11-13T11:00:00Z
+sr_fg "$sr_f" CLEAN1 'I reviewed it.\n\nNo findings.\n\nNot checked: x'
+sr_call "$sr_f" DUP1 playbook-agents:review 2026-11-14T12:00:00Z
+sr_fg "$sr_f" DUP1 'Found one.\n\n1. a finding'
+sr_call "$sr_f" TASK1 x:code-review 2026-11-15T12:00:00Z Task
+sr_fg "$sr_f" TASK1 'Found five.\n\n1. with Task'
+sr_fg "$sr_f" NOCALL 'A result of no call.'
+mkdir -p "$(sr_dir "$sr_repo")/subagents"
+sr_call "$(sr_dir "$sr_repo")/subagents/s2.jsonl" SUB1 playbook-agents:review 2026-11-16T12:00:00Z
+sr_fg "$(sr_dir "$sr_repo")/subagents/s2.jsonl" SUB1 'Found six: in subagents/.'
+
+sr_list "$sr_repo"
+check "seed-reviews list: reviews are numbered, oldest first, with date and time (UTC)" sh -c 'printf "%s\n" "$1" | sed -n "1p" | grep -q "^1  2026-11-10 08:00:00  1 finding\$" && printf "%s\n" "$1" | sed -n "2p" | grep -q "^2  2026-11-11 09:15:30  1 finding\$" && printf "%s\n" "$1" | sed -n "3p" | grep -q "^3  2026-11-12 10:30:00.500  1 finding\$"' sh "$sr_out"
+check "seed-reviews list: a foreground review with string content is found" sr_has "2026-11-10 08:00:00  1 finding"
+check "seed-reviews list: a background review is found by its notification" sr_has "2026-11-11 09:15:30  1 finding"
+check "seed-reviews list: a line that is exactly \"No findings.\" is detected" sr_has "4  2026-11-13 11:00:00  No findings."
+check "seed-reviews list: an identical report counts once" sr_lacks "2026-11-14"
+check "seed-reviews list: a call that is not a review is left out" sr_lacks "2026-11-09"
+check "seed-reviews list: a call of \"Task\" with review in its type is found" sr_has "2026-11-15 12:00:00  1 finding"
+check "seed-reviews list: transcripts in subagents/ are not read" sr_lacks "2026-11-16"
+check "seed-reviews list: the runs line counts reviews with findings not seeded" sr_has "Runs of classify: 4"
+check "seed-reviews list: the totals line" sr_has "5 reviews, 4 with findings, 4 with findings and not seeded yet."
+sr_show "$sr_repo" 2
+check "seed-reviews show: the identifier is the first line, then the report" sh -c '[ "$1" -eq 0 ] && [ "$(printf "%s\n" "$2" | sed -n 1p)" = "2026-11-11 09:15:30" ] && [ "$(printf "%s\n" "$2" | sed -n 2p)" = "Found three." ]' sh "$sr_code" "$sr_out"
+check "seed-reviews show: the start notice is not taken as the report" sr_lacks "Async agent launched"
+sr_show "$sr_repo" 1
+check "seed-reviews show: numbering is stable, 1 is the oldest" sr_has "1. a finding"
+
+# Escapes.
+sr_e="$(sr_dir "$sr_repo")/esc.jsonl"
+sr_call "$sr_e" ESC1 playbook-agents:review 2026-11-20T10:00:00Z
+sr_fg "$sr_e" ESC1 'He said \"hi\"\nline2\ttab \\ back \u00e9 \u0041 \ud83d\ude00 a\/b'
+sr_show "$sr_repo" 6
+sr_want=$(printf 'He said "hi"\nline2\ttab \\ back \303\251 A \360\237\230\200 a/b')
+check "seed-reviews show: escaped quotes, newlines, tabs, backslashes, and \\u codes are unescaped" sh -c '[ "$(printf "%s\n" "$1" | sed 1d)" = "$2" ]' sh "$sr_out" "$sr_want"
+sr_show "$sr_repo" 99
+check "seed-reviews show: a number with no review fails" sh -c '[ "$1" -eq 1 ]' sh "$sr_code"
+sr_show "$sr_repo" x
+check "seed-reviews show: a number that is not a number is a usage error" sh -c '[ "$1" -eq 2 ]' sh "$sr_code"
+
+# The page marks the reviews already seeded.
+ev_page "$tmp/sr/page" '| missing-test | 1 | | a change | | project |\n' '| missing-test | 1 | 2026-11-10 08:00:00 | 2026-11-10 | A finding. |\n| missing-test | 1 | 2026-11-12 10:30:00.500 | 2026-11-12 | Another. |\n'
+sr_list "$sr_repo" "$tmp/sr/page/evidence.md"
+check "seed-reviews list: a review in the Review column is marked already seeded" sr_has "1  2026-11-10 08:00:00  1 finding  already seeded"
+check "seed-reviews list: a review not on the page is not marked" sh -c 'printf "%s\n" "$1" | grep "^2  " | grep -qv "already seeded"' sh "$sr_out"
+check "seed-reviews list: the runs line leaves out the seeded reviews" sr_has "Runs of classify: 3"
+mkdir -p "$sr_repo/docs/wiki"
+cp "$tmp/sr/page/evidence.md" "$sr_repo/docs/wiki/evidence.md"
+sr_list "$sr_repo"
+check "seed-reviews list: with no page given, docs/wiki/evidence.md of the repository is read" sr_has "Runs of classify: 3"
+rm -rf "$sr_repo/docs"
+
+# Worktrees, sessions under .claude/worktrees, and other repositories.
+sr_call "$(sr_dir "$tmp/sr/repo-wt")/w1.jsonl" WT1 playbook-agents:review 2026-11-05T01:00:00Z
+sr_fg "$(sr_dir "$tmp/sr/repo-wt")/w1.jsonl" WT1 'Found one: in a worktree.\n\n1. w'
+sr_call "$(sr_dir "$sr_repo/.claude/worktrees/s1")/c1.jsonl" CW1 playbook-agents:review 2026-11-04T01:00:00Z
+sr_fg "$(sr_dir "$sr_repo/.claude/worktrees/s1")/c1.jsonl" CW1 'Found one: in a session.\n\n1. s'
+sr_call "$(sr_dir "$tmp/sr/repo2")/o1.jsonl" OTH1 playbook-agents:review 2026-11-03T01:00:00Z
+sr_fg "$(sr_dir "$tmp/sr/repo2")/o1.jsonl" OTH1 'Found one: in a sibling.\n\n1. o'
+sr_call "$(sr_dir "$tmp/sr/repo2/.claude/worktrees/s1")/o2.jsonl" OTH2 playbook-agents:review 2026-11-02T01:00:00Z
+sr_fg "$(sr_dir "$tmp/sr/repo2/.claude/worktrees/s1")/o2.jsonl" OTH2 'Found one: in a sibling session.\n\n1. o'
+sr_call "$(sr_dir "$tmp/sr")/p1.jsonl" PAR1 playbook-agents:review 2026-11-01T01:00:00Z
+sr_fg "$(sr_dir "$tmp/sr")/p1.jsonl" PAR1 'Found one: in the parent folder.\n\n1. p'
+sr_list "$sr_repo"
+check "seed-reviews list: the folder of a git worktree is read" sr_has "2026-11-05 01:00:00"
+check "seed-reviews list: the folder of a .claude/worktrees session is read" sr_has "2026-11-04 01:00:00"
+check "seed-reviews list: a sibling repository whose name starts the same is not read" sr_lacks "2026-11-03"
+check "seed-reviews list: a session of a sibling repository is not read" sr_lacks "2026-11-02"
+check "seed-reviews list: the folder of a parent directory is not read" sr_lacks "2026-11-01"
+check "seed-reviews list: the oldest review of a worktree is number 1" sr_has "1  2026-11-04 01:00:00"
+sr_list "$tmp/sr/repo-wt"
+check "seed-reviews list: run from the worktree, the main folder is read too" sr_has "2026-11-10 08:00:00"
+
+# A folder with no review.
+mkdir -p "$(sr_dir "$tmp/sr/repo2")" "$tmp/sr/empty"
+rm -rf "$(sr_dir "$tmp/sr/repo2")"/*.jsonl "$(sr_dir "$tmp/sr/repo2/.claude/worktrees/s1")"
+sr_list "$tmp/sr/repo2"
+check "seed-reviews list: a folder with no review says so and exits 0" sh -c '[ "$1" -eq 0 ] && printf "%s" "$2" | grep -q "No reviews found"' sh "$sr_code" "$sr_out"
+sr_list
+check "seed-reviews list: with no repository it is a usage error" sh -c '[ "$1" -eq 2 ]' sh "$sr_code"
+
+# Marking by the minute of the identifier that classify gets from review
+# ("<unit or description> YYYY-MM-DD HH:MM"), in the local zone only.
+ev_page "$tmp/sr/page2" '| missing-test | 1 | | a change | | project |\n' '| missing-test | 1 | unit-7 2026-11-11 09:15 | 2026-11-11 | A finding. |\n| missing-test | 1 | 2026-11-12 10:30:00.500 | 2026-11-12 | Another. |\n'
+sr_list "$sr_repo" "$tmp/sr/page2/evidence.md"
+check "seed-reviews list: an identifier on the page that ends with the review's minute marks it seeded" sr_has "2026-11-11 09:15:30  1 finding  already seeded"
+check "seed-reviews list: a review of another minute is not marked by it" sh -c 'printf "%s\n" "$1" | grep "2026-11-10 08:00:00" | grep -qv "already seeded"' sh "$sr_out"
+sr_tz=UTC-3 sr_list "$sr_repo" "$tmp/sr/page2/evidence.md"
+check "seed-reviews list: a minute of the page that matches only in UTC does not mark the review when the zone is not UTC" sh -c 'printf "%s\n" "$1" | grep "2026-11-11 09:15:30" | grep -qv "already seeded"' sh "$sr_out"
+check "seed-reviews list: an identifier on the page with the fraction of a second marks the review" sr_has "2026-11-12 10:30:00.500  1 finding  already seeded"
+sr_late="$(sr_dir "$sr_repo")/late.jsonl"
+sr_call "$sr_late" LATE1 playbook-agents:review 2026-11-08T23:30:00Z
+sr_fg "$sr_late" LATE1 'Found one.\n\n1. late in the day'
+sr_call "$sr_late" EARLY1 playbook-agents:review 2026-11-09T02:00:00Z
+sr_fg "$sr_late" EARLY1 'Found one.\n\n1. early in the day'
+ev_page "$tmp/sr/page3" '| missing-test | 1 | | a change | | project |\n' '| missing-test | 1 | u 2026-11-09 02:30 | 2026-11-09 | A. |\n| missing-test | 1 | u 2026-11-08 21:00 | 2026-11-08 | B. |\n'
+sr_tz=UTC-3 sr_list "$sr_repo" "$tmp/sr/page3/evidence.md"
+check "seed-reviews list: the minute is also compared in the local zone, across midnight (UTC+3)" sr_has "2026-11-08 23:30:00  1 finding  already seeded"
+check "seed-reviews list: in UTC+3 the other minute does not mark the early review" sh -c 'printf "%s\n" "$1" | grep "2026-11-09 02:00:00" | grep -qv "already seeded"' sh "$sr_out"
+sr_tz=UTC+5 sr_list "$sr_repo" "$tmp/sr/page3/evidence.md"
+check "seed-reviews list: the minute is also compared in the local zone, back across midnight (UTC-5)" sr_has "2026-11-09 02:00:00  1 finding  already seeded"
+
+# A report that holds </result>, in the background.
+sr_x="$(sr_dir "$sr_repo")/x.jsonl"
+sr_call "$sr_x" BGX1 playbook-agents:review 2026-11-21T01:00:00Z
+sr_start "$sr_x" BGX1
+sr_notice "$sr_x" BGX1 'Found two.\n\n1. quotes the </result> tag\n\n2. last item'
+sr_list "$sr_repo"
+sr_n=$(printf '%s\n' "$sr_out" | awk '/2026-11-21 01:00:00/ { print $1 }')
+check "seed-reviews list: a report with </result> in it is whole (two findings)" sr_has "2026-11-21 01:00:00  2 findings"
+sr_show "$sr_repo" "$sr_n"
+check "seed-reviews show: a report with </result> in it ends with its last line" sh -c 'printf "%s\n" "$1" | tail -n 1 | grep -Fqx "2. last item"' sh "$sr_out"
+
+# A folder inside a repository is not the repository.
+mkdir -p "$sr_repo/sub"
+sr_list "$sr_repo/sub"
+check "seed-reviews list: a folder inside a git repository does not read the repository's transcripts" sh -c '[ "$1" -eq 0 ] && printf "%s" "$2" | grep -q "No Claude Code transcript folder"' sh "$sr_code" "$sr_out"
+
+# A root through a symbolic link.
+ln -s "$sr_repo" "$tmp/sr/link"
+sr_list "$tmp/sr/link"
+check "seed-reviews list: a root through a symbolic link reads the folder of the physical path" sr_has "2026-11-10 08:00:00  1 finding"
+mkdir -p "$tmp/sr/plain"
+sr_call "$(sr_dir "$tmp/sr/plain")/l1.jsonl" LN1 playbook-agents:review 2026-11-27T10:00:00Z
+sr_fg "$(sr_dir "$tmp/sr/plain")/l1.jsonl" LN1 'Found one.\n\n1. plain'
+ln -s "$tmp/sr/plain" "$tmp/sr/plainlink"
+sr_list "$tmp/sr/plainlink"
+check "seed-reviews list: a link to a folder that is not a git repository reads the folder of the physical path" sr_has "2026-11-27 10:00:00  1 finding"
+
+# Identifiers that repeat, and the fraction of a second. The file lists the
+# review with the later tool use id first: the identifiers must not depend on
+# the order of the file.
+sr_i="$(sr_dir "$sr_repo")/ids.jsonl"
+sr_call "$sr_i" IDbbb222 playbook-agents:review 2026-11-22T10:00:00.100Z
+sr_fg "$sr_i" IDbbb222 'Found one.\n\n1. second'
+sr_call "$sr_i" IDaaa111 playbook-agents:review 2026-11-22T10:00:00.100Z
+sr_fg "$sr_i" IDaaa111 'Found one.\n\n1. first'
+sr_call "$sr_i" IDccc333 playbook-agents:review 2026-11-22T10:00:00.200Z
+sr_fg "$sr_i" IDccc333 'Found one.\n\n1. third'
+sr_call "$sr_i" UNbbb222 playbook-agents:review ""
+sr_fg "$sr_i" UNbbb222 'Found one.\n\n1. undated two'
+sr_call "$sr_i" UNaaa111 playbook-agents:review ""
+sr_fg "$sr_i" UNaaa111 'Found one.\n\n1. undated one'
+sr_list "$sr_repo"
+check "seed-reviews list: the fraction of a second stays in the identifier" sr_has "2026-11-22 10:00:00.200  1 finding"
+check "seed-reviews list: reviews of the same identifier get the end of their tool use id" sh -c 'printf "%s\n" "$1" | grep -q "2026-11-22 10:00:00.100 aaa111  1 finding" && printf "%s\n" "$1" | grep -q "2026-11-22 10:00:00.100 bbb222  1 finding"' sh "$sr_out"
+check "seed-reviews list: a review that does not collide has no suffix" sr_lacks "10:00:00.200 ccc333"
+check "seed-reviews list: reviews with no timestamp are undated with the end of their tool use id" sh -c 'printf "%s\n" "$1" | grep -q "  undated aaa111  1 finding" && printf "%s\n" "$1" | grep -q "  undated bbb222  1 finding"' sh "$sr_out"
+check "seed-reviews list: reviews of the same date are ordered by tool use id, not by the order of the file" sh -c 'printf "%s\n" "$1" | awk '"'"'/10:00:00.100 aaa111/ { a = $1 } /10:00:00.100 bbb222/ { b = $1 } END { exit !(a + 0 > 0 && a < b) }'"'"'' sh "$sr_out"
+sr_n=$(printf '%s\n' "$sr_out" | awk '/10:00:00.100 aaa111/ { print $1 }')
+sr_show "$sr_repo" "$sr_n"
+check "seed-reviews show: the identifier of a colliding review is the same whatever the order of the file" sh -c 'printf "%s\n" "$1" | grep -Fq "1. first" && [ "$(printf "%s\n" "$1" | sed -n 1p)" = "2026-11-22 10:00:00.100 aaa111" ]' sh "$sr_out"
+
+# The date comes from a later copy of the call when the first has none.
+sr_c="$(sr_dir "$sr_repo")/copy.jsonl"
+printf '{"type":"assistant","message":{"content":[{"type":"tool_use","id":"toolu_CP1","name":"Agent","input":{"description":"d","subagent_type":"playbook-agents:review","prompt":"p"}}]}}\n' >> "$sr_c"
+sr_call "$sr_c" CP1 playbook-agents:review 2026-11-23T04:05:06Z
+sr_fg "$sr_c" CP1 'Found one.\n\n1. copy'
+sr_list "$sr_repo"
+check "seed-reviews list: the date is taken from a later copy of the call" sr_has "2026-11-23 04:05:06  1 finding"
+
+# A report that ends with an escaped backslash before n.
+sr_b="$(sr_dir "$sr_repo")/bs.jsonl"
+sr_call "$sr_b" BS1 playbook-agents:review 2026-11-24T10:00:00Z
+sr_fg "$sr_b" BS1 'Found one.\n\n1. path C:\\n'
+sr_call "$sr_b" BS2 playbook-agents:review 2026-11-24T11:00:00Z
+sr_fg "$sr_b" BS2 '\n  Found one.\n\n1. spaces and newlines around\n\n  '
+sr_list "$sr_repo"
+sr_n=$(printf '%s\n' "$sr_out" | awk '/2026-11-24 10:00:00/ { print $1 }')
+sr_show "$sr_repo" "$sr_n"
+check "seed-reviews show: a trailing backslash and n is kept, not trimmed as a newline" sh -c 'printf "%s\n" "$1" | tail -n 1 | grep -Fqx "$2"' sh "$sr_out" '1. path C:\n'
+sr_list "$sr_repo"
+sr_n=$(printf '%s\n' "$sr_out" | awk '/2026-11-24 11:00:00/ { print $1 }')
+sr_show "$sr_repo" "$sr_n"
+check "seed-reviews show: newlines and spaces at both ends are trimmed" sh -c '[ "$(printf "%s\n" "$1" | sed -n 2p)" = "Found one." ] && [ "$(printf "%s\n" "$1" | tail -n 1)" = "1. spaces and newlines around" ]' sh "$sr_out"
+
+# The number of findings.
+sr_n2="$(sr_dir "$sr_repo")/num.jsonl"
+sr_call "$sr_n2" NUM1 playbook-agents:review 2026-11-25T10:00:00Z
+sr_fg "$sr_n2" NUM1 'Found three.\n\n**1. first**\n\nx\n\n**2. second**\n\n**3. third**\n\nNot checked:\n- a'
+sr_call "$sr_n2" NUM2 playbook-agents:review 2026-11-26T10:00:00Z
+sr_fg "$sr_n2" NUM2 'Only prose, no list.'
+sr_list "$sr_repo"
+check "seed-reviews list: the findings are counted from lines that start with a number and a dot, or ** and one" sr_has "2026-11-25 10:00:00  3 findings"
+check "seed-reviews list: a report with no numbered line says only findings" sr_has "2026-11-26 10:00:00  findings"
+
+# A repository with no transcript folder: show fails.
+sr_show "$tmp/sr/empty" 1
+check "seed-reviews show: with no transcript folder it fails with exit 1" sh -c '[ "$1" -eq 1 ] && printf "%s" "$2" | grep -q "no transcript folder"' sh "$sr_code" "$sr_out"
+
+# A live review writes the minute when it takes the date, often minutes after
+# its call: a minute of the page from the call's minute to the result's,
+# inclusive, marks the review seeded, in the local zone only.
+sr_g="$(sr_dir "$sr_repo")/range.jsonl"
+sr_call "$sr_g" RGbg0001 playbook-agents:review 2026-11-28T20:11:17.312Z
+sr_start "$sr_g" RGbg0001
+sr_notice "$sr_g" RGbg0001 'Found one.\n\n1. in the background' 2026-11-28T20:25:40.000Z
+sr_call "$sr_g" RGfg0002 playbook-agents:review 2026-11-29T09:00:10Z
+sr_fg "$sr_g" RGfg0002 'Found one.\n\n1. in the foreground' 2026-11-29T09:07:00Z
+# sr_page <name> <identifier>...: a page whose Review column has those identifiers.
+sr_page() {
+  sr_rows=
+  sr_pn=$1; shift
+  for sr_pi in "$@"; do sr_rows="$sr_rows| missing-test | 1 | $sr_pi | 2026-11-28 | A. |\\n"; done
+  ev_page "$tmp/sr/$sr_pn" '| missing-test | 1 | | a change | | project |\n' "$sr_rows"
+}
+sr_page pg1 "unit 2026-11-28 20:21" "unit 2026-11-29 09:05"
+sr_list "$sr_repo" "$tmp/sr/pg1/evidence.md"
+check "seed-reviews list: a minute between the call and the result marks a review of the background" sr_has "2026-11-28 20:11:17.312  1 finding  already seeded"
+check "seed-reviews list: a minute between the call and the result marks a review of the foreground" sr_has "2026-11-29 09:00:10  1 finding  already seeded"
+sr_page pg2 "unit 2026-11-28 20:10" "unit 2026-11-28 20:26" "unit 2026-11-29 08:59" "unit 2026-11-29 09:08"
+sr_list "$sr_repo" "$tmp/sr/pg2/evidence.md"
+check "seed-reviews list: minutes just outside the call and the result do not mark them" sh -c 'printf "%s\n" "$1" | grep -E "2026-11-28 20:11|2026-11-29 09:00" | grep -qv "already seeded" && ! printf "%s\n" "$1" | grep -E "2026-11-28 20:11|2026-11-29 09:00" | grep -q "already seeded"' sh "$sr_out"
+sr_page pg3 "unit 2026-11-28 20:25" "unit 2026-11-29 09:00"
+sr_list "$sr_repo" "$tmp/sr/pg3/evidence.md"
+check "seed-reviews list: the minute of the result and the minute of the call are included" sh -c 'printf "%s\n" "$1" | grep -c "2026-11-2[89] .*already seeded" | grep -qx 2' sh "$sr_out"
+sr_page pg4 "unit 2026-11-28 23:21" "unit 2026-11-29 12:05"
+sr_tz=UTC-3 sr_list "$sr_repo" "$tmp/sr/pg4/evidence.md"
+check "seed-reviews list: the range is also compared in the local zone" sh -c 'printf "%s\n" "$1" | grep -c "2026-11-2[89] .*already seeded" | grep -qx 2' sh "$sr_out"
+sr_tz=UTC-3 sr_list "$sr_repo" "$tmp/sr/pg1/evidence.md"
+check "seed-reviews list: a range that matches only in UTC does not mark the reviews when the zone is not UTC" sh -c '! printf "%s\n" "$1" | grep -E "2026-11-2[89] " | grep -q "already seeded"' sh "$sr_out"
+
+# A report of the background that quotes </task-notification> is whole.
+sr_k="$(sr_dir "$sr_repo")/quote.jsonl"
+sr_call "$sr_k" TNq00001 playbook-agents:review 2026-11-30T05:00:00Z
+sr_start "$sr_k" TNq00001
+sr_notice "$sr_k" TNq00001 'Found two.\n\n1. quotes \"</task-notification>\" and </task-notification> in it\n\n2. last item'
+sr_list "$sr_repo"
+sr_n=$(printf '%s\n' "$sr_out" | awk '/2026-11-30 05:00:00/ { print $1 }')
+check "seed-reviews list: a report that quotes </task-notification> is whole (two findings)" sr_has "2026-11-30 05:00:00  2 findings"
+sr_show "$sr_repo" "$sr_n"
+check "seed-reviews show: a report that quotes </task-notification> ends with its last line" sh -c 'printf "%s\n" "$1" | tail -n 1 | grep -Fqx "2. last item"' sh "$sr_out"
+
+# --from <old path>: the transcript folders of a repository's old path
+# (seed-evidence-14). The old paths do not exist on disk.
+mkdir -p "$tmp/sr/newrepo"
+sr_call "$(sr_dir "$tmp/sr/newrepo")/n1.jsonl" FRn00001 playbook-agents:review 2026-12-01T10:00:00Z
+sr_fg "$(sr_dir "$tmp/sr/newrepo")/n1.jsonl" FRn00001 'Found one.\n\n1. new'
+sr_call "$(sr_dir "$tmp/sr/old1")/o1.jsonl" FRo00002 playbook-agents:review 2026-12-02T10:00:00Z
+sr_fg "$(sr_dir "$tmp/sr/old1")/o1.jsonl" FRo00002 'Found one.\n\n1. old'
+sr_call "$(sr_dir "$tmp/sr/old1/.claude/worktrees/s1")/o3.jsonl" FRo00003 playbook-agents:review 2026-12-03T10:00:00Z
+sr_fg "$(sr_dir "$tmp/sr/old1/.claude/worktrees/s1")/o3.jsonl" FRo00003 'Found one.\n\n1. old session'
+sr_call "$(sr_dir "$tmp/sr/old2")/o2.jsonl" FRo00004 playbook-agents:review 2026-12-04T10:00:00Z
+sr_fg "$(sr_dir "$tmp/sr/old2")/o2.jsonl" FRo00004 'Found one.\n\n1. other old'
+sr_call "$(sr_dir "$tmp/sr/old1b")/b1.jsonl" FRb00005 playbook-agents:review 2026-12-05T10:00:00Z
+sr_fg "$(sr_dir "$tmp/sr/old1b")/b1.jsonl" FRb00005 'Found one.\n\n1. sibling of the old path'
+sr_list "$tmp/sr/newrepo"
+check "seed-reviews --from: without it the folder of an old path is not read" sh -c 'printf "%s\n" "$1" | grep -q "2026-12-01" && ! printf "%s\n" "$1" | grep -Eq "2026-12-0[2345]"' sh "$sr_out"
+sr_list --from "$tmp/sr/old1" "$tmp/sr/newrepo"
+check "seed-reviews --from: the folder of the old path is read, though the path does not exist" sh -c '[ ! -e "$1" ] && printf "%s\n" "$2" | grep -q "2026-12-02 10:00:00  1 finding"' sh "$tmp/sr/old1" "$sr_out"
+check "seed-reviews --from: the .claude/worktrees sessions of the old path are read" sr_has "2026-12-03 10:00:00  1 finding"
+check "seed-reviews --from: the reviews of the new path are still listed, oldest first" sh -c 'printf "%s\n" "$1" | sed -n 1p | grep -q "^1  2026-12-01"' sh "$sr_out"
+check "seed-reviews --from: a sibling whose name starts like the old path is not read" sr_lacks "2026-12-05"
+check "seed-reviews --from: a folder of another old path is not read" sr_lacks "2026-12-04"
+sr_list --from "$tmp/sr/old1" --from "$tmp/sr/old2/" "$tmp/sr/newrepo"
+check "seed-reviews --from: two of them read both old paths (a trailing slash is dropped)" sh -c 'printf "%s\n" "$1" | grep -q "2026-12-02" && printf "%s\n" "$1" | grep -q "2026-12-04" && ! printf "%s\n" "$1" | grep -q "2026-12-05"' sh "$sr_out"
+sr_n=$(printf '%s\n' "$sr_out" | awk '/2026-12-04 10:00:00/ { print $1 }')
+sr_show --from "$tmp/sr/old1" --from "$tmp/sr/old2" "$tmp/sr/newrepo" "$sr_n"
+check "seed-reviews --from: show with the same options gives the review that list numbered" sh -c '[ "$(printf "%s\n" "$1" | sed -n 1p)" = "2026-12-04 10:00:00" ] && printf "%s\n" "$1" | grep -Fq "1. other old"' sh "$sr_out"
+sr_list --from relative/path "$tmp/sr/newrepo"
+check "seed-reviews --from: a path that is not absolute is a usage error" sh -c '[ "$1" -eq 2 ]' sh "$sr_code"
+sr_list --from
+check "seed-reviews --from: with no path after it is a usage error" sh -c '[ "$1" -eq 2 ]' sh "$sr_code"
 
 if [ "$failed" -eq 0 ]; then
   printf 'all cases passed\n'

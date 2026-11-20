@@ -30,7 +30,7 @@ Every statement is one of:
 | [03-technology/codex.md](03-technology/codex.md) | Codex installation, agent profiles and workflow guides | `codex/` |
 | [03-technology/installation.md](03-technology/installation.md) | How the product is installed and started in Claude Code, its versions, and the routes evaluated for TD1 | `.claude-plugin/`, `plugins/playbook/.claude-plugin/`, `plugins/playbook-wiki/.claude-plugin/`, `plugins/playbook-agents/.claude-plugin/` |
 | [03-technology/skill-evaluation.md](03-technology/skill-evaluation.md) | How a skill is verified and evaluated: what Claude Code provides and the use chosen | `plugins/playbook-wiki/evals/`, `plugins/playbook-agents/evals/` |
-| [03-technology/architecture.md](03-technology/architecture.md) | The architecture of the product as it is: the three plugins, their modules and hooks, the data, and the size limits | `plugins/playbook/skills/init/`, `plugins/playbook-agents/agents/`, `plugins/playbook-agents/evidence.sh`, `plugins/playbook-agents/evidence-rules.md`, `plugins/playbook-wiki/hooks/`, `plugins/playbook-agents/hooks/`, `plugins/playbook-agents/models.conf`, `scripts/set-models.sh`, `plugins/playbook-wiki/skeleton.md`, `plugins/playbook-agents/skills/config/` |
+| [03-technology/architecture.md](03-technology/architecture.md) | The architecture of the product as it is: the three plugins, their modules and hooks, the data, and the size limits | `plugins/playbook/skills/init/`, `plugins/playbook-agents/agents/`, `plugins/playbook-agents/evidence.sh`, `plugins/playbook-agents/evidence-rules.md`, `plugins/playbook-agents/seed-reviews.sh`, `plugins/playbook-agents/skills/seed-evidence/`, `plugins/playbook-wiki/hooks/`, `plugins/playbook-agents/hooks/`, `plugins/playbook-agents/models.conf`, `scripts/set-models.sh`, `plugins/playbook-wiki/skeleton.md`, `plugins/playbook-agents/skills/config/` |
 | [03-technology/architecture-phase-2.md](03-technology/architecture-phase-2.md) | The architecture of phases 1 and 2: one plugin, and what phase 2 changed, with risks, trade-offs, and discarded alternatives. Kept as a record | |
 | [03-technology/phase-2.md](03-technology/phase-2.md) | What phase 2 needs from its technology and what is chosen for each need (stage 2 of phase 2) | |
 | [04-skills/working-skills.md](04-skills/working-skills.md) | The skills the agent uses to build this product (stage 3) | |
@@ -58,6 +58,7 @@ Finished:
 Waiting for the owner since before format 4:
 
 - Six proposals to spend fewer tokens, P1 to P6: 02-current-state/token-economy.md (kept in the private archive).
+- The work [works/seed-evidence/README.md](works/seed-evidence/README.md), which builds a repository's first evidence page from its past reviews, is closed for version 3.3.0 (seed-evidence-33) and waits for the owner to merge its pull request.
 - The plugin's version: an installation from GitHub gets wiki format 3 only when the owner raises it (TD22). Phase 4 raises it to `2.0.0` (TD32).
 
 Phase 3 (D104):
