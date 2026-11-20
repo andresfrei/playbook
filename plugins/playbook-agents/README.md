@@ -33,6 +33,7 @@ flowchart TD
 | [evidence.sh](evidence.sh) | A script, in `sh` and `awk`, that checks the evidence page, counts distinct reviews per kind and level, prints the rules of level 2 and up, their index of kinds and when each applies, and the rule of one kind. It never writes a file |
 | [evidence-rules.md](evidence-rules.md) | The playbook's general rules, learned from repeated findings: 15 of level 2 |
 | [seed-reviews.sh](seed-reviews.sh) | A script, in `sh` and `awk`, that lists the past reviews of a repository from your Claude Code transcripts and prints one review's text. `--from <old path>` also reads the folder of a moved repository. It never writes a file |
+| [protect.sh](protect.sh) | A script, in `sh` and `awk`, that lists the secret files of a repository by name (`scan`, skipping `.git` and `node_modules`, never reading a file) and adds the rules you choose to a Claude Code settings file (`apply`): `Read` denials and sandbox read denials for secret files, `ask` rules for deleting and resetting, the sandbox on, and unsandboxed commands off. It adds only what is missing, changes no other key, and leaves a file that is not a JSON object untouched |
 | `keep-minimal` | Keeps an implementation the simplest one that solves the current problem |
 | `review-change` | Reviews a change, a diff, or a commit for defects before it is merged |
 | `write-skill` | Writes or audits a skill in a fixed format and within size limits |
