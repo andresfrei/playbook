@@ -1,7 +1,7 @@
 #!/bin/bash
 # Builds a project with only `main` and an open work `pdf-invoice` at stage 6,
 # every unit Done. docs/wiki/tasks.md holds the task `release` in two other
-# works, and git shows a release done in this work, so recording it makes the
+# works, and git shows a release after the previous work's close and one in this work, so recording it makes the
 # third work and the task ready for an agent.
 set -eu
 git init -q -b main .
@@ -99,14 +99,28 @@ cat > docs/wiki/works/pdf-invoice/plan.md <<'MD'
 - Tested by the checks of each unit.
 MD
 cat > package.json <<'JSON'
-{ "name": "invoicing-app", "version": "1.1.0" }
+{ "name": "invoicing-app", "version": "1.0.0" }
 JSON
-printf '# Changelog\n\n## 1.1.0\n\n- Tax lines.\n' > CHANGELOG.md
+printf '# Changelog\n\n## 1.0.0\n\n- First version.\n' > CHANGELOG.md
 printf '#!/bin/sh\necho "test $1: ok"\n' > test.sh
 printf 'export const app = {};\n' > src/app.js
 git add -A
 git commit -q -m "feat: invoicing app"
+# The previous work, tax-lines: closed, its pull request merged, then its release.
+git checkout -q -b tax-lines
+printf 'export const tax = {};\n' > src/tax.js
+git add -A
+git commit -q -m "feat(tax): add tax lines"
+git commit -q --allow-empty -m "docs(wiki): close the work tax-lines"
+git checkout -q main
+git merge -q --no-ff tax-lines -m "Merge pull request #7 from laura/tax-lines"
+git branch -q -d tax-lines
+printf '{ "name": "invoicing-app", "version": "1.1.0" }\n' > package.json
+printf '# Changelog\n\n## 1.1.0\n\n- Tax lines.\n\n## 1.0.0\n\n- First version.\n' > CHANGELOG.md
+git add -A
+git commit -q -m "chore(release): 1.1.0"
 git tag v1.1.0
+# This work, pdf-invoice: its commits, its release, and its close.
 printf 'export const layout = {};\n' > src/layout.js
 git add -A
 git commit -q -m "feat(pdf): render an invoice as a PDF"
@@ -114,6 +128,7 @@ printf 'export const download = {};\n' > src/download.js
 git add -A
 git commit -q -m "feat(pdf): serve the PDF from a download button"
 printf '{ "name": "invoicing-app", "version": "1.2.0" }\n' > package.json
-printf '# Changelog\n\n## 1.2.0\n\n- PDF invoice.\n\n## 1.1.0\n\n- Tax lines.\n' > CHANGELOG.md
+printf '# Changelog\n\n## 1.2.0\n\n- PDF invoice.\n\n## 1.1.0\n\n- Tax lines.\n\n## 1.0.0\n\n- First version.\n' > CHANGELOG.md
 git add -A
 git commit -q -m "chore(release): 1.2.0"
+git commit -q --allow-empty -m "docs(wiki): both units of pdf-invoice are Done"
