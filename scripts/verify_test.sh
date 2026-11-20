@@ -2985,7 +2985,9 @@ ev_page "$tmp/ev" '| a-b | 2 | Use x \| y. | a change | none | general |\n' ""
 ev_rules "$tmp/ev"
 check "evidence rules: an escaped pipe stays one cell" sh -c 'printf "%s\n" "$1" | grep -Fxq -- "- a-b (level 2; applies when: a change): Use x | y."' sh "$ev_out"
 ev_script_real=$(sh "$ev_script" rules "$tmp/ev" 2>&1)
-check "evidence rules: the playbook's own evidence-rules.md adds no rule yet" sh -c '[ "$(printf "%s\n" "$1" | wc -l)" -eq 2 ]' sh "$ev_script_real"
+ev_general_n=$(grep -cE '^\| [a-z0-9-]+ \| [2-9][0-9]* \|' "$root/plugins/playbook-agents/evidence-rules.md")
+check "evidence rules: the playbook's own evidence-rules.md adds each of its rules" sh -c '[ "$(printf "%s\n" "$1" | wc -l)" -eq $((2 + $2)) ] && [ "$2" -gt 0 ]' sh "$ev_script_real" "$ev_general_n"
+check "evidence rules: the playbook's own evidence-rules.md passes check" sh "$root/plugins/playbook-agents/evidence.sh" check "$tmp/ev"
 
 # index and rule (seed-evidence-31): the index of level 2 and up, and one rule.
 printf '%b%b%b' '# Evidence\n\nGeneral rules.\n\n## Kinds\n\n' "$ev_kh" '| vague-name | 3 | Name the mistake, not the place. | a new kind | 4 reviews | general |\n| general-new | 1 | Not yet a rule. | x | | general |\n' > "$tmp/evs/evidence-rules.md"
@@ -3100,7 +3102,12 @@ check "evidence: no file is written" sh -c '[ -z "$(find "$1" -newer "$2" -type 
 
 # The rules at the start of write and review (repeated-corrections-18):
 # plugins/playbook-agents/hooks/rules-for-subagent.sh.
-rs_hook="$root/plugins/playbook-agents/hooks/rules-for-subagent.sh"
+# A copy of the plugin whose general rules file has no rule, so each case sees
+# only the rules of its test project.
+rm -rf "$tmp/rsplug"
+cp -R "$root/plugins/playbook-agents" "$tmp/rsplug"
+sed -n '1,/^|------/p' "$root/plugins/playbook-agents/evidence-rules.md" > "$tmp/rsplug/evidence-rules.md"
+rs_hook="$tmp/rsplug/hooks/rules-for-subagent.sh"
 rs_krow='| quoted-path | 2 | Write "stop" and C:\\dir with care. | a change that writes "paths" or C:\\dir | 3 reviews | project |\n| low-kind | 1 | | a change | | project |\n'
 rs_proj="$tmp/rs project"
 rm -rf "$rs_proj"
@@ -3129,7 +3136,7 @@ rs_no_bare_quote() { printf '%s\n' "$rs_out" > "$tmp/rs.out"; no_bare_quote "$tm
 rs_has_index() {
   printf '%s\n' "$rs_out" | decode | grep -Fxq -- "$(sh "$ev_script" index "$rs_proj/docs/wiki")"
 }
-rs_command="sh \"$root/plugins/playbook-agents/evidence.sh\" rule <kind> \"$rs_proj/docs/wiki\""
+rs_command="sh \"$(cd "$tmp/rsplug" && pwd)/evidence.sh\" rule <kind> \"$rs_proj/docs/wiki\""
 
 for rs_agent in playbook-agents:write playbook-agents:review; do
   rs_run "$rs_agent" set "$rs_proj"
