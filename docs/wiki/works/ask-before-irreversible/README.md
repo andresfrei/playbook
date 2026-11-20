@@ -6,25 +6,25 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after ask-before-irreversible-11.
+Updated 2026-11-19, after ask-before-irreversible-16.
 
-Stage 1, Wiki, is closed; stage 2, Technology, is open. [definition.md](definition.md) holds the definition, and no question is open.
+Stages 1 and 2 are closed; stage 3, Skills, is open. [technology.md](technology.md) and [architecture.md](architecture.md) hold what was chosen.
 
 Waiting for a decision: none.
 
 Next steps, in order:
 
-1. Measure in which permission modes a hook's `ask` shows a prompt, and in which it does not (ask-before-irreversible-3).
-2. Choose how the hook recognizes each action of ask-before-irreversible-2, and how `/playbook-agents:protect` finds secret files and writes the settings (ask-before-irreversible-9, -10).
-3. Write the architecture page and close stage 2.
+1. Stage 3: the skills needed to build the hook, the script, and the command.
+2. Stage 4, likely not applicable: no interface.
+3. Stage 5: the plan in units.
 
 ## Stage table
 
 | Stage | Status | Closed on |
 |-------|--------|-----------|
 | 1 Wiki | Closed | 2026-11-19 |
-| 2 Technology | Open | |
-| 3 Skills | Not started | |
+| 2 Technology | Closed | 2026-11-19 |
+| 3 Skills | Open | |
 | 4 Design system | Not started | |
 | 5 Plan | Not started | |
 | 6 Execution | Not started | |
@@ -35,5 +35,7 @@ Next steps, in order:
 |------|---------|-----------------|
 | [definition.md](definition.md) | The problem, what is known, and the coverage of each topic | |
 | [measurements.md](measurements.md) | Whether a hook's `ask` shows a prompt in each permission mode | |
+| [technology.md](technology.md) | What the work needs from its technology, and the answers | |
+| [architecture.md](architecture.md) | The shape, modules, data, and risks | |
 | [decisions.md](decisions.md) | The decisions of this work | |
 | [questions.md](questions.md) | The open questions | |
