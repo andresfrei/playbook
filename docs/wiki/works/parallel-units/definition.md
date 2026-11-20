@@ -42,11 +42,11 @@ A person who prepares a work with `prepare-project` and lets the agent build its
 |-------|----------|
 | The problem and who has it | Covered |
 | Who uses it and what they do | Covered: the owner accepts the plan with its batches; the agent builds them |
-| Main flows | Partly: where the batches are decided is parallel-units-Q1 |
-| What it must do | Partly: how agents avoid each other is parallel-units-Q2; how a unit reaches the work's branch is parallel-units-Q3 |
-| What it must not do, and what waits | Partly: when the next batch starts is parallel-units-Q4 |
+| Main flows | Covered: the batches follow from the plan's "Waits for" column and are accepted with the plan (parallel-units-3, parallel-units-5) |
+| What it must do | Covered: a worktree per agent (parallel-units-4), prepared as the plan says (parallel-units-9); the main agent merges each unit (parallel-units-6) |
+| What it must not do, and what waits | Covered: a unit starts when what it waits for is Done (parallel-units-7) |
 | Qualities | Covered: no two agents change the same file at the same time |
-| Limits | Partly: how many agents run at once is parallel-units-Q5 |
+| Limits | Covered: each plan sets the most agents at once (parallel-units-8) |
 | Outside systems | Covered: git worktrees and Claude Code's Agent tool |
 | Volume | Does not apply |
 | Who runs and maintains it | Covered: it ships in `playbook-wiki`, in `prepare-project` |

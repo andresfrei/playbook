@@ -6,23 +6,23 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-20, after parallel-units-2.
+Updated 2026-11-20, after parallel-units-10.
 
-Stage 1, Wiki, is open. The shared picture is confirmed (parallel-units-2); the definition is written, with five open questions.
+Stage 1, Wiki, is closed (parallel-units-10). Stage 2, Technology, is open.
 
-Waiting for a decision: parallel-units-Q1 to -Q5 of [questions.md](questions.md).
+Waiting for a decision: none.
 
 Next steps, in order:
 
-1. Answer the questions, one at a time.
-2. Close stage 1.
+1. Check what Claude Code offers for worktrees: running `write` in its own worktree, copying ignored files such as `.env` into it, and how the review hold behaves across worktrees (parallel-units-9).
+2. Write the work's technology and architecture pages.
 
 ## Stage table
 
 | Stage | Status | Closed on |
 |-------|--------|-----------|
-| 1 Wiki | Open | |
-| 2 Technology | Not started | |
+| 1 Wiki | Closed | 2026-11-20 |
+| 2 Technology | Open | |
 | 3 Skills | Not started | |
 | 4 Design system | Not started | |
 | 5 Plan | Not started | |
