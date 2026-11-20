@@ -1,12 +1,12 @@
 # Playbook wiki
 
-Single source of truth for the playbook repository. When this wiki and any other document disagree, the wiki wins; inside the wiki, [decisions.md](decisions.md) wins.
+Single source of truth for the playbook repository. When this wiki and any other document disagree, the wiki wins. Inside it, the definitions in force are in the shared pages, each citing its decision; each work records its decisions in its own `decisions.md`; [decisions.md](decisions.md) is the history from before format 4 (decision-review-9).
 
 Project owner: Andres Frei.
 
 Every statement is one of:
 
-- **Decided** — accepted by the owner, numbered in [decisions.md](decisions.md).
+- **Decided** — accepted by the owner, a row of a work's `decisions.md`, or a `D#` or `TD#` of the history in [decisions.md](decisions.md).
 - **Proposed** — a recommendation waiting for the owner's answer.
 - **Open** — a question listed in [01-product/open-questions.md](01-product/open-questions.md).
 
@@ -14,7 +14,7 @@ Every statement is one of:
 
 | Page | Content | Code it governs |
 |------|---------|-----------------|
-| [decisions.md](decisions.md) | Numbered decisions with the owner's words | |
+| [decisions.md](decisions.md) | The decisions from before format 4, `D#` and `TD#`, with the owner's words: history, replaced since by decisions of works without being marked | |
 | [01-product/overview.md](01-product/overview.md) | What the product is after phase 4, who uses it, how it starts, and what it is not | |
 | [01-product/form.md](01-product/form.md) | Proposed principles for structure and storage, from the agent's side | |
 | [01-product/rules.md](01-product/rules.md) | Where each working rule comes from and which decision accepted it; the text is in `plugins/playbook-agents/rules.md` and, for six of them, in the contract of `playbook-wiki` | `plugins/playbook-agents/rules.md`, `plugins/playbook-wiki/contract.md` |
@@ -64,7 +64,6 @@ Waiting for the owner since before format 4:
 - The work [works/ask-before-irreversible/README.md](works/ask-before-irreversible/README.md), which makes Claude Code ask before a push, a pull request, a merge, or a release and adds the command `protect`, is closed and released as 3.4.0 (ask-before-irreversible-25).
 - The work [works/parallel-units/README.md](works/parallel-units/README.md), which plans units in batches by what each waits for and builds ready units in parallel, each in its own worktree, is closed and released as 3.5.0 (parallel-units-25).
 - The work [works/task-agents/README.md](works/task-agents/README.md), which records the tasks of each work at its close and proposes a dedicated agent, with a model by its weight, for a task held in 3 works, is closed and released as 3.6.0 (task-agents-27).
-- The plugin's version: an installation from GitHub gets wiki format 3 only when the owner raises it (TD22). Phase 4 raises it to `2.0.0` (TD32).
 
 Phase 3 (D104):
 
