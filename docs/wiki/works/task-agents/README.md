@@ -6,16 +6,16 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-20, after task-agents-13.
+Updated 2026-11-20, after task-agents-15.
 
-Stages 1 and 2 are closed (task-agents-7, -13). Stage 3, Skills, is open: [skills.md](skills.md) waits for the owner.
+Stages 1 to 4 are closed. Stage 5, Plan, is open: [plan.md](plan.md) is written and waits for the owner.
 
-Waiting for a decision: the owner accepts the list of skills.
+Waiting for a decision: the owner accepts the plan.
 
 Next steps, in order:
 
-1. The owner accepts the list of skills.
-2. Stage 4 does not apply; stage 5, Plan.
+1. The owner accepts the plan.
+2. Build U1, then U2.
 
 ## Stage table
 
@@ -23,9 +23,9 @@ Next steps, in order:
 |-------|--------|-----------|
 | 1 Wiki | Closed | 2026-11-20 |
 | 2 Technology | Closed | 2026-11-20 |
-| 3 Skills | Open | |
-| 4 Design system | Not started | |
-| 5 Plan | Not started | |
+| 3 Skills | Closed | 2026-11-20 |
+| 4 Design system | Closed (not applicable) | 2026-11-20 |
+| 5 Plan | Open | |
 | 6 Execution | Not started | |
 
 ## Pages
@@ -37,4 +37,5 @@ Next steps, in order:
 | [technology.md](technology.md) | What the work needs from its technology, and the answers | |
 | [architecture.md](architecture.md) | The shape, modules, data, and risks | |
 | [skills.md](skills.md) | The skills used to build the work | |
+| [plan.md](plan.md) | The units, the batches, and how the work is delivered | |
 | [decisions.md](decisions.md) | The decisions of this work | |
