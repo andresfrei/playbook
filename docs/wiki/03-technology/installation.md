@@ -27,7 +27,7 @@ Ready for that work:
 
 - Only `playbook-wiki` and `playbook-agents` are submitted, as two submissions; `playbook` is not, because it turns the others on by this repository's marketplace name (plugin-directory-1).
 - The installation from this repository's marketplace stays as it is; the directory is a second way in (plugin-directory-2).
-- Each of the two holds what the directory reads inside the plugin folder: a `README.md`, `"license": "MIT"` in its `plugin.json`, and its icon, `.claude-plugin/icon.png`, drawn from `.claude-plugin/icon.svg` (plugin-directory-3, plugin-directory-5). The directory takes the icon only at the first submission.
+- Each of the two holds what the directory reads inside the plugin folder: a `README.md`, `"license": "MIT"` in its `plugin.json`, and its icon, `.claude-plugin/icon.png`, drawn from `.claude-plugin/icon.svg` (plugin-directory-3, plugin-directory-5): the logo "Manual con franjas" with the plugin's sign on the right page, a check for `playbook-wiki`, three dots for `playbook-agents` (plugin-icons-2). The directory takes the icon only at the first submission.
 
 Installing `playbook-agents` from this marketplace also installs `playbook-wiki`, its dependency: checked on 2026-11-17 in [../works/plugin-directory/technology.md](../works/plugin-directory/technology.md).
 

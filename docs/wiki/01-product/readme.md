@@ -29,4 +29,4 @@ To change the demo, edit the dialogue in `docs/assets/demo.html` and run `sh doc
 
 ## Not here
 
-The plugin icons stay as plugin-directory-7 drew them, until a work of their own moves them to the new logo (readme-redesign-11).
+The plugin icons moved to the new logo in a work of their own (readme-redesign-11): the same logo with each plugin's sign, described in `03-technology/installation.md` (plugin-icons-2).
