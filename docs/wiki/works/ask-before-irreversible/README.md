@@ -8,7 +8,7 @@ Status: Open.
 
 Updated 2026-11-20, after ask-before-irreversible-21.
 
-Stage 6, Execution, is open. ask-before-irreversible-U1 and -U2 are Done; -U3 is Built and waits for the owner's judgement; see [plan.md](plan.md).
+Stage 6, Execution, is open. ask-before-irreversible-U1, -U2, and -U3 are Done; the work is ready to close; see [plan.md](plan.md).
 
 Waiting for a decision: none.
 
