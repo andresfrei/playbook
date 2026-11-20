@@ -7,7 +7,7 @@ The units that build [architecture.md](architecture.md), in order.
 | Unit | Status | Evidence | Done on | Owner's words |
 |------|--------|----------|---------|---------------|
 | task-agents-U1 | Done | `sh scripts/verify_test.sh` passes with gawk and with mawk (1077 cases, 82 of `tasks.sh`), `sh scripts/verify.sh` passes, shellcheck clean; each case seen to fail with its behaviour broken, 16 mutations on 7cda528 and 13 on the fixes. Reviewed: eight findings, fixed in 3b9169d and 050cdcb. Merged into `feat/task-agents` with `--no-ff` (c322198) | 2026-11-20 | |
-| task-agents-U2 | Not started | | | |
+| task-agents-U2 | Done | Judged by the owner (task-agents-19). `sh scripts/verify.sh` passes with L2 and L4 unchanged, `claude plugin validate plugins/playbook-wiki` passes; the case's fixture builds and its wiki passes check-wiki; the case itself was not run. Reviewed: nine findings, fixed in 67393ad. Merged with `--no-ff` (edb7a40) | 2026-11-20 | |
 
 ## Units
 

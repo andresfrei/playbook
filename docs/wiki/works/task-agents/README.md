@@ -8,7 +8,7 @@ Status: Open.
 
 Updated 2026-11-20, after task-agents-17.
 
-Stages 1 to 5 are closed. Stage 6, Execution, is open: U1 is Done; U2 is being built; see [plan.md](plan.md).
+Stages 1 to 5 are closed. Stage 6, Execution, is open: U1 and U2 are Done; the work is closing; see [plan.md](plan.md).
 
 Waiting for a decision: none.
 
