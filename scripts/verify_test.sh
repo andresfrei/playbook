@@ -4044,6 +4044,35 @@ tk_out=$(sh "$tk_script" --help 2>&1); tk_code=$?
 check "tasks: --help prints the usage and exits 0" sh -c '[ "$1" -eq 0 ] && printf "%s" "$2" | grep -q "^usage: sh tasks.sh add"' sh "$tk_code" "$tk_out"
 
 
+# The command that finds a script of playbook-agents, kept in the Claude Code
+# working-agent instructions of prepare-project, run as an agent would run it.
+la_ref="$root/plugins/playbook-wiki/skills/prepare-project/references/working-agents.md"
+la_cmd=$(awk '/^```sh$/ { on = 1; next } /^```$/ { on = 0 } on' "$la_ref")
+# la_run <skill folder> <script>: prints what the command prints.
+la_run() {
+  printf '%s\n' "$la_cmd" | sed -e "s|<this skill's folder>|$1|" -e "s|<script>|$2|" > "$tmp/la.sh"
+  (sh "$tmp/la.sh")
+}
+la="$tmp/la"
+mkdir -p "$la/folder/playbook-wiki/skills/prepare-project" "$la/folder/playbook-agents"
+: > "$la/folder/playbook-agents/evidence.sh"
+check "locate: a marketplace kept in a folder is found" test "$(la_run "$la/folder/playbook-wiki/skills/prepare-project" evidence.sh)" = "$la/folder/playbook-agents/evidence.sh"
+mkdir -p "$la/cache/playbook-wiki/3.10.0/skills/prepare-project"
+for v in 3.9.0 3.10.0 3.2.1; do mkdir -p "$la/cache/playbook-agents/$v"; : > "$la/cache/playbook-agents/$v/tasks.sh"; done
+check "locate: the highest cached version wins, compared as numbers" test "$(la_run "$la/cache/playbook-wiki/3.10.0/skills/prepare-project" tasks.sh)" = "$la/cache/playbook-agents/3.10.0/tasks.sh"
+check "locate: a missing script prints nothing" test -z "$(la_run "$la/cache/playbook-wiki/3.10.0/skills/prepare-project" evidence.sh)"
+check "locate: a folder without the script prints nothing" test -z "$(la_run "$la/folder/playbook-wiki/skills/prepare-project" tasks.sh)"
+printf '%s\n' "$la_cmd" | sed -e "s|<this skill's folder>|$la/folder/playbook-wiki/skills/prepare-project|" -e "s|<script>|evidence.sh|" > "$tmp/la.sh"
+printf 'pwd\n' >> "$tmp/la.sh"
+check "locate: the working folder is the same after the command" test "$(cd "$tmp" && . "$tmp/la.sh" | tail -n 1)" = "$tmp"
+la_refs="$root/plugins/playbook-wiki/skills/prepare-project/references"
+for la_sec in "Locate a script" "Review findings" "Recurring tasks"; do
+  check "locate: the references name the section $la_sec" grep -rqF "\"$la_sec\" in the client's working-agent instructions" "$la_refs/6-execution.md" "$la_refs/evidence.md" "$la_refs/tasks.md"
+  check "locate: Claude Code's instructions have the section $la_sec" grep -qx "## $la_sec" "$la_refs/working-agents.md"
+  check "locate: Codex's instructions have the section $la_sec" grep -qx "## $la_sec" "$root/codex/playbook-wiki/working-agents.md"
+done
+
+
 if [ "$failed" -eq 0 ]; then
   printf 'all cases passed\n'
 else

@@ -1,6 +1,6 @@
 # Working agents in Codex CLI
 
-## Locate the agents plugin
+## Locate a script
 
 From the target project, run `codex plugin list --marketplace playbook --json`. In `installed`, find `playbook-agents@playbook` with `enabled` set to true. If absent or disabled, skip the steps that require the plugin. If the command fails, report the error.
 

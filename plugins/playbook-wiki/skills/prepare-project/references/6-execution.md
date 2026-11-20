@@ -2,7 +2,7 @@
 
 The plan is built unit by unit. A unit is accepted as the plan says: by its evidence, or by the owner's judgement.
 
-For each completed review with findings, use the client's working-agent instructions to record evidence on the work branch.
+For each completed review with findings, follow "Review findings" in the client's working-agent instructions to record evidence on the work branch.
 
 ## Steps
 
