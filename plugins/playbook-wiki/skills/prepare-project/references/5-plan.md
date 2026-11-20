@@ -32,13 +32,14 @@ The work is an ordered list of units. The plan says how each one is accepted: by
    When a proposal, from a source or from the owner, would leave an unfinished work on a branch people test on, name the risk and recommend a way that keeps that branch whole. The owner decides.
 6. Write the work's `plan.md` with:
    - a progress table: unit, status, evidence, the date each unit is Done, and, for a unit accepted by judgement, the owner's words;
-   - a units table: identifier (`<work>-U1`, `<work>-U2`, …), unit, what it delivers, when it ends, waits for, and accepted by: evidence or judgement. "Waits for" holds the identifiers of the units that one waits for, or "none". A unit waits for another when it uses what that one builds. Sharing a file is not waiting;
-   - a "Batches" table, with the columns batch and units, that follows from "Waits for": batch 1 holds the units that wait for none, batch 2 those that wait only for units of batch 1, and so on;
+   - a units table: identifier (`<work>-U1`, `<work>-U2`, …), unit, what it delivers, the paths it may change, when it ends, waits for, and accepted by: evidence or judgement. "Waits for" holds the identifiers of the units that one waits for, or "none". A unit waits for another when it uses what that one builds. Sharing a file is not waiting, except in a shared batch: there, units that change the same file cannot run together, so one waits for the other;
+   - a "Batches" table, with the columns batch, units, and shared (yes or no), that follows from "Waits for": batch 1 holds the units that wait for none, batch 2 those that wait only for units of batch 1, and so on. A batch is shared when the units of the batch share one worktree and one branch;
    - the most `write` agents that run at once. Recommend a number; the owner accepts it with the plan;
-   - how a new worktree is prepared: the command that installs the dependencies, or none, and the ignored files to copy from the main folder, such as `.env`, or none. When preparing a worktree costs too much, the units of a batch share one worktree, each with exclusive paths;
+   - how a new worktree is prepared: the command that installs the dependencies, or none, and the ignored files to copy from the main folder, such as `.env`, or none. When preparing a worktree costs too much, mark the batch as shared: its units get exclusive paths in one worktree;
    - how the work is delivered, naming the decisions of step 5;
    - what is left out of the plan.
-7. Ask the owner to accept the plan.
+7. Batches run in parallel only when the plan delivers through a work branch with local merges. With another delivery, write the batches and say that the units are built one at a time.
+8. Ask the owner to accept the plan.
 
 The status of a unit is one of: Not started, Built (waiting for the owner's review, for a unit accepted by judgement), Done.
 

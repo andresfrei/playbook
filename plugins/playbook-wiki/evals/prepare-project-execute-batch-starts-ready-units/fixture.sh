@@ -52,18 +52,18 @@ cat > docs/wiki/works/pdf-invoice/plan.md <<'MD'
 
 ## Units
 
-| ID | Unit | Delivers | Ends when | Waits for | Accepted by |
-|----|------|----------|-----------|-----------|-------------|
-| pdf-invoice-U1 | PDF layout | `src/layout.js` renders an invoice as a PDF | `sh test.sh layout` passes | none | Evidence |
-| pdf-invoice-U2 | Invoice totals | `src/totals.js` adds the lines and the tax | `sh test.sh totals` passes | none | Evidence |
-| pdf-invoice-U3 | Download button | `src/download.js` serves the PDF with its totals | `sh test.sh download` passes | pdf-invoice-U1, pdf-invoice-U2 | Evidence |
+| ID | Unit | Delivers | Changes | Ends when | Waits for | Accepted by |
+|----|------|----------|---------|-----------|-----------|-------------|
+| pdf-invoice-U1 | PDF layout | `src/layout.js` renders an invoice as a PDF | `src/layout.js` | `sh test.sh layout` passes | none | Evidence |
+| pdf-invoice-U2 | Invoice totals | `src/totals.js` adds the lines and the tax | `src/totals.js` | `sh test.sh totals` passes | none | Evidence |
+| pdf-invoice-U3 | Download button | `src/download.js` serves the PDF with its totals | `src/download.js` | `sh test.sh download` passes | pdf-invoice-U1, pdf-invoice-U2 | Evidence |
 
 ## Batches
 
-| Batch | Units |
-|-------|-------|
-| 1 | pdf-invoice-U1, pdf-invoice-U2 |
-| 2 | pdf-invoice-U3 |
+| Batch | Units | Shared |
+|-------|-------|--------|
+| 1 | pdf-invoice-U1, pdf-invoice-U2 | no |
+| 2 | pdf-invoice-U3 | no |
 
 - Most `write` agents at once: 2.
 - Worktree preparation: none.

@@ -1,7 +1,7 @@
 ---
 type: tool_used
 tool: Agent
-input_match: 'isolation'
+input_match: '"isolation"\s*:'
 min: 0
 max: 0
 ---
