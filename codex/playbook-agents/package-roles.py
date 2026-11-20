@@ -11,13 +11,14 @@ defaults = {
 
 source, destination = map(Path, sys.argv[1:])
 destination.mkdir()
-for path in sorted(source.glob("*.md")):
+for name, (model, effort) in defaults.items():
+    path = source / f"{name}.md"
     _, front, instructions = path.read_text(encoding="utf-8").split("---\n", 2)
     fields = dict(line.split(": ", 1) for line in front.strip().splitlines())
-    name = fields["name"]
+    if fields["name"] != name:
+        raise ValueError(f"{path}: expected agent name {name!r}, got {fields['name']!r}")
     if name == "review":
         instructions = "Use the playbook-agents:review-change skill to review the change. Read only."
-    model, effort = defaults[name]
     role = {
         "name": name,
         "description": fields["description"],

@@ -1,6 +1,8 @@
 # Playbook for Codex CLI
 
-Use a local checkout with Codex CLI, Git, Python 3.11 or newer, and a Unix shell toolchain. The installer was tested on Linux with Codex CLI 0.170.0. From the repository root, run:
+From the repository root, check the installer requirements with `python3 codex/install.py --check`. It reports the Python, Git, and Codex CLI versions, checks for the Unix packaging tools, and verifies the Codex plugin commands using a temporary profile. Python 3.11 or newer is required. Codex compatibility depends on the available commands. See the [OpenAI plugin guide](https://developers.openai.com/plugins/build/plugins).
+
+To run the check and install Playbook, run
 
 ```sh
 python3 codex/install.py
@@ -19,6 +21,8 @@ Ask Codex to start a project, prepare an existing repository, or continue an ope
 To have Codex perform the installation, copy the [Codex CLI installation prompt](../README.md#codex-cli-prompt).
 
 ## Working agents
+
+During a work, the main session records review findings on the work branch. At close, `prepare-project` uses the enabled `playbook-agents` plugin to count evidence and record recurring tasks. After the owner approves a task agent, it gets a project-local profile under `.codex/agents/`.
 
 The full installation places three personal profiles in the Codex agents directory (normally `~/.codex/agents/`). It preserves existing profiles and reports conflicts. This also applies to profiles from an earlier manual installation: compare the settings if you want the new defaults.
 

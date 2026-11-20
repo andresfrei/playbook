@@ -36,6 +36,9 @@ case $session in
     ;;
 esac
 
+# Codex installs the commit reminder with three working agents (codex-install-check-2).
+[ "${1:-}" = --mark-only ] && exit 0
+
 # The check of the classifier.
 printf '%s\n' "$input" |
   grep -Eq '"stop_hook_active"[[:space:]]*:[[:space:]]*true' && exit 0
