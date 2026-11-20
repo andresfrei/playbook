@@ -2673,7 +2673,44 @@ deliv_asks 'git status; git push'
 deliv_asks 'git status
 git push'
 deliv_asks "bash -c 'gh release create v1'"
+# Shell keywords and wrappers before the command word.
+deliv_asks 'for r in a b; do git push "$r" main; done'
+deliv_asks 'if ! git push; then echo f; fi'
+deliv_asks '! git push'
+deliv_asks '{ git push; }'
+deliv_asks 'time git push'
+deliv_asks 'env GIT_SSH_COMMAND=x git push'
+deliv_asks 'env -u X git push'
+deliv_asks 'sudo git push'
+deliv_asks 'sudo -u bob git push'
+deliv_asks 'nohup git push'
+deliv_asks 'command git push'
+deliv_asks 'exec git push'
+# The aliases of gh.
+deliv_asks 'gh pr new'
+deliv_asks 'gh release new v1'
+# Options of the shell before -c, and of gh and git before the subcommand.
+deliv_asks "bash -lc 'git push'"
+deliv_asks "bash -o pipefail -c 'git push'"
+deliv_asks "bash -euo pipefail -c 'git push'"
+deliv_asks 'gh -R o/r pr merge 1'
+deliv_asks 'git --git-dir /x/.git push'
+# Each action inside each wrapper.
+for deliv_action in 'git -C /x push' 'gh pr merge 1' 'gh release delete v1'; do
+  deliv_asks "sh -c '$deliv_action'"
+  deliv_asks "bash -c \"$deliv_action\""
+  deliv_asks "eval $deliv_action"
+done
+# Known gap, accepted (architecture.md): the body of a heredoc is read as
+# commands, so a line that looks like one asks. A false ask, never a missed one.
+deliv_asks "git commit -F - <<'EOF'
+subject
+gh pr merge now asks
+EOF"
 deliv_silent 'git commit -m "push it"'
+deliv_silent 'sudo git log'
+deliv_silent 'env FOO=1 git log'
+deliv_silent 'if true; then git status; fi'
 deliv_silent 'echo git push'
 deliv_silent 'git log'
 deliv_silent 'git status'

@@ -54,7 +54,23 @@ verdict=$(printf '%s' "$command" | awk "$shell_tokens"'
     i = 1
     while (i <= nt) {
       if (sep[i]) { i++; continue }
-      while (i <= nt && !sep[i] && tok[i] ~ /^[A-Za-z_][A-Za-z0-9_]*=/) i++
+      # skip what comes before the command word: NAME=value, shell keywords,
+      # and the wrappers env, sudo, time, command, exec, and nohup with their options
+      while (i <= nt && !sep[i]) {
+        b = base(tok[i])
+        if (tok[i] ~ /^[A-Za-z_][A-Za-z0-9_]*=/ || b ~ /^(if|then|else|elif|do|while|until|!|\{)$/) i++
+        else if (b ~ /^(time|command|exec|nohup)$/) {
+          i++
+          while (i <= nt && !sep[i] && substr(tok[i], 1, 1) == "-") i++
+        } else if (b == "env" || b == "sudo") {
+          i++
+          while (i <= nt && !sep[i]) {
+            if (b == "env" ? tok[i] ~ /^(-u|--unset|-C|--chdir)$/ : tok[i] ~ /^(-u|-g|-h|-p|-D|-R|-T|-U)$/) i += 2
+            else if (substr(tok[i], 1, 1) == "-" || tok[i] ~ /^[A-Za-z_][A-Za-z0-9_]*=/) i++
+            else break
+          }
+        } else break
+      }
       if (i > nt || sep[i]) continue
       b = base(tok[i])
       if (b == "git") {
@@ -71,12 +87,16 @@ verdict=$(printf '%s' "$command" | awk "$shell_tokens"'
           else j++
         }
         if (j + 1 <= nt && !sep[j] && !sep[j + 1]) {
-          if (tok[j] == "pr" && tok[j + 1] ~ /^(create|merge)$/) return 1
-          if (tok[j] == "release" && tok[j + 1] ~ /^(create|edit|delete)$/) return 1
+          if (tok[j] == "pr" && tok[j + 1] ~ /^(create|merge|new)$/) return 1
+          if (tok[j] == "release" && tok[j + 1] ~ /^(create|edit|delete|new)$/) return 1
         }
       } else if (depth == 0 && (b == "sh" || b == "bash")) {
-        for (j = i + 1; j <= nt && !sep[j] && substr(tok[j], 1, 1) == "-"; j++)
+        # options before the script text; -o and -O (also +o, +O, and as the
+        # last letter of a group, as in -euo) take an argument
+        for (j = i + 1; j <= nt && !sep[j] && tok[j] ~ /^[-+]/; j++) {
           if (tok[j] ~ /^-[A-Za-z]*c[A-Za-z]*$/ && j + 1 <= nt && !sep[j + 1]) { inner[++ni] = tok[j + 1]; break }
+          if (tok[j] ~ /^[-+][A-Za-z]*[oO]$/) j++
+        }
       } else if (depth == 0 && b == "eval") {
         t = ""
         for (j = i + 1; j <= nt && !sep[j]; j++) t = t (t == "" ? "" : " ") tok[j]

@@ -38,6 +38,7 @@ The settings file of the repository, `.claude/settings.json` or `.claude/setting
 | Risk | What reduces it |
 |------|-----------------|
 | A form of push the tokenizer misses, such as a script that pushes inside | The sandbox and the rules of `protect`; the gap is stated, as the guide states it for rules |
+| The body of a heredoc is read as commands, so a line in it such as `gh pr merge now` asks | Accepted: it costs one extra prompt, a false ask and never a missed one, and the tokenizer is shared with `commit_dir`, which it is not changed for |
 | A prompt on a command that does not push | Tokens, not text: a word inside a commit message is not a command |
 | A broken settings file after `apply` | `json_add` writes to a temporary file and stops on a file that is not a JSON object |
 | `acceptEdits` and `auto` not measured | The documentation says auto mode still shows a hook's prompts; measured again in stage 6 |
