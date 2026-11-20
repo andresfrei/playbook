@@ -34,5 +34,6 @@ Next steps, in order:
 | Page | Content | Code it governs |
 |------|---------|-----------------|
 | [definition.md](definition.md) | The problem, what is known, and the coverage of each topic | |
+| [measurements.md](measurements.md) | Whether a hook's `ask` shows a prompt in each permission mode | |
 | [decisions.md](decisions.md) | The decisions of this work | |
 | [questions.md](questions.md) | The open questions | |
