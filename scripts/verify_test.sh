@@ -3785,6 +3785,265 @@ else
   check "protect apply: a write into a read-only folder exits 4, the file is byte-identical, nothing is left" sh -c 'test "$1" -eq 4 && cmp -s "$2" "$3/settings.json" && test "$(ls -A "$3" | wc -l | tr -d " ")" -eq 1' sh "$pr_code" "$tmp/pr/ro.before" "$tmp/pr/ro"
 fi
 
+# The tasks of the works: plugins/playbook-agents/tasks.sh.
+tk_script="$root/plugins/playbook-agents/tasks.sh"
+tk_head='# Tasks\n\n## Tasks\n\n| Task | Date | Work | Steps | Agent |\n|------|------|------|-------|-------|\n'
+tk_today=$(date +%Y-%m-%d)
+# tk_page <rows>: writes a fresh page in $tmp/tk/w.
+tk_page() { rm -rf "$tmp/tk/w"; mkdir -p "$tmp/tk/w"; printf '%b%b' "$tk_head" "$1" > "$tmp/tk/w/tasks.md"; }
+tk_count() { tk_out=$(sh "$tk_script" count "$tmp/tk/w" 2>&1); tk_code=$?; }
+tk_check_case() {
+  tk_page "$2"
+  tk_out=$(sh "$tk_script" check "$tmp/tk/w" 2>&1); tk_code=$?
+  check "tasks check: $1" sh -c '[ "$1" -eq 1 ] && printf "%s" "$2" | grep "^FAIL tasks.md: " | grep -Fq "$3"' sh "$tk_code" "$tk_out" "$3"
+}
+
+rm -rf "$tmp/tk"; mkdir -p "$tmp/tk"
+sh "$tk_script" add release work-a 'tag, then publish' "$tmp/tk/new" > "$tmp/tk/out"; tk_code=$?
+check "tasks add: creates the page with its title, header, and a row of today with no agent" sh -c '[ "$1" -eq 0 ] && head -n 1 "$2/tasks.md" | grep -qx "# Tasks" && grep -qx "## Tasks" "$2/tasks.md" && grep -Fxq "| Task | Date | Work | Steps | Agent |" "$2/tasks.md" && grep -Fxq "| release | $3 | work-a | tag, then publish |  |" "$2/tasks.md"' sh "$tk_code" "$tmp/tk/new" "$tk_today"
+check "tasks add: prints one line saying what it added" sh -c '[ "$(wc -l < "$1")" -eq 1 ] && grep -q "added the task release of the work work-a" "$1"' sh "$tmp/tk/out"
+sh "$tk_script" add release work-b 'again' "$tmp/tk/new" >/dev/null; tk_code=$?
+check "tasks add: appends to an existing page, keeping the first row" sh -c '[ "$1" -eq 0 ] && [ "$(grep -c "^| release | " "$2/tasks.md")" -eq 2 ] && [ "$(grep -c "^# Tasks" "$2/tasks.md")" -eq 1 ] && tail -n 1 "$2/tasks.md" | grep -Fq "| work-b | again |"' sh "$tk_code" "$tmp/tk/new"
+check "tasks add: the page it writes passes check" sh -c 'sh "$1" check "$2" | grep -q "tasks check passed"' sh "$tk_script" "$tmp/tk/new"
+CLAUDE_PROJECT_DIR="$tmp/tk/proj" sh "$tk_script" add release work-a x >/dev/null
+check "tasks add: the directory defaults to CLAUDE_PROJECT_DIR/docs/wiki" test -f "$tmp/tk/proj/docs/wiki/tasks.md"
+
+sh "$tk_script" add release work-a 'a | b | c' "$tmp/tk/pipe" >/dev/null
+check "tasks add: a | in steps is written as \\| and the page passes check" sh -c 'grep -Fxq "| release | $3 | work-a | a \\| b \\| c |  |" "$1/tasks.md" && sh "$2" check "$1" | grep -q "tasks check passed"' sh "$tmp/tk/pipe" "$tk_script" "$tk_today"
+sh "$tk_script" add p1 work-a 'run a | grep b' "$tmp/tk/rt" >/dev/null
+sh "$tk_script" add p1 work-b 'run a | grep b' "$tmp/tk/rt" >/dev/null
+sh "$tk_script" add p1 work-c 'run a | grep b' "$tmp/tk/rt" >/dev/null
+sh "$tk_script" set-agent p1 p1-agent "$tmp/tk/rt" >/dev/null
+check "tasks: a | in steps round-trips through add and set-agent, in one cell" sh -c 'n=$(grep -c "^| p1 | [0-9-]* | work-[abc] | run a \\| grep b | p1-agent |$" "$1/tasks.md"); [ "$n" -eq 3 ] && sh "$2" check "$1" | grep -q "tasks check passed"' sh "$tmp/tk/rt" "$tk_script"
+
+for tk_bad in 'Bad_Task|work-a|x' 'release|Work A|x' 'release|work-a|'; do
+  tk_t=${tk_bad%%|*}; tk_rest=${tk_bad#*|}; tk_w=${tk_rest%%|*}; tk_s=${tk_rest#*|}
+  rm -rf "$tmp/tk/bad"
+  sh "$tk_script" add "$tk_t" "$tk_w" "$tk_s" "$tmp/tk/bad" >/dev/null 2>&1; tk_code=$?
+  check "tasks add: bad argument \"$tk_bad\" exits 2 and writes nothing" sh -c '[ "$1" -eq 2 ] && [ ! -e "$2/tasks.md" ]' sh "$tk_code" "$tmp/tk/bad"
+done
+rm -rf "$tmp/tk/bad"
+sh "$tk_script" add release work-a "line one
+line two" "$tmp/tk/bad" >/dev/null 2>&1; tk_code=$?
+check "tasks add: a newline in the steps exits 2 and writes nothing" sh -c '[ "$1" -eq 2 ] && [ ! -e "$2/tasks.md" ]' sh "$tk_code" "$tmp/tk/bad"
+sh "$tk_script" add "release
+x" work-a s "$tmp/tk/bad" >/dev/null 2>&1; tk_code=$?
+check "tasks add: a newline in the task exits 2" [ "$tk_code" -eq 2 ]
+
+tk_page '| release | 2026-11-01 | w1 | s | |\n| release | 2026-11-02 | w2 | s | |\n| release | 2026-11-05 | w3 | s | |\n'
+tk_count
+check "tasks count: a task in 3 distinct works is ready, with its works and last date" sh -c '[ "$2" -eq 0 ] && [ "$1" = "ready: release: 3 works, last 2026-11-05" ]' sh "$tk_out" "$tk_code"
+tk_page '| release | 2026-11-01 | w1 | s | |\n| release | 2026-11-02 | w2 | s | |\n| release | 2026-11-03 | w2 | s | |\n| release | 2026-11-04 | w1 | s | |\n'
+tk_count
+check "tasks count: 4 rows in 2 works are not ready" [ "$tk_code" -eq 0 -a -z "$tk_out" ]
+tk_page '| release | 2026-11-01 | w1 | s | |\n| release | 2026-11-02 | w2 | s | |\n| release | 2026-11-05 | w3 | s | rel-agent |\n'
+tk_count
+check "tasks count: a task with an agent on one row is skipped" [ "$tk_code" -eq 0 -a -z "$tk_out" ]
+tk_page '| release | 2026-11-01 | w1 | s | declined |\n| release | 2026-11-02 | w2 | s | declined |\n| release | 2026-11-05 | w3 | s | declined |\n'
+tk_count
+check "tasks count: a declined task is skipped" [ "$tk_code" -eq 0 -a -z "$tk_out" ]
+tk_page '| a-task | 2026-11-01 | w1 | s | |\n| a-task | 2026-11-02 | w2 | s | |\n| a-task | 2026-11-05 | w3 | s | |\n| b-task | 2026-11-01 | w1 | s | |\n| c-task | 2026-11-01 | w1 | s | |\n| c-task | 2026-11-02 | w2 | s | |\n| c-task | 2026-11-03 | w3 | s | |\n| c-task | 2026-11-09 | w4 | s | |\n'
+tk_count
+check "tasks count: tasks are counted apart, one line each" sh -c '[ "$(printf "%s\n" "$1" | wc -l)" -eq 2 ] && printf "%s\n" "$1" | grep -Fxq "ready: a-task: 3 works, last 2026-11-05" && printf "%s\n" "$1" | grep -Fxq "ready: c-task: 4 works, last 2026-11-09"' sh "$tk_out"
+rm -rf "$tmp/tk/w"
+tk_count
+check "tasks count: no page prints nothing and exits 0" [ "$tk_code" -eq 0 -a -z "$tk_out" ]
+
+tk_page '| release | 2026-11-01 | w1 | s \\| t | |\n| other | 2026-11-02 | w1 | s | |\n| release | 2026-11-03 | w2 | s | old-agent |\n'
+sh "$tk_script" set-agent release rel-agent "$tmp/tk/w" > "$tmp/tk/out"; tk_code=$?
+check "tasks set-agent: fills the agent of every row of the task and no other row" sh -c '[ "$1" -eq 0 ] && [ "$(grep -c "| rel-agent |$" "$2/tasks.md")" -eq 2 ] && grep -Fxq "| other | 2026-11-02 | w1 | s | |" "$2/tasks.md" && grep -Fq "| s \\| t | rel-agent |" "$2/tasks.md"' sh "$tk_code" "$tmp/tk/w"
+check "tasks set-agent: prints one line" [ "$(wc -l < "$tmp/tk/out")" -eq 1 ]
+sh "$tk_script" set-agent other declined "$tmp/tk/w" >/dev/null
+check "tasks set-agent: declined is written" grep -Fxq "| other | 2026-11-02 | w1 | s | declined |" "$tmp/tk/w/tasks.md"
+cp "$tmp/tk/w/tasks.md" "$tmp/tk/before"
+sh "$tk_script" set-agent missing-task x "$tmp/tk/w" >/dev/null 2>&1; tk_code=$?
+check "tasks set-agent: a task not on the page exits 2 and leaves the page" sh -c '[ "$1" -eq 2 ] && cmp -s "$2" "$3/tasks.md"' sh "$tk_code" "$tmp/tk/before" "$tmp/tk/w"
+sh "$tk_script" set-agent release "Bad Agent" "$tmp/tk/w" >/dev/null 2>&1; tk_code=$?
+check "tasks set-agent: a bad agent name exits 2 and leaves the page" sh -c '[ "$1" -eq 2 ] && cmp -s "$2" "$3/tasks.md"' sh "$tk_code" "$tmp/tk/before" "$tmp/tk/w"
+tk_page '| a-task | 2026-11-01 | w1 | s | |\n| a-task | 2026-11-02 | w2 | s | |\n| a-task | 2026-11-05 | w3 | s | |\n'
+sh "$tk_script" set-agent a-task a-agent "$tmp/tk/w" >/dev/null; tk_count
+check "tasks: after set-agent, count no longer offers the task" [ "$tk_code" -eq 0 -a -z "$tk_out" ]
+
+tk_page '| release | 2026-11-01 | w1 | s | |\n'
+tk_out=$(sh "$tk_script" check "$tmp/tk/w" 2>&1); tk_code=$?
+check "tasks check: a good page passes with one line" sh -c '[ "$1" -eq 0 ] && [ "$(printf "%s\n" "$2" | wc -l)" -eq 1 ] && printf "%s" "$2" | grep -q "tasks check passed"' sh "$tk_code" "$tk_out"
+tk_check_case "a bad date fails" '| release | 2026-13-01 | w1 | s | |\n' 'has date "2026-13-01"'
+tk_check_case "a date with the wrong shape fails" '| release | 20/11/2026 | w1 | s | |\n' 'has date "20/11/2026"'
+tk_check_case "a bad task name fails" '| Release Now | 2026-11-01 | w1 | s | |\n' 'task "Release Now" is not kebab-case'
+tk_check_case "a bad work name fails" '| release | 2026-11-01 | Work 1 | s | |\n' 'has work "Work 1"'
+tk_check_case "a bad agent name fails" '| release | 2026-11-01 | w1 | s | Some Agent |\n' 'has agent "Some Agent"'
+tk_check_case "a row with a missing cell fails" '| release | 2026-11-01 | w1 | s |\n' 'has 4 cells, not 5'
+tk_check_case "a row with no steps fails" '| release | 2026-11-01 | w1 | | |\n' 'has no steps'
+tk_page ''
+sed 's/| Steps |/| Text |/' "$tmp/tk/w/tasks.md" > "$tmp/tk/x" && mv "$tmp/tk/x" "$tmp/tk/w/tasks.md"
+tk_out=$(sh "$tk_script" check "$tmp/tk/w" 2>&1); tk_code=$?
+check "tasks check: a missing header (a changed header row) fails" sh -c '[ "$1" -eq 1 ] && printf "%s" "$2" | grep -Fq "FAIL tasks.md: the header row is not"' sh "$tk_code" "$tk_out"
+tk_page ''
+sed '/^| Task |/d' "$tmp/tk/w/tasks.md" > "$tmp/tk/x" && mv "$tmp/tk/x" "$tmp/tk/w/tasks.md"
+tk_out=$(sh "$tk_script" check "$tmp/tk/w" 2>&1); tk_code=$?
+check "tasks check: a table with no header row fails" sh -c '[ "$1" -eq 1 ] && printf "%s" "$2" | grep -q "^FAIL tasks.md: "' sh "$tk_code" "$tk_out"
+tk_page ''
+sed 's/^## Tasks$/## Rows/' "$tmp/tk/w/tasks.md" > "$tmp/tk/x" && mv "$tmp/tk/x" "$tmp/tk/w/tasks.md"
+tk_out=$(sh "$tk_script" check "$tmp/tk/w" 2>&1); tk_code=$?
+check "tasks check: a missing heading fails" sh -c '[ "$1" -eq 1 ] && printf "%s" "$2" | grep -Fq "FAIL tasks.md: missing the heading \"## Tasks\""' sh "$tk_code" "$tk_out"
+tk_page ''
+sed 's/^# Tasks$/# Other/' "$tmp/tk/w/tasks.md" > "$tmp/tk/x" && mv "$tmp/tk/x" "$tmp/tk/w/tasks.md"
+tk_out=$(sh "$tk_script" check "$tmp/tk/w" 2>&1); tk_code=$?
+check "tasks check: a missing title fails" sh -c '[ "$1" -eq 1 ] && printf "%s" "$2" | grep -Fq "FAIL tasks.md: missing the heading \"# Tasks\""' sh "$tk_code" "$tk_out"
+tk_page '| release | 2026-11-01 | w1 | s | |\n\n| release | 2026-11-02 | w2 | s | |\n'
+tk_out=$(sh "$tk_script" check "$tmp/tk/w" 2>&1); tk_code=$?
+check "tasks check: a row after the table ended fails" sh -c '[ "$1" -eq 1 ] && printf "%s" "$2" | grep -Fq "a table row after the table ended"' sh "$tk_code" "$tk_out"
+rm -rf "$tmp/tk/w"
+tk_out=$(sh "$tk_script" check "$tmp/tk/w" 2>&1); tk_code=$?
+check "tasks check: no page says so and passes" sh -c '[ "$1" -eq 0 ] && printf "%s" "$2" | grep -q "no tasks page"' sh "$tk_code" "$tk_out"
+
+tk_page '| release | 2026-11-01 | w1 | s | |\n'
+chmod 640 "$tmp/tk/w/tasks.md"
+sh "$tk_script" add release w2 s "$tmp/tk/w" >/dev/null
+check "tasks add: the mode of the page (640) is kept" sh -c 'test "$(ls -l "$1/tasks.md" | cut -c1-10)" = "-rw-r-----" && [ "$(grep -c "^| release" "$1/tasks.md")" -eq 2 ]' sh "$tmp/tk/w"
+chmod 600 "$tmp/tk/w/tasks.md"
+sh "$tk_script" set-agent release rel-agent "$tmp/tk/w" >/dev/null
+check "tasks set-agent: the mode of the page (600) is kept" sh -c 'test "$(ls -l "$1/tasks.md" | cut -c1-10)" = "-rw-------" && grep -q "rel-agent" "$1/tasks.md"' sh "$tmp/tk/w"
+check "tasks add: no temporary file is left in the wiki directory" sh -c '[ "$(ls -A "$1" | wc -l | tr -d " ")" -eq 1 ]' sh "$tmp/tk/w"
+
+if [ "$(id -u)" -eq 0 ]; then
+  printf 'skip  tasks add: a write into a read-only folder (running as root)\n'
+else
+  tk_page '| release | 2026-11-01 | w1 | s | |\n'
+  cp "$tmp/tk/w/tasks.md" "$tmp/tk/before"
+  chmod 555 "$tmp/tk/w"
+  sh "$tk_script" add release w2 s "$tmp/tk/w" >/dev/null 2>&1; tk_code=$?
+  chmod 755 "$tmp/tk/w"
+  check "tasks add: a write that fails exits 4 and leaves the page and the folder as they were" sh -c '[ "$1" -eq 4 ] && cmp -s "$2" "$3/tasks.md" && [ "$(ls -A "$3" | wc -l | tr -d " ")" -eq 1 ]' sh "$tk_code" "$tmp/tk/before" "$tmp/tk/w"
+fi
+
+# Review findings of task-agents-U1.
+tk_raw() { rm -rf "$tmp/tk/w"; mkdir -p "$tmp/tk/w"; printf '%b' "$1" > "$tmp/tk/w/tasks.md"; }
+tk_chk() { tk_out=$(sh "$tk_script" check "$tmp/tk/w" 2>&1); tk_code=$?; }
+tk_r1='| release | 2026-11-01 | w1 | s | |\n| release | 2026-11-02 | w2 | s | |\n'
+
+# add puts the row inside the table, not at the end of the file.
+tk_page "$tk_r1"'\n'
+sh "$tk_script" add release w3 s "$tmp/tk/w" >/dev/null; tk_code=$?; tk_chk; tk_c2=$tk_code; tk_count
+check "tasks add: a page ending with a blank line gets the row right after the table; check passes and count sees it" sh -c '[ "$1" -eq 0 ] && [ "$2" -eq 0 ] && [ "$3" = "ready: release: 3 works, last '"$tk_today"'" ] && sed -n 9p "$4/tasks.md" | grep -Fq "| release | " && [ -z "$(sed -n 10p "$4/tasks.md")" ] && [ "$(wc -l < "$4/tasks.md" | tr -d " ")" -eq 10 ]' sh "$tk_c2" "$tk_code" "$tk_out" "$tmp/tk/w"
+tk_page "$tk_r1"'\n## Notes\n\nsome text\n'
+sh "$tk_script" add release w3 s "$tmp/tk/w" >/dev/null; tk_chk; tk_c2=$tk_code; tk_count
+check "tasks add: a section after the table stays after it; check passes and count sees the row" sh -c '[ "$1" -eq 0 ] && [ "$2" -eq 0 ] && [ "$3" = "ready: release: 3 works, last '"$tk_today"'" ] && sed -n 9p "$4/tasks.md" | grep -Fq "| release | " && tail -n 3 "$4/tasks.md" | head -n 1 | grep -qx "## Notes" && tail -n 1 "$4/tasks.md" | grep -qx "some text"' sh "$tk_c2" "$tk_code" "$tk_out" "$tmp/tk/w"
+tk_raw '# Tasks\n\n```\n## Tasks\n| a | b |\n```\n\n'"$tk_head"'| release | 2026-11-01 | w1 | s | |\n| release | 2026-11-02 | w2 | s | |\n'
+sh "$tk_script" add release w3 s "$tmp/tk/w" >/dev/null; tk_chk; tk_c2=$tk_code; tk_count
+check "tasks add: a ## Tasks heading inside a code block is not the table" sh -c '[ "$1" -eq 0 ] && [ "$2" -eq 0 ] && [ "$3" = "ready: release: 3 works, last '"$tk_today"'" ] && ! grep -A1 "^| a | b |" "$4/tasks.md" | grep -q "^| release"' sh "$tk_c2" "$tk_code" "$tk_out" "$tmp/tk/w"
+tk_raw '# Tasks\n\n## Tasks\n'
+cp "$tmp/tk/w/tasks.md" "$tmp/tk/before"
+sh "$tk_script" add release w3 s "$tmp/tk/w" >/dev/null 2>&1; tk_code=$?
+check "tasks add: a page with no table under ## Tasks exits 2 and leaves the page" sh -c '[ "$1" -eq 2 ] && cmp -s "$2" "$3/tasks.md" && [ "$(ls -A "$3" | wc -l | tr -d " ")" -eq 1 ]' sh "$tk_code" "$tmp/tk/before" "$tmp/tk/w"
+
+# A row indented by 1 to 3 spaces.
+tk_check_case "a row indented by 1 space fails" ' | release | 2026-11-01 | w1 | s | declined |\n' "an indented table row"
+tk_check_case "a row indented by 3 spaces fails" '   | release | 2026-11-01 | w1 | s | declined |\n' "an indented table row"
+tk_page '| release | 2026-11-01 | w1 | s | |\n| release | 2026-11-02 | w2 | s | |\n  | release | 2026-11-03 | w3 | s | declined |\n'
+tk_count
+check "tasks count: an indented row is not counted" [ "$tk_code" -eq 0 -a -z "$tk_out" ]
+sh "$tk_script" set-agent release rel-agent "$tmp/tk/w" >/dev/null
+check "tasks set-agent: an indented row is kept as it was and the valid rows get the agent" sh -c '[ "$(grep -c "| rel-agent |$" "$1/tasks.md")" -eq 2 ] && grep -Fxq "  | release | 2026-11-03 | w3 | s | declined |" "$1/tasks.md"' sh "$tmp/tk/w"
+
+# count reads only the rows that pass the check, inside the table.
+tk_page '| release | 2026-11-01 | work-a | s | |\n| release | 2026-11-02 | Work-A | s | |\n| release | 2026-11-03 | WORK-A | s | |\n'
+tk_count
+check "tasks count: the works work-a, Work-A and WORK-A are not 3 works" [ "$tk_code" -eq 0 -a -z "$tk_out" ]
+tk_chk
+check "tasks check: the works Work-A and WORK-A fail" sh -c '[ "$1" -eq 1 ] && [ "$(printf "%s\n" "$2" | grep -c "not kebab-case")" -eq 2 ]' sh "$tk_code" "$tk_out"
+tk_page '| release | 2026-11-01 | w1 | s | |\n| release | 2026-11-02 | w2 | s | |\n\nA paragraph.\n\n| Task | Date | Work | Steps | Agent |\n|------|------|------|-------|-------|\n| release | 2026-11-03 | w3 | s | |\n'
+tk_count
+check "tasks count: rows of a second table after a paragraph are not counted" [ "$tk_code" -eq 0 -a -z "$tk_out" ]
+tk_page '| release | 2026-11-01 | w1 | s | |\n| release | 2026-11-02 | w2 | s | |\n\n| release | 2026-11-03 | w3 | s | |\n'
+tk_count
+check "tasks count: a row after the table ended is not counted" [ "$tk_code" -eq 0 -a -z "$tk_out" ]
+cp "$tmp/tk/w/tasks.md" "$tmp/tk/before"
+sh "$tk_script" set-agent release rel-agent "$tmp/tk/w" >/dev/null
+check "tasks set-agent: a row after the table ended keeps its agent cell empty" sh -c '[ "$(grep -c "| rel-agent |$" "$1/tasks.md")" -eq 2 ] && grep -Fxq "| release | 2026-11-03 | w3 | s | |" "$1/tasks.md"' sh "$tmp/tk/w"
+
+# A page that is a symbolic link, live or dangling, is refused.
+for tk_kind in live dangling; do
+  for tk_cmd in add set-agent; do
+    rm -rf "$tmp/tk/w" "$tmp/tk/target.md"; mkdir -p "$tmp/tk/w"
+    if [ "$tk_kind" = live ]; then
+      printf '%b%b' "$tk_head" '| release | 2026-11-01 | w1 | s | |\n' > "$tmp/tk/target.md"
+      cp "$tmp/tk/target.md" "$tmp/tk/before"
+    fi
+    ln -s "$tmp/tk/target.md" "$tmp/tk/w/tasks.md"
+    if [ "$tk_cmd" = add ]; then
+      tk_out=$(sh "$tk_script" add release w2 s "$tmp/tk/w" 2>&1 >/dev/null); tk_code=$?
+    else
+      tk_out=$(sh "$tk_script" set-agent release rel-agent "$tmp/tk/w" 2>&1 >/dev/null); tk_code=$?
+    fi
+    check "tasks $tk_cmd: a $tk_kind symbolic link as the page exits 4, names it, and changes nothing" sh -c '[ "$1" -eq 4 ] && printf "%s" "$2" | grep -Fq "$3/tasks.md" && [ -L "$3/tasks.md" ] && [ "$(ls -A "$3" | wc -l | tr -d " ")" -eq 1 ] && { [ "$4" = dangling ] && [ ! -e "$5" ] || cmp -s "$5" "$6"; }' sh "$tk_code" "$tk_out" "$tmp/tk/w" "$tk_kind" "$tmp/tk/target.md" "$tmp/tk/before"
+  done
+done
+
+# The steps are trimmed with POSIX sed: a t at either end stays.
+rm -rf "$tmp/tk/w"
+sh "$tk_script" add release w1 "  ttest it t  " "$tmp/tk/w" >/dev/null
+sh "$tk_script" add release w2 "$(printf 'tab\t\r')" "$tmp/tk/w" >/dev/null
+sh "$tk_script" add release w3 "$(printf ' \t t\r')" "$tmp/tk/w" >/dev/null
+check "tasks add: steps that start or end with t keep it, and blanks and a CR are trimmed" sh -c 'grep -Fq "| w1 | ttest it t |  |" "$1/tasks.md" && grep -Fq "| w2 | tab |  |" "$1/tasks.md" && grep -Fq "| w3 | t |  |" "$1/tasks.md"' sh "$tmp/tk/w"
+
+# An interrupted write leaves nothing behind.
+tk_bin="$tmp/tk/bin"; mkdir -p "$tk_bin" "$tmp/tk/tmpd"
+printf '#!/bin/sh\nkill -"$TK_SIG" "$PPID"\nsleep 1\nexit 0\n' > "$tk_bin/cat"; chmod +x "$tk_bin/cat"
+for tk_sig in TERM HUP; do
+  for tk_cmd in add set-agent; do
+    tk_page '| release | 2026-11-01 | w1 | s | |\n'
+    cp "$tmp/tk/w/tasks.md" "$tmp/tk/before"; rm -rf "$tmp/tk/tmpd"; mkdir "$tmp/tk/tmpd"
+    if [ "$tk_cmd" = add ]; then
+      TK_SIG=$tk_sig TMPDIR="$tmp/tk/tmpd" PATH="$tk_bin:$PATH" sh "$tk_script" add release w2 s "$tmp/tk/w" >/dev/null 2>&1; tk_code=$?
+    else
+      TK_SIG=$tk_sig TMPDIR="$tmp/tk/tmpd" PATH="$tk_bin:$PATH" sh "$tk_script" set-agent release rel-agent "$tmp/tk/w" >/dev/null 2>&1; tk_code=$?
+    fi
+    check "tasks $tk_cmd: $tk_sig in the middle of the write exits 4 and leaves the page and both folders clean" sh -c '[ "$1" -eq 4 ] && cmp -s "$2" "$3/tasks.md" && [ "$(ls -A "$3" | wc -l | tr -d " ")" -eq 1 ] && [ -z "$(ls -A "$4")" ]' sh "$tk_code" "$tmp/tk/before" "$tmp/tk/w" "$tmp/tk/tmpd"
+  done
+done
+
+# A fenced code block is not read.
+tk_page '| release | 2026-11-01 | w1 | s | |\n| release | 2026-11-02 | w2 | s | |\n\n```\n| bad | row |\n| release | 2026-11-05 | w3 | s | |\n```\n'
+tk_chk
+check "tasks check: rows inside a fenced code block after the table are not read" [ "$tk_code" -eq 0 ]
+tk_count
+check "tasks count: a valid row inside a fenced code block is not counted" [ "$tk_code" -eq 0 -a -z "$tk_out" ]
+sh "$tk_script" set-agent release rel-agent "$tmp/tk/w" >/dev/null
+check "tasks set-agent: a row inside a fenced code block is kept as it was" sh -c '[ "$(grep -c "| rel-agent |$" "$1/tasks.md")" -eq 2 ] && grep -Fxq "| release | 2026-11-05 | w3 | s | |" "$1/tasks.md"' sh "$tmp/tk/w"
+
+# A page with CRLF line ends.
+tk_page '| release | 2026-11-01 | w1 | s | |\n| release | 2026-11-02 | w2 | s | |\n| release | 2026-11-05 | w3 | s | |\n'
+sed "s/\$/$(printf '\r')/" "$tmp/tk/w/tasks.md" > "$tmp/tk/x" && mv "$tmp/tk/x" "$tmp/tk/w/tasks.md"
+tk_chk
+check "tasks check: a page with CRLF line ends passes" [ "$tk_code" -eq 0 ]
+tk_count
+check "tasks count: a page with CRLF line ends counts its rows, the date without the CR" [ "$tk_out" = "ready: release: 3 works, last 2026-11-05" ]
+sh "$tk_script" set-agent release rel-agent "$tmp/tk/w" >/dev/null; tk_chk
+check "tasks set-agent: a page with CRLF line ends gets the agent and passes check" sh -c '[ "$1" -eq 0 ] && [ "$(grep -c "| rel-agent |$" "$2/tasks.md")" -eq 3 ]' sh "$tk_code" "$tmp/tk/w"
+
+# The second row is the separator row.
+tk_raw '# Tasks\n\n## Tasks\n\n| Task | Date | Work | Steps | Agent |\n| release | 2026-11-01 | w1 | s | |\n| release | 2026-11-02 | w2 | s | |\n| release | 2026-11-03 | w3 | s | |\n'
+tk_chk
+check "tasks check: a data row in place of the separator row fails" sh -c '[ "$1" -eq 1 ] && printf "%s" "$2" | grep -Fq "FAIL tasks.md: the second row is not the separator row"' sh "$tk_code" "$tk_out"
+tk_count
+check "tasks count: a row in place of the separator row is not counted" [ "$tk_code" -eq 0 -a -z "$tk_out" ]
+tk_raw '# Tasks\n\n## Tasks\n\n| Task | Date | Work | Steps | Agent |\n| : | : | : | : | : |\n| release | 2026-11-01 | w1 | s | |\n'
+tk_chk
+check "tasks check: a second row with no dash fails" sh -c '[ "$1" -eq 1 ] && printf "%s" "$2" | grep -Fq "the second row is not the separator row"' sh "$tk_code" "$tk_out"
+tk_raw '# Tasks\n\n## Tasks\n\n| Task | Date | Work | Steps | Agent |\n|:-----|:----:|------:|---|---|\n| release | 2026-11-01 | w1 | s | |\n'
+tk_chk
+check "tasks check: a separator row with colons passes" [ "$tk_code" -eq 0 ]
+
+for tk_args in "" "bogus" "add" "add only-two" "count a b" "set-agent only-task" "check a b"; do
+  # shellcheck disable=SC2086
+  tk_out=$(sh "$tk_script" $tk_args 2>&1 >/dev/null); tk_code=$?
+  check "tasks: bad usage \"$tk_args\" exits 2 and prints the usage" sh -c '[ "$1" -eq 2 ] && printf "%s" "$2" | grep -q "^usage: sh tasks.sh"' sh "$tk_code" "$tk_out"
+done
+tk_out=$(sh "$tk_script" --help 2>&1); tk_code=$?
+check "tasks: --help prints the usage and exits 0" sh -c '[ "$1" -eq 0 ] && printf "%s" "$2" | grep -q "^usage: sh tasks.sh add"' sh "$tk_code" "$tk_out"
+
+
 if [ "$failed" -eq 0 ]; then
   printf 'all cases passed\n'
 else
