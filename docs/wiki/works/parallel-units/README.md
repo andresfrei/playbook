@@ -14,8 +14,7 @@ Waiting for a decision: none.
 
 Next steps, in order:
 
-1. The owner pushes `feat/parallel-units`, opens the pull request, and merges it (R14).
-2. After the merge: version 3.5.0 in the three manifests, the tag `v3.5.0`, and the release on GitHub (parallel-units-25).
+PR #42 merged into `main` on 2026-11-20 at be70cfb. Version 3.5.0 is set in the three manifests and released as `v3.5.0` (parallel-units-25).
 
 ## Stage table
 
