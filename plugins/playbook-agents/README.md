@@ -40,6 +40,7 @@ flowchart TD
 | `avoid-generic-design` | Keeps out the generic look AI tools give a page or an interface by default |
 | `config` | Shows and sets the model and effort of each agent, for one repository or every project. Only you start it: `/playbook-agents:config` |
 | `seed-evidence` | Seeds the repository's evidence page from its past reviews: shows them, you choose, and `classify` stores each one. Only you start it: `/playbook-agents:seed-evidence`. A review resumed after a restart is not listed; a moved repository needs `--from <old path>`; transcripts are kept about 30 days (recalled, not verified) |
+| `protect` | Protects this repository: offers to keep Claude Code from reading its secret files, to ask before deletes and history resets, and to turn on the sandbox, and writes your choice to `.claude/settings.json` or `.claude/settings.local.json`. Only you start it: `/playbook-agents:protect` |
 
 The agents' default models and reasoning effort come from [models.conf](models.conf). To choose your own, run `/playbook-agents:config`: it writes your choice under `playbook.models` in your Claude Code settings, so an update of the plugin keeps it, and a hook adds it to each call of the agent. The model is an alias: `haiku`, `sonnet`, `opus`, or `fable`. The [Codex guide](../../codex/README.md) lists the corresponding Codex profiles.
 
@@ -71,6 +72,10 @@ Review the landing page in src/pages/index.tsx for a generic AI look.
 
 ```text
 /playbook-agents:seed-evidence
+```
+
+```text
+/playbook-agents:protect
 ```
 
 ## Install
