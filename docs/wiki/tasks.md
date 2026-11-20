@@ -28,3 +28,7 @@
 | record-decision | 2026-11-20 | claude-code-versions | append a row to decisions.md with the owner's words, kind, and answer, keep the text under 60 words, update the pages it changes, run check-wiki |  |
 | write-shared-pages | 2026-11-20 | claude-code-versions | write what the work decided in the shared pages citing its decisions, name each decision's shared page, run check-wiki |  |
 | write-skill | 2026-11-20 | claude-code-versions | write a skill with write-skill: job, triggers, SKILL.md within limits, cases, checks |  |
+| open-work | 2026-11-20 | decision-review | create the work branch and worktree, write the work folder, record the origin decision, run check-wiki |  |
+| close-stage | 2026-11-20 | decision-review | check the closing condition, record the close-stage decision, set the stage table and the work README, run check-wiki |  |
+| record-decision | 2026-11-20 | decision-review | append a row to decisions.md with the owner's words, kind, and answer, keep the text under 60 words, update the pages it changes, run check-wiki |  |
+| write-shared-pages | 2026-11-20 | decision-review | write what the work decided in the shared pages citing its decisions, name each decision's shared page, run check-wiki |  |

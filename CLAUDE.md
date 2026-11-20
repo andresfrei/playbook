@@ -2,8 +2,8 @@
 
 Read `docs/wiki/README.md` before anything else. It is the single entry point: it says what this repository is, where work stands, and what comes next.
 
-- The wiki is the source of truth. Inside it, `docs/wiki/decisions.md` wins.
-- Every statement is Decided (numbered `D#`), Proposed, or Open. Only the owner turns Proposed into Decided; record each decision with the owner's words verbatim.
+- The wiki is the source of truth. The definitions in force are in its shared pages, each citing its decision. Each work records its decisions in its own `decisions.md`; `docs/wiki/decisions.md` (`D#`, `TD#`) is the history from before format 4.
+- Every statement is Decided, Proposed, or Open. Only the owner turns Proposed into Decided; record each decision with the owner's words verbatim.
 - Write the wiki in English. Talk to the owner in their language.
 - "Phase" means one of the product phases (D30, D104). "Stage" means one of the six method stages (D8). Do not mix them.
 - Do not copy or rewrite any part of gentle-ai before phase 2 (D30, D31).
