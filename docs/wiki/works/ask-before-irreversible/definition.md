@@ -31,12 +31,12 @@ Read in code.claude.com/docs on 2026-11-19 (hooks, permissions, permission-modes
 | Topic | Coverage |
 |-------|----------|
 | The problem and who has it | Covered |
-| Who uses it and what they do | Covered: the person, who answers the prompt |
+| Who uses it and what they do | Covered: the person answers the prompt, and starts `/playbook-agents:protect` in each repository (ask-before-irreversible-8) |
 | Main flows | Covered: a permission prompt, or a refusal where no prompt is shown (ask-before-irreversible-3) |
 | What it must do | Covered: the actions of R14 (ask-before-irreversible-2), also those of subagents (ask-before-irreversible-5) |
-| What it must not do, and what waits | Partly covered: the hook stops only the actions of R14 (ask-before-irreversible-2); the rest of rule 3 is proposed per repository (ask-before-irreversible-7), ask-before-irreversible-Q5 to -Q7 |
+| What it must not do, and what waits | Covered: the hook stops only the actions of R14 (ask-before-irreversible-2); the rest of rule 3 is proposed per repository (ask-before-irreversible-7), what it proposes (ask-before-irreversible-9) and where it writes (ask-before-irreversible-10) |
 | Qualities | Covered: it works in every mode (ask-before-irreversible-3) |
-| Limits | Covered: a plugin ships hooks, not permission rules |
+| Limits | Covered: a plugin ships hooks, not permission rules; the rules of a repository are written in its settings (ask-before-irreversible-10) |
 | Outside systems | Covered: git and the GitHub CLI `gh` |
 | Volume | Does not apply |
 | Who runs and maintains it | Covered: it ships in `playbook-agents` |

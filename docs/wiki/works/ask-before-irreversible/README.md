@@ -6,24 +6,24 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after ask-before-irreversible-7.
+Updated 2026-11-19, after ask-before-irreversible-11.
 
-Stage 1, Wiki, is open again: ask-before-irreversible-7 added the proposal of each repository's rules, and three questions are open in [questions.md](questions.md).
+Stage 1, Wiki, is closed; stage 2, Technology, is open. [definition.md](definition.md) holds the definition, and no question is open.
 
-Waiting for a decision: [ask-before-irreversible-Q5](questions.md).
+Waiting for a decision: none.
 
 Next steps, in order:
 
-1. Answer ask-before-irreversible-Q5 to ask-before-irreversible-Q7.
-2. Close stage 1.
-3. In stage 2, measure in which permission modes a hook's `ask` shows a prompt (ask-before-irreversible-3).
+1. Measure in which permission modes a hook's `ask` shows a prompt, and in which it does not (ask-before-irreversible-3).
+2. Choose how the hook recognizes each action of ask-before-irreversible-2, and how `/playbook-agents:protect` finds secret files and writes the settings (ask-before-irreversible-9, -10).
+3. Write the architecture page and close stage 2.
 
 ## Stage table
 
 | Stage | Status | Closed on |
 |-------|--------|-----------|
-| 1 Wiki | Open | |
-| 2 Technology | Not started | |
+| 1 Wiki | Closed | 2026-11-19 |
+| 2 Technology | Open | |
 | 3 Skills | Not started | |
 | 4 Design system | Not started | |
 | 5 Plan | Not started | |
