@@ -6,16 +6,17 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after ask-before-irreversible-20.
+Updated 2026-11-20, after ask-before-irreversible-21.
 
-Stages 1 to 5 are closed; stage 6, Execution, is open. [plan.md](plan.md) holds the units and their progress.
+Stage 6, Execution, is open. ask-before-irreversible-U1 is Done; see [plan.md](plan.md).
 
 Waiting for a decision: none.
 
 Next steps, in order:
 
-1. Build ask-before-irreversible-U1, the delivery hook.
-2. Build U2, the protect script, then U3, the protect command.
+1. Build ask-before-irreversible-U2, the protect script.
+2. Build U3, the protect command, and ask the owner to review it.
+3. Close the work.
 
 ## Stage table
 
