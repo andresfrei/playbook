@@ -14,8 +14,7 @@ Waiting for a decision: none.
 
 Next steps, in order:
 
-1. The owner pushes `feat/ask-before-irreversible`, opens the pull request, and merges it (R14).
-2. After the merge: version 3.4.0 in the three manifests, the tag `v3.4.0`, and the release on GitHub (ask-before-irreversible-25).
+PR #40 merged into `main` on 2026-11-20 at 0b24fbb. Version 3.4.0 is set in the three manifests and released as `v3.4.0` (ask-before-irreversible-25).
 
 ## Stage table
 
