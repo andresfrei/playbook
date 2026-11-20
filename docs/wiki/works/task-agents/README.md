@@ -6,23 +6,23 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-20, after task-agents-2.
+Updated 2026-11-20, after task-agents-7.
 
-Stage 1, Wiki, is open. The shared picture is confirmed (task-agents-2); the definition is written, with four open questions.
+Stage 1, Wiki, is closed (task-agents-7). Stage 2, Technology, is open.
 
-Waiting for a decision: task-agents-Q1 to -Q4 of [questions.md](questions.md).
+Waiting for a decision: none.
 
 Next steps, in order:
 
-1. Answer the questions, one at a time.
-2. Close stage 1.
+1. Check how Claude Code loads a project's agents and what their front matter takes.
+2. Write the work's technology and architecture pages.
 
 ## Stage table
 
 | Stage | Status | Closed on |
 |-------|--------|-----------|
-| 1 Wiki | Open | |
-| 2 Technology | Not started | |
+| 1 Wiki | Closed | 2026-11-20 |
+| 2 Technology | Open | |
 | 3 Skills | Not started | |
 | 4 Design system | Not started | |
 | 5 Plan | Not started | |

@@ -36,11 +36,11 @@ A person who uses the playbook over many works, and pays for every task the main
 |-------|----------|
 | The problem and who has it | Covered |
 | Who uses it and what they do | Covered: the owner answers a proposal at the close of a work (task-agents-2) |
-| Main flows | Partly: how a repeated task is noticed is task-agents-Q1 |
-| What it must do | Partly: when a task counts as repeated is task-agents-Q2; how its model is chosen is task-agents-Q3 |
-| What it must not do, and what waits | Partly: which steps of a task stay in the main session is task-agents-Q3 |
+| Main flows | Covered: a row in `docs/wiki/tasks.md` each time a task ends that was done before (task-agents-3); the proposal at the close of a work (task-agents-2) |
+| What it must do | Covered: 3 distinct works (task-agents-4); three weights (task-agents-5) |
+| What it must not do, and what waits | Covered: what decides, designs, or touches R14 or R20 stays in the main session (task-agents-5) |
 | Qualities | Covered: the dedicated agent costs less than the main model for the same result |
-| Limits | Partly: where the agent lives, given L4, is task-agents-Q4 |
+| Limits | Covered: the agent lives in the project's `.claude/agents/`, outside L4 (task-agents-6) |
 | Outside systems | Covered: Claude Code's subagents |
 | Volume | Does not apply |
 | Who runs and maintains it | Covered: it ships in `playbook-agents` |
