@@ -15,10 +15,10 @@ At the close of a work, when the sibling plugin `playbook-agents` is installed. 
    ```
 
    It prints the absolute path found. When it prints nothing, skip the rest of this file, silently. Run every later command from the project's root, with `docs/wiki` as the last argument. When `add` or `set-agent` exits non-zero, show the script's message and skip the rest of this file.
-2. Record the tasks. Read the git log since the previous work's close, so steps done after it show, such as the previous work's release (task-agents-18). The previous close is the last merge of a pull request, or the last squashed commit ending in `(#N)`; with none, the whole log:
+2. Record the tasks. Read the git log since the previous work's close, so steps done after it show, such as the previous work's release (task-agents-18). The previous close is the last merge of a pull request, or the last squashed commit ending in `(#N)`, that is not a release; with none, the whole log:
 
    ```sh
-   base=$(git log -1 --format=%H -E --grep='^Merge pull request|\(#[0-9]+\)$'); git log --format='%h %s' ${base:+$base..}HEAD
+   base=$(git log --format='%H %s' -E --grep='^Merge pull request|\(#[0-9]+\)$' | grep -iv release | head -n 1 | cut -d' ' -f1); git log --format='%h %s' ${base:+$base..}HEAD
    ```
 
    From that log, the plan, and what was done, list the tasks the agent carried out that it would carry out again in another work, such as `release`, `close-stage`, `record-decision`. For each:
