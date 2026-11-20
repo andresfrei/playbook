@@ -6,23 +6,24 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after ask-before-irreversible-1.
+Updated 2026-11-19, after ask-before-irreversible-6.
 
-Stage 1, Wiki, is open. [definition.md](definition.md) holds the problem and what is known; four questions are open in [questions.md](questions.md).
+Stage 1, Wiki, is closed; stage 2, Technology, is open. [definition.md](definition.md) holds the definition, and no question is open.
 
-Waiting for a decision: [ask-before-irreversible-Q1](questions.md).
+Waiting for a decision: none.
 
 Next steps, in order:
 
-1. Answer ask-before-irreversible-Q1 to ask-before-irreversible-Q4.
-2. Close stage 1.
+1. Measure in which permission modes a hook's `ask` shows a prompt, and in which it does not (ask-before-irreversible-3).
+2. Choose how the hook recognizes each action of ask-before-irreversible-2, and write the architecture page.
+3. Close stage 2.
 
 ## Stage table
 
 | Stage | Status | Closed on |
 |-------|--------|-----------|
-| 1 Wiki | Open | |
-| 2 Technology | Not started | |
+| 1 Wiki | Closed | 2026-11-19 |
+| 2 Technology | Open | |
 | 3 Skills | Not started | |
 | 4 Design system | Not started | |
 | 5 Plan | Not started | |

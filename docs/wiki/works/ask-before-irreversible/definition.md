@@ -29,12 +29,12 @@ Read in code.claude.com/docs on 2026-11-19 (hooks, permissions, permission-modes
 |-------|----------|
 | The problem and who has it | Covered |
 | Who uses it and what they do | Covered: the person, who answers the prompt |
-| Main flows | Partly covered: what the person sees, ask-before-irreversible-Q2 |
-| What it must do | Partly covered: which actions, ask-before-irreversible-Q1 and -Q4 |
-| What it must not do, and what waits | Partly covered: ask-before-irreversible-Q1 |
-| Qualities | Partly covered: it works in every mode, ask-before-irreversible-Q2 |
+| Main flows | Covered: a permission prompt, or a refusal where no prompt is shown (ask-before-irreversible-3) |
+| What it must do | Covered: the actions of R14 (ask-before-irreversible-2), also those of subagents (ask-before-irreversible-5) |
+| What it must not do, and what waits | Covered: deleting files, resetting history, and reading secrets wait (ask-before-irreversible-2) |
+| Qualities | Covered: it works in every mode (ask-before-irreversible-3) |
 | Limits | Covered: a plugin ships hooks, not permission rules |
 | Outside systems | Covered: git and the GitHub CLI `gh` |
 | Volume | Does not apply |
 | Who runs and maintains it | Covered: it ships in `playbook-agents` |
-| Business rules, states, vocabulary | Partly covered: ask-before-irreversible-Q3 |
+| Business rules, states, vocabulary | Covered: the prompt is shown every time (ask-before-irreversible-4) |
