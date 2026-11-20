@@ -6,7 +6,7 @@ The units that build [architecture.md](architecture.md), in order.
 
 | Unit | Status | Evidence | Done on | Owner's words |
 |------|--------|----------|---------|---------------|
-| ask-before-irreversible-U1 | Not started | | | |
+| ask-before-irreversible-U1 | Built | `sh scripts/verify_test.sh` and `sh scripts/verify.sh` pass, shellcheck clean; the new cases ask on 19 delivery forms and 3 unreadable inputs and are silent on 13 others (888 cases in all), and failed when the hook never asked (19 failed), always asked (10 failed), and never asked on unreadable input (3 failed). Pending: the owner's run with the plugin loaded from this worktree, in `bypassPermissions` and in `acceptEdits` | 2026-11-19 | |
 | ask-before-irreversible-U2 | Not started | | | |
 | ask-before-irreversible-U3 | Not started | | | |
 

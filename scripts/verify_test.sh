@@ -289,6 +289,16 @@ cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-agents/hooks/hooks.json"
 expect "hooks: a hold hook with a narrower if fails" fail "playbook-agents does not set \"matcher\": \"Bash\" and an"
 
 fresh
+sed 's/ask-before-delivery\.sh/other.sh/' "$tmp/repo/plugins/playbook-agents/hooks/hooks.json" > "$tmp/hooks.json"
+cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-agents/hooks/hooks.json"
+expect "hooks: hooks.json of playbook-agents without the delivery hook fails" fail "does not run ask-before-delivery.sh"
+
+fresh
+sed 's/"matcher": "Bash"/"matcher": "Read"/' "$tmp/repo/plugins/playbook-agents/hooks/hooks.json" > "$tmp/hooks.json"
+cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-agents/hooks/hooks.json"
+expect "hooks: a delivery hook without the Bash matcher fails" fail "does not run ask-before-delivery.sh"
+
+fresh
 sed 's/agent-models\.sh/other.sh/' "$tmp/repo/plugins/playbook-agents/hooks/hooks.json" > "$tmp/hooks.json"
 cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-agents/hooks/hooks.json"
 expect "hooks: hooks.json of playbook-agents without the model hook fails" fail "does not run agent-models.sh"
@@ -308,7 +318,7 @@ sed 's/"\^playbook-agents:(write|review)\$"/"write"/' "$tmp/repo/plugins/playboo
 cp "$tmp/hooks.json" "$tmp/repo/plugins/playbook-agents/hooks/hooks.json"
 expect "hooks: a SubagentStart matcher that is not exact fails" fail "under SubagentStart"
 
-for f in review-ran.sh review-before-commit.sh agent-models.sh hook-lib.sh rules-for-subagent.sh; do
+for f in review-ran.sh review-before-commit.sh ask-before-delivery.sh agent-models.sh hook-lib.sh rules-for-subagent.sh; do
   fresh
   rm "$tmp/repo/plugins/playbook-agents/hooks/$f"
   expect "hooks: a missing $f of playbook-agents fails" fail "hooks/$f of playbook-agents is missing"
@@ -2620,6 +2630,73 @@ touch -t 202001010000 "$hold_data/held/old"
 ran_run s6 playbook-agents:review
 check "hold: a mark older than seven days is removed when one is written" absent "$hold_data/review/old"
 check "hold: a held commit older than seven days is removed when a mark is written" absent "$hold_data/held/old"
+
+# The delivery hook (ask-before-irreversible-12, ask-before-irreversible-13).
+deliv_hook="$root/plugins/playbook-agents/hooks/ask-before-delivery.sh"
+# deliv_run <command as raw text>: runs the hook on a Bash call with that command.
+deliv_run() {
+  esc=$(printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
+  out=$(printf '{"session_id":"s","cwd":"/tmp","tool_name":"Bash","tool_input":{"command":"%s"}}' "$esc" | sh "$deliv_hook" 2>&1)
+  code=$?
+}
+# asks: exactly one line that asks, with R14 as the reason.
+asks() {
+  [ "$code" -eq 0 ] || return 1
+  [ "$(printf '%s\n' "$out" | wc -l | tr -d ' ')" -eq 1 ] || return 1
+  [ "$out" = '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"ask","permissionDecisionReason":"R14: push, pull requests, merges, and releases are the owner'"'"'s decisions. Confirm this one."}}' ]
+}
+deliv_asks() {
+  deliv_run "$1"
+  check "delivery hook: asks on $1" asks
+}
+deliv_silent() {
+  deliv_run "$1"
+  check "delivery hook: silent on $1" passes
+}
+deliv_asks 'git push'
+deliv_asks 'git -C /x push origin HEAD'
+deliv_asks 'cd x && git push'
+deliv_asks 'FOO=1 git push'
+deliv_asks 'git push --tags'
+deliv_asks 'git push --delete origin b'
+deliv_asks 'git -c a=b push'
+deliv_asks 'git --git-dir=/x/.git push'
+deliv_asks 'gh pr create --fill'
+deliv_asks 'gh pr merge 3'
+deliv_asks 'gh release create v1'
+deliv_asks 'gh release edit v1'
+deliv_asks 'gh release delete v1'
+deliv_asks "sh -c 'git push'"
+deliv_asks 'bash -c "gh pr merge 1"'
+deliv_asks 'eval git push'
+deliv_asks 'git status; git push'
+deliv_asks 'git status
+git push'
+deliv_asks "bash -c 'gh release create v1'"
+deliv_silent 'git commit -m "push it"'
+deliv_silent 'echo git push'
+deliv_silent 'git log'
+deliv_silent 'git status'
+deliv_silent 'gh pr view 1'
+deliv_silent 'gh pr list'
+deliv_silent 'gh release list'
+deliv_silent 'gh release view v1'
+deliv_silent 'git stash push'
+deliv_silent 'ls'
+deliv_silent "sh -c 'git log'"
+out=$(printf '{"tool_input":{"command":""}}' | sh "$deliv_hook" 2>&1); code=$?
+check "delivery hook: an empty command prints nothing" passes
+out=$(printf '' | sh "$deliv_hook" 2>&1); code=$?
+check "delivery hook: empty input prints nothing" passes
+out=$(printf 'not json at all' | sh "$deliv_hook" 2>&1); code=$?
+check "delivery hook: input that is not JSON asks" asks
+out=$(printf '{"cwd":"/tmp","tool_input":{"description":"d"}}' | sh "$deliv_hook" 2>&1); code=$?
+check "delivery hook: input without a command field asks" asks
+rm -rf "$tmp/nolib2"
+mkdir -p "$tmp/nolib2/hooks"
+cp "$deliv_hook" "$tmp/nolib2/hooks/"
+out=$(printf '{"tool_input":{"command":"ls"}}' | sh "$tmp/nolib2/hooks/ask-before-delivery.sh" 2>&1); code=$?
+check "delivery hook: a missing hook-lib.sh asks" asks
 
 # The classifier check of the same hook (repeated-corrections-17).
 cls_t="$tmp/cls"
