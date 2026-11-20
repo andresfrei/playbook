@@ -14,8 +14,7 @@ Waiting for a decision: none.
 
 Next steps, in order:
 
-1. The owner merges the work's pull request into `main`.
-2. After the merge: version 3.6.0 in the three manifests, the tag `v3.6.0`, and the release on GitHub (github-release-2).
+PR #44 merged into `main` on 2026-11-20 at 3fc98e4. Version 3.6.0 is set in the three manifests and released as `v3.6.0` (task-agents-27).
 
 ## Stage table
 
