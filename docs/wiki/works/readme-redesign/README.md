@@ -2,20 +2,21 @@
 
 Redesigns the repository's root `README.md` for a developer who finds Playbook on GitHub, aligned with the landing at https://playbook.neuralmind.lat/ and its new brand. Andres Frei leads it.
 
-Status: Open.
+Status: Closed 2026-11-20.
 
 ## Where work stands
 
-Updated 2026-11-20, after readme-redesign-18.
+Updated 2026-11-20, after readme-redesign-24.
 
-Stage 6, Execution, is open. U1 of [plan.md](plan.md) is Done; U2, the demo image, is Done. U3, the README, is Built. The demo is a designed console, not a recording (readme-redesign-18).
+All stages are closed. The units U1 to U3 of [plan.md](plan.md) are Done. At the close, `test-passes-when-broken` and, after the pre-merge review, `documentation-contradicts-code` went to level 3 and up to `evidence-rules.md` (readme-redesign-19, -20, -23, -24); the review's findings are fixed, the kind other was not delegated (readme-redesign-21), the tasks are recorded in `docs/wiki/tasks.md`, and the shared page `01-product/readme.md` is written. The work closes for version 3.7.2 (readme-redesign-22).
 
-Waiting for a decision: the owner's review of the README rendered on GitHub, light and dark themes.
+Waiting for a decision: none.
 
 Next steps, in order:
 
-1. The owner judges U3 on the pushed branch.
-2. Close the work: shared pages, version, pull request.
+1. The owner merges the pull request of `docs/readme-redesign` into `main`.
+2. Release 3.7.2: the version in the five manifests, the tag, and the GitHub release.
+3. Remove the worktree `../playbook-readme-redesign` and the branch.
 
 ## Stage table
 
@@ -26,7 +27,7 @@ Next steps, in order:
 | 3 Skills | Closed | 2026-11-20 |
 | 4 Design system | Closed | 2026-11-20 |
 | 5 Plan | Closed | 2026-11-20 |
-| 6 Execution | Open | |
+| 6 Execution | Closed | 2026-11-20 |
 
 ## Pages
 

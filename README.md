@@ -34,7 +34,7 @@ Every new feature or phase is a work with its own folder in `docs/wiki/`. The ag
 
 A review agent reads every risky change from a fresh context. Each defect it finds is stored as evidence under a kind of mistake. When three reviews hit the same kind, Playbook proposes one rule, and the agents that write and review code get it every time they start.
 
-**review finds a defect** → **classify stores it as evidence** → **three hits on one kind** → **a rule every agent follows**
+**review finds a defect** → **it is stored as evidence** → **three hits on one kind** → **a rule every agent follows**
 
 ## Three plugins
 
@@ -42,13 +42,13 @@ Take the wiki alone, or add the team. `playbook-agents` requires `playbook-wiki`
 
 | Plugin | What it gives you |
 |--------|-------------------|
-| [`playbook`](plugins/playbook/README.md) | The setup wizard, `/playbook:init`: choose the components and their scope |
+| [`playbook`](plugins/playbook/README.md) | The setup wizard of Claude Code, `/playbook:init`: choose the components and their scope. In Codex CLI, the installer asks instead |
 | [`playbook-wiki`](plugins/playbook-wiki/README.md) | Project memory: decisions kept in Git, each work prepared in six stages, checks on the wiki before commits and merges |
-| [`playbook-agents`](plugins/playbook-agents/README.md) | A working team: `explore` maps code, `write` builds, `review` reviews, `classify` stores findings as evidence. Plus working rules and skills |
+| [`playbook-agents`](plugins/playbook-agents/README.md) | A working team: `explore` maps code, `write` builds, `review` reviews; in Claude Code, `classify` stores findings as evidence. Plus working rules and skills |
 
 ## Install
 
-Paste one prompt into a session and your agent does the rest. Then run `/playbook:init` in your project.
+Paste one prompt into a session and your agent does the rest. In Claude Code, then run `/playbook:init` in your project; in Codex CLI, the installer asks which setup you want.
 
 ### Claude Code prompt
 
