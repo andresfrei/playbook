@@ -20,7 +20,7 @@ The units that build [architecture.md](architecture.md), in order.
 
 ## How the work is delivered
 
-Proposed, as in the works before it (seed-evidence-10), from this repository's history and its only long-lived branch, `main`, which is production:
+Decided (ask-before-irreversible-19), as in the works before it (seed-evidence-10), from this repository's history and its only long-lived branch, `main`, which is production:
 
 - Tested by the checks of each unit and the real runs of U1 and U3.
 - The units are built in order on this work's branch, `feat/ask-before-irreversible`.
