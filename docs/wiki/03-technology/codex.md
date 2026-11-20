@@ -1,5 +1,7 @@
 # Codex CLI integration
 
+Release 3.7.0 aligns the two Codex plugin manifest versions with the three Claude Code plugin versions (codex-install-check-5).
+
 The local checkout supplies a one-command installer (codex-support-3, codex-support-5, codex-support-8). Run `python3 codex/install.py` and choose the wiki or the wiki with agents. The installer packages shared sources, registers a local marketplace through the Codex CLI, preserves existing profiles and directs the user to review hooks in `/hooks`. See the [Codex guide](../../../codex/README.md).
 
 The package carries `skeleton.md` for `prepare-project`. The Codex installer sets the working-agent models. The `config`, `protect`, and `seed-evidence` skills belong to Claude Code (setup-commands-7, codex-install-check-3).
