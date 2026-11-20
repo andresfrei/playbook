@@ -107,6 +107,32 @@ Accepted limits:
 
 The reviewer starts without the conversation, so the request must say what to review.
 
+## How units are planned and built in parallel
+
+Stage 5 of `prepare-project` adds to a work's plan a table of batches, built batch by batch in stage 6 (parallel-units-2). It writes in `plan.md` a column "Waits for" in the units table: a unit that uses what another builds waits for it, and sharing a file is not waiting (parallel-units-5). The batches follow from that column and are written in a Batches table with a column "Shared"; batch 1 holds the units that wait for none, batch 2 those that wait only on batch 1, and so on (parallel-units-3, parallel-units-5). A column "Changes" gives the exact paths each unit may change (parallel-units-4). The plan also names the most `write` agents at once, and how a worktree is prepared: the command that installs the dependencies and the ignored files to copy, such as `.env`. The owner accepts all of it with the plan (parallel-units-8, parallel-units-9, parallel-units-12, parallel-units-15).
+
+Stage 6 starts a unit as soon as every unit it waits for is Done, up to the plan's number of agents (parallel-units-7, parallel-units-8). For each ready unit the main agent:
+
+1. creates a worktree with `git worktree add -b <unit branch> <folder> <work branch>`, never with the Agent tool's `isolation: "worktree"` (parallel-units-11);
+2. runs the plan's install command and copies its ignored files, and nothing when the plan names none (parallel-units-12);
+3. starts `write` in the background with the folder and its paths, as several Agent calls in one message; when one ends, the next ready unit starts (parallel-units-13);
+4. runs `review` from the main folder when the unit is risky, so `classify` writes the evidence once, on the work's branch (parallel-units-6, parallel-units-24);
+5. merges the unit with `git merge --no-ff <unit branch>`, runs its checks, and removes the worktree and its branch (parallel-units-14).
+
+A batch the plan marks as Shared gets one worktree and one branch, prepared once and merged once; in it two units that change the same file cannot run together (parallel-units-23). On a conflict the main agent resolves it and runs the checks of both units again (parallel-units-6).
+
+This happens only when the plan delivers through a work branch with local merges (parallel-units-21) and `playbook-agents` is on. Without it, where `write` does not exist, the main agent builds each unit directly, one at a time, and the batches stay in the plan (parallel-units-22).
+
+Accepted risks (the work's own page lists them with what reduces each):
+
+- Two units change the same lines and the merge conflicts (parallel-units-6).
+- Units pass alone and fail together, so the checks run again on the work's branch after each merge (parallel-units-14).
+- Preparing a worktree is slow or heavy; then the batch is Shared (parallel-units-9, parallel-units-23).
+- A `write` agent changes files in the main folder instead of its own; it gets the absolute folder and its paths (parallel-units-4).
+- An agent fails and leaves its worktree and branch behind; the main agent lists them with `git worktree list` and removes them before the work closes (parallel-units-14).
+- The commit hold of `playbook-agents` holds the first commit in each new worktree once; the agent commits again.
+- Parallel agents spend tokens at the same time; the plan sets the number (parallel-units-8).
+
 ## The data
 
 - In a project's repository: the wiki, in two layers (D189). The shared pages say how the project is now; the folder of each work, `docs/wiki/works/<name>/`, holds its decisions with their reasons and who decided (TD24).
