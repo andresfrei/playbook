@@ -58,4 +58,4 @@ Read the current stage's references.
 - `references/delegation.md` — delegations.
 - `references/evidence.md` — consolidation at close.
 - `references/tasks.md` — recurring tasks at close.
-- `references/working-agents.md` — review findings during execution, scripts and task profiles at close.
+- `references/working-agents.md` — the client's working-agent instructions: scripts, review findings, task profiles. Read it with `6-execution.md`, `evidence.md`, `tasks.md`.

@@ -8,7 +8,7 @@ At the close of a work, when `docs/wiki/evidence.md` exists. Skip silently other
 
 ## Steps
 
-1. Locate `evidence.sh` using the client's working-agent instructions. If the agents plugin is unavailable, tell the owner and skip the rest of this file. Run subsequent commands from the project root with the quoted absolute script path.
+1. Locate `evidence.sh` as "Locate a script" in the client's working-agent instructions says. If the agents plugin is unavailable, tell the owner and skip the rest of this file. Run subsequent commands from the project root with the quoted absolute script path.
 2. Run `sh <script> count docs/wiki`. Each line "ready to consolidate: <kind> (level N): R distinct reviews, last DATE" is one group: kind K at level k. With no such line, go to step 7.
 3. For each group, write one rule of level k+1 that covers every level-k Evidence row of K:
    - concrete, with an example inside;
