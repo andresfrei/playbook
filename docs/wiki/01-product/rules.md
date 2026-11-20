@@ -19,7 +19,7 @@ R1 to R17 are Decided: five by the decision named below, the other twelve by D34
 | R11 | Building | Owner's briefs ask for tests with the feature | D34 |
 | R12 | Building | "todo documentaco y ordenado para que cualquier LLM lo pueda entender de forma optima" | D34 |
 | R13 | Delivering | Current global instructions | D34 |
-| R14 | Delivering | Practice in the owner's projects | D34 |
+| R14 | Delivering | Practice in the owner's projects. A hook of `playbook-agents` asks the person before `git push`, `gh pr create`, `gh pr merge`, and `gh release` create, edit, and delete, every time and for subagents too; the prompt gives R14 as its reason (ask-before-irreversible-2, ask-before-irreversible-3, ask-before-irreversible-4, ask-before-irreversible-5, ask-before-irreversible-21) | D34 |
 | R15 | Delivering | D14 | D14 |
 | R16 | Organizing rules and skills | D2 | D2 |
 | R17 | Organizing rules and skills | D6 | D6 |
