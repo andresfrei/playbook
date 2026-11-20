@@ -6,15 +6,16 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-19, after seed-evidence-13.
+Updated 2026-11-19, after seed-evidence-32.
 
-Stages 1 to 5 are closed (seed-evidence-6, -9, -11, -12, -13). Stage 6, Execution, is open: the units of [plan.md](plan.md) are built in order.
+Stages 1 to 5 are closed (seed-evidence-6, -9, -11, -12, -13). Stage 6, Execution, is open: units U1, U2, and U3 of [plan.md](plan.md) are done, and the shared pages are written.
 
-Waiting for a decision: none.
+Waiting for a decision: the version. Proposed: 3.3.0, MINOR (TD22), for the owner to accept.
 
 Next steps, in order:
 
-1. Close the work: the shared pages, the consolidation of the kinds ready, and the version.
+1. The owner decides the version.
+2. On a yes, after the merge: the version in the three manifests, the tag, and the release on GitHub.
 
 ## Stage table
 
