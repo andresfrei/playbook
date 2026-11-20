@@ -2,21 +2,20 @@
 
 Detects when a task the agent does becomes repetitive, and proposes a dedicated agent for it, with a model that fits the task's weight. Andres Frei leads it.
 
-Status: Open.
+Status: Closed.
 
 ## Where work stands
 
-Updated 2026-11-20, after task-agents-17.
+Updated 2026-11-20, after task-agents-27.
 
-Stages 1 to 5 are closed. Stage 6, Execution, is open: U1 and U2 are Done; the work is closing; see [plan.md](plan.md).
+Stages 1 to 5 are closed (task-agents-7, -13, -14, -15, -17). Stage 6, Execution, is closed: units U1 and U2 of [plan.md](plan.md) are Done, six kinds of findings are consolidated and sent up to `evidence-rules.md` (task-agents-20 to -26), this work's tasks are recorded in `docs/wiki/tasks.md`, and the shared pages are written. The work closes for version 3.6.0 (task-agents-27).
 
 Waiting for a decision: none.
 
 Next steps, in order:
 
-1. Build U1, review it, and merge it.
-2. Build U2, and ask the owner to review it.
-3. Close the work.
+1. The owner merges the work's pull request into `main`.
+2. After the merge: version 3.6.0 in the three manifests, the tag `v3.6.0`, and the release on GitHub (github-release-2).
 
 ## Stage table
 
@@ -27,7 +26,7 @@ Next steps, in order:
 | 3 Skills | Closed | 2026-11-20 |
 | 4 Design system | Closed (not applicable) | 2026-11-20 |
 | 5 Plan | Closed | 2026-11-20 |
-| 6 Execution | Open | |
+| 6 Execution | Closed | 2026-11-20 |
 
 ## Pages
 
