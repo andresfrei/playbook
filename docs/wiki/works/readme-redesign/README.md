@@ -6,17 +6,16 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-20, after readme-redesign-14.
+Updated 2026-11-20, after readme-redesign-18.
 
-Stages 1 to 5 are closed (readme-redesign-7, -9, -10, -12, -14). Stage 6, Execution, is open: U1 of [plan.md](plan.md) is Done.
+Stage 6, Execution, is open. U1 of [plan.md](plan.md) is Done; U2, the demo image, is Done. The demo is a designed console, not a recording (readme-redesign-18).
 
-Waiting for a decision: the owner's go-ahead to install `vhs` and `ttyd` for U2 (readme-redesign-8).
+Waiting for a decision: none.
 
 Next steps, in order:
 
-1. Build U2, the demo GIF, and have the owner judge it.
-2. Build U3, the README, and have the owner judge it on GitHub.
-3. Close the work: shared pages, version, pull request.
+1. Build U3, the README, and have the owner judge it on GitHub.
+2. Close the work: shared pages, version, pull request.
 
 ## Stage table
 
@@ -36,7 +35,7 @@ Next steps, in order:
 | [definition.md](definition.md) | Who reads the README, its structure, what it keeps and moves, and the coverage of each topic | |
 | [technology.md](technology.md) | What the work needs from its technology, and the candidates | |
 | [skills.md](skills.md) | The skills used to build the work | |
-| [design.md](design.md) | The brand the README takes from the landing, and the tokens of the demo GIF | |
+| [design.md](design.md) | The brand the README takes from the landing, and the demo console | |
 | [plan.md](plan.md) | The units, the batches, and how the work is delivered | |
 | [questions.md](questions.md) | The open questions | |
 | [decisions.md](decisions.md) | The decisions of this work | |

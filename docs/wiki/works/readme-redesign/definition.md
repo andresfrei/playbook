@@ -14,7 +14,7 @@ In this order (readme-redesign-2):
 
 1. The banner, linking to the landing; two shields.io badges, the latest release and the license (readme-redesign-4); the site link.
 2. What Playbook is, in one line, and for whom.
-3. A demo: an animated GIF of a real session, the agent asking one question and recording the decision (readme-redesign-3).
+3. A demo: a designed console as a static WebP image, the agent asking one question and recording the decision (readme-redesign-18).
 4. The problem, in three points: decisions vanish in the chat, every session starts from zero, the same mistakes come back.
 5. How it works: the six stages, one line each.
 6. It learns: review finds a defect, classify stores it as evidence, three hits on one kind, a rule every agent follows.

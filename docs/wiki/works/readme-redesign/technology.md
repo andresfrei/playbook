@@ -8,21 +8,18 @@ What the new README needs from its technology, and what is chosen for each need.
 |------|------|------------|--------|
 | N1. Render the README and `docs/how-it-works.md` | readme-redesign-2 | GitHub's Markdown, with Mermaid for the two diagrams, already used by the current README | In use |
 | N2. Show the latest release and the license | readme-redesign-4 | shields.io badges, images loaded by the reader's browser | Decided (readme-redesign-4) |
-| N3. Record the demo as an animated GIF of a real session, and re-record it when the flow changes | readme-redesign-3 | VHS, from `docs/assets/demo.tape` | Decided (readme-redesign-8) |
+| N3. Show the demo as a designed console in a static WebP image | readme-redesign-18 | `docs/assets/demo.html`, rendered to PNG by a headless Chromium (the one Playwright keeps in its cache, or one named by `CHROME`) and encoded to WebP by ffmpeg with libwebp, both already on the machine | Decided (readme-redesign-18) |
 
-## N3: recording the GIF
+## N3: the demo image
 
-The demo shows the agent asking one question and recording the decision (readme-redesign-3). The session is a TUI, Claude Code, whose answers vary from run to run.
+The demo was first an animated GIF recorded with VHS (readme-redesign-3, -8). The first recording showed Claude Code's header, its notices, and a dialogue that varies from run to run; the owner judged it "horrible" and chose a designed console (readme-redesign-18). The VHS candidates are kept here as a record:
 
-| Candidate | What it gains | What it gives up |
-|-----------|---------------|------------------|
-| VHS v0.12.1, charmbracelet, MIT | A `.tape` script in the repository types the prompt, waits for screen text (`Wait+Screen /regex/`), and writes the GIF; re-recording is one command | Needs `vhs` and `ttyd` installed; `ffmpeg` 8.1 is already present. Each recording runs a real session, which spends tokens and can differ |
-| asciinema recorder, then agg v1.9.0, GPL-3.0 | Records a session played by hand, with no script | Nothing to re-run: each new GIF is played again by hand. Two tools, agg built with Cargo |
-| A screen recorder, then ffmpeg to GIF | No new tool beyond ffmpeg | Pixel video, heavy GIF, and nothing reproducible |
+| Candidate | Why it was dropped |
+|-----------|--------------------|
+| VHS v0.12.1 recording a real session | The result depends on the model's answer and on Claude Code's notices and header; it needs a login in an isolated configuration |
+| asciinema with agg | Same dependence on a real session, and nothing to re-run |
 
-Chosen: VHS (readme-redesign-8). Its tape lives in `docs/assets/demo.tape`, so re-recording is reproducible as readme-redesign-3 asks. The tools are installed only when the owner asks for that step.
-
-Sources: https://github.com/charmbracelet/vhs (release v0.12.1, read 2026-11-20; the year of that release was not shown), https://github.com/asciinema/agg (release v1.9.0, read 2026-11-20).
+The image needs no session, no login, and no tokens: the dialogue is text in `docs/assets/demo.html`, and `sh docs/assets/render-demo.sh` writes `docs/assets/demo.webp`. GitHub shows WebP images in Markdown (recalled, checked when the README renders on the pushed branch).
 
 ## Architecture
 

@@ -8,19 +8,22 @@ The README carries the brand designed for the landing in the neuralmind reposito
 - Banner: the landing's social image, `og.png`, copied to `docs/assets/playbook-banner.png`: logo, wordmark, "Your coding agent, with a method.", and the three stripes. A PNG, so GitHub shows the wordmark in Bricolage Grotesque without loading a font.
 - Voice: the landing's copy, in English, adapted to Markdown.
 
-## Tokens, for the demo GIF
+## The demo console
 
-The VHS tape sets the terminal to the brand's colours:
+A static image of one terminal window (readme-redesign-18), 1200 px wide, drawn in HTML:
 
-| Token | Value | In the GIF |
-|-------|-------|------------|
-| `ink` | `#0e1116` | Terminal background, as the banner |
+| Token | Value | In the console |
+|-------|-------|----------------|
+| `ink` | `#0e1116` | Window background, as the banner |
 | `on-ink` | `#e9ecef` | Text |
-| `accent` | `#ff5a1f` | Cursor and selection |
-| `pb-amber` | `#ffb020` | Yellow of the terminal palette |
-| `pb-paper` | `#f2ebdd` | Bright white of the terminal palette |
+| `muted` (dark) | `#8f98a3` | Secondary text and the window's title |
+| `accent` | `#ff5a1f` | The prompt `❯` and the agent's `●` |
+| `pb-amber` | `#ffb020` | Identifiers, such as `rate-limit-1` |
+| `pb-paper` | `#f2ebdd` | The answer the owner types |
 
-Font: IBM Plex Mono, the landing's mono, when installed on the machine that records; otherwise VHS's default monospace. Width 1200 px, the banner's, so both align on GitHub.
+- Font: IBM Plex Mono, the landing's mono, loaded from Google Fonts when the image is rendered.
+- The window: rounded corners, a title bar with three dots and "acme-api", and the logo's three stripes along its foot.
+- The dialogue: the owner asks to continue the work `rate-limit`; the agent asks `rate-limit-Q1` with its recommendation; the owner answers; the agent records `rate-limit-1` with the owner's words.
 
 ## Patterns
 
