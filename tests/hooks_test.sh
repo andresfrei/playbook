@@ -45,7 +45,8 @@ for c in "cd 'repo' && git commit -m x" "cd '$repo' && git commit -m x" 'cd \"re
 done
 
 # A value with a quote inside it, and a folder the hook cannot resolve.
-for c in "git -c user.name='Andres Frei' commit -m x" 'git -C \"$(git rev-parse --show-toplevel)\" commit -m x' \
+for c in "git -c user.name='Andres Frei' commit -m x" "sh -c 'git add -A && git commit -m x'" \
+  "# Don't stage the lockfile\\ngit add src && git commit -m x\\n# now it's safe" 'git -C \"$(git rev-parse --show-toplevel)\" commit -m x' \
   'git -C \"$root\"/. commit -m x'; do
   case $(commit "$repo" "$c") in *'"deny"'*) ok "broken wiki: $c" ;; *) bad "broken wiki: $c" "no deny" ;; esac
 done
@@ -96,6 +97,23 @@ git \\\n  push origin main
 git commit -m \"$(cat <<'EOF'\ndon't stop (yet\nEOF\n)\" && git push
 cat <<EOF > notes.txt\nit's here\nEOF\ngit push
 git commit -m \"it's done && git push
+bash -c \"cd repo && git push origin main\"
+sh -c 'git add -A && git commit -m x && git push'
+bash -lc 'eval \"gh pr merge 3 --squash\"'
+env GIT_TERMINAL_PROMPT=0 git push origin main
+env -u GIT_DIR git push
+sudo -u deploy git push
+git tag -l 'v*' | xargs -n 1 git push origin
+git branch --format='%(refname:short)' | xargs -I{} git push origin {}
+bash <<'EOF'\ncd repo\ngit push\nEOF
+ssh host bash -s <<EOF\ngit push origin main\nEOF
+# Let's ship it\ngit push origin main\n# that's all
+/usr/bin/git push
+git push>/dev/null
+git push 2>&1 | tail -3
+timeout \"$T\" git push
+time -p git push
+command -p git push
 CASES
 while IFS= read -r c; do
   out=$(ask "$c")
@@ -108,6 +126,11 @@ git -c user.name='Andres Frei' commit -m x
 cat <<EOF\ngit push\nEOF
 git commit -m \"$(cat <<'EOF'\nfix: ask before git push\n\ngh pr create is asked too\nEOF\n)\"
 git -C 'my repo' log --grep \"gh pr merge\"
+bash -c \"echo git push\"
+ls # git push
+# git push\nls
+env | grep GIT
+sudo -u deploy git status
 CASES
 
 out=$(CLAUDE_PLUGIN_OPTION_LANGUAGE=Spanish sh "$hooks/session-start.sh" | tail -n 1)

@@ -31,10 +31,11 @@ field() {
 # <program> with these words as its subcommands, in this order, options aside:
 # "has git push" holds for "git -C dir push" and "timeout 60 git push", not for
 # "git stash push". It reads the command as a shell does: quotes, backslashes,
-# command substitutions, whose commands it reads too, and heredocs, whose body
-# it drops. It drops the wrappers Claude Code drops before matching a rule
-# (permissions.md): timeout, time, nice, nohup, stdbuf, command, builtin,
-# noglob, and a bare xargs. The "if" filters of hooks.json are best-effort:
+# comments, command substitutions, whose commands it reads too, and heredocs,
+# whose body it drops unless a shell reads it. It looks through the wrappers
+# Claude Code drops before matching a rule (permissions.md): timeout, time,
+# nice, nohup, stdbuf, command, builtin, noglob, and xargs; through env and
+# sudo; and into the command a shell runs, as in bash -c "git push". The "if" filters of hooks.json are best-effort:
 # Claude Code runs a hook for any command holding $(), backticks, or $VAR, so
 # each hook checks the command itself.
 has() {
@@ -42,8 +43,9 @@ has() {
     function flush() { if (inword) { n++; tok[n] = cur; kind[n] = "w"; cur = ""; inword = 0 } }
     function sep() { flush(); n++; tok[n] = ""; kind[n] = "s" }
 
-    # heredocs: the text without the body of each heredoc whose last line is found.
-    function heredocs(text,    nl, lines, i, j, out, m, delim, hd) {
+    # heredocs: the text without the body of each heredoc whose last line is
+    # found. A body that a shell reads goes to subs, to be read as commands.
+    function heredocs(text,    nl, lines, i, j, out, m, delim, hd, body, shell) {
       hd = "<<-?[ \t]*[\"" q "\\\\]?[A-Za-z_][A-Za-z0-9_]*"
       nl = split(text, lines, "\n"); out = ""
       for (i = 1; i <= nl; i++) {
@@ -51,9 +53,11 @@ has() {
         if (!match(lines[i], hd) || (RSTART > 1 && substr(lines[i], RSTART - 1, 1) == "<")) continue
         delim = substr(lines[i], RSTART, RLENGTH)
         sub(/^<<-?[ \t]*/, "", delim); sub("^[\"" q "\\\\]", "", delim)
+        shell = lines[i] ~ /(^|[^A-Za-z0-9_.\/-])(ba|z|da)?sh([ \t]|$)/; body = ""
         for (j = i + 1; j <= nl; j++) {
           m = lines[j]; gsub(/^[ \t]+|[ \t]+$/, "", m)
-          if (m == delim) { i = j; break }
+          if (m == delim) { if (shell) subs[++ns] = body; i = j; break }
+          body = body lines[j] "\n"
         }
       }
       return out
@@ -94,7 +98,11 @@ has() {
           cur = cur "x"; inword = 1; i = k; continue
         }
         if (dq) { cur = cur c; i++; continue }
-        if (c == " " || c == "\t") { flush(); i++; continue }
+        if (c == "#" && !inword) {
+          j = index(substr(text, i), "\n")
+          i = j ? i + j - 1 : L + 1; continue
+        }
+        if (c == " " || c == "\t" || c == ">" || c == "<") { flush(); i++; continue }
         if (c == "\n" || c == ";" || c == "&" || c == "|" || c == "(" || c == ")") { sep(); i++; continue }
         cur = cur c; inword = 1; i++
       }
@@ -116,23 +124,32 @@ has() {
       }
     }
 
-    # runs: whether a simple command among the words runs the program wanted.
-    function runs(    i, t, state, k, wrap, skip) {
+    # takesarg: whether the option t of a wrapper takes the next word.
+    function takesarg(wrap, t) {
+      if (t ~ /^--(signal|kill-after|adjustment|user|group)$/) return 1
+      return t ~ /^-[A-Za-z]$/ && index(argflags[wrap], substr(t, 2, 1)) > 0
+    }
+
+    # runs: whether a simple command among the words, from the word at "from",
+    # runs the program wanted. The words a shell or eval runs go to subs.
+    function runs(from,    i, t, p, state, k, wrap, skip) {
       state = "first"; k = 0; wrap = ""; skip = 0
-      for (i = 1; i <= n; i++) {
+      for (i = from; i <= n; i++) {
         t = tok[i]
         if (kind[i] == "s") { state = "first"; k = 0; wrap = ""; skip = 0; continue }
         if (skip) { skip = 0; continue }
+        if (state == "shell") { if (t !~ /^-/) subs[++ns] = t; continue }
         if (state == "first") {
-          if (wrap != "") {
-            if (t ~ /^-/) { if (t ~ /^-[nskioe]$|^--(signal|kill-after|adjustment)$/) skip = 1; continue }
-            if (wrap == "timeout" && t ~ /^[0-9.]+[smhd]?$/) { wrap = "done"; continue }
+          if (wrap != "" && wrap != "done") {
+            if (t ~ /^-/) { if (takesarg(wrap, t)) skip = 1; continue }
+            if (wrap == "timeout") { wrap = "done"; continue }
           }
-          if (t ~ /^[A-Za-z_][A-Za-z0-9_]*=/ || t ~ /^(do|then|else|elif|if|while|until|!|time|nohup|builtin|noglob|[{]|[}])$/) continue
-          if (t == "command" && tok[i + 1] !~ /^-[vV]$/) continue
-          if (t == "xargs" && tok[i + 1] !~ /^-/) continue
-          if (t ~ /^(timeout|nice|stdbuf)$/) { wrap = t; continue }
-          state = (t == w[1]) ? "match" : "other"; k = 1
+          if (t ~ /^[A-Za-z_][A-Za-z0-9_]*=/ || t ~ /^(do|then|else|elif|if|while|until|!|nohup|builtin|noglob|[{]|[}])$/) continue
+          p = t; sub(/^.*\//, "", p)
+          if (p == "command" && tok[i + 1] ~ /^-[vV]$/) { state = "other"; continue }
+          if (p ~ /^(timeout|nice|stdbuf|time|command|env|sudo|xargs)$/) { wrap = p; continue }
+          if (p ~ /^(bash|sh|zsh|dash|eval)$/) { state = "shell"; continue }
+          state = (p == w[1]) ? "match" : "other"; k = 1
           if (state == "match" && k == nw) return 1
           continue
         }
@@ -143,14 +160,22 @@ has() {
       return 0
     }
 
-    BEGIN { nw = split(want, w, " ") }
+    BEGIN {
+      nw = split(want, w, " ")
+      argflags["timeout"] = "sk"; argflags["nice"] = "n"; argflags["stdbuf"] = "ioe"; argflags["time"] = "of"
+      argflags["env"] = "uCS"; argflags["sudo"] = "ugChpU"; argflags["xargs"] = "nILPsdEa"
+    }
     { text = text $0 "\n" }
     END {
       text = heredocs(text)
-      ok = scan(text)
-      for (s = 1; s <= ns; s++) if (!scan(subs[s])) ok = 0
-      found = runs()
-      if (!found && !ok) { naive(text); found = runs() }
+      ok = scan(text); read = 0; from = 1
+      while (1) {
+        while (read < ns) if (!scan(subs[++read])) ok = 0
+        if (runs(from)) { found = 1; break }
+        from = n + 1
+        if (read == ns) break
+      }
+      if (!found && !ok) { naive(text); found = runs(1) }
       exit !found
     }'
 }
