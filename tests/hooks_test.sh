@@ -33,6 +33,9 @@ case $out in *'"deny"'*) ok "cd <dir>: found" ;; *) bad "cd <dir>" "$out" ;; esa
 out=$(commit "/" "git -C $repo commit -m x")
 case $out in *'"deny"'*) ok "git -C <dir>: found" ;; *) bad "git -C <dir>" "$out" ;; esac
 
+out=$(commit "$repo" "git -C $repo commit -m \\\"fix: push\\\"")
+case $out in *'"deny"'*) ok "broken wiki, commit message naming push: deny" ;; *) bad "commit message naming push" "$out" ;; esac
+
 out=$(commit "$repo" 'for f in $(ls); do cat $f; done')
 [ -z "$out" ] && ok "broken wiki, not a commit: silent" || bad "broken wiki, not a commit" "$out"
 
@@ -43,11 +46,15 @@ out=$(commit "$tmp" "git commit -m x")
 # through any command with $(), backticks, or $VAR.
 ask() { printf '{"tool_input":{"command":"%s"}}' "$1" | sh "$hooks/ask.sh"; }
 for c in 'git push origin main' 'cd x && git push' 'git -C ../a push -u origin b' 'gh pr create --fill' \
-  'gh -R o/r pr merge 3' 'gh release create v1' 'echo hi\ngit push'; do
+  'gh -R o/r pr merge 3' 'gh release create v1' 'echo hi\ngit push' 'gh release upload v1 a.tgz' \
+  'timeout 120 git push origin main' 'timeout -s KILL 5m git push' 'nohup git push' 'nice -n 10 git push' \
+  'stdbuf -oL git push' 'command git push' 'echo main | xargs git push origin' 'git --no-pager push' \
+  'git -c push.default=current push' 'FOO=1 git push' 'if git push; then echo ok; fi'; do
   case $(ask "$c") in *'"permissionDecision":"ask"'*) ok "ask: $c" ;; *) bad "ask: $c" "did not ask" ;; esac
 done
 for c in 'for f in $(ls); do cat $f; done' 'git status --porcelain' 'echo git push' 'gh release view v1' \
-  'cat "$f" | grep push' 'git log -n 3'; do
+  'cat "$f" | grep push' 'git log -n 3' 'git stash push -u -m wip' 'git commit -m \"fix: ask before push\"' \
+  'command -v git' 'gh issue create --title \"pr create\"' 'git log --grep push'; do
   out=$(ask "$c")
   [ -z "$out" ] && ok "silent: $c" || bad "silent: $c" "$out"
 done
@@ -78,6 +85,11 @@ case $out in
   *) bad "session start: README that fits alone but not with the rules" "printed whole" ;;
 esac
 
+# A session started in a folder of the repository finds the wiki at its root.
+mkdir -p "$repo/packages/x"
+out=$(CLAUDE_PROJECT_DIR=$repo/packages/x sh "$hooks/session-start.sh")
+case $out in *'# The wiki: docs/playbook/README.md'*) ok "session start: from a subfolder" ;; *) bad "session start: from a subfolder" "missing" ;; esac
+
 # Adoption: a systemMessage inside a git repository not yet adopted.
 adopt() { CLAUDE_PROJECT_DIR=$1 sh "$hooks/adopt.sh"; }
 mkdir -p "$tmp/bare" && git -C "$tmp/bare" init -q
@@ -91,6 +103,10 @@ mkdir -p "$tmp/done/docs/playbook" && git -C "$tmp/done" init -q
 printf '# W\n\nLast audit: 2026-11-21, after work a. Contradictions: 0, 0.\n' > "$tmp/done/docs/playbook/README.md"
 out=$(adopt "$tmp/done")
 [ -z "$out" ] && ok "adopt: audited, silent" || bad "adopt: audited" "$out"
+
+mkdir -p "$tmp/done/sub"
+out=$(adopt "$tmp/done/sub")
+[ -z "$out" ] && ok "adopt: audited, from a subfolder, silent" || bad "adopt: from a subfolder" "$out"
 
 mkdir -p "$tmp/nogit"
 out=$(adopt "$tmp/nogit")

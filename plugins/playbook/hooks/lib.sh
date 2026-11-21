@@ -28,9 +28,13 @@ field() {
 }
 
 # has <program> <word>...: whether one of the simple commands in $command runs
-# <program> with these words among its arguments, in this order. The "if"
-# filters of hooks.json are best-effort: Claude Code runs a hook for any command
-# holding $(), backticks, or $VAR, so each hook checks the command itself.
+# <program> with these words as its subcommands, in this order, options aside:
+# "has git push" holds for "git -C dir push" and "timeout 60 git push", not for
+# "git stash push". It drops the wrappers Claude Code drops before matching a
+# rule (permissions.md): timeout, time, nice, nohup, stdbuf, command, builtin,
+# noglob, and a bare xargs. The "if" filters of hooks.json are best-effort:
+# Claude Code runs a hook for any command holding $(), backticks, or $VAR, so
+# each hook checks the command itself.
 has() {
   printf '%s\n' "$command" | awk -v want="$*" -v q="'" '
     BEGIN { n = split(want, w, " ") }
@@ -38,20 +42,29 @@ has() {
       line = $0
       gsub(/\$\(|`|\(|\)|&&|\|\||[;|&{}]/, " ; ", line)
       m = split(line, t, /[ \t]+/)
-      first = 1; k = 0
+      for (i = 1; i <= m; i++) gsub("^[\"" q "]+|[\"" q "]+$", "", t[i])
+      state = "first"; k = 0; wrap = ""; skip = 0
       for (i = 1; i <= m; i++) {
-        tok = t[i]; gsub("^[\"" q "]+|[\"" q "]+$", "", tok)
+        tok = t[i]
         if (tok == "") continue
-        if (tok == ";") { first = 1; k = 0; continue }
-        if (first) {
-          if (tok ~ /^[A-Za-z_][A-Za-z0-9_]*=/ || tok ~ /^(do|then|else|elif|if|while|until|!|time)$/) continue
-          first = 0
-          if (tok == w[1]) k = 1
-          if (k == n) { found = 1; exit }
+        if (tok == ";") { state = "first"; k = 0; wrap = ""; skip = 0; continue }
+        if (skip) { skip = 0; continue }
+        if (state == "first") {
+          if (wrap != "") {
+            if (tok ~ /^-/) { if (tok ~ /^-[nskioe]$|^--(signal|kill-after|adjustment)$/) skip = 1; continue }
+            if (wrap == "timeout" && tok ~ /^[0-9.]+[smhd]?$/) { wrap = "done"; continue }
+          }
+          if (tok ~ /^[A-Za-z_][A-Za-z0-9_]*=/ || tok ~ /^(do|then|else|elif|if|while|until|!|time|nohup|builtin|noglob)$/) continue
+          if (tok == "command" && t[i + 1] !~ /^-[vV]$/) continue
+          if (tok == "xargs" && t[i + 1] !~ /^-/) continue
+          if (tok ~ /^(timeout|nice|stdbuf)$/) { wrap = tok; continue }
+          state = (tok == w[1]) ? "match" : "other"; k = 1
+          if (state == "match" && k == n) { found = 1; exit }
           continue
         }
-        if (k > 0 && k < n && tok == w[k + 1]) k++
-        if (k == n) { found = 1; exit }
+        if (state != "match") continue
+        if (tok ~ /^-/) { if (tok ~ /^(-C|-c|-R|--repo|--git-dir|--work-tree|--namespace)$/) skip = 1; continue }
+        if (tok == w[k + 1]) { k++; if (k == n) { found = 1; exit } } else state = "other"
       }
     }
     END { exit !found }'

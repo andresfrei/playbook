@@ -53,13 +53,16 @@ Then start a new session in your project and run `/playbook:audit`. On its first
 
 To make searches cheaper, copy [`plugins/playbook/extras/Explore.md`](plugins/playbook/extras/Explore.md) to `~/.claude/agents/`.
 
-To keep Claude from reading secrets, add deny rules to `.claude/settings.json`. To be asked before a command that destroys local work, add ask rules: they prompt in every permission mode, `bypassPermissions` included. The plugin already asks before every push, so a forced push needs no rule.
+To keep Claude from reading secrets, add deny rules to `.claude/settings.json`. To be asked before a command that destroys work, add ask rules: they prompt in every permission mode, `bypassPermissions` included. The plugin asks before every push; a forced push, which rewrites the remote's history, gets its own rules as well, since a hook's filter is best-effort.
 
 ```json
 {
   "permissions": {
     "deny": ["Read(./.env)", "Read(./.env.*)", "Read(./secrets/**)"],
-    "ask": ["Bash(git reset --hard*)", "Bash(git clean *)", "Bash(rm -rf *)", "Bash(rm -fr *)"]
+    "ask": [
+      "Bash(git reset --hard*)", "Bash(git clean *)", "Bash(rm -rf *)", "Bash(rm -fr *)",
+      "Bash(git push -f*)", "Bash(git push * -f*)", "Bash(git push *--force*)"
+    ]
   }
 }
 ```

@@ -4,8 +4,8 @@
 # message goes out as a systemMessage, which the person sees, and as context
 # for Claude. Outside a git repository it prints nothing.
 dir=${CLAUDE_PROJECT_DIR:-.}
-git -C "$dir" rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0
-readme=$dir/docs/playbook/README.md
+root=$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null) || exit 0
+readme=$root/docs/playbook/README.md
 if [ ! -f "$readme" ]; then
   message='No playbook wiki: run /playbook:audit to adopt this project, or /playbook:define to start a new one.'
 elif ! grep -q '^Last audit:' "$readme"; then

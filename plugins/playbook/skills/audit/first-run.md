@@ -13,7 +13,7 @@ The first run adopts the project: it turns the knowledge the project already hol
    - Inside the repository: the README files; `docs/`, a 4.x wiki in `docs/wiki/` among them; `CLAUDE.md`, nested ones too; `AGENTS.md`; `.claude/rules/` and `.claude/skills/`; records of decisions, such as `docs/adr/`; other tools' rules or memory, such as `.cursor/rules/`, `.clinerules`, or `memory-bank/`.
    - Outside it: `~/.claude/CLAUDE.md` and the auto memory index, to report only; the plugins on at any scope, from `claude plugin list`, for step 5.
 2. **Propose the order.** Show one table: each file, what it holds, and what to do with it: keep, merge into another, move into the wiki (and to which page), or delete. Documentation for the software's users stays where it is. Ask the owner one topic at a time.
-3. **Build `docs/playbook/`.**
+3. **Build `docs/playbook/`.** When it already exists, as `define` creates it for a new project, keep its pages and decisions and add to them.
    - `README.md`: the product in two lines, the owner, the open work, and the pages.
    - `product.md`, `technology.md`, `skills.md`, and `design.md` when the project has an interface. Each statement cites its decision, or is marked Open when nobody knows why. Write only what the code does not say: what the code or its configuration shows, such as the test runner or the indentation, stays out.
    - A reason the project already wrote, such as a record of a decision or a section of a README, is shown to the owner to confirm. On a yes it becomes a decision that quotes the owner and names its source; without an answer, the statement keeps its reason and is marked Open.
