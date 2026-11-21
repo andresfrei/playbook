@@ -38,11 +38,11 @@ Do not use it to update Claude Code, to answer how a Claude Code feature works, 
 
    When it prints an error, or no `## ` line when the record is behind, say why, leave the record as it is, and stop.
 4. When the cut holds more than 10 versions, keep the 10 oldest and say the range left for the next run.
-5. Give the Explore agent the cut file and these paths: `plugins/*/hooks/`, `plugins/*/.claude-plugin/`, `.claude-plugin/marketplace.json`, `plugins/*/agents/`, `plugins/*/skills/`, `plugins/*/commands/`, `.claude/`, `codex/`, `docs/wiki/03-technology/`. Ask for one row per changelog entry that touches one of them: version, change, the file it touches, a proposal, optimize or check, and one line of why. Entries that touch nothing are left out.
+5. Give the Explore agent the cut file and these paths: `plugins/*/hooks/`, `plugins/*/.claude-plugin/`, `.claude-plugin/marketplace.json`, `plugins/*/agents/`, `plugins/*/skills/`, `plugins/*/commands/`, `.claude/`, `docs/wiki/technology.md`. Ask for one row per changelog entry that touches one of them: version, change, the file it touches, a proposal, optimize or check, and one line of why. Entries that touch nothing are left out.
 6. Verify each row by reading the file it names. A row whose file does not use what the entry changes, or that the change already favours, becomes "nothing", with one line of why.
 7. Show the table, newest version first: the rows to optimize or check, then the rows that became nothing, and the range read, such as "2.1.326 to 2.1.330".
 8. Ask, one at a time, each optimize or check row and each Pending row: do it, leave it for later, or drop it.
-9. Write the record: set `Last version evaluated` to the newest version read; add a row to Evaluations, whose Where each went names, for each proposal, the work or fix it became, "pending", or "dropped"; add the proposals left for later to Pending, and remove the Pending rows answered. Run `sh plugins/playbook-wiki/check-wiki.sh docs/wiki`.
+9. Write the record: set `Last version evaluated` to the newest version read; add a row to Evaluations, whose Where each went names, for each proposal, the work or fix it became, "pending", or "dropped"; add the proposals left for later to Pending, and remove the Pending rows answered. Run `sh plugins/playbook/scripts/check-wiki.sh docs/wiki`.
 
 ## Output
 

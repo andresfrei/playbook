@@ -1,24 +1,19 @@
 # playbook
 
-This optional setup plugin gives Claude Code the `/playbook:init` command. Use it to choose what runs in a single repository or across your projects. You can also install the wiki directly. Codex offers its own [installer](../../codex/README.md).
+A Claude Code plugin that helps you build software fast: it defines each change with you before code, records your decisions in your words, and learns from its own mistakes.
 
-## Setup flow
-
-```mermaid
-flowchart TD
-    start["Run /playbook:init"] --> scan["Inspect enabled plugins, skills, and the wiki"]
-    scan --> on{"Already on here?"}
-    on -->|Keep| wiki
-    on -->|Change, or not on| choice{"Choose components"}
-    choice -->|Wiki only| scope["Choose repository or user scope"]
-    choice -->|Wiki and agents| language["Choose the agent language"]
-    language --> scope
-    scope --> conflicts["Resolve overlapping skills if found"]
-    conflicts --> apply["Apply the selection"]
-    apply --> wiki{"Repository without a wiki?"}
-    wiki -->|Yes, add one| skeleton["Write the wiki's skeleton"]
-    wiki -->|No| next["Start a new session"]
-    skeleton --> next
+```sh
+claude plugin marketplace add andresfrei/playbook
+claude plugin install playbook@playbook
 ```
 
-Run the command again to see what is on and keep it or change it. A pair of skills you settled with "Keep both" is not asked again: the choice is kept under `playbook.keepBoth` in your Claude Code settings. See the [Claude Code guide](../../docs/claude-code.md) for installation and the [init skill](skills/init/SKILL.md) for the exact prompts and settings.
+| Piece | What it does |
+|-------|--------------|
+| `/playbook:define` | Interviews you until the change's spec can be written, with only the steps its type needs |
+| `/playbook:close` | Checks the build against the spec, has `reviewer` read a risky change, and proposes one line for each repeated mistake |
+| `/playbook:release` | Sets the version, commits, and drafts the notes; you push and publish |
+| `reviewer` | A read-only agent that checks a change against its spec, for correctness only |
+| Rules | Loaded at session start, under 50 lines |
+| Hooks | Ask before push, pull request, merge, and release; run the wiki check on commit |
+
+For cheaper searches, copy `extras/Explore.md` to `~/.claude/agents/`: it runs Claude Code's Explore on `haiku`.

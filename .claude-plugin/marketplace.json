@@ -1,24 +1,14 @@
 {
   "name": "playbook",
-  "description": "General working rules and skills for building software with an AI coding agent.",
+  "description": "Playbook: build software fast with Claude Code, with each change defined before code and each decision recorded.",
   "owner": {
     "name": "Andres Frei"
   },
   "plugins": [
     {
       "name": "playbook",
-      "description": "Starts the playbook in a repository: the wiki alone or the whole product.",
+      "description": "Defines each change before code, records the owner's decisions, and learns from repeated mistakes.",
       "source": "./plugins/playbook"
-    },
-    {
-      "name": "playbook-wiki",
-      "description": "A project's wiki as its shared source of truth: the method, the format, and the check.",
-      "source": "./plugins/playbook-wiki"
-    },
-    {
-      "name": "playbook-agents",
-      "description": "Working rules, skills, and agents for building software with an AI coding agent.",
-      "source": "./plugins/playbook-agents"
     }
   ]
 }

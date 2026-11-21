@@ -1,4 +1,0 @@
-schema_version: "1.1"
-name: prepare-project-no-code-before-stage-six
-context:
-  scaffold_script: fixture.sh
