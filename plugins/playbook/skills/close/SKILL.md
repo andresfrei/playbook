@@ -27,7 +27,7 @@ Do not use it for a small change with no work: run its tests and commit.
    Write each line the owner accepts. When there is none, say so in one line.
 4. For a unit, mark it done in `spec.md`. For the whole work, write what it decided into the shared pages (`product.md`, `technology.md`, `skills.md`, `design.md`), each statement citing its decision, and clear the open work in `docs/playbook/README.md`. For each decision of the work that starts with "Replaces <ID>", write "Replaced by <its ID>" at the start of the old decision's cell and move each shared page's citation of the old ID to the new one, in the same edit. Reread each shared page you changed against the work's decisions, and show any contradiction to the owner to resolve.
 5. Run `sh "${CLAUDE_PLUGIN_ROOT}/scripts/check-wiki.sh" docs/playbook` and fix what it lists.
-6. For the whole work, read the line "Last audit" in `docs/playbook/README.md`. When works closed since then, there is none, or you found a contradiction, suggest `/playbook:audit` in one line.
+6. For the whole work, read the line "Last audit" in `docs/playbook/README.md`. When works closed since then, there is none, or you found a contradiction, suggest `/playbook:audit-wiki` in one line.
 7. For the whole work, recommend whether it needs a new version, MAJOR, MINOR, or PATCH by Semantic Versioning, and ask the owner. On a yes, the owner runs `/playbook:release`.
 
 ## Output
