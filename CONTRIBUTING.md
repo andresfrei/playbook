@@ -6,7 +6,7 @@ Playbook adds only what Claude Code does not already do, and every piece is just
 
 ## Issues
 
-Use one of the two templates: **Bug** for something that does not work as described, **Idea** for a proposal. Say which client and version you use.
+Use one of the two templates: **Bug** for something that does not work as described, **Idea** for a proposal. Say which version of Claude Code you use.
 
 Do not report a security problem in an issue. See [SECURITY.md](SECURITY.md).
 
@@ -21,12 +21,12 @@ Do not report a security problem in an issue. See [SECURITY.md](SECURITY.md).
   ```sh
   sh tests/check-wiki_test.sh
   sh tests/hooks_test.sh
-  sh plugins/playbook/scripts/check-wiki.sh docs/wiki
+  sh plugins/playbook/scripts/check-wiki.sh docs/playbook
   shellcheck plugins/playbook/hooks/*.sh plugins/playbook/scripts/*.sh tests/*.sh
   claude plugin validate .
   ```
 
-What is decided about the product is in [docs/wiki/](docs/wiki/README.md). A change that contradicts a decision is discussed in an issue first.
+What is decided about the product is in [docs/playbook/](docs/playbook/README.md). A change that contradicts a decision is discussed in an issue first.
 
 ## Releases
 

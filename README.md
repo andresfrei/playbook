@@ -85,7 +85,7 @@ Then run `/playbook:audit` in each project. It moves the 4.x wiki in `docs/wiki/
 ## Documentation
 
 - [What is new](https://github.com/andresfrei/playbook/releases): the notes of every release.
-- [The project wiki](docs/wiki/README.md): this repository builds Playbook with Playbook.
+- [The project wiki](docs/playbook/README.md): this repository builds Playbook with Playbook.
 
 ## Contributing
 
