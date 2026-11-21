@@ -15,7 +15,7 @@ Do not use it for a small change in an existing repository that has no wiki. Do 
 
 - Read the format of a wiki, `<this skill's folder>/../../format.md`, before you write in the wiki.
 - A work is prepared in six stages, in this order: 1 wiki, 2 technology, 3 skills, 4 design system, 5 plan, 6 execution.
-- Work on one stage at a time: the first one in the work's stage table that is not closed. Never start a stage before the one before it is closed.
+- Work on one stage at a time. Never start a stage before the one before it is closed.
 - Only the owner closes a stage, also as not applicable, or a delegation does. Never skip one.
 - No code before stage 6. In stages 1 to 5, do not write the product's code, generate a scaffold, or add a dependency.
 - For a project already started, also follow "Project already started" in each reference file.
@@ -32,13 +32,14 @@ Do not use it for a small change in an existing repository that has no wiki. Do 
 
 ## Steps
 
-1. Read `docs/wiki/README.md`. When there is none, this is a new project, or a project already started when the repository holds code: follow "A new project" in `references/1-wiki.md`.
-2. The current work is the folder under `docs/wiki/works/` whose `README.md` says Open. When none does, ask the owner for the work's name and what it is for; create its folder at the first decision, question, or plan. When several do, ask which.
-3. The current stage is the first one in the work's stage table that is not closed. Tell the owner which one it is, in one line.
-4. Read the reference file of the current stage and do its steps.
-5. Write each result in the work's folder when it is produced, with the `write-docs` skill. Then rewrite "Where work stands" in the work's `README.md`.
-6. When the closing condition of the stage holds and `sh <this skill's folder>/../../check-wiki.sh docs/wiki` passes, list what it leaves Decided, Proposed, and Open, and ask the owner to close it, unless delegated.
-7. When it is closed, record that as a decision. In the stage table, set the stage to Closed with the date and the next stage to Open.
+1. Run `sh "${CLAUDE_SKILL_DIR}/../migrate/scripts/wiki-format.sh" status docs/wiki`; on any output, show it and stop.
+2. Read `docs/wiki/README.md`. When there is none, this is a new project, or a project already started when the repository holds code: follow "A new project" in `references/1-wiki.md`.
+3. The current work is the folder under `docs/wiki/works/` whose `README.md` says Open. When none does, ask the owner for the work's name and what it is for; create its folder at the first decision, question, or plan. When several do, ask which.
+4. The current stage is the first one in the work's stage table that is not closed. Tell the owner which one it is, in one line.
+5. Do the steps of the current stage's reference file.
+6. Write each result in the work's folder when it is produced, with the `write-docs` skill. Then rewrite "Where work stands" in the work's `README.md`.
+7. When the closing condition of the stage holds and `sh <this skill's folder>/../../check-wiki.sh docs/wiki` passes, list what it leaves Decided, Proposed, and Open, and ask the owner to close it, unless delegated.
+8. When it is closed, record that as a decision. In the stage table, set the stage to Closed with the date and the next stage to Open.
 
 ## Output
 

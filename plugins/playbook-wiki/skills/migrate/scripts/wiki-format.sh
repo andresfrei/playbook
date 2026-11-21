@@ -29,8 +29,8 @@ set -u
 check_wiki="$(dirname "$0")/../../../check-wiki.sh"
 
 # The format of a wiki the playbook is at, read from the one place that holds
-# it. Raise it there only together with a new references/format-<number>.md
-# that says how a wiki reaches it.
+# it. Raise it there only together with a change of format.md
+# that says what the format is.
 format=$(sh "$check_wiki" --format)
 
 command=${1:-}
@@ -55,7 +55,7 @@ wiki_format() {
   esac
 }
 
-advice='Tell the owner, and recommend running the doctor skill (/playbook-wiki:doctor). Do not repair the wiki unasked.'
+advice='Tell the owner, and recommend running the migrate skill (/playbook-wiki:migrate). Do not repair the wiki unasked.'
 
 # notice <message for the person> <context for the agent>: one JSON object for a
 # SessionStart hook. Both texts are fixed sentences with numbers, so nothing in
@@ -69,11 +69,11 @@ case $command in
     [ -f "$wiki/README.md" ] || exit 0
     current=$(wiki_format)
     if [ -z "$current" ]; then
-      notice "This project's wiki has no format marker, and the playbook is at wiki format $format. Run /playbook-wiki:doctor to bring it to that format." \
-        "The wiki of this project has no format marker, and the playbook is at wiki format $format. The person was shown this at the start of the session; recommend running the doctor skill (/playbook-wiki:doctor). Do not repair the wiki unasked."
+      notice "This project's wiki has no format marker, and the playbook is at wiki format $format. Run /playbook-wiki:migrate to bring it to that format." \
+        "The wiki of this project has no format marker, and the playbook is at wiki format $format. The person was shown this at the start of the session; recommend running the migrate skill (/playbook-wiki:migrate). Do not repair the wiki unasked."
     elif [ "$current" -lt "$format" ]; then
-      notice "This project's wiki is at format $current, and the playbook is at $format. Run /playbook-wiki:doctor to bring it to that format." \
-        "The wiki of this project is at wiki format $current, and the playbook is at $format. The person was shown this at the start of the session; recommend running the doctor skill (/playbook-wiki:doctor). Do not repair the wiki unasked."
+      notice "This project's wiki is at format $current, and the playbook is at $format. Run /playbook-wiki:migrate to bring it to that format." \
+        "The wiki of this project is at wiki format $current, and the playbook is at $format. The person was shown this at the start of the session; recommend running the migrate skill (/playbook-wiki:migrate). Do not repair the wiki unasked."
     elif [ "$current" -gt "$format" ]; then
       notice "This project's wiki is at format $current, newer than the playbook's $format: the playbook installed is older than the wiki. Update its plugins with /plugin, then start a new session." \
         "The wiki of this project is at wiki format $current, newer than the wiki format $format of the playbook installed, so its plugins are older than the wiki. The person was shown this at the start of the session. Do not mark or migrate the wiki, and do not update a plugin unasked."

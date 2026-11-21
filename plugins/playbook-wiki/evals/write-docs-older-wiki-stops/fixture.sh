@@ -1,6 +1,6 @@
 #!/bin/bash
-# Builds a repository whose wiki has no format marker and no stage table: it
-# was written before the stages existed, so it is at format 1.
+# Builds a repository whose wiki is below the playbook's format: it has no
+# format marker, so write-docs must stop and point to migrate.
 set -eu
 git init -q -b main .
 git config user.email eval@example.com

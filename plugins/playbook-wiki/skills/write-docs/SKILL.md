@@ -28,12 +28,13 @@ Do not use it for writing a skill or for preparing a project in stages. Use it f
 
 ## Steps
 
-1. Find out what the document is for, who will read it, and where it will live. Take this from the request and the repository. Ask the owner for what neither says.
-2. Read the documents that already exist there: the entry point, the pages on the same topic, and the glossary when there is one. Keep their terms and format. When a page already covers the topic, update it instead of adding one.
-3. Collect the facts the document needs. Verify each one against its source: the code, a command's output, a tool's current documentation, or the owner's words. Keep the evidence. Ask the owner for a fact that has no source. Do not invent it.
-4. Write the document following the Rules.
-5. Link a new page from the entry point, and update what the entry point says is decided, open, and next when that changed. When several documents have no entry point, report it to the owner.
-6. Read the document as a reader who has nothing else. Fix every break of the Rules, and every link or path that does not resolve.
+1. Run `sh "${CLAUDE_SKILL_DIR}/../migrate/scripts/wiki-format.sh" status docs/wiki`. When it prints a line, show it, point to `/playbook-wiki:migrate`, and stop.
+2. Find out what the document is for, who will read it, and where it will live. Take this from the request and the repository. Ask the owner for what neither says.
+3. Read the documents that already exist there: the entry point, the pages on the same topic, and the glossary when there is one. Keep their terms and format. When a page already covers the topic, update it instead of adding one.
+4. Collect the facts the document needs. Verify each one against its source: the code, a command's output, a tool's current documentation, or the owner's words. Keep the evidence. Ask the owner for a fact that has no source. Do not invent it.
+5. Write the document following the Rules.
+6. Link a new page from the entry point, and update what the entry point says is decided, open, and next when that changed. When several documents have no entry point, report it to the owner.
+7. Read the document as a reader who has nothing else. Fix every break of the Rules, and every link or path that does not resolve.
 
 ## Output
 

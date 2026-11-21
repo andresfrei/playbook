@@ -352,11 +352,11 @@ skill_plugin=playbook add_skill starter-skill "Short description." 10 "disable-m
 expect "L4: a skill only the person starts in the start plugin passes" pass
 
 fresh
-printf 'Read `../../prepare-project/references/1-wiki.md`.\n' >> "$tmp/repo/plugins/playbook-wiki/skills/doctor/references/format-3.md"
-expect "skills: a reference file that reads a file of another skill fails" fail "reads a file inside the skill prepare-project"
+printf 'Read `../../write-docs/SKILL.md`.\n' >> "$tmp/repo/plugins/playbook-wiki/skills/prepare-project/references/1-wiki.md"
+expect "skills: a reference file that reads a file of another skill fails" fail "reads a file inside the skill write-docs"
 
 fresh
-printf 'Read `../../../format.md`.\n' >> "$tmp/repo/plugins/playbook-wiki/skills/doctor/references/format-3.md"
+printf 'Read `../../../format.md`.\n' >> "$tmp/repo/plugins/playbook-wiki/skills/prepare-project/references/1-wiki.md"
 expect "skills: a reference file that reads the plugin's format passes" pass
 
 fresh
@@ -1363,7 +1363,7 @@ check "in force: plain --decisions still prints every decision, replaced or not"
 check "in force: plain --decisions lines keep three fields" test "$(sh "$check_wiki" --decisions "$project_wiki" | head -n 1)" = "2026-01-10 auth-2 Rule two of auth"
 
 # The marker of a wiki's format.
-wiki_format="$root/plugins/playbook-wiki/skills/doctor/scripts/wiki-format.sh"
+wiki_format="$root/plugins/playbook-wiki/skills/migrate/scripts/wiki-format.sh"
 product_format=$present
 
 # expect_format <case name> <command> <expected exit code> <text the output must contain, or "" for no output>
@@ -1392,13 +1392,13 @@ expect_format "format: a project without a wiki gets no notice" status 0 ""
 
 fresh_wiki
 rm "$tmp/wiki/.format"
-expect_format "format: a wiki without a marker gets a notice that names the doctor" status 0 "has no format marker"
+expect_format "format: a wiki without a marker gets a notice that names migrate" status 0 "has no format marker"
 expect_format "format: the notice says not to repair unasked" status 0 "Do not repair the wiki unasked"
 
 fresh_wiki
 printf '3\n' > "$tmp/wiki/.format"
 expect_format "format: a marker at 3 gets the behind line with both numbers" status 0 "is at wiki format 3, and the playbook is at $product_format"
-expect_format "format: the behind line names the doctor" status 0 "/playbook-wiki:doctor"
+expect_format "format: the behind line names migrate" status 0 "/playbook-wiki:migrate"
 
 fresh_wiki
 expect_format "format: a marker at 5 gets no notice" status 0 ""
@@ -1528,8 +1528,9 @@ rm "$tmp/wiki/.format"
 printf '# Wiki\n\nProject owner: Ana.\n\n```text\n| Page | Content | Code it governs |\n```\n' > "$tmp/wiki/README.md"
 expect_format "format: mark refuses a wiki whose only code column is inside a code block" mark 3 "has no column"
 
-# The ending condition of the doctor: a wiki of format 3 is brought to the
-# present format by the steps of the doctor, and its decisions are not changed.
+# The ending condition of migrate: a wiki of format 3 is brought to the
+# present format by the steps an agent takes from format.md, and its decisions
+# are not changed.
 fresh_wiki
 printf '3\n' > "$tmp/wiki/.format"
 {
@@ -1541,17 +1542,17 @@ decisions
 { decision D11 200; decision D12 30; } >> "$tmp/wiki/decisions.md"
 printf '2\n' > "$tmp/wiki/.unchecked-decisions"
 cp "$tmp/wiki/decisions.md" "$tmp/decisions-before"
-expect_format "doctor: a copy of a wiki at format 3 gets the behind line" status 0 "is at wiki format 3, and the playbook is at $product_format"
+expect_format "migrate: a copy of a wiki at format 3 gets the behind line" status 0 "is at wiki format 3, and the playbook is at $product_format"
 out=$(sh "$check_wiki" "$tmp/wiki" 2>&1)
-check "doctor: the check refuses it until it is brought up" sh -c 'printf "%s" "$1" | grep -q -F "is at wiki format 3"' sh "$out"
+check "migrate: the check refuses it until it is brought up" sh -c 'printf "%s" "$1" | grep -q -F "is at wiki format 3"' sh "$out"
 
 # Left out, the steps leave the wiki in format 3 in the README: mark refuses it.
-expect_format "doctor: mark refuses the wiki when the steps are left out" mark 1 "The marker was not written"
+expect_format "migrate: mark refuses the wiki when the steps are left out" mark 1 "The marker was not written"
 out=$(sh "$wiki_format" mark "$tmp/wiki" 2>&1)
-check "doctor: it names the missing owner, the state, and the stage table" sh -c 'printf "%s" "$1" | grep -q "no line \"Project owner" && printf "%s" "$1" | grep -q "heading \"Where work stands\"" && printf "%s" "$1" | grep -q "has a stage table"' sh "$out"
-check "doctor: the marker is still 3 after the refused mark" test "$(cat "$tmp/wiki/.format")" = 3
-check "doctor: .unchecked-decisions is kept after the refused mark" test -f "$tmp/wiki/.unchecked-decisions"
-check "doctor: decisions.md is untouched by the refused mark" cmp -s "$tmp/decisions-before" "$tmp/wiki/decisions.md"
+check "migrate: it names the missing owner, the state, and the stage table" sh -c 'printf "%s" "$1" | grep -q "no line \"Project owner" && printf "%s" "$1" | grep -q "heading \"Where work stands\"" && printf "%s" "$1" | grep -q "has a stage table"' sh "$out"
+check "migrate: the marker is still 3 after the refused mark" test "$(cat "$tmp/wiki/.format")" = 3
+check "migrate: .unchecked-decisions is kept after the refused mark" test -f "$tmp/wiki/.unchecked-decisions"
+check "migrate: decisions.md is untouched by the refused mark" cmp -s "$tmp/decisions-before" "$tmp/wiki/decisions.md"
 
 # The steps: an owner in the README, a work with the state and the stage table
 # of the phase that is open, the closed stages kept under a heading of history.
@@ -1575,22 +1576,22 @@ mkdir -p "$tmp/wiki/works/history"
 } > "$tmp/wiki/works/history/decisions.md"
 cp "$tmp/wiki/works/history/decisions.md" "$tmp/decisions-before"
 rm "$tmp/wiki/decisions.md"
-expect_format "doctor: mark succeeds once the steps are applied" mark 0 "as wiki format $product_format"
-expect_format "doctor: the wiki has no notice after mark" status 0 ""
-check "doctor: the marker is the playbook's format" test "$(cat "$tmp/wiki/.format")" = "$product_format"
-check "doctor: .unchecked-decisions is gone" absent "$tmp/wiki/.unchecked-decisions"
-check "doctor: the history is byte-identical" cmp -s "$tmp/decisions-before" "$tmp/wiki/works/history/decisions.md"
-check "doctor: the state moved to the work" grep -q 'Stage 3 is open' "$tmp/wiki/works/skills/README.md"
-check "doctor: the project README no longer holds the state" sh -c '! grep -q "Where work stands" "$1"' sh "$readme"
-expect_wiki "doctor: the brought-up wiki passes the check with one work" pass "wiki format 6, 2 works"
+expect_format "migrate: mark succeeds once the steps are applied" mark 0 "as wiki format $product_format"
+expect_format "migrate: the wiki has no notice after mark" status 0 ""
+check "migrate: the marker is the playbook's format" test "$(cat "$tmp/wiki/.format")" = "$product_format"
+check "migrate: .unchecked-decisions is gone" absent "$tmp/wiki/.unchecked-decisions"
+check "migrate: the history is byte-identical" cmp -s "$tmp/decisions-before" "$tmp/wiki/works/history/decisions.md"
+check "migrate: the state moved to the work" grep -q 'Stage 3 is open' "$tmp/wiki/works/skills/README.md"
+check "migrate: the project README no longer holds the state" sh -c '! grep -q "Where work stands" "$1"' sh "$readme"
+expect_wiki "migrate: the brought-up wiki passes the check with one work" pass "wiki format 6, 2 works"
 
 
 # An interrupted mark puts the old marker back. The check is a stand-in, in a
 # copy of the plugin, that sends TERM to the script that runs it.
 standin=$tmp/standin
 rm -rf "$standin"
-mkdir -p "$standin/skills/doctor/scripts" "$standin/tmpdir"
-cp "$wiki_format" "$standin/skills/doctor/scripts/wiki-format.sh"
+mkdir -p "$standin/skills/migrate/scripts" "$standin/tmpdir"
+cp "$wiki_format" "$standin/skills/migrate/scripts/wiki-format.sh"
 cat > "$standin/check-wiki.sh" <<'STANDIN'
 case ${1:-} in
   --format) echo 5 ;;
@@ -1598,7 +1599,7 @@ case ${1:-} in
   *) kill -TERM "$PPID"; sleep 1; exit 0 ;;
 esac
 STANDIN
-interrupted="$standin/skills/doctor/scripts/wiki-format.sh"
+interrupted="$standin/skills/migrate/scripts/wiki-format.sh"
 
 fresh_wiki
 printf '3\r\n' > "$tmp/wiki/.format"
@@ -1680,7 +1681,7 @@ hook_run() { out=$(CLAUDE_PLUGIN_ROOT="$root/plugins/playbook-wiki" CLAUDE_PROJE
 check "format: the plugin runs the format notice on startup only" startup_only wiki-format.sh
 rm "$tmp/my project/docs/wiki/.format"; hook_run
 check "format: the person is told the wiki has no format marker" notice_field person "This project's wiki has no format marker"
-check "format: the person is told to run the doctor" notice_field person "Run /playbook-wiki:doctor"
+check "format: the person is told to run migrate" notice_field person "Run /playbook-wiki:migrate"
 check "format: the agent gets the line of status and is told not to repair unasked" notice_field agent "The wiki of this project has no format marker"
 check "format: the agent is told not to repair unasked" notice_field agent "Do not repair the wiki unasked"
 check "format: the hook exits 0 with a notice" [ "$code" -eq 0 ]
@@ -1690,7 +1691,7 @@ check "format: the agent gets the line of status for a wiki behind" notice_field
 printf '%s\n' "$((product_format + 1))" > "$tmp/my project/docs/wiki/.format"; hook_run
 check "format: the person is told the playbook is older than a wiki ahead" notice_field person "newer than the playbook's $product_format: the playbook installed is older than the wiki"
 check "format: the agent is told not to mark or migrate a wiki ahead" notice_field agent "Do not mark or migrate the wiki"
-check "format: the hook's notice for a wiki ahead does not send to the doctor" sh -c '! printf "%s" "$1" | grep -Fq "doctor"' sh "$out"
+check "format: the hook's notice for a wiki ahead does not send to migrate" sh -c '! printf "%s" "$1" | grep -Fq "/playbook-wiki:migrate"' sh "$out"
 out=$(sh "$wiki_format" status "$tmp/my project/docs/wiki" 2>&1)
 check "format: status still prints nothing for a wiki ahead" test -z "$out"
 printf '%s\n' "$product_format" > "$tmp/my project/docs/wiki/.format"
