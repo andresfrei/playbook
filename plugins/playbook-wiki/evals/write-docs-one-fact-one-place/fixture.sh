@@ -1,5 +1,5 @@
 #!/bin/bash
-# Builds a repository whose wiki is at format 5 and defines, in one page, the
+# Builds a repository whose wiki is at format 6 and defines, in one page, the
 # request limit of each plan. A small rate-limiting module takes the limit as a
 # parameter and has no README.
 set -eu
@@ -7,7 +7,7 @@ git init -q -b main .
 git config user.email eval@example.com
 git config user.name "Laura Gómez"
 mkdir -p docs/wiki/01-product docs/wiki/works/plans src/ratelimit
-printf '5\n' > docs/wiki/.format
+printf '6\n' > docs/wiki/.format
 cat > docs/wiki/README.md <<'MD'
 # Weather API
 
@@ -33,9 +33,9 @@ The plans of the API and the request limit of each.
 MD
 printf '# Plans\n\nDefine the plans and their limits.\n\nStatus: Closed 2026-10-01.\n' > docs/wiki/works/plans/README.md
 cat > docs/wiki/works/plans/decisions.md <<'MD'
-| ID | Date | Decision | Who decided | Their words | Shared page | Kind | Answer |
-|----|------|----------|-------------|-------------|-------------|------|--------|
-| plans-1 | 2026-09-01 | Two plans: Free at 75 requests per minute and Pro at 750. | Laura Gómez | "Free 75, Pro 750." | `01-product/plans.md` | definition | as recommended |
+| ID | Date | Decision | Who decided | Their words | Shared page | Replaces | Kind | Answer |
+|----|------|----------|-------------|-------------|-------------|----------|------|--------|
+| plans-1 | 2026-09-01 | Two plans: Free at 75 requests per minute and Pro at 750. | Laura Gómez | "Free 75, Pro 750." | `01-product/plans.md` | | definition | as recommended |
 MD
 cat > src/ratelimit/index.js <<'JS'
 // Fixed-window rate limiter. The caller passes the limit and the window.

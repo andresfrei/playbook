@@ -4,7 +4,7 @@ Release 3.7.0 aligns the two Codex plugin manifest versions with the three Claud
 
 The local checkout supplies a one-command installer (codex-support-3, codex-support-5, codex-support-8). Run `python3 codex/install.py` and choose the wiki or the wiki with agents. The installer packages shared sources, registers a local marketplace through the Codex CLI, preserves existing profiles and directs the user to review hooks in `/hooks`. See the [Codex guide](../../../codex/README.md).
 
-The package carries `skeleton.md` for `prepare-project`. The Codex installer sets the working-agent models. The `config`, `protect`, and `seed-evidence` skills belong to Claude Code (setup-commands-7, codex-install-check-3).
+The package carries `skeleton.md` for `prepare-project`. It carries the skill `migrate` without `context: fork`, `agent`, or `disable-model-invocation`, because Codex runs no skill in a forked agent and the plugin ships no agent; the session follows `wiki-writer.md` at the plugin root, the agent's steps with `AGENTS.md` for `CLAUDE.md`, for `migrate` and for the shared pages at the close of a work (decision-index-2, decision-index-5, decision-index-12). The session-start notice points to `migrate`. The Codex installer sets the working-agent models. The `config`, `protect`, and `seed-evidence` skills belong to Claude Code (setup-commands-7, codex-install-check-3).
 
 The wiki contract loads at session start. The optional working agents use personal profiles. New profiles default to `gpt-6.2-sol` at low effort for explore, the same model at medium effort for write, and `gpt-6.2-astra` at high effort for review (codex-support-2, codex-support-4).
 

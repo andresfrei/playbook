@@ -27,7 +27,7 @@ Do not report a security problem in an issue. See [SECURITY.md](SECURITY.md).
 
   `verify.sh` needs the `claude` command. The limits it enforces are in [docs/wiki/01-product/style-guide.md](docs/wiki/01-product/style-guide.md).
 
-What is decided about the product is in [docs/wiki/decisions.md](docs/wiki/decisions.md). A change that contradicts a decision is discussed in an issue first.
+What is decided about the product is in [docs/wiki/works/history/decisions.md](docs/wiki/works/history/decisions.md). A change that contradicts a decision is discussed in an issue first.
 
 ## Claude Code models and skill evaluations
 

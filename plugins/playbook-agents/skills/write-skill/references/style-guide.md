@@ -63,7 +63,7 @@ description: <The requests that trigger the skill>. <What the skill does>.
 ---
 ```
 
-- `name` and `description`, and no other key. A skill that runs in a separate context adds two more after them, both and in this order: `context: fork`, then `agent` naming the agent that runs it. Set no `model` or `effort`; the agent's own apply. A skill that only the owner starts adds one key after them instead: `disable-model-invocation: true`. Claude Code then keeps its description out of the session, so it does not count toward the limit at session start.
+- `name` and `description`, and no other key. A skill that runs in a separate context adds two more after them, both and in this order: `context: fork`, then `agent` naming the agent that runs it. Set no `model` or `effort`; the agent's own apply. A skill that only the owner starts adds `disable-model-invocation: true` after them, and after `agent` when it runs in a separate context. Claude Code then keeps its description out of the session, so it does not count toward the limit at session start.
 - `name` equals the directory name.
 - The description is one line. It starts with the requests that trigger the skill, in the words the owner would use, then says what the skill does.
 

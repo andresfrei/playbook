@@ -27,5 +27,5 @@ Ask one question at a time, with a recommendation, using AskUserQuestion when av
    |------|---------|-----------------|
    ```
 
-4. Run `sh <plugin>/skills/doctor/scripts/wiki-format.sh mark docs/wiki`. It writes `docs/wiki/.format`; never write that file by hand. When it fails, show its message, repair the `README.md`, and run it again.
+4. Run `sh <plugin>/skills/migrate/scripts/wiki-format.sh mark docs/wiki`. It writes `docs/wiki/.format`; never write that file by hand. When it fails, show its message, repair the `README.md`, and run it again.
 5. Ask whether to add to the project's `CLAUDE.md` the two sentences of the format, "The project's instruction file". On a yes, create the file when missing; in a file that exists, add the two sentences and change nothing else.

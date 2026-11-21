@@ -14,7 +14,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/skills/doctor/scripts/wiki-format.sh\" hook"
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/skills/migrate/scripts/wiki-format.sh\" hook"
           },
           {
             "type": "command",

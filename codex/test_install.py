@@ -161,6 +161,35 @@ class InstallerTest(unittest.TestCase):
                       run_script("evidence.sh", "count"))
         self.assertIn("missing-test", run_script("evidence.sh", "rule", "missing-test"))
 
+    def test_package_follows_migrate(self):
+        stage = self.root / "stage"
+        subprocess.run(["sh", INSTALLER.with_name("package.sh"), stage], check=True)
+        wiki = stage / "plugins/playbook-wiki"
+        skill = (wiki / "skills/migrate/SKILL.md").read_text()
+        self.assertIn("name: migrate", skill)
+        for line in ("context: fork", "agent: playbook-wiki:wiki-writer", "disable-model-invocation"):
+            self.assertNotIn(line, skill)
+        self.assertTrue((wiki / "skills/migrate/agents/openai.yaml").is_file())
+        self.assertTrue((wiki / "skills/migrate/scripts/wiki-format.sh").is_file())
+        old = "doc" + "tor"
+        self.assertFalse((wiki / "skills" / old).exists())
+        self.assertFalse((wiki / "agents").exists())
+        self.assertIn("<wiki plugin root>/format.md", (wiki / "wiki-writer.md").read_text())
+        for path in wiki.rglob("*"):
+            if path.is_file():
+                self.assertNotIn(old, path.read_text(errors="ignore"), path)
+        # Codex substitutes no Claude Code variable: none may reach a packaged file.
+        for path in stage.rglob("*"):
+            if path.is_file():
+                text = path.read_text(errors="ignore")
+                for variable in ("${CLAUDE_SKILL_DIR}", "${CLAUDE_PLUGIN_ROOT}"):
+                    self.assertNotIn(variable, text, path)
+        for skill_file in ("prepare-project", "write-docs"):
+            text = (wiki / "skills" / skill_file / "SKILL.md").read_text()
+            self.assertIn("<this skill's folder>/../migrate/scripts/wiki-format.sh", text)
+        self.assertIn("wiki-writer.md", skill)
+        self.assertNotIn("starts you again", skill)
+
     def test_concurrent_publication(self):
         from concurrent.futures import ThreadPoolExecutor
         other = self.root / "second-profile"

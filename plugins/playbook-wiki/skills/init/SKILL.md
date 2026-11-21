@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 - The person types `/playbook-wiki:init` in a repository with no `docs/wiki/`.
 
-Do not use it to repair a wiki that exists, which is `/playbook-wiki:doctor`, or to define a product, which is `prepare-project`.
+Do not use it to repair a wiki that exists, which is `/playbook-wiki:migrate`, or to define a product, which is `prepare-project`.
 
 ## Rules
 
@@ -17,7 +17,7 @@ Do not use it to repair a wiki that exists, which is `/playbook-wiki:doctor`, or
 
 ## Steps
 
-1. When `docs/wiki/README.md` exists, run `sh "${CLAUDE_SKILL_DIR}/../doctor/scripts/wiki-format.sh" status docs/wiki` from the project's root. When it prints a line, show it and point to `/playbook-wiki:doctor`; otherwise say the repository already has a wiki. Change nothing, and stop.
+1. When `docs/wiki/README.md` exists, run `sh "${CLAUDE_SKILL_DIR}/../migrate/scripts/wiki-format.sh" status docs/wiki` from the project's root. When it prints a line, show it and point to `/playbook-wiki:migrate`; otherwise say the repository already has a wiki. Change nothing, and stop.
 2. Read `${CLAUDE_SKILL_DIR}/../../skeleton.md` and do its steps.
 
 ## Output

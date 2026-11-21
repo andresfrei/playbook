@@ -4,7 +4,7 @@ Phase 4 of the product (D167): version 2, which splits the product into a shared
 
 Status: Closed 2026-11-16 (phase-4-3).
 
-Its decisions up to D208 are in [../../decisions.md](../../decisions.md). New ones are `phase-4-1` onwards, in its own `decisions.md`.
+Its decisions up to D208 are in [../history/decisions.md](../history/decisions.md). New ones are `phase-4-1` onwards, in its own `decisions.md`.
 
 ## Where work stands
 

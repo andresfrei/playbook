@@ -1,6 +1,6 @@
 # Open questions
 
-Each has a recommendation and says what it blocks. Answered questions move to [../decisions.md](../decisions.md). Numbers are kept from when each question was opened, so they are not consecutive.
+Each has a recommendation and says what it blocks. Answered questions move to [../works/history/decisions.md](../works/history/decisions.md). Numbers are kept from when each question was opened, so they are not consecutive.
 
 ## About the product
 

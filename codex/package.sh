@@ -14,31 +14,37 @@ cp "$src/playbook-wiki/hooks.json" "$plugin/hooks/hooks.json"
 cp "$src/playbook-wiki/session-start.py" "$wiki/contract.md" "$wiki/merge-step.sh" "$wiki/check-wiki.sh" "$plugin/"
 cp "$wiki/hooks/contract-for-subagent.sh" "$wiki/hooks/commit-check-hook.sh" "$src/playbook-wiki/merge-review.py" "$wiki/hooks/merge-step-hook.sh" "$wiki/hooks/git-hook-lib.sh" "$plugin/hooks/"
 
-doctor=$plugin/skills/doctor
-source_doctor=$wiki/skills/doctor
-mkdir -p "$doctor/agents" "$doctor/scripts" "$doctor/references"
-cp "$src/playbook-wiki/doctor/openai.yaml" "$doctor/agents/"
-sed '/^disable-model-invocation: true$/d' "$source_doctor/SKILL.md" > "$doctor/SKILL.md"
-for reference in "$source_doctor"/references/*.md; do
-  sed 's/CLAUDE\.md/AGENTS.md/g' "$reference" > "$doctor/references/${reference##*/}"
-done
+migrate=$plugin/skills/migrate
+source_migrate=$wiki/skills/migrate
+mkdir -p "$migrate/agents" "$migrate/scripts"
+cp "$src/playbook-wiki/migrate/openai.yaml" "$migrate/agents/"
+# Codex runs no skill in a forked agent: migrate runs in the session, which follows wiki-writer.md.
+# shellcheck disable=SC2016
+sed '/^disable-model-invocation: true$/d; /^context: fork$/d; /^agent: playbook-wiki:wiki-writer$/d; /^## When to use$/i\
+In Codex the session runs these steps itself, in the order given here, and follows `wiki-writer.md` at the wiki plugin root for how it writes and reports.\
+' \
+  "$source_migrate/SKILL.md" > "$migrate/SKILL.md"
 sed 's/CLAUDE\.md/AGENTS.md/g' "$wiki/format.md" > "$plugin/format.md"
 sed 's/CLAUDE\.md/AGENTS.md/g' "$wiki/skeleton.md" > "$plugin/skeleton.md"
-sed 's| (/playbook-wiki:doctor)| (select doctor in /skills)|' \
-  "$source_doctor/scripts/wiki-format.sh" > "$doctor/scripts/wiki-format.sh"
+sed 's| (/playbook-wiki:migrate)| (select migrate in /skills)|g' \
+  "$source_migrate/scripts/wiki-format.sh" > "$migrate/scripts/wiki-format.sh"
+# The agent wiki-writer is not a Codex profile: its steps are a file the session reads.
+sed '1,/^---$/d; s/[$]{CLAUDE_PLUGIN_ROOT}/<wiki plugin root>/g; s/CLAUDE\.md/AGENTS.md/g' \
+  "$wiki/agents/wiki-writer.md" > "$plugin/wiki-writer.md"
 
 prepare=$plugin/skills/prepare-project
 source_prepare=$wiki/skills/prepare-project
 mkdir -p "$prepare/references" "$plugin/skills/write-docs"
-# The backticks are literal Markdown in the shared skill.
+# The backticks are literal Markdown in the shared skill. Codex substitutes no
+# skill variable: a skill's folder is written as the folder of the skill.
 # shellcheck disable=SC2016
-sed 's/Use `AskUserQuestion` when available/Ask in the conversation or use the available question tool/' \
+sed 's/Use `AskUserQuestion` when available/Ask in the conversation or use the available question tool/; s/[$]{CLAUDE_SKILL_DIR}/<this skill'"'"'s folder>/g' \
   "$source_prepare/SKILL.md" > "$prepare/SKILL.md"
 for reference in "$source_prepare"/references/*.md; do
-  sed 's/CLAUDE\.md/AGENTS.md/g' "$reference" > "$prepare/references/${reference##*/}"
+  sed 's/CLAUDE\.md/AGENTS.md/g; s/Hand the shared pages to the agent `playbook-wiki:wiki-writer`, with a brief/Follow `wiki-writer.md` at the wiki plugin root yourself, with a brief/; s/ it writes what the work decided/ write what the work decided/' "$reference" > "$prepare/references/${reference##*/}"
 done
 cp "$src/playbook-wiki/working-agents.md" "$prepare/references/working-agents.md"
-cp "$wiki/skills/write-docs/SKILL.md" "$plugin/skills/write-docs/"
+sed 's/[$]{CLAUDE_SKILL_DIR}/<this skill'"'"'s folder>/g' "$wiki/skills/write-docs/SKILL.md" > "$plugin/skills/write-docs/SKILL.md"
 
 agents=$dest/plugins/playbook-agents
 source_agents=$src/../plugins/playbook-agents

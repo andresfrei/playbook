@@ -10,7 +10,7 @@ It has two parts with a name each (D168, D182):
 
 | Part | Plugin | Shared | Holds |
 |------|--------|--------|-------|
-| The core | `playbook-wiki` | Yes, by everyone who works on a project | The contract an agent follows (D175), the format of a project's wiki and its check, the step at the merge (D173), and the skills `prepare-project`, `doctor`, and `write-docs` (TD30) |
+| The core | `playbook-wiki` | Yes, by everyone who works on a project | The contract an agent follows (D175), the format of a project's wiki and its check, the step at the merge (D173), and the agent `wiki-writer` (decision-index-12), and the skills `prepare-project`, `migrate` (decision-index-5), and `write-docs` (TD30). It reads and writes only format 6; an older wiki is migrated first (decision-index-2), which is why the release is 4.0.0 (decision-index-3) |
 | The owner's agent system | `playbook-agents` | No, each person has their own | The owner's working rules, the agents `explore`, `write`, `review`, and `classify` with their models, the rules learned from repeated findings of `review` (repeated-corrections-1, repeated-corrections-17), and the skills `keep-minimal`, `review-change`, `write-skill`, and `avoid-generic-design` (TD30). It depends on `playbook-wiki` |
 
 In Claude Code, a third plugin, `playbook`, holds only the start command, `/playbook:init` (TD26, TD31). The three are published from this repository's marketplace (TD26).

@@ -29,7 +29,7 @@ One idea is taken from it: a change of a definition is not closed until the page
 
 G3 says that the text of a decision states the choice in at most 60 words and links to the page that holds the detail (D138). [style-guide.md](style-guide.md) says what enforces it: "Nothing".
 
-Counted on 2026-11-15 on the 17 rows of [decisions.md](../decisions.md) written after D138, D139 to D154 and TD22. The words are the pieces of the third column separated by spaces; a link is the text `](` in that column.
+Counted on 2026-11-15 on the 17 rows of [decisions.md](../works/history/decisions.md) written after D138, D139 to D154 and TD22. The words are the pieces of the third column separated by spaces; a link is the text `](` in that column.
 
 | Row | Words | Link | Row | Words | Link |
 |---|---|---|---|---|---|

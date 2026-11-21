@@ -29,7 +29,7 @@ dir=$(git_parse commit)
 root=$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null) || exit 0
 [ -n "$root" ] && [ -d "$root/docs/wiki" ] || exit 0
 
-# A wiki below the playbook's format, or with no marker, is left to the doctor.
+# A wiki below the playbook's format, or with no marker, is left to migrate.
 present=$(sh "$check" --format 2>/dev/null)
 marker=$(head -n 1 "$root/docs/wiki/.format" 2>/dev/null | tr -d ' \t\r')
 case $present in '' | *[!0-9]*) exit 0 ;; esac
