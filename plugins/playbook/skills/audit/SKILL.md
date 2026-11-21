@@ -1,6 +1,6 @@
 ---
 name: audit
-description: Audit the project's wiki against itself, the code, and the tools the repository has on, on the owner's request; on its first run, adopt the project by building the playbook's wiki and rules from the knowledge it already holds. Reports each contradiction with both quotes for the owner to resolve.
+description: Audit the project's wiki against itself and the code, and the repository's tools for collisions with the playbook, on the owner's request; on its first run, adopt the project by building the playbook's wiki and rules from the knowledge it already holds. Reports each contradiction with both quotes for the owner to resolve.
 disable-model-invocation: true
 ---
 
@@ -14,19 +14,20 @@ disable-model-invocation: true
 - Report only contradictions: a statement of a shared page that the code, another page, or a newer decision says otherwise. Skip style and wording.
 - Quote both sides with file and line. Say when a side is inferred rather than read.
 - Ask one question at a time, with a recommendation, then stop and wait.
-- The owner decides which tools the repository uses. Turn off or remove none unless the owner asks, and name in the wiki only tools the repository has.
+- For a tool that collides with the playbook, suggest; the owner decides. Turn off or remove none unless the owner says so.
 
 ## Steps
 
 0. When `docs/playbook/README.md` is missing, or has no line that starts with `Last audit:`, this is the first run: read [first-run.md](first-run.md) and do its steps first.
 1. Run `sh "${CLAUDE_PLUGIN_ROOT}/scripts/check-wiki.sh" docs/playbook`. Fix what is light, such as a broken link, and list the rest.
 2. For each shared page (`docs/playbook/*.md`), read each statement and check it against the code: versions against the manifests, rules of the product against the behaviour, technology against the dependencies. Check it also against the other pages and the newest decision on the same subject.
-3. Check the tools. List what is on for this repository: the plugins, with `claude plugin list`; the MCP servers and their status, with `claude mcp list`; `.mcp.json`; and the skills and agents under `.claude/`. Leave out the playbook and what Claude Code has built in. Compare the list with `docs/playbook/skills.md`, which says what the agent uses for each job:
-   - A tool that is on and the page does not name: ask whether the repository uses it. On a yes, add a row: the job, the tool, and when to use it. On a no, leave it out and offer to turn it off for this repository only: a plugin with `claude plugin disable <name>@<marketplace> --scope local`, a skill with `"<name>": "off"` under `skillOverrides` in `.claude/settings.local.json`, an MCP server by the owner in `/mcp`.
-   - A tool the page names that is missing, or a server that does not connect: a contradiction; quote the row and the status.
-   - Two tools the page gives the same job: ask which does what.
+3. Check the tools for collisions with the playbook. List what is on for this repository: the plugins, with `claude plugin list`; the MCP servers and their status, with `claude mcp list`; `.mcp.json`; the skills, agents, and hooks under `.claude/`; and the rules files of other coding tools. A tool collides when it:
+   - keeps the project's decisions or knowledge somewhere other than the wiki;
+   - defines, closes, audits, or releases work in its own way, as a skill with the job of one of the playbook's;
+   - gives instructions that contradict the playbook's rules or the project's;
+   - asks or blocks at the same moments, such as a hook on commit or push.
 
-   Recommend as Claude Code's documentation does: a command-line tool before an MCP server for the same job; a server nobody uses turned off, since it adds its tool names to every session; a tool every person on the project needs at project scope, in `.mcp.json` or installed with `--scope project`.
+   For each collision, quote what the tool says it does, and suggest one way out: turn it off for this repository, keep both with the jobs split, or leave it. Apply the owner's answer with Claude Code's own commands and settings, for this repository only, never for the whole machine; a split of jobs is a decision, and a line in the project's `CLAUDE.md`. Report a server that does not connect. Say nothing of a tool that does not collide, and keep no list of tools in the wiki: Claude Code knows what is on.
 4. Show a table: the page's quote, the other side's quote, and your recommendation.
 5. Ask the owner to resolve each contradiction, one at a time:
    - The code is right: record the owner's answer as a decision, in the open work's `decisions.md` or, when none is open, in `docs/playbook/works/audit-<date>/decisions.md`. In the same edit, update the page, write "Replaced by <ID>" at the start of the old decision's cell, and move the page's citation to the new ID.
@@ -37,4 +38,4 @@ disable-model-invocation: true
 
 ## Output
 
-- The check's result, the tools found and what the owner decided for each, the table of contradictions, how the owner resolved each, the lines proposed, and the line "Last audit".
+- The check's result, each tool that collides and what the owner decided for it, the table of contradictions, how the owner resolved each, the lines proposed, and the line "Last audit".
