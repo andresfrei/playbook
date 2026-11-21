@@ -51,6 +51,7 @@ Do not use it for rules that apply to every task, for project documentation, or 
 1. Count the body's words and the description's characters with the commands in the style guide. Shorten until both are within the limits.
 2. Confirm that every file, command, and tool the skill names exists where the skill runs.
 3. When the skill lives in a Claude Code plugin, run `claude plugin validate <plugin path>` and fix what it reports.
+4. Read each step you wrote or changed against every rule and limit of its file and of the files loaded with it, the steps before and after it, the delegations in force, and the eval graders; make order, scope, count, and stop conditions agree.
 
 ## Output
 
