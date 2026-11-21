@@ -1,4 +1,4 @@
-[![Playbook](docs/assets/playbook-banner.png)](https://playbook.neuralmind.lat/)
+[![Playbook](docs/assets/playbook-banner.png?v=2)](https://playbook.neuralmind.lat/)
 
 # Playbook
 
