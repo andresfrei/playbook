@@ -6,27 +6,27 @@ Status: Open.
 
 ## Where work stands
 
-Updated 2026-11-20, after rule-promotion-7.
+Updated 2026-11-20, after rule-promotion-10.
 
-Stage 1 is closed: [definition.md](definition.md) is Decided (rule-promotion-3 to -7). Stage 2, Technology, is open.
+Stages 1 to 5 are closed; stage 6, Execution, is open with U1 and U2 of [plan.md](plan.md).
 
 Waiting for: nothing.
 
 Next steps, in order:
 
-1. Map where consolidation runs today (`evidence.sh`, `references/evidence.md` of prepare-project, the agent `classify`) and propose where graduation lives.
-2. Write `technology.md` and ask the owner to close stage 2.
+1. Build U1, then U2, with the agent `write`.
+2. Close the work: run the new step on the six candidates, one at a time.
 
 ## Stage table
 
 | Stage | Status | Closed on |
 |-------|--------|-----------|
 | 1 Wiki | Closed | 2026-11-20 |
-| 2 Technology | Open | |
-| 3 Skills | Not started | |
-| 4 Design system | Not started | |
-| 5 Plan | Not started | |
-| 6 Execution | Not started | |
+| 2 Technology | Closed | 2026-11-20 |
+| 3 Skills | Not applicable | 2026-11-20 |
+| 4 Design system | Not applicable | 2026-11-20 |
+| 5 Plan | Closed | 2026-11-20 |
+| 6 Execution | Open | |
 
 ## Pages
 
@@ -35,3 +35,5 @@ Next steps, in order:
 | [decisions.md](decisions.md) | The decisions of the work | |
 | [questions.md](questions.md) | The open questions | |
 | [definition.md](definition.md) | What graduating an evidence rule means | Decided |
+| [technology.md](technology.md) | How graduation is built | Decided |
+| [plan.md](plan.md) | The units and their delivery | Decided |
