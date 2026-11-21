@@ -133,6 +133,15 @@ env | grep GIT
 sudo -u deploy git status
 CASES
 
+# When the hook cannot read the command, it asks; and a hook that fails blocks.
+mkdir -p "$tmp/noawk"
+printf '#!/bin/sh\nexit 2\n' > "$tmp/noawk/awk"
+chmod +x "$tmp/noawk/awk"
+out=$(printf '{"tool_input":{"command":"ls"}}' | PATH="$tmp/noawk:$PATH" sh "$hooks/ask.sh" 2>/dev/null)
+case $out in *'"permissionDecision":"ask"'*'could not read'*) ok "ask: awk fails" ;; *) bad "ask: awk fails" "$out" ;; esac
+[ "$(grep -c 'ask.sh' "$hooks/hooks.json")" = "$(grep -c '"onFailure": "block"' "$hooks/hooks.json")" ] &&
+  ok "hooks.json: each ask.sh entry blocks on failure" || bad "hooks.json" "an ask.sh entry without onFailure"
+
 out=$(CLAUDE_PLUGIN_OPTION_LANGUAGE=Spanish sh "$hooks/session-start.sh" | tail -n 1)
 [ "$out" = "Talk to the person in Spanish." ] && ok "session start: language" || bad "session start" "$out"
 
