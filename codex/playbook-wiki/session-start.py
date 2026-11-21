@@ -7,7 +7,7 @@ plugin = Path(__file__).resolve().parent
 context = (plugin / "contract.md").read_text(encoding="utf-8")
 project = json.load(sys.stdin)["cwd"]
 notice = subprocess.check_output([
-    "sh", plugin / "skills/doctor/scripts/wiki-format.sh", "status",
+    "sh", plugin / "skills/migrate/scripts/wiki-format.sh", "status",
     Path(project) / "docs/wiki",
 ], text=True).strip()
 if notice:

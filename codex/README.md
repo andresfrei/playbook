@@ -14,7 +14,9 @@ Open Codex in the target repository and review the plugin hooks with `/hooks`. T
 
 Before a merge, the plugin checks for decisions added on both branches and shared wiki pages touched by both. When the comparison needs review, Codex stops the command and reports the items to discuss. After reviewing them, the owner can complete the merge in their terminal. Other merges proceed normally.
 
-At session start, a wiki with a missing or outdated format marker also produces a notice. Select the plugin's `doctor` skill in `/skills` to review the repairs. It proposes changes for the owner to approve and marks the wiki only after validation succeeds. Its project instruction file is `AGENTS.md`.
+At session start, a wiki with a missing or outdated format marker also produces a notice. Select the plugin's `migrate` skill in `/skills` to bring the wiki to the current format (6). Selecting it is the owner's acceptance: it migrates without proposing first, returns what changed and every estimated value, and marks the wiki only after validation succeeds. Git is the undo. Its project instruction file is `AGENTS.md`.
+
+In Claude Code, `migrate` and the close of a work run in the agent `wiki-writer`. Codex cannot run a skill in a forked agent and the plugin ships no agent, so there the session itself does the work: it follows `wiki-writer.md` at the plugin root, which holds the agent's steps, and runs `check-wiki.sh` until it passes. No personal profile is installed for it.
 
 Ask Codex to start a project, prepare an existing repository, or continue an open work. It can select `playbook-wiki:prepare-project` from the request. Subagents receive the wiki contract when they start. It walks through the wiki, technology, skills, design system, plan, and execution. The owner closes each stage. The bundled `playbook-wiki:write-docs` skill records definitions and updates documentation during that process and can also be selected on its own.
 
