@@ -72,6 +72,6 @@ Each unit is accepted by its check.
 |------|--------------|-------|--------|
 | U1 | Rewrites this wiki into the flat pages, deletes the old shared pages, and writes the new check of the wiki in `plugins/playbook/scripts/check-wiki.sh` | `sh plugins/playbook/scripts/check-wiki.sh docs/wiki` passes; `sh tests/check-wiki_test.sh` shows it fails on a broken link, a repeated ID, and a decision with no words | Done |
 | U2 | Builds the plugin `playbook`: `rules.md`, the session-start hook, the hook before delivery, the check on commit, `userConfig`, the agent `reviewer`, and `Explore.md` | `claude plugin validate plugins/playbook`; `sh tests/hooks_test.sh`; a live `claude -p --plugin-dir` run loaded the rules, stopped a commit on a broken wiki, and asked before a push | Done |
-| U3 | Writes the skills `define`, `close`, and `release` | `claude plugin validate`; each skill run once on a small case | Not started |
+| U3 | Writes the skills `define`, `close`, and `release` | `claude plugin validate`; each skill run once by `claude -p --plugin-dir` on a small case: `define` named the type and steps, `close` refused a unit with no code, `release` bumped and committed on a branch and left delivery to the owner | Done |
 | U4 | Removes `playbook-wiki`, `playbook-agents`, Codex, and the scripts and evaluations they need; rewrites the README and `CLAUDE.md` | `claude plugin validate .`; nothing names a removed path | Not started |
 | U5 | Releases 5.0.0, after the owner's yes | The tag and the release on GitHub | Not started |
