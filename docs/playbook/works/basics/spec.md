@@ -86,7 +86,7 @@ Each unit is accepted by its check.
 | U8 | Adoption (basics-15 to basics-18): the folder `docs/playbook/` in every skill, hook, and check; the SessionStart recommendation inside a git repository; the first run of `audit`; `define` sends an existing project with no wiki to `audit`; the precedence line in `rules.md`; the README's install section with the three scopes | The tests and `claude plugin validate`; a live run of `audit` on a throwaway project with a README, a `CLAUDE.md`, and an old `docs/wiki/` builds the new wiki and leaves one diff | Done |
 | U9 | A trial of `audit` (basics-19, basics-20): a detached worktree of `main` at 4.0.0, with the plugin installed at user scope; the owner runs `/playbook:audit` | Its `docs/playbook/` compared with the `docs/wiki/` U1 built by hand (commit 89cf79f): what each holds that the other lacks; the cost, the time, and each time the owner had to step in, recorded in this spec; the fixes to `audit` made and tested | Done |
 | U10 | The audit of this repository, with the fixes of U9, with the plugin installed | The wiki ordered in `docs/playbook/`; the check passes; nothing names `docs/wiki/` but the upgrade steps | Done |
-| U11 | Releases 5.0.0, after the owner's yes | The tag and the release on GitHub | Not started |
+| U11 | Releases 5.0.0, after the owner's yes | The tag and the release on GitHub | Done |
 
 ## Trial of audit (U9)
 
