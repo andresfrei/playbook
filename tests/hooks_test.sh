@@ -36,7 +36,7 @@ case $out in *'"deny"'*) ok "git -C <dir>: found" ;; *) bad "git -C <dir>" "$out
 out=$(commit "$repo" "git -C $repo commit -m \\\"fix: push\\\"")
 case $out in *'"deny"'*) ok "broken wiki, commit message naming push: deny" ;; *) bad "commit message naming push" "$out" ;; esac
 
-# A quoted folder, the form Code Mode sends, and a folder with a space.
+# A quoted folder, as Claude often writes it, and a folder with a space.
 cp -R "$repo" "$tmp/my repo"
 for c in "cd 'repo' && git commit -m x" "cd '$repo' && git commit -m x" 'cd \"repo\" && git commit -m x' \
   "cd 'my repo' && git commit -m x" 'cd my\\ repo && git commit -m x' "git -C 'my repo' commit -m x" \
