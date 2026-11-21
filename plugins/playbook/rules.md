@@ -20,6 +20,7 @@ These rules apply in every project. "The owner" is the person you work for. A pr
 ## The wiki
 
 - When the project has `docs/wiki/README.md`, the session starts with it, after these rules. It holds only what the code does not say: the product, the decisions, and the open work.
+- When a change contradicts a shared page of the wiki, update the page in the same commit, or tell the owner.
 - R12. Write documentation any agent understands without the conversation that produced it. Write the wiki in English.
 
 ## Building

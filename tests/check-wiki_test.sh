@@ -38,4 +38,13 @@ wiki repeated; mkdir -p "$tmp/repeated/works/b"
 printf '%s\n| a-1 | d | x | O | "si" |\n' "$header" > "$tmp/repeated/works/b/decisions.md"
 expect repeated 1 'decision a-1 is repeated'
 
+for w in replaced cited; do
+  wiki $w
+  printf '| a-2 | d | Replaced by a-3. y | O | "si" |\n| a-3 | d | z | O | "no" |\n' >> "$tmp/$w/works/a/decisions.md"
+  printf 'Rule z (a-3).\n' > "$tmp/$w/product.md"
+done
+expect replaced 0 'check-wiki passed: 3 decisions'
+printf 'Rule y (a-2).\n' >> "$tmp/cited/product.md"
+expect cited 1 'product.md cites a-2, which is replaced'
+
 exit $failed

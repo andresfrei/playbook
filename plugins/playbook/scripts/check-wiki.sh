@@ -2,7 +2,8 @@
 # check-wiki.sh [wiki]
 # Checks a project's wiki: every relative link resolves, in the shared pages
 # and in each work with a spec.md; every decision ID is unique; every decision
-# has the decider's words. Prints one FAIL line per problem; exits 1 on any.
+# has the decider's words; no shared page cites a decision marked
+# "Replaced by" in its Decision cell. Prints one FAIL line per problem; exits 1 on any.
 wiki=${1:-docs/wiki}
 [ -f "$wiki/README.md" ] || { printf 'FAIL %s has no README.md\n' "$wiki"; exit 1; }
 
@@ -30,12 +31,22 @@ out=$(
         words = $6; gsub(/^[ \t]+|[ \t]+$/, "", words)
         if (words == "") printf "FAIL %s: %s has no words of the decider\n", f, id
         print "ID\t" id "\t" f
+        decision = $4; gsub(/^[ \t]+/, "", decision)
+        if (decision ~ /^Replaced by /) print "REPLACED\t" id
       }' "$file"
   done
 )
+# Shared pages citing a replaced decision.
+replaced=$(printf '%s\n' "$out" | awk -F '\t' '$1 == "REPLACED" { print $2 }' |
+  while IFS= read -r id; do
+    for page in "$wiki"/*.md; do
+      [ -f "$page" ] || continue
+      grep -qwF -- "$id" "$page" && printf 'FAIL %s cites %s, which is replaced\n' "$page" "$id"
+    done
+  done)
 fails=$(printf '%s\n' "$out" | grep '^FAIL')
 dups=$(printf '%s\n' "$out" | awk -F '\t' '$1 == "ID" { n[$2]++; w[$2] = w[$2] " " $3 } END { for (i in n) if (n[i] > 1) printf "FAIL decision %s is repeated in%s\n", i, w[i] }')
-all=$(printf '%s\n%s\n' "$fails" "$dups" | grep -v '^$')
+all=$(printf '%s\n%s\n%s\n' "$fails" "$dups" "$replaced" | grep -v '^$')
 if [ -n "$all" ]; then
   printf '%s\n' "$all"
   printf '%s check(s) failed\n' "$(printf '%s\n' "$all" | wc -l | tr -d ' ')"

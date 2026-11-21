@@ -22,12 +22,13 @@ It adds only what Claude Code does not already do. Writing stays in your session
    | Feature that adds or replaces a technology | Define, Technology, Skills |
    | New project | Define, Technology, Skills, and Design when it has an interface |
 
-   It asks one question at a time, checks each technology in its current documentation, and writes a spec with how to check it. You accept the spec once.
+   It asks one question at a time, cites what you already decided instead of asking again, checks each technology in its current documentation, and writes a spec with how to check it. You accept the spec once.
 2. **Build.** In your session, on the model you choose with `/model`.
-3. **Close.** `/playbook:close` runs the spec's check, has a read-only `reviewer` read a risky change, and proposes one line for each mistake that happened twice: for `CLAUDE.md`, `.claude/rules/`, or a skill. You accept each line or not.
-4. **Release.** `/playbook:release` sets the version and drafts the notes. Pushing, opening or merging a pull request, and publishing a release always ask you first.
+3. **Close.** `/playbook:close` runs the spec's check, has a read-only `reviewer` read a risky change, and proposes one line for each mistake that happened twice, or each answer you gave twice: for `CLAUDE.md`, `.claude/rules/`, or a skill. You accept each line or not.
+4. **Audit**, before a release or when `close` suggests it. `/playbook:audit` reads the wiki against the code and shows each contradiction with both quotes; you say which side is right.
+5. **Release.** `/playbook:release` sets the version and drafts the notes. Pushing, opening or merging a pull request, and publishing a release always ask you first.
 
-Everything lives in `docs/wiki/`: the product, each work's spec, and its decisions with who decided and their words.
+Everything lives in `docs/wiki/`: the product, each work's spec, and its decisions with who decided and their words. Its `README.md` loads at the start of every session.
 
 ## Install
 
