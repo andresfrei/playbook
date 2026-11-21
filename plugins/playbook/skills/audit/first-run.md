@@ -19,8 +19,8 @@ The first run adopts the project: it turns the knowledge the project already hol
    - Keep the pages short: write only what someone changing the code needs and cannot read in it. Lists of modules, skills, or settings the code shows stay out, and so do the test runner and the indentation.
    - Records of what is finished, such as the pages and plans of past phases, old measurements, and pages of data the project no longer uses: propose deleting them, since git keeps them.
    - A reason the project already wrote, such as a record of a decision or a section of a README, is shown to the owner to confirm. On a yes it becomes a decision that quotes the owner and names its source; without an answer, the statement keeps its reason and is marked Open.
-   - Move the works of a 4.x wiki unchanged into `docs/playbook/works/`, so their IDs and the owner's words stay. Leave their links as they are: the check reads only works with a `spec.md`, and an old link may point to a page that git keeps.
-   - Record the owner's new answers in `docs/playbook/works/audit-<date>/decisions.md`, with five columns, `| ID | Date | Decision | Who decided | Their words |`, and IDs `audit-<date>-<n>`.
+   - Move the works of a 4.x wiki unchanged into `docs/playbook/works/`, so their IDs and the owner's words stay. Leave their links as they are: the check follows links only in works with a `spec.md`, and an old link may point to a page that git keeps.
+   - Record the owner's new answers in the `decisions.md` of the open work, or in `docs/playbook/works/audit-<date>/decisions.md` when no work is open, with five columns, `| ID | Date | Decision | Who decided | Their words |`, and IDs `<work>-<n>`, such as `audit-<date>-<n>`.
 4. **Clean the rules.** For `CLAUDE.md`, `AGENTS.md`, and `.claude/rules/`, show per file what you would cut and apply it on the owner's yes:
    - cut what Claude can derive from the code, such as layouts, dependency lists, and architecture overviews;
    - move each reason into the wiki;

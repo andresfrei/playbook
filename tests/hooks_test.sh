@@ -44,6 +44,12 @@ for c in "cd 'repo' && git commit -m x" "cd '$repo' && git commit -m x" 'cd \"re
   case $(commit "$tmp" "$c") in *'"deny"'*) ok "broken wiki: $c" ;; *) bad "broken wiki: $c" "no deny" ;; esac
 done
 
+# A value with a quote inside it, and a folder the hook cannot resolve.
+for c in "git -c user.name='Andres Frei' commit -m x" 'git -C \"$(git rev-parse --show-toplevel)\" commit -m x' \
+  'git -C \"$root\"/. commit -m x'; do
+  case $(commit "$repo" "$c") in *'"deny"'*) ok "broken wiki: $c" ;; *) bad "broken wiki: $c" "no deny" ;; esac
+done
+
 out=$(commit "$repo" 'for f in $(ls); do cat $f; done')
 [ -z "$out" ] && ok "broken wiki, not a commit: silent" || bad "broken wiki, not a commit" "$out"
 
@@ -67,6 +73,42 @@ for c in 'for f in $(ls); do cat $f; done' 'git status --porcelain' 'echo git pu
   out=$(ask "$c")
   [ -z "$out" ] && ok "silent: $c" || bad "silent: $c" "$out"
 done
+
+# Quotes, substitutions, and heredocs; one command a line, escaped as JSON.
+while IFS= read -r c; do
+  case $(ask "$c") in *'"permissionDecision":"ask"'*) ok "ask: $c" ;; *) bad "ask: $c" "did not ask" ;; esac
+done <<'CASES'
+git -C \"$repo\"/sub push origin main
+gh -R \"$owner\"/repo pr merge 3
+git -C 'R&D docs' push
+git -C 'my repo (old)' push
+git -C 'my repo ' push
+git -c http.extraheader=\"AUTHORIZATION: basic x\" push
+git --git-dir='my repo/.git' push
+GIT_SSH_COMMAND='ssh -i key' git push
+git -C \"$(pwd)\" push
+git -C \"$(git rev-parse --show-toplevel)\" push -u origin b
+echo \"$(git push)\"
+echo `git push`
+{ git push; }
+(cd x && git push)
+git \\\n  push origin main
+git commit -m \"$(cat <<'EOF'\ndon't stop (yet\nEOF\n)\" && git push
+cat <<EOF > notes.txt\nit's here\nEOF\ngit push
+git commit -m \"it's done && git push
+CASES
+while IFS= read -r c; do
+  out=$(ask "$c")
+  [ -z "$out" ] && ok "silent: $c" || bad "silent: $c" "$out"
+done <<'CASES'
+git commit -m \"x; git push\"
+git commit -m 'docs: git push asks'
+echo \"git push\"
+git -c user.name='Andres Frei' commit -m x
+cat <<EOF\ngit push\nEOF
+git commit -m \"$(cat <<'EOF'\nfix: ask before git push\n\ngh pr create is asked too\nEOF\n)\"
+git -C 'my repo' log --grep \"gh pr merge\"
+CASES
 
 out=$(CLAUDE_PLUGIN_OPTION_LANGUAGE=Spanish sh "$hooks/session-start.sh" | tail -n 1)
 [ "$out" = "Talk to the person in Spanish." ] && ok "session start: language" || bad "session start" "$out"

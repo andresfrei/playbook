@@ -41,7 +41,9 @@ other=$(word_after '(^|[ \t;&|])git[ \t]+-C[ \t]+')
 for d in "$first" "$other"; do
   case $d in '') ;; /*) dir=$d ;; *) dir=$dir/$d ;; esac
 done
-root=$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null) || exit 0
+# A folder the hook cannot resolve, such as "$repo"/app, falls back to the session's.
+root=$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null) ||
+  root=$(git -C "${cwd:-.}" rev-parse --show-toplevel 2>/dev/null) || exit 0
 [ -d "$root/docs/playbook" ] || exit 0
 [ -n "$(git -C "$root" status --porcelain --untracked-files=all -- docs/playbook 2>/dev/null)" ] || exit 0
 output=$(sh "${CLAUDE_PLUGIN_ROOT}/scripts/check-wiki.sh" "$root/docs/playbook" 2>&1) && exit 0

@@ -49,11 +49,11 @@ The installer asks where to turn it on:
 
 From your shell, `claude plugin install playbook@playbook` installs it for you in every project; add `--scope project` or `--scope local` to choose another.
 
-Then start a new session in your project and run `/playbook:audit`. On its first run it adopts the project: it reads the documentation and rules the project already has, proposes how to order them, builds the wiki in `docs/playbook/`, and cleans `CLAUDE.md`, asking you each choice. It starts from a clean git tree, so all it changes is one diff. Until a project is adopted, each session there recommends it.
+Then start a new session in your project and run `/playbook:audit`. On its first run it adopts the project: it reads the documentation and rules the project already has, proposes how to order them, builds the wiki in `docs/playbook/`, and cleans `CLAUDE.md`, asking you each choice. It starts from a clean git tree, so all it changes is one diff. Until a project is adopted, each session in its git repository recommends it.
 
 To make searches cheaper, copy [`plugins/playbook/extras/Explore.md`](plugins/playbook/extras/Explore.md) to `~/.claude/agents/`.
 
-To keep Claude from reading secrets, add deny rules to `.claude/settings.json`. To be asked before a command that destroys work, add ask rules: they prompt in every permission mode, `bypassPermissions` included. The plugin asks before every push; a forced push, which rewrites the remote's history, gets its own rules as well, since a hook's filter is best-effort.
+To keep Claude from reading secrets, add deny rules to `.claude/settings.json`. To be asked before a command that destroys work, add ask rules: they prompt in every permission mode, `bypassPermissions` included. The plugin asks before a push; a forced push, which rewrites the remote's history, gets its own rules as well, since a hook's filter is best-effort.
 
 ```json
 {
