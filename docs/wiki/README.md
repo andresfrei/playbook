@@ -12,7 +12,7 @@ Playbook is a Claude Code plugin that helps a person build software fast with Cl
 
 ## Open work
 
-[works/basics/](works/basics/spec.md): rebuild the playbook to its minimum, released as 5.0.0. Unit U1 is done; U2, the plugin `playbook`, is next.
+[works/basics/](works/basics/spec.md): rebuild the playbook to its minimum, released as 5.0.0. Units U1 and U2 are done; U3, the skills `define`, `close`, and `release`, is next.
 
 ## Pages
 
