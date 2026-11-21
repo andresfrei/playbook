@@ -214,10 +214,15 @@ for skill in "$plugins"/*/skills/*/SKILL.md; do
     "name description context agent ")
       [ "$(printf '%s\n' "$matter" | sed -n 's/^context: *//p')" = "fork" ] ||
         fail "context of $name must be fork" ;;
+    "name description context agent disable-model-invocation ")
+      [ "$(printf '%s\n' "$matter" | sed -n 's/^context: *//p')" = "fork" ] ||
+        fail "context of $name must be fork"
+      [ "$(printf '%s\n' "$matter" | sed -n 's/^disable-model-invocation: *//p')" = "true" ] ||
+        fail "disable-model-invocation of $name must be true" ;;
     "name description disable-model-invocation ")
       [ "$(printf '%s\n' "$matter" | sed -n 's/^disable-model-invocation: *//p')" = "true" ] ||
         fail "disable-model-invocation of $name must be true" ;;
-    *) fail "front matter of $name must hold name and description, or those two followed by context and agent, or by disable-model-invocation, in that order, one line each" ;;
+    *) fail "front matter of $name must hold name and description, or those two followed by context and agent, by disable-model-invocation, or by context, agent, and disable-model-invocation, in that order, one line each" ;;
   esac
 
   description=$(printf '%s\n' "$matter" | sed -n 's/^description: *//p' |
@@ -301,13 +306,19 @@ if ! output=$(sh "$root/scripts/set-models.sh" --check "$root" 2>&1); then
   printf '%s\n' "$output"
 fi
 
-# The models check reads only the agents of playbook-agents, so an agent file
-# anywhere else would have a model that models.conf does not set.
+# The models check reads only the agents of playbook-agents, so models.conf
+# sets no model for an agent anywhere else. An agent of playbook-wiki sets its
+# own model and effort in its front matter; no other plugin may hold an agent.
 for agent in "$plugins"/*/agents/*.md; do
   [ -f "$agent" ] || continue
   case $agent in
     "$agents_plugin"/agents/*) ;;
-    *) fail "${agent#"$plugins"/} is not in playbook-agents, so models.conf does not set its model" ;;
+    "$wiki_plugin"/agents/*)
+      for key in model effort; do
+        [ -n "$(front_matter "$agent" | sed -n "s/^$key: *//p")" ] ||
+          fail "${agent#"$plugins"/} sets no $key, and models.conf does not set it for an agent of playbook-wiki"
+      done ;;
+    *) fail "${agent#"$plugins"/} is not in playbook-agents or playbook-wiki, so no file sets its model" ;;
   esac
 done
 

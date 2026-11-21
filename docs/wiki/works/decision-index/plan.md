@@ -8,7 +8,7 @@
 | decision-index-U2 | Done | `doctor` moved to `migrate` with generic steps and no reference of an older format; `prepare-project`, `write-docs`, and `init` stop on an older wiki; evals renamed; no `doctor` left outside `docs/wiki/` but the review-evidence seed, a diff of a past commit; `migrate` 494 words, `prepare-project` 696 after keeping its decided trigger wording; `claude plugin validate`, `verify.sh`, and `verify_test.sh` pass; a broken notice made two cases fail. The new evals were not run | 2026-11-20 | |
 | decision-index-U3 | Not started | | | |
 | decision-index-U4 | Not started | | | |
-| decision-index-U5 | Not started | | | |
+| decision-index-U5 | Done | `plugins/playbook-wiki/agents/wiki-writer.md`, sonnet and effort medium, listed by a new headless session; `migrate` runs in it with `context: fork` and stays owner-only (decision-index-13); the close hands shared pages to it; `write-shared-pages` removed and its 5 task rows name `wiki-writer`; `verify.sh` accepts an agent of `playbook-wiki` that sets model and effort; `playbook-wiki` loads 351 of 370 words; `claude plugin validate`, `verify.sh`, and `verify_test.sh` pass | 2026-11-20 | |
 
 ## Units
 

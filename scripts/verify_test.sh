@@ -41,6 +41,12 @@ fresh() {
   # to three words, in the copy only.
   ws="$tmp/repo/plugins/playbook-agents/skills/write-skill/SKILL.md"
   sed '3s/.*/description: Write a skill./' "$ws" > "$ws.new" && mv "$ws.new" "$ws"
+  # The same for playbook-wiki, whose real load is at its limit of 370: the
+  # description of migrate and of wiki-writer are cut in the copy only.
+  mg="$tmp/repo/plugins/playbook-wiki/skills/migrate/SKILL.md"
+  sed '3s/.*/description: Migrate the wiki./' "$mg" > "$mg.new" && mv "$mg.new" "$mg"
+  ww="$tmp/repo/plugins/playbook-wiki/agents/wiki-writer.md"
+  sed '3s/.*/description: Writes wiki pages./' "$ww" > "$ww.new" && mv "$ww.new" "$ww"
 }
 
 # add_skill <name> <description> <body words> [extra front matter line]
@@ -381,6 +387,30 @@ expect "front matter with disable-model-invocation: true passes" pass
 fresh
 add_skill owner-only "Short description." 10 "disable-model-invocation: false"
 expect "front matter with disable-model-invocation other than true fails" fail "disable-model-invocation of"
+
+fresh
+add_skill forked-owner "Short description." 10 "context: fork
+agent: playbook-agents:review
+disable-model-invocation: true"
+expect "front matter with context, agent, and disable-model-invocation passes" pass
+
+fresh
+add_skill forked-owner "Short description." 10 "context: fork
+agent: playbook-agents:review
+disable-model-invocation: false"
+expect "front matter with context, agent, and disable-model-invocation other than true fails" fail "disable-model-invocation of"
+
+fresh
+add_skill forked-owner "Short description." 10 "context: thread
+agent: playbook-agents:review
+disable-model-invocation: true"
+expect "front matter with context other than fork and disable-model-invocation fails" fail "context of"
+
+fresh
+add_skill forked-owner "Short description." 10 "disable-model-invocation: true
+context: fork
+agent: playbook-agents:review"
+expect "front matter with disable-model-invocation before context fails" fail "front matter"
 
 fresh
 words 400 > "$tmp/repo/plugins/playbook-agents/rules.md"
@@ -1801,9 +1831,29 @@ sed 's/^skills: .*/skills: prepare-project/' "$tmp/repo/plugins/playbook-agents/
 expect "plugins: an agent that preloads a skill of another plugin fails" fail "preloads the skill 'prepare-project'"
 
 fresh
-mkdir -p "$tmp/repo/plugins/playbook-wiki/agents"
-cp "$tmp/repo/plugins/playbook-agents/agents/explore.md" "$tmp/repo/plugins/playbook-wiki/agents/extra.md"
-expect "plugins: an agent outside playbook-agents fails" fail "playbook-wiki/agents/extra.md is not in playbook-agents"
+mkdir -p "$tmp/repo/plugins/playbook/agents"
+cp "$tmp/repo/plugins/playbook-agents/agents/explore.md" "$tmp/repo/plugins/playbook/agents/extra.md"
+expect "plugins: an agent outside playbook-agents and playbook-wiki fails" fail "playbook/agents/extra.md is not in playbook-agents or playbook-wiki"
+
+fresh
+expect "plugins: wiki-writer of playbook-wiki passes" pass
+grep -q '^name: wiki-writer$' "$tmp/repo/plugins/playbook-wiki/agents/wiki-writer.md" || {
+  printf 'FAIL  plugins: wiki-writer is missing\n'; failed=$((failed + 1)); }
+
+fresh
+sed '/^model:/d' "$tmp/repo/plugins/playbook-wiki/agents/wiki-writer.md" > "$tmp/x" &&
+  mv "$tmp/x" "$tmp/repo/plugins/playbook-wiki/agents/wiki-writer.md"
+expect "plugins: an agent of playbook-wiki with no model fails" fail "wiki-writer.md sets no model"
+
+fresh
+sed '/^effort:/d' "$tmp/repo/plugins/playbook-wiki/agents/wiki-writer.md" > "$tmp/x" &&
+  mv "$tmp/x" "$tmp/repo/plugins/playbook-wiki/agents/wiki-writer.md"
+expect "plugins: an agent of playbook-wiki with no effort fails" fail "wiki-writer.md sets no effort"
+
+fresh
+sed 's/^description: .*/description: '"$(words 40 | tr -d '\n')"'/' "$tmp/repo/plugins/playbook-wiki/agents/wiki-writer.md" > "$tmp/x" &&
+  mv "$tmp/x" "$tmp/repo/plugins/playbook-wiki/agents/wiki-writer.md"
+expect "plugins: the description of a wiki agent counts toward the session start" fail "L4 playbook-wiki loads"
 
 fresh
 expect "agents and skills together still pass" pass

@@ -1,6 +1,8 @@
 ---
 name: migrate
 description: Bring this project's wiki to the current wiki format, or repair a wiki that fails its check. Only the owner starts it, usually after a session notice said the wiki's format is behind.
+context: fork
+agent: playbook-wiki:wiki-writer
 disable-model-invocation: true
 ---
 
@@ -15,17 +17,17 @@ Do not use it to write, extend, or reorganize a wiki for any other reason.
 
 - Change only files under `docs/wiki/`.
 - This skill holds no knowledge of any older format. The current format is `<this skill's folder>/../../format.md`; read it, and the wiki, every time.
-- Propose before you change. List the rewrites, wait for the owner's answer, and apply only what the owner accepts.
+- Propose before you change. You run apart from the owner, so list the rewrites in your answer and stop; apply only what the brief says the owner accepted. The main session asks the owner and starts you again with the answer.
 - Move text. Do not rewrite it, shorten it, or delete it, except a copy of something that another page of the wiki already holds.
 - Keep every decision's identifier, date, words, and who decided.
 - A value you fill by reading a row, not from the owner's words, ends in ` (estimated)`. Leave a cell empty rather than guess.
 - Never write `docs/wiki/.format` by hand. Only `scripts/wiki-format.sh mark` writes it, and only when the check passes.
-- When the project is not a git repository, copy `docs/wiki/` to a folder next to it before the first change, and tell the owner where the copy is.
+- When the project is not a git repository, copy `docs/wiki/` to a folder next to it before the first change, and report where the copy is.
 
 ## Steps
 
 1. When the project has no `docs/wiki/README.md`, say so and stop.
-2. Read `format.md`. From the project's root, run `sh <this skill's folder>/scripts/wiki-format.sh status docs/wiki`, and run `sh <this skill's folder>/../../check-wiki.sh docs/wiki`. When the status prints nothing and the check passes, tell the owner that the wiki is at the current format, and stop.
+2. Read `format.md`. From the project's root, run `sh <this skill's folder>/scripts/wiki-format.sh status docs/wiki`, and run `sh <this skill's folder>/../../check-wiki.sh docs/wiki`. When the status prints nothing and the check passes, report that the wiki is at the current format, and stop.
 3. Read the wiki: every page and every `decisions.md`. Compare it with `format.md` and list what differs.
 4. When the status printed a line, rewrite the wiki to the current format:
    - Add each column the format requires. For Replaces, fill a row only where its own text names a decision it replaces, changes, or narrows, mark the value ` (estimated)`, and otherwise leave it empty. Fill Kind and Answer the same way, or leave them empty where the format allows.
@@ -37,6 +39,6 @@ Do not use it to write, extend, or reorganize a wiki for any other reason.
 ## Output
 
 - Each page changed, and what moved from where to where.
-- Every value you wrote with ` (estimated)`, as a list of the decision and the value, for the owner to read.
-- What the owner did not accept.
+- Every value you wrote with ` (estimated)`, as a list of the decision and the value, for the main session to show the owner.
+- What the brief says the owner did not accept.
 - The last line that the check and, when it ran, `wiki-format.sh mark` printed.
