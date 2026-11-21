@@ -36,6 +36,14 @@ case $out in *'"deny"'*) ok "git -C <dir>: found" ;; *) bad "git -C <dir>" "$out
 out=$(commit "$repo" "git -C $repo commit -m \\\"fix: push\\\"")
 case $out in *'"deny"'*) ok "broken wiki, commit message naming push: deny" ;; *) bad "commit message naming push" "$out" ;; esac
 
+# A quoted folder, the form Code Mode sends, and a folder with a space.
+cp -R "$repo" "$tmp/my repo"
+for c in "cd 'repo' && git commit -m x" "cd '$repo' && git commit -m x" 'cd \"repo\" && git commit -m x' \
+  "cd 'my repo' && git commit -m x" 'cd my\\ repo && git commit -m x' "git -C 'my repo' commit -m x" \
+  "cd '$tmp' && git -C 'my repo' commit -m x"; do
+  case $(commit "$tmp" "$c") in *'"deny"'*) ok "broken wiki: $c" ;; *) bad "broken wiki: $c" "no deny" ;; esac
+done
+
 out=$(commit "$repo" 'for f in $(ls); do cat $f; done')
 [ -z "$out" ] && ok "broken wiki, not a commit: silent" || bad "broken wiki, not a commit" "$out"
 
@@ -49,12 +57,13 @@ for c in 'git push origin main' 'cd x && git push' 'git -C ../a push -u origin b
   'gh -R o/r pr merge 3' 'gh release create v1' 'echo hi\ngit push' 'gh release upload v1 a.tgz' \
   'timeout 120 git push origin main' 'timeout -s KILL 5m git push' 'nohup git push' 'nice -n 10 git push' \
   'stdbuf -oL git push' 'command git push' 'echo main | xargs git push origin' 'git --no-pager push' \
-  'git -c push.default=current push' 'FOO=1 git push' 'if git push; then echo ok; fi'; do
+  'git -c push.default=current push' 'FOO=1 git push' 'if git push; then echo ok; fi' \
+  "git -C 'my repo' push" 'git -C \"my own repo\" push origin main' 'git -C my\\ repo push' "gh -R 'o/r' pr merge 3"; do
   case $(ask "$c") in *'"permissionDecision":"ask"'*) ok "ask: $c" ;; *) bad "ask: $c" "did not ask" ;; esac
 done
 for c in 'for f in $(ls); do cat $f; done' 'git status --porcelain' 'echo git push' 'gh release view v1' \
   'cat "$f" | grep push' 'git log -n 3' 'git stash push -u -m wip' 'git commit -m \"fix: ask before push\"' \
-  'command -v git' 'gh issue create --title \"pr create\"' 'git log --grep push'; do
+  'command -v git' 'gh issue create --title \"pr create\"' 'git log --grep push' "git -C 'my repo' stash push"; do
   out=$(ask "$c")
   [ -z "$out" ] && ok "silent: $c" || bad "silent: $c" "$out"
 done

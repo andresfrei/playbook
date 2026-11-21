@@ -42,13 +42,20 @@ has() {
       line = $0
       gsub(/\$\(|`|\(|\)|&&|\|\||[;|&{}]/, " ; ", line)
       m = split(line, t, /[ \t]+/)
-      for (i = 1; i <= m; i++) gsub("^[\"" q "]+|[\"" q "]+$", "", t[i])
-      state = "first"; k = 0; wrap = ""; skip = 0
+      for (i = 1; i <= m; i++) { raw[i] = t[i]; gsub("^[\"" q "]+|[\"" q "]+$", "", t[i]) }
+      state = "first"; k = 0; wrap = ""; skip = 0; open = ""
       for (i = 1; i <= m; i++) {
         tok = t[i]
         if (tok == "") continue
-        if (tok == ";") { state = "first"; k = 0; wrap = ""; skip = 0; continue }
-        if (skip) { skip = 0; continue }
+        if (tok == ";") { state = "first"; k = 0; wrap = ""; skip = 0; open = ""; continue }
+        # The value of an option may be quoted and hold spaces: skip to its end.
+        if (open != "") { if (substr(raw[i], length(raw[i])) == open) open = ""; continue }
+        if (skip) {
+          skip = 0; c = substr(raw[i], 1, 1)
+          if ((c == q || c == "\"") && (length(raw[i]) == 1 || substr(raw[i], length(raw[i])) != c)) open = c
+          else if (raw[i] ~ /\\$/) skip = 1
+          continue
+        }
         if (state == "first") {
           if (wrap != "") {
             if (tok ~ /^-/) { if (tok ~ /^-[nskioe]$|^--(signal|kill-after|adjustment)$/) skip = 1; continue }
