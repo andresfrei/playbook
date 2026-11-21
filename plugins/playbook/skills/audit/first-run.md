@@ -15,9 +15,11 @@ The first run adopts the project: it turns the knowledge the project already hol
 2. **Propose the order.** Show one table: each file, what it holds, and what to do with it: keep, merge into another, move into the wiki (and to which page), or delete. Documentation for the software's users stays where it is. Ask the owner one topic at a time.
 3. **Build `docs/playbook/`.** When it already exists, as `define` creates it for a new project, keep its pages and decisions and add to them.
    - `README.md`: the product in two lines, the owner, the open work, and the pages.
-   - `product.md`, `technology.md`, `skills.md`, and `design.md` when the project has an interface. Each statement cites its decision, or is marked Open when nobody knows why. Write only what the code does not say: what the code or its configuration shows, such as the test runner or the indentation, stays out.
+   - `product.md`, what the product does, for whom, and its rules; `technology.md`, each technology with why and its version; `skills.md`, the skills and tools the agent uses for each job of building this repository, not the skills the product ships; and `design.md` when the project has an interface. Each statement cites its decision, or is marked Open when nobody knows why.
+   - Keep the pages short: write only what someone changing the code needs and cannot read in it. Lists of modules, skills, or settings the code shows stay out, and so do the test runner and the indentation.
+   - Records of what is finished, such as the pages and plans of past phases, old measurements, and pages of data the project no longer uses: propose deleting them, since git keeps them.
    - A reason the project already wrote, such as a record of a decision or a section of a README, is shown to the owner to confirm. On a yes it becomes a decision that quotes the owner and names its source; without an answer, the statement keeps its reason and is marked Open.
-   - Move the works of a 4.x wiki unchanged into `docs/playbook/works/`, so their IDs and the owner's words stay.
+   - Move the works of a 4.x wiki unchanged into `docs/playbook/works/`, so their IDs and the owner's words stay. Leave their links as they are: the check reads only works with a `spec.md`, and an old link may point to a page that git keeps.
    - Record the owner's new answers in `docs/playbook/works/audit-<date>/decisions.md`, with five columns, `| ID | Date | Decision | Who decided | Their words |`, and IDs `audit-<date>-<n>`.
 4. **Clean the rules.** For `CLAUDE.md`, `AGENTS.md`, and `.claude/rules/`, show per file what you would cut and apply it on the owner's yes:
    - cut what Claude can derive from the code, such as layouts, dependency lists, and architecture overviews;
