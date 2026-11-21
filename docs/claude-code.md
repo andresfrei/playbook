@@ -55,7 +55,7 @@ The hooks and modules behind each step are in [docs/wiki/03-technology/architect
 
 ## Needs
 
-`playbook-agents` uses these tools and does not install them. Install each one in Claude Code yourself; `playbook-wiki` alone needs none of them, only git. The decisions are in [docs/wiki/decisions.md](wiki/decisions.md).
+`playbook-agents` uses these tools and does not install them. Install each one in Claude Code yourself; `playbook-wiki` alone needs none of them, only git. The decisions are in [docs/wiki/works/history/decisions.md](wiki/works/history/decisions.md).
 
 | Tool | Used for | Decision |
 |------|----------|----------|

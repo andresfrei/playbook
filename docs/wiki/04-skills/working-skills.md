@@ -71,7 +71,7 @@ Nothing is installed or written for this stage. Every skill named is the product
 
 | Job in this repository | Technology | What the agent uses | Where it lives | When |
 |------------------------|------------|---------------------|----------------|------|
-| Change `prepare-project` and `doctor`, rename the agent that `review-change` names, and write the start skill (TD30, TD31) | Skill files | `playbook:write-skill`, with its style guide and the two evaluation cases it asks for | `plugin/skills/write-skill/` | Each time a skill file is written or changed |
+| Change `prepare-project` and `doctor` (renamed `migrate`, decision-index-5), rename the agent that `review-change` names, and write the start skill (TD30, TD31) | Skill files | `playbook:write-skill`, with its style guide and the two evaluation cases it asks for | `plugin/skills/write-skill/` | Each time a skill file is written or changed |
 | Write the three manifests, the marketplace entries, the dependency, the `userConfig` option, and the hooks (TD26, TD28, TD29, TD31) | Claude Code plugins | No skill needed. The documentation quoted in [../03-technology/phase-4.md](../03-technology/phase-4.md), read again through the `claude-code-guide` agent when a detail is missing, and `claude plugin validate`. A skill for the plugin format stays Deferred, as in phases 1 to 3 | Claude Code 2.1.325 on the owner's machine | When each file is written |
 | Write the wizard's script and the script of the step at the merge, and change the check and `scripts/verify.sh` (TD24, TD27, TD28) | Plain shell (TD2) | No skill needed. `shellcheck` checks each script, and `scripts/verify_test.sh` holds the tests | The owner's machine: `shellcheck` 0.11.0, seen with `shellcheck --version` on 2026-11-16 | Each change to a script |
 | Try how Claude Code's scopes and hooks behave, which [../03-technology/phase-4.md](../03-technology/phase-4.md) lists as not verified | Claude Code's plugin commands | No skill needed. Each command's own help, and a trial that the owner authorizes before it runs on the owner's machine | Claude Code 2.1.325 | Before anything is built on a behaviour that was not tried |
@@ -111,7 +111,7 @@ Stage 3 of the work `delegation`: the skills used to change the contract, the fo
 
 | Job in this repository | What the agent uses | When |
 |------------------------|---------------------|------|
-| Write `prepare-project`'s `references/delegation.md` and the doctor's `references/format-5.md` | `playbook-agents:write-skill` | Each file written or changed |
+| Write `prepare-project`'s `references/delegation.md` and the doctor's `references/format-5.md` (deleted: `migrate` keeps no reference for an older format, decision-index-10) | `playbook-agents:write-skill` | Each file written or changed |
 | Keep the change to what was decided | `playbook-agents:keep-minimal` | Each change |
 | Change `check-wiki.sh` and its tests | No skill needed: `shellcheck` and `scripts/verify_test.sh` | Each change to the check |
 | Read the contract, the format, the check, and the skills, which every project uses | `playbook-agents:review-change`, on the `review` agent (R20) | Before each unit is delivered |
@@ -144,3 +144,7 @@ How the agents keep in mind what repeated findings of `review` taught (repeated-
 - A repository's page can be started from its past reviews with the skill `seed-evidence`, which only the person starts and which is not in the limit L4 (seed-evidence-2, seed-evidence-5). The 15 general rules of level 2 are in `evidence-rules.md` (seed-evidence-32).
 - Consolidation happens at the close of a work: N records at level k become one rule at level k+1 that covers them, and the level-k records are deleted, git keeping them. The agent proposes it to the owner, or makes it when the owner delegated the kind `consolidate` (repeated-corrections-5, repeated-corrections-13, repeated-corrections-28). The step is the file `references/evidence.md` of `prepare-project`.
 - A rule is the project's when understanding it needs the project's business, and general otherwise. A general rule is proposed to the owner to go up to `plugins/playbook-agents/evidence-rules.md`, which every project reads (repeated-corrections-15, repeated-corrections-20).
+
+## Decision index
+
+Stage 3 of the work `decision-index`: `playbook-agents:write-skill` writes the renamed skill `migrate` and no other skill is needed (decision-index-8). `migrate` runs in the agent `wiki-writer` (decision-index-12) and keeps no reference for an older format (decision-index-10).

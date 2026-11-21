@@ -8,7 +8,7 @@ git init -q -b main .
 git config user.email eval@example.com
 git config user.name "Laura Gómez"
 mkdir -p docs/wiki/works/pdf-invoice src
-printf '5\n' > docs/wiki/.format
+printf '6\n' > docs/wiki/.format
 cat > docs/wiki/README.md <<'MD'
 # Invoicing app
 
@@ -55,16 +55,16 @@ MD
 cat > docs/wiki/works/pdf-invoice/decisions.md <<'MD'
 # Decisions of pdf-invoice
 
-| ID | Date | Decision | Who decided | Their words | Shared page | Kind | Answer |
-|----|------|----------|-------------|-------------|-------------|------|--------|
-| pdf-invoice-5 | 2026-11-14 | Unit 1, PDF layout: `src/layout.js` renders an invoice as a PDF. It ends when its tests pass. | Laura Gómez | "Sí, el diseño del PDF primero" | none | definition | as recommended |
-| pdf-invoice-6 | 2026-11-14 | Unit 2, Download button: `src/download.js` serves the PDF. It ends when its tests pass. | Laura Gómez | "Sí, y el botón después" | none | definition | as recommended |
-| pdf-invoice-7 | 2026-11-14 | Close stage 4, Design system, as not applicable. | Laura Gómez | "No hay diseño nuevo" | none | close-stage | as recommended |
-| pdf-invoice-8 | 2026-11-15 | The plan is accepted: two units, built one after the other. | Laura Gómez | Asked "¿Aceptás el plan?"; answered "Sí, acepto el plan" | none | plan | as recommended |
-| pdf-invoice-9 | 2026-11-15 | Close stage 5, Plan. | Laura Gómez | "Cerrá el plan" | none | close-stage | as recommended |
-| pdf-invoice-10 | 2026-11-17 | The work is delivered through one pull request to `main`, which the owner merges. Production is `main`. | Laura Gómez | Chose "Un pull request a main" | none | plan | as recommended |
-| pdf-invoice-11 | 2026-11-18 | Version 1.2.0 for this work, a new feature that breaks nothing. | Laura Gómez | "Sí, la 1.2.0" | none | other | as recommended |
-| pdf-invoice-12 | 2026-11-18 | Both units are Done; the work goes to its close. | Laura Gómez | "Listo, cerremos" | none | other | as recommended |
+| ID | Date | Decision | Who decided | Their words | Shared page | Replaces | Kind | Answer |
+|----|------|----------|-------------|-------------|-------------|----------|------|--------|
+| pdf-invoice-5 | 2026-11-14 | Unit 1, PDF layout: `src/layout.js` renders an invoice as a PDF. It ends when its tests pass. | Laura Gómez | "Sí, el diseño del PDF primero" | none | | definition | as recommended |
+| pdf-invoice-6 | 2026-11-14 | Unit 2, Download button: `src/download.js` serves the PDF. It ends when its tests pass. | Laura Gómez | "Sí, y el botón después" | none | | definition | as recommended |
+| pdf-invoice-7 | 2026-11-14 | Close stage 4, Design system, as not applicable. | Laura Gómez | "No hay diseño nuevo" | none | | close-stage | as recommended |
+| pdf-invoice-8 | 2026-11-15 | The plan is accepted: two units, built one after the other. | Laura Gómez | Asked "¿Aceptás el plan?"; answered "Sí, acepto el plan" | none | | plan | as recommended |
+| pdf-invoice-9 | 2026-11-15 | Close stage 5, Plan. | Laura Gómez | "Cerrá el plan" | none | | close-stage | as recommended |
+| pdf-invoice-10 | 2026-11-17 | The work is delivered through one pull request to `main`, which the owner merges. Production is `main`. | Laura Gómez | Chose "Un pull request a main" | none | | plan | as recommended |
+| pdf-invoice-11 | 2026-11-18 | Version 1.2.0 for this work, a new feature that breaks nothing. | Laura Gómez | "Sí, la 1.2.0" | none | | other | as recommended |
+| pdf-invoice-12 | 2026-11-18 | Both units are Done; the work goes to its close. | Laura Gómez | "Listo, cerremos" | none | | other | as recommended |
 MD
 cat > docs/wiki/works/pdf-invoice/plan.md <<'MD'
 # Plan of pdf-invoice

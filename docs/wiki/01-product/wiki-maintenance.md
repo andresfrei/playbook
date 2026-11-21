@@ -1,6 +1,6 @@
 # Wiki maintenance
 
-How a project's wiki stays small and current as the project advances, and how a definition the owner changes reaches the next session. It holds what was measured on 2026-11-14, the changes proposed, and the order of the work. The owner decided that this is corrected, that the product maintains the wiki by itself, the order, the reduced scope, and that a changed definition must be followed the next time (D133 to D137 in [decisions.md](../decisions.md)). The owner accepted the rules and the texts under "Decided" as written (D138). They are built and merged into `main` on 2026-11-14; see "Built".
+How a project's wiki stays small and current as the project advances, and how a definition the owner changes reaches the next session. It holds what was measured on 2026-11-14, the changes proposed, and the order of the work. The owner decided that this is corrected, that the product maintains the wiki by itself, the order, the reduced scope, and that a changed definition must be followed the next time (D133 to D137 in [decisions.md](../works/history/decisions.md)). The owner accepted the rules and the texts under "Decided" as written (D138). They are built and merged into `main` on 2026-11-14; see "Built".
 
 A project's wiki is created by the skill `prepare-project`; its format is in [`plugins/playbook-wiki/skills/prepare-project/references/1-wiki.md`](../../../plugins/playbook-wiki/skills/prepare-project/references/1-wiki.md). A change to that file reaches every project. A change to this wiki alone does not.
 
@@ -140,6 +140,8 @@ A script that looks decisions up, an index in JSON, decisions split into files b
 5. torneo-pro and huellitas-id, when work on each resumes.
 
 ## The doctor
+
+Now: the skill `doctor` is `migrate` (decision-index-5). It brings any older wiki straight to the present format, 6, and repairs a wiki that fails its check (decision-index-2). It keeps no reference for an older format: it reads the present `format.md` and the older wiki, rewrites it, and runs the check until it passes (decision-index-10). It runs in the agent `wiki-writer`, and only the owner starts it (decision-index-12, decision-index-13). `playbook-wiki` reads and writes only the present format, and a skill that writes a wiki stops on an older one (decision-index-2). The marker and the notice below stand, pointing to `migrate`. The rest of this section is the design as built on 2026-11-14 for format 2, kept as a record; its repair instructions and references were deleted (decision-index-10).
 
 The owner decided that each wiki is repaired in its own project by that project's agent, guided by the product, and that a file in the wiki says whether there is anything to resolve (D139), so that nothing reads the documentation to check it all the time (D140). The owner then chose the format number and accepted the rest as proposed (D141). It is built and merged with the rest; see "Built".
 

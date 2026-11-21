@@ -22,7 +22,7 @@ Every statement is Decided, Proposed, or Open.
 | [decisions.md](decisions.md) | Decisions from before works | |
 | [01-product/invoices.md](01-product/invoices.md) | How an invoice is issued | `src/` |
 MD
-printf '# Invoices\n\nAn invoice has a number, a customer, and lines (invoices-1).\n' > docs/wiki/01-product/invoices.md
+printf '# Invoices\n\nAn invoice has a number, a customer, and lines (invoices-1), stored in PostgreSQL (D1).\n' > docs/wiki/01-product/invoices.md
 printf '# Invoices\n\nIssue invoices. Led by Laura Gómez.\n\nStatus: Closed 2026-10-01.\n' > docs/wiki/works/invoices/README.md
 cat > docs/wiki/works/invoices/decisions.md <<'MD'
 | ID | Date | Decision | Who decided | Their words | Shared page | Kind | Answer |

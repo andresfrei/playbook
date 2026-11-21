@@ -28,13 +28,13 @@ Two limits apply to a project's wiki, not to the plugin (D138). They are stated 
 | What | Limit | Enforced by |
 |------|-------|-------------|
 | The section "Where work stands" of a work's `README.md` | 250 words | `plugins/playbook-wiki/check-wiki.sh`, which also fails on a relative link that does not resolve and on a path the wiki names as code that does not exist (D160) |
-| The text of a decision in a work's `decisions.md` | 60 words | The same script (D161). The `decisions.md` of an earlier format is history: the script does not read it (D202) |
+| The text of a decision in a work's `decisions.md` | 60 words | The same script (D161). The script reads only the present format, 6; a wiki below it is migrated first (decision-index-2). The history, `works/history/decisions.md`, keeps its rows as written and is exempt from the limit |
 
 ## Format of a skill
 
 The format of a skill, its writing rules, and the format of its evaluation cases live in one place: [`plugins/playbook-agents/skills/write-skill/references/style-guide.md`](../../../plugins/playbook-agents/skills/write-skill/references/style-guide.md), the file the agent reads when it writes or audits a skill (D48, unit U5). The work skill-best-practices added to it what Anthropic's and agentskills.io's guides have and it lacked. The limits of L2 and L3 stay as they are (skill-best-practices-1). In short:
 
-- Front matter: `name` and `description`, plus `context` and `agent` when the skill runs in a separate context (TD10), or plus `disable-model-invocation: true` when only the owner starts the skill (D141).
+- Front matter: `name` and `description`, plus `context` and `agent` when the skill runs in a separate context (TD10), and `disable-model-invocation: true` when only the owner starts the skill (D141). A skill may set all three, in the order `context`, `agent`, `disable-model-invocation`, and `scripts/verify.sh` accepts them (decision-index-13).
 - Name: at most 64 characters, lowercase letters, digits, and single hyphens, never the word `claude` or `anthropic` (skill-best-practices-1, -6). `scripts/verify.sh` fails on a name that breaks it.
 - Files: references are one level deep, so a reference file names no other file of `references/`, and one over 100 lines opens with `## Contents` (skill-best-practices-1, -6). `scripts/verify.sh` fails on either.
 - Body: up to six sections, in order: When to use, Rules, Gotchas, Steps, Output, References. Gotchas is optional: the mistakes the agent makes on the job without the skill, each with the right way (skill-best-practices-1). A skill at the limit moves its least-used detail to a reference file to make room for it (skill-best-practices-6).

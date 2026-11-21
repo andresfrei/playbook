@@ -1,12 +1,12 @@
 # Playbook wiki
 
-Single source of truth for the playbook repository. When this wiki and any other document disagree, the wiki wins. Inside it, the definitions in force are in the shared pages, each citing its decision; each work records its decisions in its own `decisions.md`; [decisions.md](decisions.md) is the history from before format 4 (decision-review-9).
+Single source of truth for the playbook repository. When this wiki and any other document disagree, the wiki wins. Inside it, the definitions in force are in the shared pages, each citing its decision; each work records its decisions in its own `decisions.md`; [works/history/decisions.md](works/history/decisions.md) is the history from before format 4 (decision-review-9).
 
 Project owner: Andres Frei.
 
 Every statement is one of:
 
-- **Decided** — accepted by the owner, a row of a work's `decisions.md`, or a `D#` or `TD#` of the history in [decisions.md](decisions.md).
+- **Decided** — accepted by the owner, a row of a work's `decisions.md`, or a `D#` or `TD#` of the history in [works/history/decisions.md](works/history/decisions.md).
 - **Proposed** — a recommendation waiting for the owner's answer.
 - **Open** — a question listed in [01-product/open-questions.md](01-product/open-questions.md).
 
@@ -14,7 +14,7 @@ Every statement is one of:
 
 | Page | Content | Code it governs |
 |------|---------|-----------------|
-| [decisions.md](decisions.md) | The decisions from before format 4, `D#` and `TD#`, with the owner's words: history, replaced since by decisions of works without being marked | |
+| [works/history/decisions.md](works/history/decisions.md) | The decisions from before format 4, `D#` and `TD#`, with the owner's words: history, replaced since by decisions of works without being marked | |
 | [01-product/overview.md](01-product/overview.md) | What the product is after phase 4, who uses it, how it starts, and what it is not | |
 | [01-product/form.md](01-product/form.md) | Proposed principles for structure and storage, from the agent's side | |
 | [01-product/rules.md](01-product/rules.md) | Where each working rule comes from and which decision accepted it; the text is in `plugins/playbook-agents/rules.md` and, for six of them, in the contract of `playbook-wiki` | `plugins/playbook-agents/rules.md`, `plugins/playbook-wiki/contract.md` |
@@ -41,59 +41,5 @@ Every statement is one of:
 | [05-plan/plan.md](05-plan/plan.md) | The work plan for phase 1, in units (stage 5) | |
 | [05-plan/plan-phase-2.md](05-plan/plan-phase-2.md) | The work plan for phase 2: units U11 to U19 (stage 5 of phase 2) | |
 | [05-plan/plan-phase-3.md](05-plan/plan-phase-3.md) | The work plan for phase 3: units U20 to U27 (stage 5 of phase 3) | |
+| [05-plan/phases-before-format-4.md](05-plan/phases-before-format-4.md) | The phases prepared before format 4 and the work waiting for the owner since then: their stage tables and where each is recorded | |
 | [05-plan/outside-phases.md](05-plan/outside-phases.md) | Work done outside any phase after phase 2: two changes to `prepare-project`, with what was run for each | |
-
-## Phases before format 4
-
-The phases below were prepared before this wiki reached format 4. Their decisions are in [decisions.md](decisions.md). Phase 4 is the work [works/phase-4/README.md](works/phase-4/README.md).
-
-Finished:
-
-- Phase 3, support for opencode 2.x (D128), which phase 4 removes (D191): [05-plan/plan-phase-3.md](05-plan/plan-phase-3.md).
-- Phase 2, replacing gentle-ai (D28, D98): [05-plan/plan-phase-2.md](05-plan/plan-phase-2.md).
-- Phase 1 (D61): [05-plan/plan.md](05-plan/plan.md).
-- Work done outside any phase: [05-plan/outside-phases.md](05-plan/outside-phases.md).
-- Wiki maintenance and the doctor (D133 to D142), built, merged into `main`, and pushed (D144): [01-product/wiki-maintenance.md](01-product/wiki-maintenance.md).
-- Wiki format 3 (D155 to D165), built and merged into `main`: [01-product/wiki-format-3.md](01-product/wiki-format-3.md). This wiki, the pilot, reached format 3 with the doctor on 2026-11-15.
-- The repository is public since 2026-11-14 (D145 to D152): https://github.com/andresfrei/playbook. Every pull request needs the owner's approval. The full earlier history, with the pages about the owner's installation, is in the private `andresfrei/playbook-archive`.
-
-Waiting for the owner since before format 4:
-
-- Six proposals to spend fewer tokens, P1 to P6: 02-current-state/token-economy.md (kept in the private archive).
-- The work [works/seed-evidence/README.md](works/seed-evidence/README.md), which builds a repository's first evidence page from its past reviews, is closed and released as 3.3.0 (seed-evidence-33).
-- The work [works/ask-before-irreversible/README.md](works/ask-before-irreversible/README.md), which makes Claude Code ask before a push, a pull request, a merge, or a release and adds the command `protect`, is closed and released as 3.4.0 (ask-before-irreversible-25).
-- The work [works/parallel-units/README.md](works/parallel-units/README.md), which plans units in batches by what each waits for and builds ready units in parallel, each in its own worktree, is closed and released as 3.5.0 (parallel-units-25).
-- The work [works/task-agents/README.md](works/task-agents/README.md), which records the tasks of each work at its close and proposes a dedicated agent, with a model by its weight, for a task held in 3 works, is closed and released as 3.6.0 (task-agents-27).
-
-Phase 3 (D104):
-
-| Stage | Status | Closed on |
-|-------|--------|-----------|
-| 1 Wiki | Closed | 2026-11-13 |
-| 2 Technology | Closed | 2026-11-13 |
-| 3 Skills | Closed | 2026-11-13 |
-| 4 Design system | Closed, not applicable (D116) | 2026-11-13 |
-| 5 Plan | Closed | 2026-11-13 |
-| 6 Execution | Closed | 2026-11-13 |
-
-Phase 2 (D63):
-
-| Stage | Status | Closed on |
-|-------|--------|-----------|
-| 1 Wiki | Closed | 2026-11-13 |
-| 2 Technology | Closed | 2026-11-13 |
-| 3 Skills | Closed | 2026-11-13 |
-| 4 Design system | Closed, not applicable (D74) | 2026-11-13 |
-| 5 Plan | Closed | 2026-11-13 |
-| 6 Execution | Closed | 2026-11-13 |
-
-Phase 1, kept as a record:
-
-| Stage | Status | Closed on |
-|-------|--------|-----------|
-| 1 Wiki | Closed | 2026-11-13 |
-| 2 Technology | Closed | 2026-11-13 |
-| 3 Skills | Closed | 2026-11-13 |
-| 4 Design system | Closed, not applicable (D45) | 2026-11-13 |
-| 5 Plan | Closed | 2026-11-13 |
-| 6 Execution | Closed | 2026-11-13 |

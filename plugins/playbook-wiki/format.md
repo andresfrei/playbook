@@ -52,7 +52,7 @@ In this order:
 
 Title the third column "Code it governs" and write each path as code, between backticks. The check fails on a path that does not exist.
 
-The project's `README.md` holds no state and no list of works: the folders under `works/` are that list.
+The project's `README.md` holds no state, no stage table, and no list of works: the folders under `works/` are that list. The stage table of an earlier phase is a page of its own under the folder that fits, such as `05-plan/`, listed in the table of pages.
 
 ## A work
 
@@ -114,14 +114,14 @@ One table with exactly nine columns: ID, date, decision, who decided, their word
 
 - Who decided: the person who leads the work, or the project's owner for a decision that changes a definition other works share.
 - Their words are verbatim. When that person chose one of the options offered, write the option chosen.
-- Shared page: the path of the shared page the decision changed, from `docs/wiki/` and as code, such as `01-product/rbac.md`; or "none". That page cites the decision.
-- Replaces: the identifiers of the decisions this row replaces, separated by `, `, or empty. Each is a decision of any work, such as `auth-3`, or of the history, such as `D12` or `TD4`. The check fails on an identifier that does not exist and on a row that replaces itself.
+- Shared page: the path of each shared page the decision changed, from `docs/wiki/` and as code, such as `01-product/rbac.md`; several are separated by `, `. Or "none". Each page cites the decision.
+- Replaces: the identifiers of the decisions this row replaces entirely, separated by `, `, or empty. A decision that changes only part of another, narrows it, or extends it names it in its text, not here, so both stay in force. Each is a decision of any work, such as `auth-3`, or of the history, such as `D12` or `TD4`. The check fails on an identifier that does not exist and on a row that replaces itself.
 - A decision is in force when its shared page is not "none" and no row of any work names it in Replaces.
 - Kind and Answer are the last two columns, after "Replaces". A cell may be empty.
 - Kind is what the decision was about, one of: `definition`, `technology`, `plan`, `open-work`, `close-stage`, `close-work`, `commit`, `merge-push`, `version`, `consolidate`, `other`.
 - Answer is how the owner answered, one of: `as recommended`, `changed`, `rejected`, `delegated`. `delegated` means the agent decided under a delegation and did not ask.
 - Kind and Answer are written as plain text, without backticks.
-- A value of Replaces, Kind, or Answer may end in exactly one space and `(estimated)`: `migrate` wrote it, from the decision and its words. What is left after the suffix must be valid: `(estimated)` alone or `plan(estimated)` fails the check.
+- A value of Shared page, Replaces, Kind, or Answer may end in exactly one space and `(estimated)`: `migrate` wrote it, from the decision and its words. What is left after the suffix must be valid: `(estimated)` alone or `plan(estimated)` fails the check.
 - Under a delegation, "Who decided" is `agent, by <decision id of the delegation>`, such as `agent, by auth-7`.
 - A decision that replaces an earlier one names it in Replaces, in this work or in another.
 - A decision is a choice made between alternatives, or a rule set. That includes an authorization given before an action, the closing of a stage, and the acceptance of a plan.

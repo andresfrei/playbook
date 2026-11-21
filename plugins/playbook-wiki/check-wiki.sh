@@ -1,6 +1,7 @@
 #!/bin/sh
 # Checks a project's wiki against the format in format.md, next to this file.
 # Usage: sh check-wiki.sh [wiki directory]    (default: docs/wiki)
+#        sh check-wiki.sh --ignore-marker [wiki directory]
 #        sh check-wiki.sh --column [wiki directory]
 #        sh check-wiki.sh --decisions [wiki directory]
 #        sh check-wiki.sh --decisions --in-force [shared page] [wiki directory]
@@ -8,7 +9,9 @@
 #        sh check-wiki.sh --format
 # It fails at once, with one line and without running the other rules, when
 # the marker $wiki/.format is missing, is not a number, or is below the format
-# the playbook is at (6). A marker above it passes. It then fails when:
+# the playbook is at (6). A marker above it passes. With --ignore-marker it
+# skips this gate and nothing else: /playbook-wiki:migrate uses it to run
+# every other rule on a wiki whose marker is still old. It then fails when:
 # - $wiki/decisions.md exists: the decisions from before works belong in
 #   works/history/decisions.md, which /playbook-wiki:migrate makes;
 # - a relative link in a page does not resolve to a file or a directory;
@@ -36,10 +39,11 @@
 #   their words, shared page, replaces, kind, answer;
 # - the shared page (sixth column) is neither "none" nor code spans of paths,
 #   relative to the wiki, of pages that exist, are not under works/, and cite
-#   the identifier as a whole word;
+#   the identifier as a whole word; it may end in " (estimated)";
 # - Replaces (seventh column) is not empty and is not a list, separated by
 #   ", ", of identifiers of decisions that exist in some works/*/decisions.md,
-#   history included, or it names the decision of its own row;
+#   history included, or it names the decision of its own row, or a decision
+#   dated later than its own row (the same date passes);
 # - Kind (eighth column) is not empty and is not one of definition,
 #   technology, plan, open-work, close-stage, close-work, commit, merge-push,
 #   version, consolidate, other; or Answer (ninth column) is not empty and is
@@ -54,14 +58,18 @@
 # With --column it prints nothing, and exits 0 when a table of README.md has
 # the column "Code it governs" and 1 when none has.
 # With --decisions it prints each decision of each work, one per line, as
-# "<date> <identifier> <decision>", ordered by date, then work, then number,
-# and checks nothing. A wiki without works prints nothing.
+# "<date> <identifier> <decision>", ordered by date, then work, then number.
+# It fails, with a line for each row, when a row of a work's decisions.md does
+# not have nine columns, so a wiki below format 6 is not listed as if it were
+# at it; it checks nothing else. A wiki without works prints nothing.
 # With --decisions --in-force it prints only the decisions in force, as
 # "<date> <identifier> <shared page> <decision>": those whose shared page is
 # not "none" and that no row of any work names in Replaces. A shared page
 # given as an argument keeps only the decisions that name that page. A single
 # argument is a page when it ends in .md, and the wiki directory otherwise; with
-# two arguments the first is the page, which may be "" for none. It checks nothing.
+# two arguments the first is the page, which may be "" for none, and a leading
+# "./" of the page is dropped, as in the cells. It fails on a row that does
+# not have nine columns, as --decisions does, and checks nothing else.
 # With --delegations it reads the marker of no wiki and checks nothing. For
 # each Kind it counts the rows of every work's decisions.md whose Answer is not
 # empty, with " (estimated)" taken off and the Answer "delegated" left out,
@@ -82,6 +90,8 @@ present_format=6
 mode=check
 in_force=
 filter=
+ignore_marker=
+if [ "${1:-}" = --ignore-marker ]; then ignore_marker=1; shift; fi
 case ${1:-} in
   --column) mode=column; shift ;;
   --decisions)
@@ -109,7 +119,7 @@ fi
 
 # The gate: the marker must be a number, and not below the playbook's format.
 # A value that is empty, not digits, or longer than nine digits is no number.
-if [ "$mode" = check ]; then
+if [ "$mode" = check ] && [ -z "$ignore_marker" ]; then
   marker_value=
   if [ -f "$wiki/.format" ]; then
     marker_value=$(head -n 1 "$wiki/.format" | tr -d ' \t\r')
@@ -152,7 +162,8 @@ fences='{ sub(/\r$/, "") }
 # <what> "list" it prints one line for each decision: date, work, number,
 # identifier, text, shared pages (paths joined by ", ", or none), and the
 # identifiers it replaces (separated by a space), separated by tabs. With <what>
-# "answers" it prints, for each decision whose Kind is not empty, a line with
+# "columns" it prints a line that starts with FAIL for each row that does not
+# have nine columns. With <what> "answers" it prints, for each decision whose Kind is not empty, a line with
 # the Kind and the Answer, separated by a tab, without " (estimated)".
 # In the work "history" an identifier is D<n> or TD<n>.
 work_table() {
@@ -194,6 +205,11 @@ work_table() {
         want = (kind == "q") ? "Q" : (kind == "p") ? "U" : ""
         valid = (prefix ~ /^[a-z0-9]+(-[a-z0-9]+)*$/ && num ~ /^[1-9][0-9]*$/)
         expected = work "-" want "<number>"
+      }
+      if (what == "columns") {
+        if (valid && prefix == work && letter == "" && cells != 9)
+          printf "FAIL %s: the row of %s has %d columns, not the nine of the format: run /playbook-wiki:migrate\n", label, id, cells
+        next
       }
       if (what == "answers") {
         if (valid && prefix == work && letter == "" && cells == 9) {
@@ -282,11 +298,22 @@ if [ "$mode" = decisions ]; then
     exit 1
   fi
   [ -d "$wiki/works" ] || exit 0
+  narrow=$(
+    work_dirs | while IFS= read -r dir; do
+      [ -f "$dir/decisions.md" ] &&
+        work_table "$dir/decisions.md" "$(basename "$dir")" d "works/$(basename "$dir")/decisions.md" columns
+    done
+  )
+  if [ -n "$narrow" ]; then
+    printf '%s\n' "$narrow"
+    exit 1
+  fi
   work_dirs | while IFS= read -r dir; do
     [ -f "$dir/decisions.md" ] &&
       work_table "$dir/decisions.md" "$(basename "$dir")" d "" list
   done | LC_ALL=C sort -t "$tab" -k1,1 -k2,2 -k3,3n |
     awk -F '\t' -v in_force="$in_force" -v filter="$filter" '
+      BEGIN { while (filter ~ /^\.\//) filter = substr(filter, 3) }
       !in_force { printf "%s %s %s\n", $1, $4, $5; next }
       {
         n++; date[n] = $1; ident[n] = $4; text[n] = $5; page[n] = $6
@@ -525,8 +552,14 @@ work_checks() {
           case $tag in
             SHARED) shared_page "$rel/$file" "$id" "$path" ;;
             REPLACES)
-              printf '%s\n' "$known_ids" | grep -Fxq -- "$path" ||
-                printf 'FAIL %s: the row of %s replaces %s, which is not a decision of any work\n' "$rel/$file" "$id" "$path" ;;
+              replaced=$(printf '%s\n' "$known_ids" | awk -F '\t' -v k="$path" '$1 == k { print "found " $2; exit }')
+              if [ -z "$replaced" ]; then
+                printf 'FAIL %s: the row of %s replaces %s, which is not a decision of any work\n' "$rel/$file" "$id" "$path"
+              else
+                own=$(printf '%s\n' "$known_ids" | awk -F '\t' -v k="$id" '$1 == k { print $2; exit }')
+                awk -v a="${replaced#found }" -v b="$own" 'BEGIN { exit !(a > b) }' &&
+                  printf 'FAIL %s: the row of %s, dated %s, replaces %s, dated %s, which is later\n' "$rel/$file" "$id" "$own" "$path" "${replaced#found }"
+              fi ;;
             *) printf '%s\n' "$tag${id:+$tab$id}${path:+$tab$path}" ;;
           esac
         done
@@ -551,11 +584,11 @@ shared_page() {
   esac
 }
 
-# The identifiers of every decision of every work, history included.
+# The identifier and the date of every decision of every work, history included.
 all_ids() {
   work_dirs | while IFS= read -r dir; do
     [ -f "$dir/decisions.md" ] &&
-      work_table "$dir/decisions.md" "$(basename "$dir")" d "" list | cut -f 4
+      work_table "$dir/decisions.md" "$(basename "$dir")" d "" list | awk -F '\t' '{ print $4 "\t" $1 }'
   done
 }
 

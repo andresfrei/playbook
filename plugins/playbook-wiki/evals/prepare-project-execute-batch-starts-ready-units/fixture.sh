@@ -6,7 +6,7 @@ git init -q -b main .
 git config user.email eval@example.com
 git config user.name "Laura Gómez"
 mkdir -p docs/wiki/works/pdf-invoice src
-printf '5\n' > docs/wiki/.format
+printf '6\n' > docs/wiki/.format
 cat > docs/wiki/README.md <<'MD'
 # Invoicing app
 

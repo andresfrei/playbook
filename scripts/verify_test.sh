@@ -1392,6 +1392,104 @@ addrow auth 3 2026-04-01 none billing-1
 check "in force: plain --decisions still prints every decision, replaced or not" test "$(sh "$check_wiki" --decisions "$project_wiki" | wc -l | tr -d ' ')" = 5
 check "in force: plain --decisions lines keep three fields" test "$(sh "$check_wiki" --decisions "$project_wiki" | head -n 1)" = "2026-01-10 auth-2 Rule two of auth"
 
+# The listings refuse a row that is not nine columns: a wiki below format 6 is not read as if it were at it.
+# narrow_case <case name> <mode arguments> : the listing must exit 1 and name the row.
+narrow_case() {
+  name=$1; shift
+  out=$(sh "$check_wiki" "$@" 2>&1)
+  code=$?
+  if [ "$code" -eq 1 ] && printf '%s' "$out" | grep -q -F "the row of auth-3 has 8 columns, not the nine of the format"; then
+    printf 'ok    %s\n' "$name"
+  else
+    printf 'FAIL  %s (exit %s)\n%s\n' "$name" "$code" "$out"
+    failed=$((failed + 1))
+  fi
+}
+fresh_works
+printf '| auth-3 | 2026-04-01 | Row 3 of auth | Ana | "x" | none | | |\n' >> "$project_wiki/works/auth/decisions.md"
+narrow_case "columns: --decisions fails on a row of eight columns" --decisions "$project_wiki"
+narrow_case "columns: --decisions --in-force fails on a row of eight columns" --decisions --in-force "$project_wiki"
+narrow_case "columns: --decisions --in-force with a page fails on a row of eight columns" --decisions --in-force 01-product/auth.md "$project_wiki"
+fresh_works
+mkhistory
+printf '| D3 | 2025-12-04 | Old row | Ana | "x" | none | | |\n' >> "$project_wiki/works/history/decisions.md"
+out=$(sh "$check_wiki" --decisions --in-force "$project_wiki" 2>&1)
+code=$?
+check "columns: a row of eight columns of the history fails the listing and is named" sh -c 'test "$1" -eq 1 && printf "%s" "$2" | grep -q -F "works/history/decisions.md: the row of D3 has 8 columns"' sh "$code" "$out"
+fresh_works
+check "columns: rows of nine columns still list" sh -c 'sh "$1" --decisions "$2" >/dev/null' sh "$check_wiki" "$project_wiki"
+
+# The page filter drops a leading ./ as the cells do.
+fresh_works
+inforce_case "in force: a page filter with a leading ./ finds the page" "2026-03-05 auth-1 01-product/auth.md Rule one of auth" ./01-product/auth.md "$project_wiki"
+inforce_case "in force: a page filter with two leading ./ finds the page" "2026-03-05 auth-1 01-product/auth.md Rule one of auth" ././01-product/auth.md "$project_wiki"
+inforce_case "in force: a page filter with a leading ./ for another page prints nothing" "" ./01-product/none.md "$project_wiki"
+fresh_works
+edit "$project_wiki/works/auth/decisions.md" 's|`01-product/auth.md`|`./01-product/auth.md`|'
+inforce_case "in force: a cell with a leading ./ is found by a filter without it" "2026-03-05 auth-1 01-product/auth.md Rule one of auth" 01-product/auth.md "$project_wiki"
+
+# Several shared pages in the cell, and the suffix (estimated) that migrate writes.
+fresh_works
+printf '# other\n\nThe rule (auth-1).\n' > "$project_wiki/01-product/other.md"
+edit "$project_wiki/works/auth/decisions.md" 's|`01-product/auth.md`|`01-product/auth.md`, `01-product/other.md` (estimated)|'
+expect_wiki "shared page: two pages and (estimated) pass when each cites the identifier" pass "" "$project_wiki"
+rm "$project_wiki/01-product/other.md"
+expect_wiki "shared page: a second page that does not exist fails" fail "the shared page 01-product/other.md of auth-1 is not a file" "$project_wiki"
+fresh_works
+edit "$project_wiki/works/auth/decisions.md" 's/| None | | | |$/| (estimated) | | | |/'
+expect_wiki "shared page: (estimated) alone fails" fail "the shared page of auth-2 is neither none nor a path" "$project_wiki"
+
+# A Replaces that names a decision dated later than its own row fails.
+fresh_works
+addrow auth 3 2026-01-01 none billing-1
+expect_wiki "replaces: a row that names a decision dated later fails and names both dates" fail "the row of auth-3, dated 2026-01-01, replaces billing-1, dated 2026-02-01, which is later" "$project_wiki"
+fresh_works
+addrow auth 3 2026-02-01 none billing-1
+expect_wiki "replaces: a decision of the same date passes" pass "" "$project_wiki"
+fresh_works
+addrow auth 3 2026-02-02 none billing-1
+expect_wiki "replaces: a decision of an earlier date passes" pass "" "$project_wiki"
+fresh_works
+mkhistory
+addrow auth 3 2025-11-01 none D1
+expect_wiki "replaces: a row that names a decision of the history dated later fails" fail "replaces D1, dated 2025-12-01, which is later" "$project_wiki"
+
+# --ignore-marker skips the marker gate and nothing else.
+# ignore_case <case name> <expected exit: pass|fail> <text the output must contain>
+ignore_case() {
+  out=$(sh "$check_wiki" --ignore-marker "$project_wiki" 2>&1)
+  code=$?
+  ok=1
+  if [ "$2" = pass ] && [ "$code" -ne 0 ]; then ok=0; fi
+  if [ "$2" = fail ] && [ "$code" -eq 0 ]; then ok=0; fi
+  if [ -n "$3" ] && ! printf '%s' "$out" | grep -q -F "$3"; then ok=0; fi
+  if [ "$ok" -eq 1 ]; then
+    printf 'ok    %s\n' "$1"
+  else
+    printf 'FAIL  %s (exit %s)\n%s\n' "$1" "$code" "$out"
+    failed=$((failed + 1))
+  fi
+}
+fresh_works
+printf '3\n' > "$project_wiki/.format"
+expect_wiki "ignore-marker: without the option a marker at 3 stops at the gate" fail "is at wiki format 3" "$project_wiki"
+ignore_case "ignore-marker: with the option a marker at 3 passes when the rest holds" pass "check-wiki passed"
+fresh_works
+rm "$project_wiki/.format"
+ignore_case "ignore-marker: with the option a missing marker passes when the rest holds" pass "check-wiki passed"
+fresh_works
+printf 'x\n' > "$project_wiki/.format"
+printf 'See [b](gone.md).\n' >> "$project_wiki/01-product/auth.md"
+ignore_case "ignore-marker: with the option the other rules still run: a broken link fails" fail "links to gone.md"
+fresh_works
+printf '3\n' > "$project_wiki/.format"
+printf '| auth-3 | 2026-04-01 | Row 3 of auth | Ana | "x" | none | | |\n' >> "$project_wiki/works/auth/decisions.md"
+ignore_case "ignore-marker: with the option a row of eight columns still fails" fail "the row of auth-3 has 8 columns"
+fresh_works
+printf '3\n' > "$project_wiki/.format"
+printf '# Decisions\n' > "$project_wiki/decisions.md"
+ignore_case "ignore-marker: with the option a decisions.md at the top still fails" fail "decisions.md exists at the top"
+
 # The marker of a wiki's format.
 wiki_format="$root/plugins/playbook-wiki/skills/migrate/scripts/wiki-format.sh"
 product_format=$present
@@ -1606,6 +1704,8 @@ mkdir -p "$tmp/wiki/works/history"
 } > "$tmp/wiki/works/history/decisions.md"
 cp "$tmp/wiki/works/history/decisions.md" "$tmp/decisions-before"
 rm "$tmp/wiki/decisions.md"
+out=$(sh "$check_wiki" --ignore-marker "$tmp/wiki" 2>&1)
+check "migrate: the check with --ignore-marker passes on the rewritten wiki while the marker is still 3" sh -c 'test "$(cat "$1/.format")" = 3 && printf "%s" "$2" | grep -q "check-wiki passed"' sh "$tmp/wiki" "$out"
 expect_format "migrate: mark succeeds once the steps are applied" mark 0 "as wiki format $product_format"
 expect_format "migrate: the wiki has no notice after mark" status 0 ""
 check "migrate: the marker is the playbook's format" test "$(cat "$tmp/wiki/.format")" = "$product_format"

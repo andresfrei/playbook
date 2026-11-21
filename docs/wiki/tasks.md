@@ -32,3 +32,8 @@
 | close-stage | 2026-11-20 | decision-review | check the closing condition, record the close-stage decision, set the stage table and the work README, run check-wiki |  |
 | record-decision | 2026-11-20 | decision-review | append a row to decisions.md with the owner's words, kind, and answer, keep the text under 60 words, update the pages it changes, run check-wiki |  |
 | write-shared-pages | 2026-11-20 | decision-review | write what the work decided in the shared pages citing its decisions, name each decision's shared page, run check-wiki | wiki-writer |
+| open-work | 2026-11-20 | decision-index | create the work branch and worktree, write the work folder, record the origin decision, run check-wiki |  |
+| close-stage | 2026-11-20 | decision-index | check the closing condition, record the close-stage decision, set the stage table and the work README, run check-wiki |  |
+| record-decision | 2026-11-20 | decision-index | append a row to decisions.md with the owner's words, kind, and answer, keep the text under 60 words, update the pages it changes, run check-wiki |  |
+| build-unit | 2026-11-20 | decision-index | build the unit on the work branch, run its ending checks, record its evidence in plan.md, commit |  |
+| write-shared-pages | 2026-11-20 | decision-index | write what the work decided in the shared pages citing its decisions, name each decision's shared page, run check-wiki |  |
