@@ -57,6 +57,6 @@ Read the current stage's references.
 - `references/5-plan.md` — plan and delivery.
 - `references/6-execution.md` — execution and close.
 - `references/delegation.md` — delegations.
-- `references/evidence.md` — consolidation at close.
+- `references/evidence.md` — consolidation and graduation at close.
 - `references/tasks.md` — recurring tasks at close.
 - `references/working-agents.md` — the client's working-agent instructions: scripts, review findings, task profiles. Read it with `6-execution.md`, `evidence.md`, `tasks.md`.

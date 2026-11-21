@@ -159,7 +159,7 @@ class InstallerTest(unittest.TestCase):
         run_script("evidence.sh", "check")
         self.assertIn("ready to consolidate: broken-link (level 1): 3 distinct reviews",
                       run_script("evidence.sh", "count"))
-        self.assertIn("missing-test", run_script("evidence.sh", "rule", "missing-test"))
+        self.assertIn("stale-reference-after-layout-change", run_script("evidence.sh", "rule", "stale-reference-after-layout-change"))
 
     def test_package_follows_migrate(self):
         stage = self.root / "stage"
