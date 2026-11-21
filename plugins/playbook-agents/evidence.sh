@@ -14,15 +14,24 @@
 # A kind is kebab-case and unique; a level is a positive integer, 1 meaning
 # that the kind has no rule yet; a date is YYYY-MM-DD; a scope is general or
 # project; every kind of the evidence is in Kinds.
+# A kind whose rule moved into a skill or a file has the Source "graduated to
+# <path>" (rule-promotion-8, N4): plain text, "graduated to", one space, and one
+# path with no space or backtick (no code span); check fails on "graduated to"
+# with no path or with more than a path. The path is not tested for existence.
 # - check: prints "FAIL <file>: <problem>" for each problem and exits 1; else
 #   prints one line and exits 0. With no page it says so and exits 0.
 # - count: one line per kind and level of the evidence: the number of distinct
 #   reviews and the last date; a group at or above the threshold starts with
-#   "ready". With no page it prints nothing.
+#   "ready". For a kind with the Source "graduated to <path>" that line reads
+#   "revise graduated step: <kind> → <path>: R distinct reviews, last DATE"
+#   instead of "ready to consolidate: ..."; below the threshold, "not ready".
+#   With no page it prints nothing.
 # - rules: the rules of level 2 and up, of the page and of evidence-rules.md,
 #   one per line under one heading; nothing at all when there are none.
 # - index: one line per kind of level 2 and up, same sources and order as
 #   rules: "- <kind> (level N): <applies when>"; nothing when there are none.
+#   rules and index leave out a graduated kind: its rule lives in its
+#   destination (rule-promotion-8, N6). rule <kind> still prints it.
 #   The SubagentStart hook gives this index, not the rules (seed-evidence-31).
 # - rule <kind>: the level, rule, applies when, and source of that kind, at any
 #   level, from the page first and then evidence-rules.md; when the kind is in
@@ -106,11 +115,18 @@ run_awk() {
       if (k !~ /^[a-z0-9]+(-[a-z0-9]+)*$/) fail("kind \"" k "\" is not kebab-case")
       if (k in kind) fail("kind \"" k "\" is repeated in Kinds")
       kind[k] = 1
+      grad[k] = ""
+      if (cell[5] ~ /^graduated to([ \t]|$)/) {
+        gp = trim(substr(cell[5], 13))
+        if (gp == "") fail("kind \"" k "\" has Source \"graduated to\" with no path")
+        else if (gp ~ /[ \t`]/) fail("kind \"" k "\" has Source \"graduated to\" with a path that is not one plain word: " gp)
+        else grad[k] = gp
+      }
       na++; ak[na] = k; al[na] = lv; ar[na] = cell[3]; aw[na] = cell[4]; asrc[na] = cell[5]
       if (lv !~ /^[1-9][0-9]*$/) fail("kind \"" k "\" has level \"" lv "\", not a positive integer")
       else if (lv + 0 >= 2 && cell[3] == "") fail("kind \"" k "\" is at level " lv " and has no rule")
       if (cell[6] != "general" && cell[6] != "project") fail("kind \"" k "\" has scope \"" cell[6] "\", not general or project")
-      if (lv ~ /^[1-9][0-9]*$/ && lv + 0 >= 2 && cell[3] != "") {
+      if (lv ~ /^[1-9][0-9]*$/ && lv + 0 >= 2 && cell[3] != "" && grad[k] == "") {
         nr++; rk[nr] = k; rl[nr] = lv; ra[nr] = cell[4]; rr[nr] = cell[3]
       }
     } else {
@@ -146,7 +162,10 @@ run_awk() {
     if (mode == "count") {
       for (i = 1; i <= ng; i++) {
         g = order[i]
-        printf "%s%s (level %s): %d distinct reviews, last %s\n", (cnt[g] >= threshold ? "ready to consolidate: " : "not ready: "), gk[g], gl[g], cnt[g], last[g]
+        if (cnt[g] >= threshold && (gk[g] in grad) && grad[gk[g]] != "")
+          printf "revise graduated step: %s → %s: %d distinct reviews, last %s\n", gk[g], grad[gk[g]], cnt[g], last[g]
+        else
+          printf "%s%s (level %s): %d distinct reviews, last %s\n", (cnt[g] >= threshold ? "ready to consolidate: " : "not ready: "), gk[g], gl[g], cnt[g], last[g]
       }
       exit 0
     }

@@ -3470,6 +3470,33 @@ rm -rf "$tmp/ev"; mkdir -p "$tmp/ev"
 ev_run count "$tmp/ev"
 check "evidence count: no page prints nothing and exits 0" [ "$ev_code" -eq 0 -a -z "$ev_out" ]
 
+# A graduated kind (rule-promotion-U1): Source "graduated to <path>".
+ev_grow='| missing-test | 2 | Test each new branch. | a change adds a branch | graduated to plugins/x/skills/y/SKILL.md | general |\n| other-kind | 2 | Another rule. | a change of other | 3 reviews | general |\n'
+ev_check_case "a kind graduated to a path passes" "$ev_grow" "" pass
+ev_check_case "a graduated kind with no path fails" '| missing-test | 2 | r | a | graduated to | general |\n' "" 'kind "missing-test" has Source "graduated to" with no path'
+ev_check_case "a graduated kind with a code-span path fails" '| missing-test | 2 | r | a | graduated to `a/b.md` | general |\n' "" 'a path that is not one plain word'
+ev_check_case "a graduated kind with two words after it fails" '| missing-test | 2 | r | a | graduated to a/b.md now | general |\n' "" 'a path that is not one plain word'
+ev_check_case "a Source that only starts like graduated passes" '| missing-test | 2 | r | a | graduated tomorrow | general |\n' "" pass
+rm -rf "$tmp/ev"; ev_page "$tmp/ev" '| missing-test | 2 | r | a | graduated tomorrow | general |\n' "$(ev_e missing-test 2 u1 2026-11-19)\n$(ev_e missing-test 2 u2 2026-11-20)\n$(ev_e missing-test 2 u3 2026-11-21)\n"
+ev_run count "$tmp/ev"
+check "evidence count: a Source that only starts like graduated is not graduated" sh -c '[ "$1" = "ready to consolidate: missing-test (level 2): 3 distinct reviews, last 2026-11-21" ]' sh "$ev_out"
+ev_gev3="$(ev_e missing-test 2 u1 2026-11-19)\n$(ev_e missing-test 2 u2 2026-11-20)\n$(ev_e missing-test 2 u3 2026-11-21)\n"
+rm -rf "$tmp/ev"; ev_page "$tmp/ev" "$ev_grow" "$ev_gev3"
+ev_run count "$tmp/ev"
+check "evidence count: a graduated kind at the threshold says revise graduated step" sh -c '[ "$2" -eq 0 ] && [ "$1" = "revise graduated step: missing-test → plugins/x/skills/y/SKILL.md: 3 distinct reviews, last 2026-11-21" ]' sh "$ev_out" "$ev_code"
+rm -rf "$tmp/ev"; ev_page "$tmp/ev" "$ev_grow" "$(ev_e missing-test 2 u1 2026-11-19)\n$(ev_e missing-test 2 u2 2026-11-20)\n"
+ev_run count "$tmp/ev"
+check "evidence count: a graduated kind below the threshold stays not ready" sh -c '[ "$1" = "not ready: missing-test (level 2): 2 distinct reviews, last 2026-11-20" ]' sh "$ev_out"
+rm -rf "$tmp/ev"; ev_page "$tmp/ev" "$ev_grow" "$ev_gev3$(ev_e other-kind 2 u1 2026-11-19)\n$(ev_e other-kind 2 u2 2026-11-19)\n$(ev_e other-kind 2 u3 2026-11-19)\n"
+ev_run count "$tmp/ev"
+check "evidence count: a kind that is not graduated still says ready to consolidate" sh -c 'printf "%s\n" "$1" | grep -Fxq "ready to consolidate: other-kind (level 2): 3 distinct reviews, last 2026-11-19" && printf "%s\n" "$1" | grep -Fq "revise graduated step: missing-test"' sh "$ev_out"
+ev_run index "$tmp/ev"
+check "evidence index: a graduated kind is left out, the others stay" sh -c '! printf "%s\n" "$1" | grep -Fq "a change adds a branch" && printf "%s\n" "$1" | grep -Fxq -- "- other-kind (level 2): a change of other"' sh "$ev_out"
+ev_run rules "$tmp/ev"
+check "evidence rules: a graduated kind is left out, the others stay" sh -c '! printf "%s\n" "$1" | grep -Fq "Test each new branch" && printf "%s\n" "$1" | grep -Fq -- "- other-kind (level 2"' sh "$ev_out"
+ev_run rule missing-test "$tmp/ev"
+check "evidence rule: a graduated kind still prints its source" sh -c 'printf "%s\n" "$1" | grep -Fxq "source: graduated to plugins/x/skills/y/SKILL.md"' sh "$ev_out"
+
 # rules: level 2 and up, from the page and from evidence-rules.md next to the script.
 rm -rf "$tmp/evs"; mkdir -p "$tmp/evs"
 cp "$ev_script" "$tmp/evs/evidence.sh"

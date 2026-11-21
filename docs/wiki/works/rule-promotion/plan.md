@@ -6,7 +6,7 @@ Decided (rule-promotion-10).
 
 | Unit | Status | Evidence | Done on | Owner's words |
 |------|--------|----------|---------|---------------|
-| rule-promotion-U1 | Not started | | | |
+| rule-promotion-U1 | Done | `sh scripts/verify_test.sh` passes; each break of `evidence.sh` in a copy fails its case | 2026-11-20 | |
 | rule-promotion-U2 | Not started | | | |
 
 ## Units
