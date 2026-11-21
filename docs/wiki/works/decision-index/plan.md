@@ -4,7 +4,7 @@
 
 | Unit | Status | Evidence | Done on | Owner's words |
 |------|--------|----------|---------|---------------|
-| decision-index-U1 | Not started | | | |
+| decision-index-U1 | Done | `format.md` at format 6: nine columns with Replaces, in force, the history in `works/history/`, no rule for an older format; `check-wiki.sh` checks Replaces and prints `--decisions --in-force [page]`; a pass and a fail case per rule, each rule broken in a copy to see its case fail; `verify_test.sh` all cases passed, `verify.sh` passed. The history is exempt from the 60-word limit: 89 of its 241 rows exceed it | 2026-11-20 | |
 | decision-index-U2 | Not started | | | |
 | decision-index-U3 | Not started | | | |
 | decision-index-U4 | Not started | | | |

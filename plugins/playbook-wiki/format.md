@@ -1,6 +1,6 @@
 # The format of a wiki
 
-Format 5. The files of a project's wiki, `docs/wiki/`, and what each one holds. The skills of `playbook-wiki` write and repair a wiki to this format, and its check verifies it.
+Format 6. The files of a project's wiki, `docs/wiki/`, and what each one holds. The skills of `playbook-wiki` write a wiki to this format, and its check verifies it. A wiki below it is neither read nor written until it is migrated.
 
 ## Two layers
 
@@ -23,6 +23,8 @@ docs/wiki/
 ├── 04-skills/           # shared
 ├── 05-design-system/    # shared
 └── works/
+    ├── history/
+    │   └── decisions.md # the decisions from before works: D#, TD#
     └── <work>/
         ├── README.md    # where the work stands, its stage table, its own pages
         ├── decisions.md
@@ -33,7 +35,11 @@ docs/wiki/
 
 Create a folder or a page only when it has content. One topic per page. `evidence.md` is optional: `evidence.sh` of `playbook-agents` checks and reads it, its format is in the header of that script, and it does not change the format of the wiki.
 
-A wiki written before format 4 also holds `decisions.md` and the pages of its earlier phases. They are history: they stay as they are, nothing is added to that `decisions.md`, and the check does not read it. Its identifiers, `D#`, `TD#`, `Q#`, and `U#`, are never renumbered.
+There is no `decisions.md` at the top of `docs/wiki/`: the check fails when one exists.
+
+### The history
+
+`works/history/decisions.md` holds the decisions from before works. It keeps their identifiers, `D#` and `TD#`, which are never renumbered. It is a work folder that holds only `decisions.md`: no `README.md`, questions, or plan. Its table has the same nine columns as any work's `decisions.md`. Its rows are kept as they were written: the limit of 60 words does not apply to them.
 
 ## The project's `README.md`
 
@@ -46,13 +52,13 @@ In this order:
 
 Title the third column "Code it governs" and write each path as code, between backticks. The check fails on a path that does not exist.
 
-The project's `README.md` holds no state and no list of works: the folders under `works/` are that list. A wiki brought from an earlier format keeps, at the end of its `README.md`, the stage tables of its earlier phases under the heading `## Phases before format 4`.
+The project's `README.md` holds no state and no list of works: the folders under `works/` are that list.
 
 ## A work
 
 A branch becomes a work at its first decision, question, or plan. Recording the first one creates the work's folder. Before that the branch needs no folder.
 
-The folder's name is the work's name: lowercase letters, digits, and hyphens, such as `auth` or `rbac-approvals`. It is never the name of another folder under `works/`, open or closed.
+The folder's name is the work's name: lowercase letters, digits, and hyphens, such as `auth` or `rbac-approvals`. It is never the name of another folder under `works/`, open or closed. The name `history` is the history's, never a work's.
 
 A closed work is never reopened. A later change to what it defined is a new work, with a new name.
 
@@ -104,20 +110,20 @@ Each counter starts at 1 and is never reused.
 
 ## A work's `decisions.md`
 
-One table: ID, date, decision, who decided, their words, shared page, kind, answer.
+One table with exactly nine columns: ID, date, decision, who decided, their words, shared page, replaces, kind, answer.
 
 - Who decided: the person who leads the work, or the project's owner for a decision that changes a definition other works share.
 - Their words are verbatim. When that person chose one of the options offered, write the option chosen.
 - Shared page: the path of the shared page the decision changed, from `docs/wiki/` and as code, such as `01-product/rbac.md`; or "none". That page cites the decision.
-- Kind and Answer are the last two columns, after "Shared page". A cell may be empty.
+- Replaces: the identifiers of the decisions this row replaces, separated by `, `, or empty. Each is a decision of any work, such as `auth-3`, or of the history, such as `D12` or `TD4`. The check fails on an identifier that does not exist and on a row that replaces itself.
+- A decision is in force when its shared page is not "none" and no row of any work names it in Replaces.
+- Kind and Answer are the last two columns, after "Replaces". A cell may be empty.
 - Kind is what the decision was about, one of: `definition`, `technology`, `plan`, `open-work`, `close-stage`, `close-work`, `commit`, `merge-push`, `version`, `consolidate`, `other`.
 - Answer is how the owner answered, one of: `as recommended`, `changed`, `rejected`, `delegated`. `delegated` means the agent decided under a delegation and did not ask.
 - Kind and Answer are written as plain text, without backticks.
-- A value may end in exactly one space and `(estimated)`: the doctor wrote it for a row from before format 5, from the decision and its words. What is left after the suffix must be one of the values: `(estimated)` alone or `plan(estimated)` fails the check.
-- A row has at most eight columns.
+- A value of Replaces, Kind, or Answer may end in exactly one space and `(estimated)`: `migrate` wrote it, from the decision and its words. What is left after the suffix must be valid: `(estimated)` alone or `plan(estimated)` fails the check.
 - Under a delegation, "Who decided" is `agent, by <decision id of the delegation>`, such as `agent, by auth-7`.
-- A row from before format 5 may have only six columns. The check accepts it.
-- A decision that replaces an earlier one names it, in this work or in another.
+- A decision that replaces an earlier one names it in Replaces, in this work or in another.
 - A decision is a choice made between alternatives, or a rule set. That includes an authorization given before an action, the closing of a stage, and the acceptance of a plan.
 - Not a row: the acceptance of a unit, which goes in the plan's progress table, and something done after a decision, such as a push or a cleanup.
 - State the choice in at most 60 words and link to the page that holds the detail. Evidence and reasons live in that page; their words are not counted.
