@@ -1,6 +1,6 @@
 #!/bin/sh
 # Tests of the hooks of plugins/playbook. Run from the repository root.
-# shellcheck disable=SC2015
+# shellcheck disable=SC2015,SC2016
 CLAUDE_PLUGIN_ROOT=$(pwd)/plugins/playbook; export CLAUDE_PLUGIN_ROOT
 hooks=$CLAUDE_PLUGIN_ROOT/hooks
 tmp=$(mktemp -d) || exit 1
@@ -11,9 +11,9 @@ bad() { printf 'not ok %s: %s\n' "$1" "$2"; failed=1; }
 
 # A repository with a valid wiki, committed.
 repo=$tmp/repo
-mkdir -p "$repo/docs/wiki/works/a"
-printf '# W\n' > "$repo/docs/wiki/README.md"
-printf '| ID | Date | Decision | Who | Their words |\n|---|---|---|---|---|\n| a-1 | d | x | O | "yes" |\n' > "$repo/docs/wiki/works/a/decisions.md"
+mkdir -p "$repo/docs/playbook/works/a"
+printf '# W\n' > "$repo/docs/playbook/README.md"
+printf '| ID | Date | Decision | Who | Their words |\n|---|---|---|---|---|\n| a-1 | d | x | O | "yes" |\n' > "$repo/docs/playbook/works/a/decisions.md"
 git -C "$repo" init -q && git -C "$repo" add -A && git -C "$repo" -c user.name=t -c user.email=t@t commit -qm init
 
 commit() { # commit <cwd> <command>
@@ -23,7 +23,7 @@ commit() { # commit <cwd> <command>
 out=$(commit "$repo" "git commit -m x")
 [ -z "$out" ] && ok "clean wiki: silent" || bad "clean wiki" "$out"
 
-printf '[x](gone.md)\n' >> "$repo/docs/wiki/README.md"
+printf '[x](gone.md)\n' >> "$repo/docs/playbook/README.md"
 out=$(commit "$repo" "git commit -m x")
 case $out in *'"deny"'*gone.md*) ok "broken wiki: deny" ;; *) bad "broken wiki" "$out" ;; esac
 
@@ -33,30 +33,43 @@ case $out in *'"deny"'*) ok "cd <dir>: found" ;; *) bad "cd <dir>" "$out" ;; esa
 out=$(commit "/" "git -C $repo commit -m x")
 case $out in *'"deny"'*) ok "git -C <dir>: found" ;; *) bad "git -C <dir>" "$out" ;; esac
 
+out=$(commit "$repo" 'for f in $(ls); do cat $f; done')
+[ -z "$out" ] && ok "broken wiki, not a commit: silent" || bad "broken wiki, not a commit" "$out"
+
 out=$(commit "$tmp" "git commit -m x")
 [ -z "$out" ] && ok "not a repository: silent" || bad "not a repository" "$out"
 
-out=$(printf '{}' | sh "$hooks/ask.sh")
-case $out in *'"permissionDecision":"ask"'*) ok "ask.sh asks" ;; *) bad "ask.sh" "$out" ;; esac
+# ask.sh asks only for a command that delivers. The "if" filters also let
+# through any command with $(), backticks, or $VAR.
+ask() { printf '{"tool_input":{"command":"%s"}}' "$1" | sh "$hooks/ask.sh"; }
+for c in 'git push origin main' 'cd x && git push' 'git -C ../a push -u origin b' 'gh pr create --fill' \
+  'gh -R o/r pr merge 3' 'gh release create v1' 'echo hi\ngit push'; do
+  case $(ask "$c") in *'"permissionDecision":"ask"'*) ok "ask: $c" ;; *) bad "ask: $c" "did not ask" ;; esac
+done
+for c in 'for f in $(ls); do cat $f; done' 'git status --porcelain' 'echo git push' 'gh release view v1' \
+  'cat "$f" | grep push' 'git log -n 3'; do
+  out=$(ask "$c")
+  [ -z "$out" ] && ok "silent: $c" || bad "silent: $c" "$out"
+done
 
 out=$(CLAUDE_PLUGIN_OPTION_LANGUAGE=Spanish sh "$hooks/session-start.sh" | tail -n 1)
 [ "$out" = "Talk to the person in Spanish." ] && ok "session start: language" || bad "session start" "$out"
 
 out=$(CLAUDE_PROJECT_DIR=$repo sh "$hooks/session-start.sh")
-case $out in *'# The wiki: docs/wiki/README.md'*'# W'*) ok "session start: wiki README" ;; *) bad "session start: wiki README" "missing" ;; esac
+case $out in *'# The wiki: docs/playbook/README.md'*'# W'*) ok "session start: wiki README" ;; *) bad "session start: wiki README" "missing" ;; esac
 
 out=$(CLAUDE_PROJECT_DIR=$tmp sh "$hooks/session-start.sh")
-case $out in *'# The wiki: docs/wiki/README.md'*) bad "session start: no wiki" "printed" ;; *) ok "session start: no wiki" ;; esac
+case $out in *'# The wiki: docs/playbook/README.md'*) bad "session start: no wiki" "printed" ;; *) ok "session start: no wiki" ;; esac
 
 # The README and the rules share the 10,000 characters of the hook's output.
 budget=$((9000 - $(wc -c < "$CLAUDE_PLUGIN_ROOT/rules.md" | tr -d ' ')))
 readme_of() { # readme_of <dir> <characters>
-  mkdir -p "$1/docs/wiki"
-  awk -v n="$2" 'BEGIN { for (i = 1; i < n; i++) printf "x"; print "" }' > "$1/docs/wiki/README.md"
+  mkdir -p "$1/docs/playbook"
+  awk -v n="$2" 'BEGIN { for (i = 1; i < n; i++) printf "x"; print "" }' > "$1/docs/playbook/README.md"
 }
 readme_of "$tmp/fits" $((budget - 100))
 out=$(CLAUDE_PROJECT_DIR=$tmp/fits sh "$hooks/session-start.sh")
-case $out in *'# The wiki: docs/wiki/README.md'*) ok "session start: README within the budget" ;; *) bad "session start: README within the budget" "not printed" ;; esac
+case $out in *'# The wiki: docs/playbook/README.md'*) ok "session start: README within the budget" ;; *) bad "session start: README within the budget" "not printed" ;; esac
 
 readme_of "$tmp/big" $((budget + 100))
 out=$(CLAUDE_PROJECT_DIR=$tmp/big sh "$hooks/session-start.sh")
@@ -64,5 +77,23 @@ case $out in
   *'too long to load with the rules'*) [ $((budget + 100)) -lt 10000 ] && ok "session start: README that fits alone but not with the rules" || bad "session start: README alone" "the case does not fit alone" ;;
   *) bad "session start: README that fits alone but not with the rules" "printed whole" ;;
 esac
+
+# Adoption: a systemMessage inside a git repository not yet adopted.
+adopt() { CLAUDE_PROJECT_DIR=$1 sh "$hooks/adopt.sh"; }
+mkdir -p "$tmp/bare" && git -C "$tmp/bare" init -q
+out=$(adopt "$tmp/bare")
+case $out in *'"systemMessage":"No playbook wiki: run /playbook:audit'*) ok "adopt: no wiki" ;; *) bad "adopt: no wiki" "$out" ;; esac
+
+out=$(adopt "$repo")
+case $out in *'"systemMessage":"This playbook wiki has no audit yet'*) ok "adopt: no audit yet" ;; *) bad "adopt: no audit yet" "$out" ;; esac
+
+mkdir -p "$tmp/done/docs/playbook" && git -C "$tmp/done" init -q
+printf '# W\n\nLast audit: 2026-11-21, after work a. Contradictions: 0, 0.\n' > "$tmp/done/docs/playbook/README.md"
+out=$(adopt "$tmp/done")
+[ -z "$out" ] && ok "adopt: audited, silent" || bad "adopt: audited" "$out"
+
+mkdir -p "$tmp/nogit"
+out=$(adopt "$tmp/nogit")
+[ -z "$out" ] && ok "adopt: not a repository, silent" || bad "adopt: not a repository" "$out"
 
 exit $failed

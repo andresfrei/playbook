@@ -4,7 +4,7 @@
 # and in each work with a spec.md; every decision ID is unique; every decision
 # has the decider's words; no shared page cites a decision marked
 # "Replaced by" in its Decision cell. Prints one FAIL line per problem; exits 1 on any.
-wiki=${1:-docs/wiki}
+wiki=${1:-docs/playbook}
 [ -f "$wiki/README.md" ] || { printf 'FAIL %s has no README.md\n' "$wiki"; exit 1; }
 
 out=$(

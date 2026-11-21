@@ -3,16 +3,16 @@
 # one, then the language the person chose (userConfig "language").
 rules="${CLAUDE_PLUGIN_ROOT}/rules.md"
 cat "$rules"
-readme="${CLAUDE_PROJECT_DIR:-.}/docs/wiki/README.md"
+readme="${CLAUDE_PROJECT_DIR:-.}/docs/playbook/README.md"
 if [ -f "$readme" ]; then
   # Hook output past 10,000 characters reaches Claude only as a file path,
   # so the rules and the README must fit together, with room for two lines.
   budget=$((9000 - $(wc -c < "$rules" | tr -d ' ')))
   if [ "$(wc -c < "$readme" | tr -d ' ')" -le "$budget" ]; then
-    printf '\n# The wiki: docs/wiki/README.md\n\n'
+    printf '\n# The wiki: docs/playbook/README.md\n\n'
     cat "$readme"
   else
-    printf '\ndocs/wiki/README.md is over %s characters, too long to load with the rules: read it first, and shorten it.\n' "$budget"
+    printf '\ndocs/playbook/README.md is over %s characters, too long to load with the rules: read it first, and shorten it.\n' "$budget"
   fi
 fi
 if [ -n "${CLAUDE_PLUGIN_OPTION_LANGUAGE:-}" ]; then

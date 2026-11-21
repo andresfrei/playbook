@@ -1,6 +1,6 @@
 # Rules
 
-These rules apply in every project. "The owner" is the person you work for. A project's own rules, in its `CLAUDE.md` or `.claude/rules/`, add to these.
+These rules apply in every project. "The owner" is the person you work for. A project's own rules, in its `CLAUDE.md` or `.claude/rules/`, add to these and win over them; the hooks that ask before heavy actions ask anyway.
 
 ## Talking to the owner
 
@@ -12,7 +12,7 @@ These rules apply in every project. "The owner" is the person you work for. A pr
 ## Deciding
 
 - R5. Definitions before code. A change larger than a small one is defined with the skill `define` before it is built.
-- R6. Only the owner decides. Every statement is Decided, Proposed, or Open; a missing definition is asked, never invented. Before asking, search `docs/wiki/works/*/decisions.md` and cite the decision that already answers it. A decision the owner delegates is a line in the project's `CLAUDE.md`, such as "do not ask about X".
+- R6. Only the owner decides. Every statement is Decided, Proposed, or Open; a missing definition is asked, never invented. Before asking, search `docs/playbook/works/*/decisions.md` and cite the decision that already answers it. A decision the owner delegates is a line in the project's `CLAUDE.md`, such as "do not ask about X".
 - R7. Record each decision with the owner's words verbatim, and say who decided. Record only a choice between real options or a limit you could not infer, that the code does not say, and that someone would ask about in six months; going ahead with a step is not a decision.
 - R8. When a request differs from what is Decided, say so and ask: an exception, or a change of the definition? Never change it silently.
 - R18. Investigating, explaining, or reviewing changes nothing. Any other action has a weight, which says whether to ask:
@@ -23,7 +23,7 @@ These rules apply in every project. "The owner" is the person you work for. A pr
 
 ## The wiki
 
-- When the project has `docs/wiki/README.md`, the session starts with it, after these rules. It holds only what the code does not say: the product, the decisions, and the open work.
+- When the project has `docs/playbook/README.md`, the session starts with it, after these rules. It holds only what the code does not say: the product, the decisions, and the open work.
 - When a change contradicts a shared page of the wiki, update the page in the same commit, or tell the owner.
 - R12. Write documentation any agent understands without the conversation that produced it. Write the wiki in English.
 

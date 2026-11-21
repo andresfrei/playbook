@@ -25,19 +25,33 @@ It adds only what Claude Code does not already do. Writing stays in your session
    It asks one question at a time, cites what you already decided instead of asking again, checks each technology in its current documentation, and writes a spec with how to check it. You accept the spec once.
 2. **Build.** In your session, on the model you choose with `/model`.
 3. **Close.** `/playbook:close` runs the spec's check, has a read-only `reviewer` read a risky change, and proposes one line for each mistake that happened twice, or each answer you gave twice: for `CLAUDE.md`, `.claude/rules/`, or a skill. You accept each line or not.
-4. **Audit**, before a release or when `close` suggests it. `/playbook:audit` reads the wiki against the code and shows each contradiction with both quotes; you say which side is right.
+4. **Audit**, when you adopt a project, before a release, or when `close` suggests it. `/playbook:audit` reads the wiki against the code and shows each contradiction with both quotes; you say which side is right.
 5. **Release.** `/playbook:release` sets the version and drafts the notes. Pushing, opening or merging a pull request, and publishing a release always ask you first.
 
-Everything lives in `docs/wiki/`: the product, each work's spec, and its decisions with who decided and their words. Its `README.md` loads at the start of every session.
+Everything lives in `docs/playbook/`: the product, each work's spec, and its decisions with who decided and their words. Its `README.md` loads at the start of every session.
 
 ## Install
 
-```sh
-claude plugin marketplace add andresfrei/playbook
-claude plugin install playbook@playbook
+In a Claude Code session:
+
+```text
+/plugin marketplace add andresfrei/playbook
+/plugin install playbook@playbook
 ```
 
-Start a new session. To make searches cheaper, copy [`plugins/playbook/extras/Explore.md`](plugins/playbook/extras/Explore.md) to `~/.claude/agents/`.
+The installer asks where to turn it on:
+
+| Scope | Who gets it | Where it is recorded |
+|-------|-------------|----------------------|
+| User | You, in every project on this machine | `~/.claude/settings.json` |
+| Project | Everyone who works in this repository | `.claude/settings.json`, which you commit; each collaborator installs it once with `--scope project` |
+| Local | You, in this repository only | `.claude/settings.local.json` |
+
+From your shell, `claude plugin install playbook@playbook` installs it for you in every project; add `--scope project` or `--scope local` to choose another.
+
+Then start a new session in your project and run `/playbook:audit`. On its first run it adopts the project: it reads the documentation and rules the project already has, proposes how to order them, builds the wiki in `docs/playbook/`, and cleans `CLAUDE.md`, asking you each choice. It starts from a clean git tree, so all it changes is one diff. Until a project is adopted, each session there recommends it.
+
+To make searches cheaper, copy [`plugins/playbook/extras/Explore.md`](plugins/playbook/extras/Explore.md) to `~/.claude/agents/`.
 
 To keep Claude from reading secrets, add deny rules to `.claude/settings.json`. To be asked before a command that destroys local work, add ask rules: they prompt in every permission mode, `bypassPermissions` included. The plugin already asks before every push, so a forced push needs no rule.
 
@@ -52,7 +66,7 @@ To keep Claude from reading secrets, add deny rules to `.claude/settings.json`. 
 
 ### From 4.x
 
-Version 5 replaces the three plugins with one. Uninstall the old ones, then install `playbook`:
+Version 5 replaces the three plugins with one and moves the wiki to `docs/playbook/`. Uninstall the old plugins and update `playbook`:
 
 ```sh
 claude plugin uninstall playbook-agents@playbook
@@ -63,7 +77,7 @@ claude plugin update playbook@playbook
 
 If `/playbook:init` turned them on for one repository only, run the two `uninstall` lines from that repository with `--scope local`.
 
-A wiki of version 4 keeps working: the check reads its decisions as they are.
+Then run `/playbook:audit` in each project. It moves the 4.x wiki in `docs/wiki/` into `docs/playbook/`, keeping every decision and the owner's words; the check reads those decisions in their 4.x format.
 
 ## Documentation
 
