@@ -1,0 +1,101 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh\""
+          },
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/adopt.sh\""
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git push*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/ask.sh\"",
+            "onFailure": "block"
+          },
+          {
+            "type": "command",
+            "if": "Bash(git * push*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/ask.sh\"",
+            "onFailure": "block"
+          },
+          {
+            "type": "command",
+            "if": "Bash(gh pr create*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/ask.sh\"",
+            "onFailure": "block"
+          },
+          {
+            "type": "command",
+            "if": "Bash(gh pr merge*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/ask.sh\"",
+            "onFailure": "block"
+          },
+          {
+            "type": "command",
+            "if": "Bash(gh * pr create*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/ask.sh\"",
+            "onFailure": "block"
+          },
+          {
+            "type": "command",
+            "if": "Bash(gh * pr merge*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/ask.sh\"",
+            "onFailure": "block"
+          },
+          {
+            "type": "command",
+            "if": "Bash(gh release create*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/ask.sh\"",
+            "onFailure": "block"
+          },
+          {
+            "type": "command",
+            "if": "Bash(gh release edit*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/ask.sh\"",
+            "onFailure": "block"
+          },
+          {
+            "type": "command",
+            "if": "Bash(gh release delete*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/ask.sh\"",
+            "onFailure": "block"
+          },
+          {
+            "type": "command",
+            "if": "Bash(gh release upload*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/ask.sh\"",
+            "onFailure": "block"
+          },
+          {
+            "type": "command",
+            "if": "Bash(gh * release *)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/ask.sh\"",
+            "onFailure": "block"
+          },
+          {
+            "type": "command",
+            "if": "Bash(git commit*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/commit-check.sh\""
+          },
+          {
+            "type": "command",
+            "if": "Bash(git * commit*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/commit-check.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}

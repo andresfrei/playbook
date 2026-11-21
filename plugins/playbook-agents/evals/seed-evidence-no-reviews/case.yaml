@@ -1,4 +1,0 @@
-schema_version: "1.1"
-name: seed-evidence-no-reviews
-context:
-  scaffold_script: fixture.sh

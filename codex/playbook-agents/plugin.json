@@ -1,6 +1,0 @@
-{
-  "name": "playbook-agents",
-  "version": "4.0.0",
-  "description": "Playbook working rules, review reminders and skills for building software.",
-  "skills": "./skills/"
-}

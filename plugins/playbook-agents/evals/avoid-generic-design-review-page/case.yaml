@@ -1,4 +1,0 @@
-schema_version: "1.1"
-name: avoid-generic-design-review-page
-context:
-  scaffold_script: fixture.sh

@@ -1,4 +1,0 @@
-schema_version: "1.1"
-name: prepare-project-new-project-stage-one
-context:
-  scaffold_script: fixture.sh

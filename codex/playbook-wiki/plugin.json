@@ -1,6 +1,0 @@
-{
-  "name": "playbook-wiki",
-  "version": "4.0.0",
-  "description": "Prepare projects, document decisions, maintain the wiki and check changes before commits and merges.",
-  "skills": "./skills/"
-}
