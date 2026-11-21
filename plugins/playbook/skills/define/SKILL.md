@@ -13,7 +13,8 @@ Do not use it for a small change, one that could be finished from the request an
 ## Rules
 
 - Ask one question at a time, with a recommendation, using `AskUserQuestion` when available, recommended option first. Then stop and wait.
-- Only the owner decides. Record each answer as a decision with the owner's words verbatim.
+- Only the owner decides. Before each question, search `docs/wiki/works/*/decisions.md`; when a decision already answers it, cite it instead of asking.
+- Record an answer as a decision only when the owner chose between real options or set a limit you could not infer, the code does not say it, and someone would ask why in six months. Going ahead with a step is not a decision.
 - Write only what the code does not say: what, why, the decisions, and how to check it. Do not describe files or architecture that Claude can read.
 - No code, scaffold, or dependency until the owner accepts the spec.
 
@@ -40,6 +41,8 @@ Do not use it for a small change, one that could be finished from the request an
 ## Gotchas
 
 - A decision row has five columns: `| ID | Date | Decision | Who decided | Their words |`. IDs are `<work>-<n>`. "Their words" holds the owner's own text, or the option they chose, quoted.
+- An answer that differs from an earlier decision replaces it: write "Replaced by <ID>" at the start of the earlier row's Decision cell, and change no other cell.
+- An answer the owner already gave in an earlier decision is a rule waiting to be written: propose the line, or the delegation in the project's `CLAUDE.md`, citing both decisions.
 
 ## Output
 

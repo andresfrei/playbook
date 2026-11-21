@@ -12,14 +12,14 @@ These rules apply in every project. "The owner" is the person you work for. A pr
 ## Deciding
 
 - R5. Definitions before code. A change larger than a small one is defined with the skill `define` before it is built.
-- R6. Only the owner decides. Every statement is Decided, Proposed, or Open; a missing definition is asked, never invented. A decision the owner delegates is a line in the project's `CLAUDE.md`, such as "do not ask about X".
-- R7. Record each decision with the owner's words verbatim, and say who decided.
+- R6. Only the owner decides. Every statement is Decided, Proposed, or Open; a missing definition is asked, never invented. Before asking, search `docs/wiki/works/*/decisions.md` and cite the decision that already answers it. A decision the owner delegates is a line in the project's `CLAUDE.md`, such as "do not ask about X".
+- R7. Record each decision with the owner's words verbatim, and say who decided. Record only a choice between real options or a limit you could not infer, that the code does not say, and that someone would ask about in six months; going ahead with a step is not a decision.
 - R8. When a request differs from what is Decided, say so and ask: an exception, or a change of the definition? Never change it silently.
 - R18. Investigating, explaining, or reviewing changes nothing. Change files only when the owner asks; when unsure, ask.
 
 ## The wiki
 
-- When the project has `docs/wiki/README.md`, read it first. It holds only what the code does not say: the product, the decisions, and the open work.
+- When the project has `docs/wiki/README.md`, the session starts with it, after these rules. It holds only what the code does not say: the product, the decisions, and the open work.
 - R12. Write documentation any agent understands without the conversation that produced it. Write the wiki in English.
 
 ## Building
@@ -32,7 +32,7 @@ These rules apply in every project. "The owner" is the person you work for. A pr
 
 ## Learning
 
-- When the same mistake happens a second time, or a review finds something you should have known about the project, propose one concrete line for the project's `CLAUDE.md`, `.claude/rules/`, or a skill, and let the owner accept it.
+- When the same mistake happens a second time, or a review finds something you should have known about the project, propose one concrete line for the project's `CLAUDE.md`, `.claude/rules/`, or a skill, and let the owner accept it. The same holds when the owner gives an answer already recorded: propose the rule or delegation so it is not asked again.
 
 ## Delivering
 

@@ -42,4 +42,15 @@ case $out in *'"permissionDecision":"ask"'*) ok "ask.sh asks" ;; *) bad "ask.sh"
 out=$(CLAUDE_PLUGIN_OPTION_LANGUAGE=Spanish sh "$hooks/session-start.sh" | tail -n 1)
 [ "$out" = "Talk to the person in Spanish." ] && ok "session start: language" || bad "session start" "$out"
 
+out=$(CLAUDE_PROJECT_DIR=$repo sh "$hooks/session-start.sh")
+case $out in *'# The wiki: docs/wiki/README.md'*'# W'*) ok "session start: wiki README" ;; *) bad "session start: wiki README" "missing" ;; esac
+
+out=$(CLAUDE_PROJECT_DIR=$tmp sh "$hooks/session-start.sh")
+case $out in *'# The wiki: docs/wiki/README.md'*) bad "session start: no wiki" "printed" ;; *) ok "session start: no wiki" ;; esac
+
+awk 'BEGIN { for (i = 0; i < 700; i++) print "0123456789" }' > "$tmp/long.md"
+mkdir -p "$tmp/big/docs/wiki" && cp "$tmp/long.md" "$tmp/big/docs/wiki/README.md"
+out=$(CLAUDE_PROJECT_DIR=$tmp/big sh "$hooks/session-start.sh")
+case $out in *'over 6000 characters'*) ok "session start: long README" ;; *) bad "session start: long README" "printed whole" ;; esac
+
 exit $failed

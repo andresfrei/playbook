@@ -1,6 +1,6 @@
 ---
 name: close
-description: Close a work when it is built, or a unit of it. Checks the build against its spec, has the reviewer read a risky change, proposes one line for each repeated mistake, and updates the wiki's shared pages.
+description: Close a work when it is built, or a unit of it. Checks the build against its spec, has the reviewer read a risky change, proposes one line for each repeated mistake or decision, and updates the wiki's shared pages.
 ---
 
 ## When to use
@@ -23,6 +23,7 @@ Do not use it for a small change with no work: run its tests and commit.
    - the project's `CLAUDE.md`, for what holds in every session;
    - `.claude/rules/<topic>.md` with `paths:`, for one part of the code;
    - a skill's gotchas, for a procedure.
+   Also list each decision of this work that repeats the answer of an earlier one, and propose the rule, or the delegation in the project's `CLAUDE.md`, that stops it being asked, citing both IDs.
    Write each line the owner accepts. When there is none, say so in one line.
 4. For a unit, mark it done in `spec.md`. For the whole work, write what it decided into the shared pages (`product.md`, `technology.md`, `skills.md`, `design.md`), each statement citing its decision, and clear the open work in `docs/wiki/README.md`.
 5. Run `sh "${CLAUDE_PLUGIN_ROOT}/scripts/check-wiki.sh" docs/wiki` and fix what it lists.
