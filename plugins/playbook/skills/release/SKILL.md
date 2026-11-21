@@ -1,6 +1,6 @@
 ---
 name: release
-description: Release a new version of the project. Sets the version, commits, tags, and drafts the release notes; pushing and publishing wait for the owner.
+description: Release a new version of the project. Sets the version, commits, and drafts the release notes; tagging, pushing, and publishing are left to the owner.
 disable-model-invocation: true
 argument-hint: "[version]"
 ---

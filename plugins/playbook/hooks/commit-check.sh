@@ -5,11 +5,28 @@
 # repository from "cd <dir>" at the start of the command or "git -C <dir>", else
 # the session's folder. On any error of its own it lets the commit through.
 input=$(cat)
-command=$(printf '%s' "$input" | sed -n 's/.*"command"[[:space:]]*:[[:space:]]*"\(\([^"\\]\|\\.\)*\)".*/\1/p' | head -n 1)
-cwd=$(printf '%s' "$input" | sed -n 's/.*"cwd"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -n 1)
+# The value of a JSON string field of the input, decoded enough for paths.
+field() {
+  printf '%s' "$input" | awk -v key="\"$1\"" '
+    { text = text $0 }
+    END {
+      i = index(text, key); if (!i) exit
+      rest = substr(text, i + length(key)); sub(/^[ \t]*:[ \t]*"/, "", rest)
+      out = ""
+      for (j = 1; j <= length(rest); j++) {
+        c = substr(rest, j, 1)
+        if (c == "\\") { j++; out = out substr(rest, j, 1); continue }
+        if (c == "\"") break
+        out = out c
+      }
+      print out
+    }'
+}
+command=$(field command)
+cwd=$(field cwd)
 dir=${cwd:-.}
-first=$(printf '%s' "$command" | sed -n 's/^cd[[:space:]]\{1,\}\([^;&|[:space:]]\{1,\}\).*/\1/p')
-other=$(printf '%s' "$command" | sed -n 's/.*git[[:space:]]\{1,\}-C[[:space:]]\{1,\}\([^;&|[:space:]]\{1,\}\).*/\1/p')
+first=$(printf '%s' "$command" | awk '$1 == "cd" && $2 != "" { d = $2; sub(/[;&|].*/, "", d); print d; exit }')
+other=$(printf '%s' "$command" | awk '{ for (i = 1; i < NF; i++) if ($i == "git" && $(i + 1) == "-C" && i + 2 <= NF) { d = $(i + 2); sub(/[;&|].*/, "", d); print d; exit } }')
 for d in $first $other; do
   case $d in /*) dir=$d ;; *) dir=$dir/$d ;; esac
 done

@@ -18,13 +18,13 @@ A Claude Code plugin, `playbook`, for Claude Code only (basics-3). It helps a pe
    Define interviews the person until the spec can be written. Technology checks each technology in its current documentation, with the link and the date, by any tool (basics-8). Skills finds, for each new technology, a skill to install, one to write, or none needed. The person accepts the spec once (basics-9).
 2. **Build.** In the main session, on the model the person chooses with `/model`, with the check the spec names (basics-7). A large mechanical change can use Claude Code's `/batch`.
 3. **Close.** The skill `close` checks the build against the spec, has the agent `reviewer` read a risky change, and proposes one concrete line for each mistake seen twice or each finding Claude should have known: into `CLAUDE.md`, `.claude/rules/`, or a skill. The person accepts each line or not (basics-4).
-4. **Release.** The skill `release`, started only by the person, sets the version, the tag, and the release.
+4. **Release.** The skill `release`, started only by the person, sets the version, commits, and drafts the notes; the person tags, pushes, and publishes.
 
 ## The pieces
 
 | Piece | What it does |
 |-------|--------------|
-| `rules.md` | The rules for every session, under 200 lines, loaded at session start. Delegated decisions are lines here |
+| `rules.md` | The rules for every session, under 200 lines, loaded at session start. A decision the owner delegates is a line in the project's `CLAUDE.md` (R6) |
 | `define`, `close`, `release` | The three skills above |
 | `reviewer` | A read-only agent that reads a change against its spec, for correctness only |
 | `Explore.md` | A search agent on `haiku`, which the person copies to `~/.claude/agents/` to make searches cheaper (basics-7) |

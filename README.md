@@ -25,7 +25,7 @@ It adds only what Claude Code does not already do. Writing stays in your session
    It asks one question at a time, checks each technology in its current documentation, and writes a spec with how to check it. You accept the spec once.
 2. **Build.** In your session, on the model you choose with `/model`.
 3. **Close.** `/playbook:close` runs the spec's check, has a read-only `reviewer` read a risky change, and proposes one line for each mistake that happened twice: for `CLAUDE.md`, `.claude/rules/`, or a skill. You accept each line or not.
-4. **Release.** `/playbook:release` sets the version and drafts the notes. Push, pull requests, merges, and releases always ask you first.
+4. **Release.** `/playbook:release` sets the version and drafts the notes. Pushing, opening or merging a pull request, and publishing a release always ask you first.
 
 Everything lives in `docs/wiki/`: the product, each work's spec, and its decisions with who decided and their words.
 
@@ -52,8 +52,10 @@ Version 5 replaces the three plugins with one. Uninstall the old ones, then inst
 claude plugin uninstall playbook-agents@playbook
 claude plugin uninstall playbook-wiki@playbook
 claude plugin marketplace update playbook
-claude plugin install playbook@playbook
+claude plugin update playbook@playbook
 ```
+
+If `/playbook:init` turned them on for one repository only, run the two `uninstall` lines from that repository with `--scope local`.
 
 A wiki of version 4 keeps working: the check reads its decisions as they are.
 
