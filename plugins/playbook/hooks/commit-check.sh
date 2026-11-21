@@ -4,7 +4,7 @@
 # When the repository has docs/playbook/ with changes since the last commit, it runs
 # the check of the wiki and denies the commit when the check fails. It finds the
 # repository from "cd <dir>" at the start of the command or "git -C <dir>", else
-# the session's folder; <dir> may be quoted, as Code Mode sends it, and hold
+# the session's folder; <dir> may be quoted, as Claude often writes it, and hold
 # spaces. On any error of its own it lets the commit through.
 # shellcheck disable=SC1091 # lib.sh is sourced at run time.
 . "${CLAUDE_PLUGIN_ROOT}/hooks/lib.sh"
