@@ -51,7 +51,7 @@ At session start the plugin loads [the working rules](rules.md). Claude Code als
 
 ## Learned rules
 
-When `review` finds the same kind of mistake in several reviews, you should not have to correct it by hand each time. `classify` stores each finding in `docs/wiki/evidence.md` of your project, under a kind such as `test-passes-when-broken`. A kind reaches the threshold at 3 distinct reviews; at the close of a work, the agent proposes to replace those rows with one rule, one level up, and you approve or reject it. From level 2, `write` and `review` get the rule when they start. Evidence is stored only when a subagent may start a subagent, which Claude Code allows by default: with `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1`, nothing is stored. The design is in the [architecture page](../../docs/wiki/03-technology/architecture.md).
+When `review` finds the same kind of mistake in several reviews, you should not have to correct it by hand each time. `classify` stores each finding in `docs/wiki/evidence.md` of your project, under a kind such as `test-passes-when-broken`. A kind reaches the threshold at 3 distinct reviews; at the close of a work, the agent proposes to replace those rows with one rule, one level up, and you approve or reject it. From level 2, `write` and `review` get an index of the rules when they start, and a rule that graduated is a fixed step of the agent `write` or of `write-skill` instead. Evidence is stored only when a subagent may start a subagent, which Claude Code allows by default: with `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1`, nothing is stored. The design is in the [architecture page](../../docs/wiki/03-technology/architecture.md).
 
 ## Examples
 

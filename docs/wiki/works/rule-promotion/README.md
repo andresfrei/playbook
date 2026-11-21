@@ -2,20 +2,20 @@
 
 Moves the evidence rules that keep recurring out of `evidence-rules.md` and into the part of the product that does their job, so they shape the work instead of staying as hints. Andres Frei leads it.
 
-Status: Open.
+Status: Closed 2026-11-21.
 
 ## Where work stands
 
-Updated 2026-11-20, after rule-promotion-10.
+Updated 2026-11-21, after rule-promotion-16.
 
-Stages 1 to 5 are closed; stage 6, Execution, is open with U1 and U2 of [plan.md](plan.md).
+All stages are closed. U1 and U2 are Done: `evidence.sh` counts a graduated kind and leaves it out of the index, and step 8 of the close proposes graduations (rule-promotion-3 to -11). The first run graduated six rules: five into the agent `write`, one into `write-skill` (rule-promotion-12 to -16). The shared pages follow.
 
-Waiting for: nothing.
+Waiting for: the owner's choice of version.
 
 Next steps, in order:
 
-1. Build U1, then U2, with the agent `write`.
-2. Close the work: run the new step on the six candidates, one at a time.
+1. The owner merges the pull request of `feat/rule-promotion`.
+2. The release, if the owner chooses one.
 
 ## Stage table
 
@@ -26,7 +26,7 @@ Next steps, in order:
 | 3 Skills | Not applicable | 2026-11-20 |
 | 4 Design system | Not applicable | 2026-11-20 |
 | 5 Plan | Closed | 2026-11-20 |
-| 6 Execution | Open | |
+| 6 Execution | Closed | 2026-11-21 |
 
 ## Pages
 
