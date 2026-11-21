@@ -41,7 +41,7 @@ Do not use it for a small change, one that could be finished from the request an
 ## Gotchas
 
 - A decision row has five columns: `| ID | Date | Decision | Who decided | Their words |`. IDs are `<work>-<n>`. "Their words" holds the owner's own text, or the option they chose, quoted.
-- An answer that differs from an earlier decision replaces it: write "Replaced by <ID>" at the start of the earlier row's Decision cell, and change no other cell.
+- An answer that differs from an earlier decision replaces it: start the new decision with "Replaces <ID>." and leave the earlier row as it is; `close` marks it when it moves the shared pages to the new decision.
 - An answer the owner already gave in an earlier decision is a rule waiting to be written: propose the line, or the delegation in the project's `CLAUDE.md`, citing both decisions.
 
 ## Output

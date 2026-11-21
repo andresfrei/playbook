@@ -12,20 +12,20 @@ Do not use it for a small change with no work: run its tests and commit.
 ## Rules
 
 - Ask one question at a time, with a recommendation, then stop and wait.
-- Change nothing the owner has not accepted. A finding is fixed only when it affects correctness.
+- Do each light step without asking, and ask each medium one, by the weights of the rules (R18). A finding is fixed only when it affects correctness.
 - Push, pull requests, merges, and releases are the owner's decisions.
 
 ## Steps
 
 1. Read the work's `spec.md` and run the check it names for what is being closed. Report what fails and stop until it passes.
-2. When the change is risky (stored data, security, an interface others use, concurrency, delivery, untested code), write the diff to a file in the scratchpad and give the agent `reviewer` the spec's path and that file. Show its findings; fix each one the owner accepts, and run the check again.
+2. When the change is risky (stored data, security, an interface others use, concurrency, delivery, untested code), write the diff to a file in the scratchpad and give the agent `reviewer` the spec's path and that file. Show its findings. Fix each finding that breaks the spec or a recorded decision, a light step, and ask about each one that needs a choice they do not settle. Run the check again.
 3. **Learning.** List each mistake of this work that happened twice, each correction the owner had to repeat, and each finding Claude should have known about the project. For each, propose one concrete line and where it goes:
    - the project's `CLAUDE.md`, for what holds in every session;
    - `.claude/rules/<topic>.md` with `paths:`, for one part of the code;
    - a skill's gotchas, for a procedure.
    Also list each decision of this work that repeats the answer of an earlier one, and propose the rule, or the delegation in the project's `CLAUDE.md`, that stops it being asked, citing both IDs.
    Write each line the owner accepts. When there is none, say so in one line.
-4. For a unit, mark it done in `spec.md`. For the whole work, write what it decided into the shared pages (`product.md`, `technology.md`, `skills.md`, `design.md`), each statement citing its decision, and clear the open work in `docs/wiki/README.md`. Reread each shared page you changed against the work's decisions, and show any contradiction to the owner to resolve.
+4. For a unit, mark it done in `spec.md`. For the whole work, write what it decided into the shared pages (`product.md`, `technology.md`, `skills.md`, `design.md`), each statement citing its decision, and clear the open work in `docs/wiki/README.md`. For each decision of the work that starts with "Replaces <ID>", write "Replaced by <its ID>" at the start of the old decision's cell and move each shared page's citation of the old ID to the new one, in the same edit. Reread each shared page you changed against the work's decisions, and show any contradiction to the owner to resolve.
 5. Run `sh "${CLAUDE_PLUGIN_ROOT}/scripts/check-wiki.sh" docs/wiki` and fix what it lists.
 6. For the whole work, read the line "Last audit" in `docs/wiki/README.md`. When works closed since then, there is none, or you found a contradiction, suggest `/playbook:audit` in one line.
 7. For the whole work, recommend whether it needs a new version, MAJOR, MINOR, or PATCH by Semantic Versioning, and ask the owner. On a yes, the owner runs `/playbook:release`.

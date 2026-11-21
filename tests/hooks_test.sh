@@ -48,9 +48,21 @@ case $out in *'# The wiki: docs/wiki/README.md'*'# W'*) ok "session start: wiki 
 out=$(CLAUDE_PROJECT_DIR=$tmp sh "$hooks/session-start.sh")
 case $out in *'# The wiki: docs/wiki/README.md'*) bad "session start: no wiki" "printed" ;; *) ok "session start: no wiki" ;; esac
 
-awk 'BEGIN { for (i = 0; i < 700; i++) print "0123456789" }' > "$tmp/long.md"
-mkdir -p "$tmp/big/docs/wiki" && cp "$tmp/long.md" "$tmp/big/docs/wiki/README.md"
+# The README and the rules share the 10,000 characters of the hook's output.
+budget=$((9000 - $(wc -c < "$CLAUDE_PLUGIN_ROOT/rules.md" | tr -d ' ')))
+readme_of() { # readme_of <dir> <characters>
+  mkdir -p "$1/docs/wiki"
+  awk -v n="$2" 'BEGIN { for (i = 1; i < n; i++) printf "x"; print "" }' > "$1/docs/wiki/README.md"
+}
+readme_of "$tmp/fits" $((budget - 100))
+out=$(CLAUDE_PROJECT_DIR=$tmp/fits sh "$hooks/session-start.sh")
+case $out in *'# The wiki: docs/wiki/README.md'*) ok "session start: README within the budget" ;; *) bad "session start: README within the budget" "not printed" ;; esac
+
+readme_of "$tmp/big" $((budget + 100))
 out=$(CLAUDE_PROJECT_DIR=$tmp/big sh "$hooks/session-start.sh")
-case $out in *'over 6000 characters'*) ok "session start: long README" ;; *) bad "session start: long README" "printed whole" ;; esac
+case $out in
+  *'too long to load with the rules'*) [ $((budget + 100)) -lt 10000 ] && ok "session start: README that fits alone but not with the rules" || bad "session start: README alone" "the case does not fit alone" ;;
+  *) bad "session start: README that fits alone but not with the rules" "printed whole" ;;
+esac
 
 exit $failed

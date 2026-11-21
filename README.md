@@ -39,10 +39,15 @@ claude plugin install playbook@playbook
 
 Start a new session. To make searches cheaper, copy [`plugins/playbook/extras/Explore.md`](plugins/playbook/extras/Explore.md) to `~/.claude/agents/`.
 
-To keep Claude from reading secrets, add deny rules to `.claude/settings.json`:
+To keep Claude from reading secrets, add deny rules to `.claude/settings.json`. To be asked before a command that destroys local work, add ask rules: they prompt in every permission mode, `bypassPermissions` included. The plugin already asks before every push, so a forced push needs no rule.
 
 ```json
-{ "permissions": { "deny": ["Read(./.env)", "Read(./.env.*)", "Read(./secrets/**)"] } }
+{
+  "permissions": {
+    "deny": ["Read(./.env)", "Read(./.env.*)", "Read(./secrets/**)"],
+    "ask": ["Bash(git reset --hard*)", "Bash(git clean *)", "Bash(rm -rf *)", "Bash(rm -fr *)"]
+  }
+}
 ```
 
 ### From 4.x
