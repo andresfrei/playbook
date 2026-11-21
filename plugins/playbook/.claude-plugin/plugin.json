@@ -1,6 +1,6 @@
 {
   "name": "playbook",
-  "version": "3.7.2",
+  "version": "4.0.0",
   "description": "Starts the playbook in a repository: the wiki alone or the whole product.",
   "author": {
     "name": "Andres Frei"
