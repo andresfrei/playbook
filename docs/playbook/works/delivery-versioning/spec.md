@@ -2,6 +2,8 @@
 
 Status: Accepted (delivery-versioning-4).
 
+Learned: 2026-11-22
+
 ## What and why (session-cost-5, session-cost-6, session-cost-7)
 
 No skill asks how a work is delivered or how a project is versioned. Evidence: `huellitas-id` ended works T3 and T4 with no tag and no versioning line in its `technology.md`; `release` falls back to guessing from the manifests. The playbook offers both as optional definitions the owner may leave Open, with no new skill.

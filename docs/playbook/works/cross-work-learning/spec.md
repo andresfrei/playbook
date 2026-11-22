@@ -2,6 +2,8 @@
 
 Status: Accepted (cross-work-learning-7).
 
+Learned: 2026-11-22
+
 Delivery: one branch and one pull request per work (delivery-versioning-2).
 
 ## What and why (cross-work-learning-1)
@@ -53,4 +55,4 @@ Claude Code's documentation, read on 2026-11-22:
 | Unit | What | Check | State |
 |------|------|-------|-------|
 | 1 | Changes 1 to 6 | The first two checks above | Done |
-| 2 | The first run on this repository, driven by the owner | The third check above | Pending |
+| 2 | The first run on this repository, driven by the owner | The third check above | Done |

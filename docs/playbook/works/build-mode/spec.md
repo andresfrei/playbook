@@ -2,6 +2,8 @@
 
 Status: Accepted (build-mode-6).
 
+Learned: 2026-11-22
+
 Delivery: one branch and one pull request per work (delivery-versioning-2).
 
 ## What and why (build-mode-1)

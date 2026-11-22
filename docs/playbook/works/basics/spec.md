@@ -1,5 +1,7 @@
 # Spec of the work basics
 
+Learned: 2026-11-22
+
 Each idea of the playbook, the problem it solves, and its simplest construction. Each item is Decided, Proposed, or Open.
 
 ## The ideas (basics-1)
