@@ -12,7 +12,7 @@ description: Find what repeats across the project's works, such as the same answ
 - Propose; the owner decides. Write no piece, rule, or delegation without the owner's yes: a new piece is medium (R18).
 - Keep no record of its own: no list of candidates, levels, or counts. What was learned is the line `Learned: <date>` in each work's `spec.md` (cross-work-learning-3).
 - A repetition is the same thing in two different works; once is not enough (cross-work-learning-5).
-- Ask one question at a time, with a recommendation, then stop and wait.
+- Ask one question at a time, with a recommendation, then stop and wait. Ask it with `AskUserQuestion` when available, one question per dialog, recommended option first; ask in text a question that has no options to offer.
 
 ## Steps
 
