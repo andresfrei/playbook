@@ -14,7 +14,7 @@ Playbook is a Claude Code plugin that helps a person build software fast with Cl
 
 None. The last work, [delivery-versioning](works/delivery-versioning/spec.md), made delivery and versioning optional definitions of a project (delivery-versioning-1 to -4); built, not yet released, together with [session-cost](works/session-cost/spec.md): one version for both (session-cost-5). [basics](works/basics/spec.md) was released as 5.0.0 (tag `v5.0.0`).
 
-Last audit: 2026-11-21, after work decision-index. Contradictions: 6 found, 6 resolved.
+Last audit: 2026-11-22, after work delivery-versioning. Contradictions: 0 found, 0 resolved.
 
 ## Pages
 
