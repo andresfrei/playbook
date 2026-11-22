@@ -22,7 +22,7 @@ claude plugin install playbook@playbook
 
 ## Build mode
 
-One line, in `~/.claude/CLAUDE.md` for every project or in the project's `CLAUDE.local.md` for one, says who builds each unit: `Build mode: main` (the main session builds, with `/clear` and `/model sonnet` between units) or `Build mode: builder` (the agent `builder` on Sonnet builds from a brief, and the main session verifies with the tests and the diff). The local line wins; with no line it is `main`. `/playbook:define` asks once when neither file has it.
+One line, in `~/.claude/CLAUDE.md` for every project or in the project's `CLAUDE.local.md` for one, says who builds each unit: `Build mode: main` (the main session builds, with `/clear` and `/model sonnet` between units) or `Build mode: builder` (the agent `builder` on Sonnet builds from a brief, and the main session verifies with the tests and the diff). In `builder`, the main session proposes to split a unit too large for one builder and to build independent units at the same time, and you decide. The local line wins; with no line it is `main`. `/playbook:define` asks once when neither file has it.
 
 ## Why sessions are short
 

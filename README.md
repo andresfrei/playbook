@@ -9,7 +9,7 @@
 
 Playbook is a free Claude Code plugin that helps you build fast without losing track. You decide what the software should do; Claude writes it down in your repository with your words, builds from it, and turns its repeated mistakes into project rules.
 
-It adds only what Claude Code does not already do. Writing stays in your session, memory is Claude Code's auto memory, and parallel work is `/batch`.
+It adds only what Claude Code does not already do. Writing stays in your session, memory is Claude Code's auto memory, and one big mechanical change across many files is `/batch`.
 
 ## How a change goes
 
@@ -23,7 +23,7 @@ It adds only what Claude Code does not already do. Writing stays in your session
    | New project | Define, Technology, Skills, and Design when it has an interface |
 
    It asks one question at a time, cites what you already decided instead of asking again, checks each technology in its current documentation, and writes a spec with how to check it. You accept the spec once.
-2. **Build.** In your session, on the model you choose with `/model`; or, with the line `Build mode: builder` in `~/.claude/CLAUDE.md` or the project's `CLAUDE.local.md`, the agent `builder` on Sonnet builds each unit from a brief and your session verifies it with the tests and the diff.
+2. **Build.** In your session, on the model you choose with `/model`; or, with the line `Build mode: builder` in `~/.claude/CLAUDE.md` or the project's `CLAUDE.local.md`, the agent `builder` on Sonnet builds each unit from a brief and your session verifies it with the tests and the diff. In that mode, units that do not depend on each other may be built at the same time, one `builder` each, when you say yes.
 3. **Close.** `/playbook:close` runs the spec's check, has a read-only `reviewer` read a risky change, and proposes one line for each mistake that happened twice, or each answer you gave twice: for `CLAUDE.md`, `.claude/rules/`, or a skill. You accept each line or not.
 4. **Audit**, when you adopt a project, before a release, or when `close` suggests it. `/playbook:audit-wiki` reads the wiki against the code and shows each contradiction with both quotes; you say which side is right. `/playbook:audit-tools` checks whether a tool your repository has on (a plugin, an MCP server, a skill) collides with this way of working, and suggests what to do; run it when you add or remove a tool. `/playbook:audit-learning` reads the decisions of the works not yet learned from, finds what repeats across two works, such as the same answer or the same correction, and proposes a delegation, a rule, a skill, or an agent; `close` offers it when a work closes.
 5. **Release.** `/playbook:release` sets the version and drafts the notes. Pushing, opening or merging a pull request, and publishing a release always ask you first.
