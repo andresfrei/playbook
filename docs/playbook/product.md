@@ -36,7 +36,7 @@ A Claude Code plugin, `playbook`, for Claude Code only (basics-3). It helps a pe
 
 ## What it leaves to Claude Code
 
-Writing (the main session, or `builder` by the person's choice), memory (auto memory), one big mechanical change across many files (`/batch`; the independent units of a spec are built by `builder` agents at the same time, builder-load-4), searching (Explore), cleaning old instructions (`/doctor prompt-audit`), and writing skills (`skill-creator`). The product depends on no MCP server (basics-7, basics-8).
+Writing (the main session, or `builder` by the person's choice), memory (auto memory), one big mechanical change across many files (`/batch`; in `builder` mode the independent units of a spec may be built by `builder` agents at the same time, on the person's yes, builder-load-4), searching (Explore), cleaning old instructions (`/doctor prompt-audit`), and writing skills (`skill-creator`). The product depends on no MCP server (basics-7, basics-8).
 
 ## The wiki of a project
 

@@ -12,9 +12,9 @@ Playbook is a Claude Code plugin that helps a person build software fast with Cl
 
 ## Open work
 
-[builder-load](works/builder-load/spec.md): in `Build mode: builder`, the main session evaluates the load before it writes a brief; it proposes to split a unit too large for one `builder`, and to build independent units at the same time (builder-load-1 to -6). Next unit: 2, units at the same time, the agent `builder`, `product.md`, and the READMEs.
+None. The last closed, [builder-load](works/builder-load/spec.md): in `Build mode: builder`, the main session evaluates the load before it writes a brief; it proposes to split a unit too large for one `builder`, and to build independent units at the same time (builder-load-1 to -6).
 
-The last closed, [question-dialog](works/question-dialog/spec.md): R3 and the five skills that ask name Claude Code's question dialog, `AskUserQuestion`, for a question with options to offer, one question per dialog; a question with no options stays in text (question-dialog-1, question-dialog-2).
+Before it, [question-dialog](works/question-dialog/spec.md): R3 and the five skills that ask name Claude Code's question dialog, `AskUserQuestion`, for a question with options to offer, one question per dialog; a question with no options stays in text (question-dialog-1, question-dialog-2).
 
 Before it, [cross-work-learning](works/cross-work-learning/spec.md): a skill `audit-learning` reads the decisions of the works not yet learned from, finds what repeats across works, and proposes a delegation, a rule, a skill, or an agent (cross-work-learning-1 to -7, -14); its first run on this repository recorded cross-work-learning-8 to -13.
 
