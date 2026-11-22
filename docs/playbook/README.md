@@ -16,7 +16,7 @@ None. The last closed, [cross-work-learning](works/cross-work-learning/spec.md):
 
 Before it: [plugin-update](works/plugin-update/spec.md), the README tells users to turn on Claude Code's auto-update instead of a notice of our own (plugin-update-1); and [agent-runs-skills](works/agent-runs-skills/spec.md), the agent offers `audit-wiki`, `audit-tools`, and `release` and runs them on the owner's yes (agent-runs-skills-1). Before it, [build-mode](works/build-mode/spec.md): a personal `Build mode: main | builder` line chooses whether the main session or the agent `builder` on Sonnet builds each unit (build-mode-1 to -6). Before it, [delivery-versioning](works/delivery-versioning/spec.md) and [session-cost](works/session-cost/spec.md) were released together as 5.1.0 (tag `v5.1.0`).
 
-Last audit: 2026-11-22, after work delivery-versioning. Contradictions: 0 found, 0 resolved.
+Last audit: 2026-11-22, after work cross-work-learning. Contradictions: 0 found, 0 resolved.
 
 ## Pages
 
