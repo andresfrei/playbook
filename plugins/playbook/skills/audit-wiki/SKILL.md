@@ -1,12 +1,11 @@
 ---
 name: audit-wiki
 description: Audit the project's wiki against itself and against the code, on the owner's request; on its first run, adopt the project by building the playbook's wiki and rules from the knowledge it already holds. Reports each contradiction with both quotes for the owner to resolve.
-disable-model-invocation: true
 ---
 
 ## When to use
 
-- The owner runs `/playbook:audit-wiki`, such as when the session start recommends it, before a release, or when `close` suggests it.
+- The owner runs `/playbook:audit-wiki` or asks for an audit, or says yes when you offer one: when the session start recommends it, before a release, or when `close` suggests it (agent-runs-skills-1).
 
 ## Rules
 

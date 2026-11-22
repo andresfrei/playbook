@@ -1,9 +1,12 @@
 ---
 name: release
 description: Release a new version of the project. Sets the version, commits, and drafts the release notes; tagging, pushing, and publishing are left to the owner.
-disable-model-invocation: true
 argument-hint: "[version]"
 ---
+
+## When to use
+
+- The owner runs `/playbook:release` or asks for a release, or says yes when `close` recommends a version (agent-runs-skills-1). Never because the work looks ready.
 
 ## Steps
 
