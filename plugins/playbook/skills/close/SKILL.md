@@ -17,7 +17,7 @@ Do not use it for a small change with no work: run its tests and commit.
 
 ## Steps
 
-1. Read the work's `spec.md` and run the check it names for what is being closed. Report what fails and stop until it passes.
+1. Read the work's `spec.md`, whose line `Delivery:` says how it is delivered, and run the check it names for what is being closed. Report what fails and stop until it passes.
 2. When the change is risky (stored data, security, an interface others use, concurrency, delivery, untested code), write the diff to a file in the scratchpad and give the agent `reviewer` the spec's path and that file. Show its findings. Fix each finding that breaks the spec or a recorded decision, a light step, and ask about each one that needs a choice they do not settle. Run the check again.
 3. **Learning.** List each mistake of this work that happened twice, each correction the owner had to repeat, and each finding Claude should have known about the project. For each, propose one concrete line and where it goes:
    - the project's `CLAUDE.md`, for what holds in every session;
@@ -28,7 +28,7 @@ Do not use it for a small change with no work: run its tests and commit.
 4. For a unit, mark it done in `spec.md`, update the next unit in the line "Open work" of `docs/playbook/README.md`, and recommend `/clear` naming the next unit (session-cost-1, session-cost-8). For the whole work, write what it decided into the shared pages (`product.md`, `technology.md`, `skills.md`, `design.md`), each statement citing its decision, and clear the open work in `docs/playbook/README.md`. For each decision of the work that starts with "Replaces <ID>", write "Replaced by <its ID>" at the start of the old decision's cell and move each shared page's citation of the old ID to the new one, in the same edit. Reread each shared page you changed against the work's decisions, and show any contradiction to the owner to resolve.
 5. Run `sh "${CLAUDE_PLUGIN_ROOT}/scripts/check-wiki.sh" docs/playbook` and fix what it lists.
 6. For the whole work, read the line "Last audit" in `docs/playbook/README.md`. When works closed since then, there is none, or you found a contradiction, suggest `/playbook:audit-wiki` in one line.
-7. For the whole work, recommend whether it needs a new version, MAJOR, MINOR, or PATCH by Semantic Versioning, and ask the owner. On a yes, the owner runs `/playbook:release`.
+7. For the whole work, read the line `Versioning:` of `docs/playbook/technology.md` (delivery-versioning-3). When it says never, say so and recommend no version. When it says after several works together, recommend one only if the owner asked. Otherwise, or with no line, recommend whether the work needs a new version, MAJOR, MINOR, or PATCH by Semantic Versioning, and ask the owner. On a yes, the owner runs `/playbook:release`.
 
 ## Output
 
