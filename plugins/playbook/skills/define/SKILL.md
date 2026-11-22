@@ -20,7 +20,7 @@ Do not use it for a small change, one that could be finished from the request an
 
 ## Steps
 
-1. Read `docs/playbook/README.md`. When there is none and the repository already holds code, recommend `/playbook:audit-wiki` to adopt the project first, and stop. For a new project, create the wiki first: `README.md` with the product in two lines, the owner's name, the open work, and the list of pages; ask the owner for what is missing.
+1. Read `docs/playbook/README.md`. When there is none and the repository already holds code, offer to run the skill `audit-wiki` to adopt the project first; run it on a yes, and otherwise stop (agent-runs-skills-1). For a new project, create the wiki first: `README.md` with the product in two lines, the owner's name, the open work, and the list of pages; ask the owner for what is missing.
 2. Name the type of change in one line and let the owner correct it:
 
    | Type | Steps that follow |

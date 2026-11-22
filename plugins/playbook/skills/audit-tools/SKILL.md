@@ -1,12 +1,11 @@
 ---
 name: audit-tools
 description: Check the tools a repository has on, such as plugins, MCP servers, skills, agents, and hooks, for collisions with the playbook and its way of working with the wiki, on the owner's request. Suggests a way out for each collision and applies the owner's answer.
-disable-model-invocation: true
 ---
 
 ## When to use
 
-- The owner runs `/playbook:audit-tools`, such as after installing or removing a tool. The first run of `audit-wiki` does these steps too.
+- The owner runs `/playbook:audit-tools` or asks for it, or says yes when you offer it, such as after installing or removing a tool (agent-runs-skills-1). The first run of `audit-wiki` does these steps too.
 
 ## Rules
 

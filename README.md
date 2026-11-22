@@ -49,6 +49,8 @@ The installer asks where to turn it on:
 
 From your shell, `claude plugin install playbook@playbook` installs it for you in every project; add `--scope project` or `--scope local` to choose another.
 
+To get new versions, turn on auto-update: run `/plugin`, open the **Marketplaces** tab, select `playbook`, and turn auto-update on. Claude Code then installs each new version in the background and shows `Plugin updated: playbook · Run /reload-plugins to apply`; without the reload, the new version loads on the next launch. It is off by default for marketplaces other than Anthropic's, and a plugin cannot turn it on for you.
+
 Then start a new session in your project and run `/playbook:audit-wiki`. On its first run it adopts the project: it reads the documentation and rules the project already has, proposes how to order them, builds the wiki in `docs/playbook/`, cleans `CLAUDE.md`, and checks the repository's tools, asking you each choice. It starts from a clean git tree, so all it changes is one diff. Until a project is adopted, each session in its git repository recommends it.
 
 To make searches cheaper, copy [`plugins/playbook/extras/Explore.md`](plugins/playbook/extras/Explore.md) to `~/.claude/agents/`.
