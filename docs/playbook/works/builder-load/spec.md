@@ -52,5 +52,5 @@ Accepted with the spec (builder-load-6):
 
 | Unit | What | Check | State |
 |------|------|-------|-------|
-| 1 | Change 1 | The first four checks, and the second live check | Pending |
+| 1 | Change 1 | The first four checks, and the second live check | Done |
 | 2 | Changes 2 to 4 | The first four checks, and the first live check | Pending |
