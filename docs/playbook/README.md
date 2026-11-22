@@ -12,7 +12,9 @@ Playbook is a Claude Code plugin that helps a person build software fast with Cl
 
 ## Open work
 
-None. The last closed, [cross-work-learning](works/cross-work-learning/spec.md): a skill `audit-learning` reads the decisions of the works not yet learned from, finds what repeats across works, and proposes a delegation, a rule, a skill, or an agent (cross-work-learning-1 to -7, -14); its first run on this repository recorded cross-work-learning-8 to -13.
+[question-dialog](works/question-dialog/spec.md): R3 and the five skills that ask name Claude Code's question dialog, `AskUserQuestion`, for a question with options to offer, one question per dialog; a question with no options stays in text (question-dialog-1, question-dialog-2). Next unit: 1, the only one.
+
+The last closed, [cross-work-learning](works/cross-work-learning/spec.md): a skill `audit-learning` reads the decisions of the works not yet learned from, finds what repeats across works, and proposes a delegation, a rule, a skill, or an agent (cross-work-learning-1 to -7, -14); its first run on this repository recorded cross-work-learning-8 to -13.
 
 Before it: [plugin-update](works/plugin-update/spec.md), the README tells users to turn on Claude Code's auto-update instead of a notice of our own (plugin-update-1); and [agent-runs-skills](works/agent-runs-skills/spec.md), the agent offers `audit-wiki`, `audit-tools`, and `release` and runs them on the owner's yes (agent-runs-skills-1). Before it, [build-mode](works/build-mode/spec.md): a personal `Build mode: main | builder` line chooses whether the main session or the agent `builder` on Sonnet builds each unit (build-mode-1 to -6). Before it, [delivery-versioning](works/delivery-versioning/spec.md) and [session-cost](works/session-cost/spec.md) were released together as 5.1.0 (tag `v5.1.0`).
 
