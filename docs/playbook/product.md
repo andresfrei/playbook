@@ -25,7 +25,7 @@ A Claude Code plugin, `playbook`, for Claude Code only (basics-3). It helps a pe
 
 | Piece | What it does |
 |-------|--------------|
-| `rules.md` | The rules for every session, near 50 lines, loaded at session start: the rules and the wiki's README share the 10,000 characters of a hook's output (basics-21). A decision the owner delegates is a line in the project's `CLAUDE.md` (R6). A question with options to offer is asked with Claude Code's question dialog, `AskUserQuestion`, one question per dialog and the recommended option first; a question with no options to offer, in text (R3, question-dialog-1) |
+| `rules.md` | The rules for every session, near 50 lines, loaded at session start: the rules and the wiki's README share 9,000 of the 10,000 characters of a hook's output, the rest left for the two lines of the language (basics-21, audit-2026-11-22-1). A decision the owner delegates is a line in the project's `CLAUDE.md` (R6). A question with options to offer is asked with Claude Code's question dialog, `AskUserQuestion`, one question per dialog and the recommended option first; a question with no options to offer, in text (R3, question-dialog-1) |
 | `define`, `close`, `audit-wiki`, `audit-tools`, `audit-learning`, `release` | The six skills above |
 | `reviewer` | A read-only agent that reads a change against its spec, for correctness only |
 | `builder` | An agent on `sonnet` that builds one unit from a brief, in the mode `Build mode: builder` (build-mode-3) |
