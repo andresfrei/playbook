@@ -1,6 +1,6 @@
 {
   "name": "playbook",
-  "version": "5.4.1",
+  "version": "5.4.2",
   "description": "Helps build software fast with Claude Code: defines each change before code, records the owner's decisions, and learns from repeated mistakes.",
   "author": {
     "name": "Andres Frei"
