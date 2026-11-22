@@ -12,7 +12,7 @@ description: Audit the project's wiki against itself and against the code, on th
 - Change nothing tied to a contradiction until the owner resolves it. Fix what the check lists when it is light, such as a broken link, and write the line "Last audit" without asking.
 - Report only contradictions: a statement of a shared page that the code, another page, or a newer decision says otherwise. Skip style and wording.
 - Quote both sides with file and line. Say when a side is inferred rather than read.
-- Ask one question at a time, with a recommendation, then stop and wait.
+- Ask one question at a time, with a recommendation, then stop and wait. Ask it with `AskUserQuestion` when available, one question per dialog, recommended option first; ask in text a question that has no options to offer.
 
 ## Steps
 

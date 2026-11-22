@@ -12,7 +12,7 @@ Do not use it for a small change, one that could be finished from the request an
 
 ## Rules
 
-- Ask one question at a time, with a recommendation, using `AskUserQuestion` when available, recommended option first. Then stop and wait.
+- Ask one question at a time, with a recommendation, then stop and wait. Ask it with `AskUserQuestion` when available, one question per dialog, recommended option first; ask in text a question that has no options to offer.
 - Only the owner decides. Before each question, search `docs/playbook/works/*/decisions.md`; when a decision already answers it, cite it instead of asking.
 - Record an answer as a decision only when the owner chose between real options or set a limit you could not infer, the code does not say it, and someone would ask why in six months. Going ahead with a step is not a decision.
 - Write only what the code does not say: what, why, the decisions, and how to check it. Do not describe files or architecture that Claude can read.

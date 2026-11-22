@@ -12,7 +12,7 @@ description: Check the tools a repository has on, such as plugins, MCP servers, 
 - Suggest; the owner decides. Turn off or remove no tool unless the owner says so.
 - Change settings for this repository only, never for the whole machine, with Claude Code's own commands and settings.
 - Say nothing of a tool that does not collide, and keep no list of tools in the wiki: Claude Code knows what is on.
-- Ask one question at a time, with a recommendation, then stop and wait.
+- Ask one question at a time, with a recommendation, then stop and wait. Ask it with `AskUserQuestion` when available, one question per dialog, recommended option first; ask in text a question that has no options to offer.
 
 ## Steps
 
