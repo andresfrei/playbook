@@ -48,4 +48,4 @@ Claude Code's documentation, read on 2026-11-22:
 
 ## Units
 
-One unit: the seven changes above, in one pull request.
+One unit: the seven changes above, in one pull request. Done: built in `ffb9a43`, closed 2026-11-22.
