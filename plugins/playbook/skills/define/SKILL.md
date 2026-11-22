@@ -38,7 +38,8 @@ Do not use it for a small change, one that could be finished from the request an
 7. **Design**, for a new project with an interface. Agree with the owner on the typeface, the colours, and the layout, each with its reason, in `docs/playbook/design.md`.
 8. Write `spec.md`: what and why, out of scope, the technology and skills chosen, the check that says it is done, and its units: size each one to fit one short session, with its own check, so the `/clear` after a unit falls where the spec holds the handoff (session-cost-4). Add the line `Delivery:` copied from the `Delivery default` of `technology.md`; ask only when the project has none, or when the work needs another way, such as a worktree for parallel sessions (delivery-versioning-1).
 9. Run `sh "${CLAUDE_PLUGIN_ROOT}/scripts/check-wiki.sh" docs/playbook` and fix what it lists.
-10. Show the spec and ask the owner to accept it once. Record the acceptance as a decision, and set the work as the open work in `docs/playbook/README.md`, naming the first unit as the next one (session-cost-8). Then recommend in one line: `/clear`, `/model sonnet`, and build the first unit by name (session-cost-1).
+10. Look for the line `Build mode:` in `~/.claude/CLAUDE.md` and in `CLAUDE.local.md`. When neither holds it, ask once, in one dialog, the mode (`main` or `builder`) and where to write it (`~/.claude/CLAUDE.md` for every project, or `CLAUDE.local.md` for this one), and write the line there (build-mode-4). The local line wins over the global one (build-mode-2).
+11. Show the spec and ask the owner to accept it once. Record the acceptance as a decision, and set the work as the open work in `docs/playbook/README.md`, naming the first unit as the next one (session-cost-8). Then recommend in one line. In `main`: `/clear`, `/model sonnet`, and build the first unit by name (session-cost-1). In `builder`: stay on the current model and build the first unit by name with `builder` (build-mode-6).
 
 ## Gotchas
 

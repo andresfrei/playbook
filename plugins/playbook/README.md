@@ -15,8 +15,13 @@ claude plugin install playbook@playbook
 | `/playbook:audit-tools` | Checks the tools the repository has on (plugins, MCP servers, skills, agents, hooks) for collisions with the playbook, and suggests what to do with each; run it when you add or remove a tool |
 | `/playbook:release` | Sets the version, commits, and drafts the notes; you push and publish |
 | `reviewer` | A read-only agent that checks a change against its spec, for correctness only |
+| `builder` | An agent on `sonnet` that builds one unit from a brief, used when the line `Build mode: builder` is set |
 | Rules | Loaded at session start, near 50 lines, with the project's `docs/playbook/README.md` |
 | Hooks | Ask before push, pull request, merge, and release; run the wiki check on commit; recommend `/playbook:audit-wiki` in a project not yet adopted |
+
+## Build mode
+
+One line, in `~/.claude/CLAUDE.md` for every project or in the project's `CLAUDE.local.md` for one, says who builds each unit: `Build mode: main` (the main session builds, with `/clear` and `/model sonnet` between units) or `Build mode: builder` (the agent `builder` on Sonnet builds from a brief, and the main session verifies with the tests and the diff). The local line wins; with no line it is `main`. `/playbook:define` asks once when neither file has it.
 
 ## Why sessions are short
 
