@@ -9,7 +9,7 @@
 
 Playbook is a free Claude Code plugin that helps you build fast without losing track. You decide what the software should do; Claude writes it down in your repository with your words, builds from it, and turns its repeated mistakes into project rules.
 
-It adds only what Claude Code does not already do. Writing stays in your session, memory is Claude Code's auto memory, and one big mechanical change across many files is `/batch`.
+It adds only what Claude Code does not already do. Writing stays in your session, or goes to the agent `builder` when you choose it, memory is Claude Code's auto memory, and one big mechanical change across many files is `/batch`.
 
 ## How a change goes
 
