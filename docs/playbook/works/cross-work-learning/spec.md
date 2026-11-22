@@ -52,5 +52,5 @@ Claude Code's documentation, read on 2026-11-22:
 
 | Unit | What | Check | State |
 |------|------|-------|-------|
-| 1 | Changes 1 to 6 | The first two checks above | Pending |
+| 1 | Changes 1 to 6 | The first two checks above | Done |
 | 2 | The first run on this repository, driven by the owner | The third check above | Pending |
