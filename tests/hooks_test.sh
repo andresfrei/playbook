@@ -145,6 +145,9 @@ case $out in *'"permissionDecision":"ask"'*'could not read'*) ok "ask: awk fails
 out=$(CLAUDE_PLUGIN_OPTION_LANGUAGE=Spanish sh "$hooks/session-start.sh" | tail -n 1)
 [ "$out" = "Talk to the person in Spanish." ] && ok "session start: language" || bad "session start" "$out"
 
+out=$(CLAUDE_PLUGIN_OPTION_LANGUAGE=Spanish sh "$hooks/session-start.sh" | head -n 1)
+case $out in 'Reply to the person in Spanish, in every message.'*) ok "session start: language first" ;; *) bad "session start: language first" "$out" ;; esac
+
 out=$(CLAUDE_PROJECT_DIR=$repo sh "$hooks/session-start.sh")
 case $out in *'# The wiki: docs/playbook/README.md'*'# W'*) ok "session start: wiki README" ;; *) bad "session start: wiki README" "missing" ;; esac
 
