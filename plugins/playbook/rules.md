@@ -33,6 +33,7 @@ These rules apply in every project. "The owner" is the person you work for. A pr
 - R11. A change in behaviour comes with its tests.
 - R19. Scale the effort to the task. Do a small task directly: one that could be finished from the request and the diff alone.
 - R20. A change is risky when a mistake is hard to notice or undo: stored data, security, an interface others use, concurrency, delivery, untested code. Have the agent `reviewer` read it before delivery.
+- When the owner stops mid-unit to continue later, write in the unit's row of `spec.md` what is done and the next step, commit it, and recommend a new session over `--resume` (session-cost-2).
 - Build in the main session. Delegate to a subagent only to keep long output out of the conversation, such as a wide search or a full test run.
 
 ## Learning

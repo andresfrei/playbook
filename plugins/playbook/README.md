@@ -18,4 +18,8 @@ claude plugin install playbook@playbook
 | Rules | Loaded at session start, near 50 lines, with the project's `docs/playbook/README.md` |
 | Hooks | Ask before push, pull request, merge, and release; run the wiki check on commit; recommend `/playbook:audit-wiki` in a project not yet adopted |
 
+## Why sessions are short
+
+The context each request carries is what costs. Claude Code's documentation: "Use `/clear` to start fresh when switching to unrelated work"; "Each model has its own cache. Switching with `/model` means the next request reads the entire conversation history with no cache hits"; "Pick your model and effort level at the top of a session." So the playbook cuts a session where the spec already holds the handoff: after a unit, `/clear`; choose the model at the start, not mid-way; and a fresh session beats `--resume`, since "your first message after a break longer than the cache lifetime misses the cache and reprocesses your full context."
+
 For cheaper searches, copy `extras/Explore.md` to `~/.claude/agents/`: it runs Claude Code's Explore on `haiku`.

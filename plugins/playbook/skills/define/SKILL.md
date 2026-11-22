@@ -34,9 +34,9 @@ Do not use it for a small change, one that could be finished from the request an
 5. **Technology**, when the type has it. List what the change needs from its technology. For each need, propose the simplest candidate, check it in its current documentation (version, limits, price), and write the link and the date. Say when something is recalled and not checked. Ask the owner to decide each one.
 6. **Skills**, when the type has it. For each new technology, read the names and descriptions of the skills available, and propose one: a skill that exists, to install after reading it; one to write with `skill-creator`; or none needed. Install or write a skill only after the owner's yes.
 7. **Design**, for a new project with an interface. Agree with the owner on the typeface, the colours, and the layout, each with its reason, in `docs/playbook/design.md`.
-8. Write `spec.md`: what and why, out of scope, the technology and skills chosen, the check that says it is done, and, for a change too large for one sitting, its units, each with its own check.
+8. Write `spec.md`: what and why, out of scope, the technology and skills chosen, the check that says it is done, and its units: size each one to fit one short session, with its own check, so the `/clear` after a unit falls where the spec holds the handoff (session-cost-4).
 9. Run `sh "${CLAUDE_PLUGIN_ROOT}/scripts/check-wiki.sh" docs/playbook` and fix what it lists.
-10. Show the spec and ask the owner to accept it once. Record the acceptance as a decision, and set the work as the open work in `docs/playbook/README.md`.
+10. Show the spec and ask the owner to accept it once. Record the acceptance as a decision, and set the work as the open work in `docs/playbook/README.md`, naming the first unit as the next one (session-cost-8). Then recommend in one line: `/clear`, `/model sonnet`, and build the first unit by name (session-cost-1).
 
 ## Gotchas
 
