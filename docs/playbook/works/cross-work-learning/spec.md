@@ -21,7 +21,7 @@ Claude Code's documentation, read on 2026-11-22:
 ## What changes
 
 1. A skill `audit-learning` of the plugin, of its own by one job, one skill (cross-work-learning-2, cross-work-learning-6).
-2. **What it reads** (cross-work-learning-3). A work is pending while its `spec.md` has no line `Learned: <date>`; today every work is pending. A run reads each pending work's `decisions.md` in full, and searches the works already learned from, with `git grep`, only for the subjects the pending ones touch. No list of candidates seen once is kept. The reading runs in a subagent, which returns the repetitions found with their IDs and quotes; the main session asks the owner, since a subagent "doesn't see your conversation history" (skills.md).
+2. **What it reads** (cross-work-learning-3). A work is pending while its `spec.md` has no line `Learned: <date>`; a work with no `spec.md`, in the format before `basics`, is history, never pending, and only searched (cross-work-learning-14). A run reads each pending work's `decisions.md` in full, and searches the works already learned from, with `git grep`, only for the subjects the pending ones touch. No list of candidates seen once is kept. The reading runs in a subagent, which returns the repetitions found with their IDs and quotes; the main session asks the owner, since a subagent "doesn't see your conversation history" (skills.md).
 3. **The criterion** (cross-work-learning-5). The same thing in two different works:
 
    | What repeats | What it proposes |
