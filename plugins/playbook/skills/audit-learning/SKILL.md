@@ -35,7 +35,7 @@ description: Find what repeats across the project's works, such as the same answ
    When a piece already covers it, propose adjusting that piece instead of a new one. A piece that holds for this project only stays in the project; one that holds for any project goes to the playbook (R16).
 4. Show one proposal at a time: the kind, both IDs with their quotes, the exact line or the piece's name and job, where it goes, and your recommendation. Stop and wait.
 5. Write each proposal the owner accepts; for a skill or an agent, write it with the owner on the yes. Record each answer, yes or no, as a decision with the owner's words: in the open work's `decisions.md`, or in `docs/playbook/works/audit-<date>/decisions.md` when none is open.
-6. Write `Learned: <date>` under the line `Status:` of each pending work's `spec.md`, whether or not anything was proposed. Run `sh "${CLAUDE_PLUGIN_ROOT}/scripts/check-wiki.sh" docs/playbook` and fix what it lists.
+6. Write `Learned: <date>` in each pending work's `spec.md`, under the line `Status:`, or under the title when it has none, whether or not anything was proposed. Run `sh "${CLAUDE_PLUGIN_ROOT}/scripts/check-wiki.sh" docs/playbook` and fix what it lists.
 
 ## Output
 
