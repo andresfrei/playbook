@@ -2,6 +2,8 @@
 
 Status: Accepted (session-cost-3), changed by session-cost-4 and session-cost-8.
 
+Learned: 2026-11-22
+
 ## What and why (session-cost-1)
 
 A session's cost grows with the context each request carries. Three `/usage` sessions of the owner, on projects using the playbook with Opus 5.5 medium, measured on 2026-11-22:
