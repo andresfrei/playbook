@@ -12,7 +12,7 @@ Playbook is a Claude Code plugin that helps a person build software fast with Cl
 
 ## Open work
 
-None. The last work, [delivery-versioning](works/delivery-versioning/spec.md), made delivery and versioning optional definitions of a project (delivery-versioning-1 to -4); built, not yet released, together with [session-cost](works/session-cost/spec.md): one version for both (session-cost-5). [basics](works/basics/spec.md) was released as 5.0.0 (tag `v5.0.0`).
+[build-mode](works/build-mode/spec.md): a personal `Build mode: main | builder` line, in `~/.claude/CLAUDE.md` or `CLAUDE.local.md`, chooses whether the main session or the agent `builder` on Sonnet builds each unit (build-mode-1 to -6). Next unit: 1, changes 1 to 6. The works before it, [delivery-versioning](works/delivery-versioning/spec.md) and [session-cost](works/session-cost/spec.md), were released together as 5.1.0 (tag `v5.1.0`).
 
 Last audit: 2026-11-22, after work delivery-versioning. Contradictions: 0 found, 0 resolved.
 
