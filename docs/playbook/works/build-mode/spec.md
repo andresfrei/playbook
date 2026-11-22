@@ -37,4 +37,4 @@ Claude Code's documentation, read on 2026-11-22:
 
 | Unit | What | Check | State |
 |------|------|-------|-------|
-| 1 | Changes 1 to 6 | The check above | To do |
+| 1 | Changes 1 to 6 | The check above | Done |
