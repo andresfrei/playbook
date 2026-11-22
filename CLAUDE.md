@@ -7,6 +7,7 @@
 - `shellcheck plugins/playbook/hooks/*.sh plugins/playbook/scripts/*.sh tests/*.sh`
 - `claude plugin validate .`
 - A live check: `claude -p --plugin-dir plugins/playbook "<request>"` in a throwaway repository.
+- The live check of a skill that reads `docs/playbook/works/` includes a work in the format before `basics` (no `spec.md`) and a spec with no `Status:` line, as this repository holds both.
 
 ## Conventions
 
