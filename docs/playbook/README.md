@@ -12,7 +12,7 @@ Playbook is a Claude Code plugin that helps a person build software fast with Cl
 
 ## Open work
 
-[session-cost](works/session-cost/spec.md): cut each session where the spec already holds the handoff, and build on a cheaper model chosen at the start of a session. The last work, [basics](works/basics/spec.md), rebuilt the playbook to its minimum and was released as 5.0.0 (tag `v5.0.0`).
+[session-cost](works/session-cost/spec.md): cut each session where the spec already holds the handoff, and build on a cheaper model chosen at the start of a session. Next: unit 1, the seven changes of the spec. The last work, [basics](works/basics/spec.md), rebuilt the playbook to its minimum and was released as 5.0.0 (tag `v5.0.0`).
 
 Last audit: 2026-11-21, after work decision-index. Contradictions: 6 found, 6 resolved.
 

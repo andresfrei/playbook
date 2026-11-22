@@ -1,6 +1,6 @@
 # Spec of the work session-cost
 
-Status: Accepted (session-cost-3), changed by session-cost-4.
+Status: Accepted (session-cost-3), changed by session-cost-4 and session-cost-8.
 
 ## What and why (session-cost-1)
 
@@ -31,7 +31,8 @@ Claude Code's documentation, read on 2026-11-22:
 3. `rules.md` gains one line: when the owner stops mid-unit to continue later, write in the unit's row of `spec.md` what is done and the next step, commit it, and recommend a new session over `--resume` (session-cost-2). `rules.md` stays near 50 lines (basics-21).
 4. The plugin's README says why, in a few lines quoting the documentation above: the context per request is what costs; choose the model at the start of a session, not mid-way; a fresh session beats resuming an old one.
 5. `define` sizes every unit to fit one short session, each with its own check, so the `/clear` after a unit falls where the spec holds the handoff (session-cost-4).
-6. `product.md` states the build step on the model chosen at the start of a session, citing session-cost-1, at close.
+6. The line "Open work" of `docs/playbook/README.md` names the next unit: `define` writes it when the spec is accepted, `close` updates it after each unit, so after `/clear` the SessionStart hook shows it and the owner says "seguí" (session-cost-8). Prompt suggestions are not used: no skill, hook, or Claude can set their text.
+7. `product.md` states the build step on the model chosen at the start of a session, citing session-cost-1, at close.
 
 ## Out of scope
 
@@ -42,9 +43,9 @@ Claude Code's documentation, read on 2026-11-22:
 ## Check
 
 - `sh tests/check-wiki_test.sh`, `sh tests/hooks_test.sh`, `sh plugins/playbook/scripts/check-wiki.sh docs/playbook`, `shellcheck`, and `claude plugin validate .` pass.
-- A live run of `define` in a throwaway repository, with `--plugin-dir plugins/playbook`, ends its acceptance with the `/clear` and `/model sonnet` line.
+- A live run of `define` in a throwaway repository, with `--plugin-dir plugins/playbook`, ends its acceptance with the `/clear` and `/model sonnet` line and writes the next unit in the README's line "Open work".
 - After release, the owner's next sessions show in `/usage` a lower context per request than the 138k to 408k above.
 
 ## Units
 
-One unit: the six changes above, in one pull request.
+One unit: the seven changes above, in one pull request.
