@@ -12,7 +12,7 @@ Playbook is a Claude Code plugin that helps a person build software fast with Cl
 
 ## Open work
 
-[ask-to-clear](works/ask-to-clear/spec.md): at the end of a task, when the next is a different one, Claude asks whether to close and continue in a clean session; on a yes it writes the handoff and the owner types `/clear` (ask-to-clear-1 to -3). Next unit: the only one, the five changes of its spec.
+[ask-to-clear](works/ask-to-clear/spec.md): at the end of a task, when the next is a different one, Claude asks whether to close and continue in a clean session; on a yes it writes the handoff and the owner types `/clear` (ask-to-clear-1 to -3). Its only unit is built; next: close the work.
 
 The last closed, [builder-load](works/builder-load/spec.md): in `Build mode: builder`, the main session evaluates the load before it writes a brief; it proposes to split a unit too large for one `builder`, and to build independent units at the same time (builder-load-1 to -6). The works before it are listed in `works/`.
 
