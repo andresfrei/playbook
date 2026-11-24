@@ -15,6 +15,7 @@ Do not use it to update Claude Code, to answer how a Claude Code feature works, 
 - Read the changelog verbatim with `curl`; never with WebFetch, which paraphrases it.
 - Move the record only when the owner has answered every proposal (claude-code-versions-4).
 - Ask one proposal at a time, with a recommendation.
+- Run steps 1 to 7 in one agent and bring back only the table and the range read; never print the changelog in the conversation. Steps 8 and 9 stay in the session, since they are the owner's answers and the record.
 
 ## Gotchas
 
