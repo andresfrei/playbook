@@ -2,6 +2,8 @@
 
 Status: Accepted (audit-decided-3); U2 added (audit-decided-4).
 
+Learned: 2026-11-24
+
 Delivery: one branch and one pull request per work (delivery-versioning-2).
 
 ## What and why (audit-decided-1)
