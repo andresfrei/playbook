@@ -30,4 +30,4 @@ The first run adopts the project: it turns the knowledge the project already hol
    Where a project rule contradicts the playbook's rules, ask which stands. The project's wins unless the owner changes it.
 5. Delete what the owner chose to delete, such as an old wiki whose content moved. Run `sh "${CLAUDE_PLUGIN_ROOT}/scripts/check-wiki.sh" docs/playbook` and fix what it lists.
 
-Then go on with step 1 of the wiki part in `SKILL.md`: the audit of the new wiki against the code.
+Then go on with step 2 of `SKILL.md`: the explorers read the new wiki against the code, the setup, and the tools.

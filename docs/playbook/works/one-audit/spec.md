@@ -60,6 +60,6 @@ Checked live on 2026-11-23: a rule with `paths:` loads in a custom subagent that
 |------|--------|-------|-------|
 | U1 | `startup-context.sh` and its tests | The tests cover each source, the three levels, a rule with and with no `paths:`, a skill with `disable-model-invocation`, and each limit | Done |
 | U2 | `audit` replaces `audit-wiki` and `audit-tools`; every mention moves; the two rules that change | `hooks_test.sh` and `git grep` above; live: a repository with no wiki is adopted with `/playbook:audit` | Done |
-| U3 | The agent `auditor`, the explorers in `audit`, the argument of one part, the step of the setup, and one table after all | The live check above | Pending |
+| U3 | The agent `auditor`, the explorers in `audit`, the argument of one part, the step of the setup, and one table after all | The live check above | Done |
 
 U1 and U2 change different files and neither uses the other: they can be built at the same time (builder-load-3). U3 uses both.
