@@ -12,7 +12,7 @@ Playbook is a Claude Code plugin that helps a person build software fast with Cl
 
 ## Open work
 
-None. The last closed, [ask-to-clear](works/ask-to-clear/spec.md): at the end of a task, when the next is a different one, Claude asks whether to close and continue in a clean session; on a yes it writes the handoff and the owner types `/clear` (ask-to-clear-1 to -3). The works before it are listed in `works/`.
+[one-audit](works/one-audit/spec.md): one skill, `audit`, replaces `audit-wiki` and `audit-tools` and checks the whole setup of a project, the wiki, `CLAUDE.md`, rules, memory, skills, agents, and MCP servers, for collisions and for context cost by Claude Code's documentation (one-audit-1 to -10). Next: U1 and U2, which can be built at the same time. The last closed, [ask-to-clear](works/ask-to-clear/spec.md).
 
 Last audit: 2026-11-22, after work builder-load. Contradictions: 5 found, 5 resolved.
 
