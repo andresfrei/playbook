@@ -7,13 +7,23 @@
 
 **[playbook.neuralmind.lat](https://playbook.neuralmind.lat/)** · Claude Code · by [NeuralMind](https://neuralmind.lat/)
 
+## For AI agents
+
+- Playbook is a Claude Code plugin: it defines each change with the owner before code, records decisions in the owner's words, and proposes rules from repeated mistakes.
+- Install: `/plugin marketplace add andresfrei/playbook`, then `/plugin install playbook@playbook`.
+- Commands: `/playbook:define`, `/playbook:close`, `/playbook:audit`, `/playbook:audit-learning`, `/playbook:release`.
+- It writes `docs/playbook/` in the project, and lines it proposes for `CLAUDE.md`, `.claude/rules/`, or a skill, which the owner accepts or not.
+- The source is `plugins/playbook/`. Each piece has a page in [docs/reference/README.md](docs/reference/README.md).
+
+## What it is
+
 Playbook is a free Claude Code plugin that helps you build fast without losing track. You decide what the software should do; Claude writes it down in your repository with your words, builds from it, and turns its repeated mistakes into project rules.
 
-It adds only what Claude Code does not already do. Writing stays in your session, or goes to the agent `builder` when you choose it, memory is Claude Code's auto memory, and one big mechanical change across many files is `/batch`.
+It adds only what Claude Code does not already do. Writing stays in your session, or goes to the agent [builder](docs/reference/builder.md) when you choose it, memory is Claude Code's auto memory, and one big mechanical change across many files is `/batch`.
 
 ## How a change goes
 
-1. **Define.** `/playbook:define` names the type of change and runs only the steps it needs:
+1. **Define.** [`/playbook:define`](docs/reference/define.md) names the type of change and runs only the steps it needs:
 
    | Type of change | Steps |
    |----------------|-------|
@@ -23,12 +33,12 @@ It adds only what Claude Code does not already do. Writing stays in your session
    | New project | Define, Technology, Skills, and Design when it has an interface |
 
    It asks one question at a time, cites what you already decided instead of asking again, checks each technology in its current documentation, and writes a spec with how to check it. You accept the spec once.
-2. **Build.** In your session, on the model you choose with `/model`; or, with the line `Build mode: builder` in `~/.claude/CLAUDE.md` or the project's `CLAUDE.local.md`, the agent `builder` on Sonnet builds each unit from a brief and your session verifies it with the tests and the diff. In that mode, units that do not depend on each other may be built at the same time, one `builder` each, when you say yes.
-3. **Close.** `/playbook:close` runs the spec's check, has a read-only `reviewer` read a risky change, and proposes one line for each mistake that happened twice, or each answer you gave twice: for `CLAUDE.md`, `.claude/rules/`, or a skill. You accept each line or not.
-4. **Audit**, when you adopt a project, before a release, or when `close` suggests it. `/playbook:audit` reads the wiki against the code and shows each contradiction with both quotes; you say which side is right. It also checks whether a tool your repository has on (a plugin, an MCP server, a skill) collides with this way of working, and suggests what to do; `/playbook:audit wiki`, `setup`, or `tools` runs one part alone, such as `tools` when you add or remove a tool. `/playbook:audit-learning` reads the decisions of the works not yet learned from, finds what repeats across two works, such as the same answer or the same correction, and proposes a delegation, a rule, a skill, or an agent; `close` offers it when a work closes.
-5. **Release.** `/playbook:release` sets the version and drafts the notes. Pushing, opening or merging a pull request, and publishing a release always ask you first.
+2. **Build.** In your session, on the model you choose with `/model`; or, with the line `Build mode: builder`, the agent [builder](docs/reference/builder.md) on Sonnet builds each unit from a brief and your session verifies it. See [build mode](docs/reference/build-mode.md).
+3. **Close.** [`/playbook:close`](docs/reference/close.md) runs the spec's check, has the read-only [reviewer](docs/reference/reviewer.md) read a risky change, and proposes one line for each mistake that happened twice, or each answer you gave twice: for `CLAUDE.md`, `.claude/rules/`, or a skill. You accept each line or not.
+4. **Audit**, when you adopt a project, before a release, or when `close` suggests it. [`/playbook:audit`](docs/reference/audit.md) reads the wiki against the code, checks what loads at startup and the repository's tools, and shows each finding for you to resolve. [`/playbook:audit-learning`](docs/reference/audit-learning.md) finds what repeats across two works and proposes a delegation, a rule, a skill, or an agent.
+5. **Release.** [`/playbook:release`](docs/reference/release.md) sets the version and drafts the notes. Pushing, opening or merging a pull request, and publishing a release always ask you first ([ask](docs/reference/ask.md)).
 
-Everything lives in `docs/playbook/`: the product, each work's spec, and its decisions with who decided and their words. Its `README.md` loads at the start of every session.
+Everything lives in `docs/playbook/` ([wiki](docs/reference/wiki.md)): the product, each work's spec, and its decisions with who decided and their words. Its `README.md` loads at the start of every session ([session-start](docs/reference/session-start.md)).
 
 ## Install
 
@@ -49,40 +59,18 @@ The installer asks where to turn it on:
 
 From your shell, `claude plugin install playbook@playbook` installs it for you in every project; add `--scope project` or `--scope local` to choose another.
 
+Then start a new session in your project and run [`/playbook:audit`](docs/reference/audit.md). On its first run it adopts the project: it reads the documentation and rules the project already has, proposes how to order them, builds the wiki in `docs/playbook/`, cleans `CLAUDE.md`, and checks the repository's tools, asking you each choice. It starts from a clean git tree, so all it changes is one diff. Until a project is adopted, each session in its git repository recommends it ([adopt](docs/reference/adopt.md)).
+
+## Updates
+
 To get new versions, turn on auto-update: run `/plugin`, open the **Marketplaces** tab, select `playbook`, and turn auto-update on. Claude Code then installs each new version in the background and shows `Plugin updated: playbook · Run /reload-plugins to apply`; without the reload, the new version loads on the next launch. It is off by default for marketplaces other than Anthropic's, and a plugin cannot turn it on for you.
 
-Then start a new session in your project and run `/playbook:audit`. On its first run it adopts the project: it reads the documentation and rules the project already has, proposes how to order them, builds the wiki in `docs/playbook/`, cleans `CLAUDE.md`, and checks the repository's tools, asking you each choice. It starts from a clean git tree, so all it changes is one diff. Until a project is adopted, each session in its git repository recommends it.
+## Reference
 
-To make searches cheaper, copy [`plugins/playbook/extras/Explore.md`](plugins/playbook/extras/Explore.md) to `~/.claude/agents/`.
-
-To keep Claude from reading secrets, add deny rules to `.claude/settings.json`. To be asked before a command that destroys work, add ask rules: they prompt in every permission mode, `bypassPermissions` included. The plugin asks before a push; a forced push, which rewrites the remote's history, gets its own rules as well, since a hook's filter is best-effort.
-
-```json
-{
-  "permissions": {
-    "deny": ["Read(./.env)", "Read(./.env.*)", "Read(./secrets/**)"],
-    "ask": [
-      "Bash(git reset --hard*)", "Bash(git clean *)", "Bash(rm -rf *)", "Bash(rm -fr *)",
-      "Bash(git push -f*)", "Bash(git push * -f*)", "Bash(git push *--force*)"
-    ]
-  }
-}
-```
-
-### From 4.x
-
-Version 5 replaces the three plugins with one and moves the wiki to `docs/playbook/`. Uninstall the old plugins and update `playbook`:
-
-```sh
-claude plugin uninstall playbook-agents@playbook
-claude plugin uninstall playbook-wiki@playbook
-claude plugin marketplace update playbook
-claude plugin update playbook@playbook
-```
-
-If `/playbook:init` turned them on for one repository only, run the two `uninstall` lines from that repository with `--scope local`.
-
-Then run `/playbook:audit` in each project. It moves the 4.x wiki in `docs/wiki/` into `docs/playbook/`, keeping every decision and the owner's words; the check reads those decisions in their 4.x format.
+- [Reference index](docs/reference/README.md): one page per skill, agent, hook, and concept.
+- [Permissions](docs/reference/permissions.md): deny and ask rules to add to a project.
+- [Upgrade from version 4](docs/reference/upgrade-from-4.md): moving from version 4 to 5.
+- To make searches cheaper, copy [`plugins/playbook/extras/Explore.md`](plugins/playbook/extras/Explore.md) to `~/.claude/agents/`; see [sessions](docs/reference/sessions.md).
 
 ## Documentation
 

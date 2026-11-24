@@ -18,4 +18,4 @@ The context each request carries is what costs. Claude Code's documentation: "Us
 - [define](define.md) and [close](close.md), which ask whether to close the session.
 - [build-mode](build-mode.md), [rules](rules.md), and [session-start](session-start.md).
 
-Source: the section "Why sessions are short" of [plugins/playbook/README.md](../../plugins/playbook/README.md)
+Source: [plugins/playbook/extras/Explore.md](../../plugins/playbook/extras/Explore.md)

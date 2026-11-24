@@ -25,4 +25,4 @@ Permission rules a project can add to `.claude/settings.json`, next to what the 
 - [ask](ask.md), the hook that asks before delivery.
 - [rules](rules.md), where R14 and R24 cover delivery and secrets.
 
-Source: the permission rules of the [README](../../README.md)
+Source: [plugins/playbook/hooks/ask.sh](../../plugins/playbook/hooks/ask.sh)

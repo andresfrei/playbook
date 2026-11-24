@@ -21,4 +21,4 @@ The local line wins; with no line it is `main`. [define](define.md) asks once wh
 - [builder](builder.md), [reviewer](reviewer.md), [define](define.md), [close](close.md).
 - [rules](rules.md), which state the mode, and [sessions](sessions.md).
 
-Source: the section "Build mode" of [plugins/playbook/README.md](../../plugins/playbook/README.md)
+Source: [plugins/playbook/rules.md](../../plugins/playbook/rules.md)

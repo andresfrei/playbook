@@ -26,4 +26,4 @@ Then run [audit](audit.md) in each project. It moves the 4.x wiki in `docs/wiki/
 - [audit](audit.md), which does the move, and [wiki](wiki.md), the new layout.
 - [adopt](adopt.md), which recommends the audit in a project not yet adopted.
 
-Source: the section "From 4.x" of the [README](../../README.md)
+Source: [plugins/playbook/skills/audit/first-run.md](../../plugins/playbook/skills/audit/first-run.md)

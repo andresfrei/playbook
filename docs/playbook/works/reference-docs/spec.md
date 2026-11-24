@@ -39,4 +39,4 @@ An agent or a person who opens the repository on GitHub has to read the whole RE
 | Unit | What | Check | State |
 |------|------|-------|-------|
 | U1 | Point 2 and 4: the index, the 18 pages, and the test | `tests/reference_test.sh` and shellcheck | Done |
-| U2 | Points 1 and 3: the root README with its block, and the plugin README as a link | The whole check above | Pending |
+| U2 | Points 1 and 3: the root README with its block, and the plugin README as a link | The whole check above | Done |
