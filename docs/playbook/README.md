@@ -12,7 +12,7 @@ Playbook is a Claude Code plugin that helps a person build software fast with Cl
 
 ## Open work
 
-Next work, to define: `startup-context.sh` counts the user's skills hidden by `skillOverrides` as loaded (audit-2026-11-24-13).
+Work in progress: [skill-overrides](works/skill-overrides/spec.md). Next: U1, honour `skillOverrides` and move synced skills to their own row in `startup-context.sh`.
 
 Last audit: 2026-11-24, after work reply-language. Contradictions: 0 found, 0 resolved.
 
