@@ -16,6 +16,8 @@
 # column holds a limit of Claude Code's documentation the source passes, or "-".
 # The rows of skill and agent descriptions are one row per level and kind: the
 # path says how many descriptions, and the bytes column holds their characters.
+# The project and user skill rows follow the setting skillOverrides; the user row
+# leaves out ~/.claude/skills/synced/, which has its own row, "claude.ai sync skills".
 # The script does not read MCP servers: use `claude mcp list` and /context.
 #
 # Limits (memory.md, hooks.md): 200 lines per CLAUDE.md; MEMORY.md 200 lines or
@@ -196,20 +198,84 @@ desc_chars() {
     }' "$1"
 }
 
+# skillOverrides (skills.md): "off" and "user-invocable-only" hide a skill from
+# Claude, "name-only" lists its name only, absent or "on" changes nothing.
+# ov_extract <file>: the pairs inside the "skillOverrides" object, one per line
+# (other keys of the file are not read).
+ov_extract() {
+  awk '{ t = t " " $0 }
+    END {
+      i = index(t, "\"skillOverrides\""); if (!i) exit
+      t = substr(t, i); j = index(t, "{"); if (!j) exit
+      t = substr(t, j + 1); depth = 1; o = ""
+      for (k = 1; k <= length(t); k++) {
+        c = substr(t, k, 1)
+        if (c == "{") depth++
+        if (c == "}" && --depth == 0) break
+        o = o c
+      }
+      gsub(/,/, "\n", o); print o
+    }' "$1"
+}
+n=0
+settings_files > "$tmp/sfiles"
+while IFS= read -r f; do
+  n=$((n + 1)); : > "$tmp/ov.$n"
+  [ -f "$f" ] && ov_extract "$f" > "$tmp/ov.$n"
+done < "$tmp/sfiles"
+# ov_get <key>: the override of the key, from the first settings file that sets it.
+ov_get() {
+  ek=$(printf '%s' "$1" | sed 's/[][\.*^$/]/\\&/g')
+  for i in 1 2 3; do
+    v=$(sed -n "s/.*\"$ek\"[[:space:]]*:[[:space:]]*\"\([^\"]*\)\".*/\1/p" "$tmp/ov.$i" | head -n 1)
+    [ -n "$v" ] && { printf '%s' "$v"; return; }
+  done
+}
+# skill_name <SKILL.md>: the frontmatter name, else the folder's name.
+skill_name() {
+  sn=$(awk 'NR == 1 { if ($0 !~ /^---[ \t]*$/) exit; next } /^---[ \t]*$/ { exit }
+    /^name:/ { s = $0; sub(/^name:[ \t]*/, "", s); gsub(/^["'"'"']|["'"'"'][ \t]*$/, "", s); print s; exit }' "$1")
+  [ -n "$sn" ] || sn=$(basename "$(dirname "$1")")
+  printf '%s' "$sn"
+}
+# override_of <SKILL.md> <synced>: hide, name-only, or on. A synced skill matches
+# its bare name and anthropic-skills:<name>; if both are set, a hiding value wins.
+override_of() {
+  on=$(skill_name "$1"); ov=$(ov_get "$on")
+  if [ "$2" = 1 ]; then
+    ov2=$(ov_get "anthropic-skills:$on")
+    case "$ov $ov2" in *off*|*user-invocable-only*) ov=off ;; *name-only*) ov=name-only ;; esac
+  fi
+  case $ov in off|user-invocable-only) echo hide ;; name-only) echo name-only ;; *) echo on ;; esac
+}
+
 # tally <level> <kind> <dir>...: one row for the descriptions under the dirs.
+# Variables set by the caller: T_OV=1 applies skillOverrides to skills; T_SYNCED
+# is "skip" (leave out folder synced/) or "only" (the claude.ai sync row);
+# T_LABEL replaces the kind in the row's name.
 tally() {
   tl=$1; tk=$2; shift 2
   n=0; chars=0
   for td in "$@"; do
     [ -d "$td" ] || continue
-    if [ "$tk" = skills ]; then find "$td" -name SKILL.md -type f; else find "$td" -name '*.md' -type f; fi | sort > "$tmp/desc"
+    if [ "$tk" = skills ]; then
+      if [ "${T_SYNCED:-}" = skip ]; then find "$td" -path "$td/synced" -prune -o -name SKILL.md -type f -print
+      else find "$td" -name SKILL.md -type f; fi
+    else find "$td" -name '*.md' -type f; fi | sort > "$tmp/desc"
     while IFS= read -r f; do
       c=$(desc_chars "$f")
       [ "$c" = off ] && continue
+      if [ "${T_OV:-}" = 1 ] && [ "$tk" = skills ]; then
+        sy=0; [ "${T_SYNCED:-}" = only ] && sy=1
+        case $(override_of "$f" "$sy") in
+          hide) continue ;;
+          name-only) c=$(skill_name "$f" | awk '{ print length($0) }') ;;
+        esac
+      fi
       n=$((n + 1)); chars=$((chars + c))
     done < "$tmp/desc"
   done
-  row "$tl $tk: $n descriptions (characters in the bytes column)" "$tl" startup - "$chars" -
+  row "${T_LABEL:-$tl $tk}: $n descriptions (characters in the bytes column)" "$tl" startup - "$chars" -
 }
 
 # The enabled plugins: the first settings file that names one decides.
@@ -227,9 +293,13 @@ while IFS= read -r key; do
 done < "$tmp/enabled"
 case " $pdirs " in *" $plugin "*) ;; *) pdirs="$pdirs $plugin" ;; esac
 
+# Set and unset apart: an assignment before a function call may persist (POSIX).
+T_OV=1
 tally project skills "$root/.claude/skills"
+T_SYNCED=skip; tally user skills "$home/.claude/skills"
+T_SYNCED=only; T_LABEL="claude.ai sync skills"; tally user skills "$home/.claude/skills/synced"
+unset T_OV T_SYNCED T_LABEL
 tally project agents "$root/.claude/agents"
-tally user skills "$home/.claude/skills"
 tally user agents "$home/.claude/agents"
 for kind in skills agents; do
   set --

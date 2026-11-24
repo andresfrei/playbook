@@ -32,4 +32,4 @@ Delivery: one branch and one pull request per work (delivery-versioning-2).
 
 | Unit | What | Check | State |
 |------|------|-------|-------|
-| U1 | Points 1 to 3 above, with their tests | The checks above | Pending |
+| U1 | Points 1 to 3 above, with their tests | The checks above | Done |

@@ -133,4 +133,24 @@ has memory-worktree "| $rmem/MEMORY.md | project | startup | 5 |"
 out=$(HOME=$home CLAUDE_PLUGIN_ROOT=$plug CLAUDE_MANAGED_MD=$tmp/managed.md sh "$script" "$repo/sub" 2>&1)
 has memory-subfolder "| $rmem/MEMORY.md | project | startup | 5 |"
 
+# skillOverrides, and the synced skills apart from the user's.
+us=$home/.claude/skills
+mkdir -p "$us/ov-off" "$us/ov-inv" "$us/ov-name" "$us/ov-prec" "$us/synced/uuid1/hid" "$us/synced/uuid1/shown" "$us/synced/uuid1/bare"
+for k in ov-off ov-inv ov-prec; do printf -- '---\nname: %s\ndescription: dddddddddd\n---\n' "$k" > "$us/$k/SKILL.md"; done
+printf -- '---\nname: ov-name\ndescription: dddddddddd\n---\n' > "$us/ov-name/SKILL.md"
+printf -- '---\nname: hid\ndescription: 1111\n---\n' > "$us/synced/uuid1/hid/SKILL.md"
+printf -- '---\nname: shown\ndescription: 22222\n---\n' > "$us/synced/uuid1/shown/SKILL.md"
+printf -- '---\nname: bare\ndescription: 333\n---\n' > "$us/synced/uuid1/bare/SKILL.md"
+printf '{\n  "other": {"ov-off": "off"},\n  "skillOverrides": {\n    "ov-off": "off",\n    "ov-inv": "user-invocable-only",\n    "ov-name": "name-only",\n    "ov-prec": "off",\n    "anthropic-skills:hid": "user-invocable-only",\n    "bare": "off"\n  }\n}\n' > "$proj/.claude/settings.json"
+rm -f "$proj/.claude/settings.local.json"
+out=$(run)
+# u (7) + ov-name (7, its name) + ov-prec is hidden by the project settings: 2 skills, 15 characters.
+has ov-user-row "user skills: 2 descriptions (characters in the bytes column) | user | startup | - | 14 |"
+has ov-sync-row "claude.ai sync skills: 1 descriptions (characters in the bytes column) | user | startup | - | 5 |"
+# A project local setting before the project's: ov-prec is on again.
+printf '{"skillOverrides": {"ov-prec": "on"}}\n' > "$proj/.claude/settings.local.json"
+out=$(run)
+has ov-precedence "user skills: 3 descriptions (characters in the bytes column) | user | startup | - | 24 |"
+rm "$proj/.claude/settings.local.json" "$proj/.claude/settings.json"
+
 exit $failed
