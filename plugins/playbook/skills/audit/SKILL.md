@@ -12,7 +12,7 @@ argument-hint: "[wiki|setup|tools]"
 ## Rules
 
 - Explore first, propose after (one-audit-6). The explorers are read-only; the owner is asked only when all of them have ended.
-- Change nothing tied to a finding until the owner resolves it. Fix what the check lists when it is light, such as a broken link, and write the line "Last audit" without asking.
+- Change nothing tied to a finding until the owner resolves it. Fix what the check lists when it is light, such as a broken link, and, when the wiki part ran, write the line "Last audit" without asking.
 - The wiki part reports only contradictions: a statement of a shared page that the code, another page, or a newer decision says otherwise. Skip style and wording. The setup part also reports the limits of the documentation that a piece passes, and proposals to load content on demand.
 - Quote both sides with file and line. Say when a side is inferred rather than read.
 - Suggest; the owner decides. Turn off or remove no tool unless the owner says so.
@@ -27,7 +27,7 @@ argument-hint: "[wiki|setup|tools]"
 3. **Cross.** Join the findings, remove duplicates, and keep the rest. When an explorer failed, say so, go on with the others' findings, and offer to run that part again.
 4. **Show.** One table with every finding: the part, the quote or quotes with file and line, the number or the limit, and your recommendation. Say why a finding is dropped; hide none. When nothing was found, say so in one line.
 5. **Ask.** Resolve each finding with the owner, one at a time, as the part says.
-6. **Apply.** Make the light fixes, and the changes the owner said yes to. Write in `docs/playbook/README.md` one line that starts with `Last audit:`, as `Last audit: <date>, after work <last closed work>. Contradictions: <found>, <resolved>.`, replacing the previous one, without asking. Run `sh "${CLAUDE_PLUGIN_ROOT}/scripts/check-wiki.sh" docs/playbook` again.
+6. **Apply.** Make the light fixes, and the changes the owner said yes to. When the wiki part ran (no argument, `wiki`, or a first run), write in `docs/playbook/README.md` one line that starts with `Last audit:`, as `Last audit: <date>, after work <last closed work>. Contradictions: <found>, <resolved>.`, replacing the previous one, without asking. Run `sh "${CLAUDE_PLUGIN_ROOT}/scripts/check-wiki.sh" docs/playbook` again.
 7. **Close** by telling the owner to run `/context` for the real numbers.
 
 ## Wiki part

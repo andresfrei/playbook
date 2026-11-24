@@ -6,11 +6,13 @@
 #   With no argument the project root is the current folder.
 # Environment (to run against a fixture in tests):
 #   HOME              the user's home folder (~/.claude, ~/.claude/projects).
+#   CLAUDE_MANAGED_MD the managed policy CLAUDE.md (default: the path of the
+#                     system, /etc/claude-code/CLAUDE.md or the macOS one).
 #   CLAUDE_PLUGIN_ROOT  the playbook plugin's root (rules.md, skills/, agents/);
 #                     defaults to the folder above this script.
 #
 # One row per source: path | level | loads | lines | bytes | limit passed.
-# Level is project, user, or plugin. "Loads" is startup or on demand. The limit
+# Level is project, user, plugin, or managed. "Loads" is startup or on demand. The limit
 # column holds a limit of Claude Code's documentation the source passes, or "-".
 # The rows of skill and agent descriptions are one row per level and kind: the
 # path says how many descriptions, and the bytes column holds their characters.
@@ -74,10 +76,9 @@ $1
 "
   file_row "$1" "$2" startup claude
   [ "$3" -ge 5 ] && return 0
-  dir=$(dirname "$1")
   grep -oE '(^|[[:space:]])@[^[:space:]]+' "$1" 2>/dev/null | sed 's/^[[:space:]]*@//' > "$tmp/imports.$3"
   while IFS= read -r imp; do
-    case $imp in \~/*) imp="$home/${imp#\~/}" ;; /*) ;; *) imp="$dir/$imp" ;; esac
+    case $imp in \~/*) imp="$home/${imp#\~/}" ;; /*) ;; *) imp="$(dirname "$1")/$imp" ;; esac
     [ -f "$imp" ] || imp=$(printf '%s' "$imp" | sed 's/[.,;:)]*$//')
     claude_file "$imp" "$2" $(($3 + 1))
   done < "$tmp/imports.$3"
@@ -85,6 +86,18 @@ $1
 
 echo '| Source | Level | Loads | Lines | Bytes | Limit passed |'
 echo '|--------|-------|-------|-------|-------|--------------|'
+
+# The managed policy CLAUDE.md and claudeMdExcludes: shown, not reasoned about.
+if [ -z "${CLAUDE_MANAGED_MD:-}" ]; then
+  case $(uname -s) in
+    Darwin) CLAUDE_MANAGED_MD='/Library/Application Support/ClaudeCode/CLAUDE.md' ;;
+    *) CLAUDE_MANAGED_MD=/etc/claude-code/CLAUDE.md ;;
+  esac
+fi
+claude_file "$CLAUDE_MANAGED_MD" managed 0
+settings_files | while IFS= read -r f; do
+  [ -f "$f" ] && grep -q '"claudeMdExcludes"' "$f" && row "$f" - "claudeMdExcludes set" - - -
+done
 
 d=$root
 while :; do
@@ -102,7 +115,7 @@ for pair in "$root/.claude/rules:project" "$home/.claude/rules:user"; do
   rdir=${pair%:*}; lvl=${pair##*:}
   [ -d "$rdir" ] || continue
   [ "$rdir" = "$root/.claude/rules" ] && [ "$root" = "$home" ] && lvl=user
-  find "$rdir" -type f -name '*.md' | sort > "$tmp/rules"
+  find -L "$rdir" -type f -name '*.md' 2>/dev/null | sort > "$tmp/rules"
   while IFS= read -r f; do
     if awk 'NR==1 { if ($0 !~ /^---[ \t]*$/) exit 1; next } /^---[ \t]*$/ { exit 1 } /^paths:/ { found = 1; exit } END { exit !found }' "$f"; then
       when="on demand"
@@ -117,7 +130,10 @@ done
 memdir=$(setting autoMemoryDirectory | cut -f2 | head -n 1)
 case $memdir in \~/*) memdir="$home/${memdir#\~/}" ;; esac
 if [ -z "$memdir" ]; then
-  folder=$(printf '%s' "$root" | sed 's/[^A-Za-z0-9]/-/g')
+  # The project is the main repository, so worktrees and subfolders share it.
+  proj=$root
+  gc=$(git -C "$root" rev-parse --path-format=absolute --git-common-dir 2>/dev/null) && [ -n "$gc" ] && proj=$(dirname "$gc")
+  folder=$(printf '%s' "$proj" | sed 's/[^A-Za-z0-9]/-/g')
   memdir=$home/.claude/projects/$folder/memory
 fi
 [ -f "$memdir/MEMORY.md" ] && file_row "$memdir/MEMORY.md" project startup memory

@@ -41,7 +41,7 @@ printf -- '---\nname: q\ndescription: qq\n---\n' > "$plug/agents/q.md"
 printf -- '---\nname: o\ndescription: oooo\n---\n' > "$tmp/other/skills/o/SKILL.md"
 printf '{"plugins": {"other@m": [{"installPath": "%s"}]}}\n' "$tmp/other" > "$home/.claude/plugins/installed_plugins.json"
 
-run() { HOME=$home CLAUDE_PLUGIN_ROOT=$plug sh "$script" "$proj" 2>&1; }
+run() { HOME=$home CLAUDE_PLUGIN_ROOT=$plug CLAUDE_MANAGED_MD=$tmp/managed.md sh "$script" "$proj" 2>&1; }
 out=$(run)
 has() { # has <case> <fixed text in one row>
   if printf '%s\n' "$out" | grep -qF -- "$2"; then printf 'ok %s\n' "$1"
@@ -96,5 +96,41 @@ has style-project "output style: Loud ($proj/.claude/settings.local.json) | proj
 # The root can also be the current folder.
 out=$(cd "$proj" && HOME=$home CLAUDE_PLUGIN_ROOT=$plug sh "$script" 2>&1)
 has cwd-root "| $proj/CLAUDE.md | project | startup | 2 |"
+
+# A later import of the parent resolves against the parent's folder.
+mkdir -p "$proj/docs"; lines 2 > "$proj/docs/a.md"; lines 9 > "$proj/b.md"
+printf 'one\n@docs/a.md\n@b.md\n' > "$proj/CLAUDE.md"
+out=$(run)
+has import-nested "| $proj/docs/a.md | project | startup | 2 |"
+has import-after-nested "| $proj/b.md | project | startup | 9 |"
+
+# Managed policy CLAUDE.md and claudeMdExcludes.
+out=$(run)
+hasnt managed-absent "| managed |"
+lines 3 > "$tmp/managed.md"
+printf '{"claudeMdExcludes": ["**/x/CLAUDE.md"]}\n' > "$proj/.claude/settings.json"
+out=$(run)
+has managed "| $tmp/managed.md | managed | startup | 3 |"
+has excludes "| $proj/.claude/settings.json | - | claudeMdExcludes set | - | - | - |"
+rm "$proj/.claude/settings.json"
+
+# A symlinked rule without paths: loads at startup, and a circular link does not hang.
+lines 4 > "$tmp/real-rule.md"; ln -s "$tmp/real-rule.md" "$proj/.claude/rules/linked.md"
+ln -s "$proj/.claude/rules" "$proj/.claude/rules/loop"
+out=$(run)
+has rule-symlink "| $proj/.claude/rules/linked.md | project | startup | 4 |"
+rm "$proj/.claude/rules/loop"
+
+# The memory folder is the main repository's, from a worktree or a subfolder.
+repo=$tmp/repo; mkdir -p "$repo/sub"
+git -C "$repo" init -q . && git -C "$repo" -c user.name=t -c user.email=t@t commit -q --allow-empty -m init
+git -C "$repo" worktree add -q "$tmp/wt" 2>/dev/null
+repo=$(cd "$repo" && pwd -P)
+rmem=$home/.claude/projects/$(printf '%s' "$repo" | sed 's/[^A-Za-z0-9]/-/g')/memory
+mkdir -p "$rmem"; lines 5 > "$rmem/MEMORY.md"
+out=$(HOME=$home CLAUDE_PLUGIN_ROOT=$plug CLAUDE_MANAGED_MD=$tmp/managed.md sh "$script" "$tmp/wt" 2>&1)
+has memory-worktree "| $rmem/MEMORY.md | project | startup | 5 |"
+out=$(HOME=$home CLAUDE_PLUGIN_ROOT=$plug CLAUDE_MANAGED_MD=$tmp/managed.md sh "$script" "$repo/sub" 2>&1)
+has memory-subfolder "| $rmem/MEMORY.md | project | startup | 5 |"
 
 exit $failed
