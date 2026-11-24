@@ -12,9 +12,9 @@ Playbook is a Claude Code plugin that helps a person build software fast with Cl
 
 ## Open work
 
-Define a work for the language of replies, kept in a setting and asked when it is missing (the owner's request of 2026-11-24).
+Next work, to define: `startup-context.sh` counts the user's skills hidden by `skillOverrides` as loaded (audit-2026-11-24-13).
 
-Last audit: 2026-11-24, after work skill-usage. Contradictions: 0 found, 0 resolved.
+Last audit: 2026-11-24, after work reply-language. Contradictions: 0 found, 0 resolved.
 
 ## Pages
 

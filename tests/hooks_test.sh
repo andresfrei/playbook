@@ -142,6 +142,19 @@ case $out in *'"permissionDecision":"ask"'*'could not read'*) ok "ask: awk fails
 [ "$(grep -c 'ask.sh' "$hooks/hooks.json")" = "$(grep -c '"onFailure": "block"' "$hooks/hooks.json")" ] &&
   ok "hooks.json: each ask.sh entry blocks on failure" || bad "hooks.json" "an ask.sh entry without onFailure"
 
+unset CLAUDE_PLUGIN_DATA CLAUDE_PLUGIN_OPTION_LANGUAGE
+data=$tmp/plugin-data
+out=$(CLAUDE_PLUGIN_DATA=$data sh "$hooks/session-start.sh")
+case $out in *'ask the person with AskUserQuestion'*'/config'*) ok "session start: asks the language" ;; *) bad "session start: asks the language" "$out" ;; esac
+[ -f "$data/language-asked" ] && ok "session start: record created" || bad "session start: record created" "missing"
+out=$(CLAUDE_PLUGIN_DATA=$data sh "$hooks/session-start.sh")
+case $out in *'ask the person with AskUserQuestion'*|*'Reply to the person'*|*'Talk to the person'*) bad "session start: asked once" "$out" ;; *) ok "session start: asked once" ;; esac
+out=$(CLAUDE_PLUGIN_DATA=$tmp/data2 CLAUDE_PLUGIN_OPTION_LANGUAGE=Spanish sh "$hooks/session-start.sh")
+case $out in *'ask the person with AskUserQuestion'*) bad "session start: option set, no question" "$out" ;; *'Reply to the person in Spanish'*'Talk to the person in Spanish.'*) ok "session start: option set, no question" ;; *) bad "session start: option set" "$out" ;; esac
+[ ! -e "$tmp/data2" ] && ok "session start: option set, no record" || bad "session start: option set, no record" "created"
+out=$(CLAUDE_PLUGIN_DATA='' sh "$hooks/session-start.sh")
+case $out in *'ask the person with AskUserQuestion'*) bad "session start: no data dir, silent" "$out" ;; *) ok "session start: no data dir, silent" ;; esac
+
 out=$(CLAUDE_PLUGIN_OPTION_LANGUAGE=Spanish sh "$hooks/session-start.sh" | tail -n 1)
 [ "$out" = "Talk to the person in Spanish." ] && ok "session start: language" || bad "session start" "$out"
 
