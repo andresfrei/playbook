@@ -12,7 +12,7 @@ Playbook is a Claude Code plugin that helps a person build software fast with Cl
 
 ## Open work
 
-[audit-decided](works/audit-decided/spec.md): the audit stops asking again what the owner already resolved: false positives become gotchas of its parts, and each "leave it" is a decision the next audit cites (audit-decided-1 to -3). U1 and U2 built; next: close, delivery as 5.5.1, and the live check. The last closed, [one-audit](works/one-audit/spec.md).
+None. The last closed, [audit-decided](works/audit-decided/spec.md): the audit stops asking again what the owner already resolved (audit-decided-1); its live check runs after the merge of 5.5.1.
 
 Last audit: 2026-11-24, after work one-audit. Contradictions: 0 found, 0 resolved.
 
