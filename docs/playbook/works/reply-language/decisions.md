@@ -1,0 +1,9 @@
+# Decisions of the work reply-language
+
+| ID | Date | Decision | Who decided | Their words |
+|----|------|----------|-------------|-------------|
+| reply-language-1 | 2026-11-24 | The language of the replies stays in the plugin's `userConfig` option `language`, which the session-start hook reads as `CLAUDE_PLUGIN_OPTION_LANGUAGE` and the owner edits in `/config`. Chosen over Claude Code's own setting `language`, which no documented mechanism passes to a hook, and over reading both. | Andres Frei | Chose "userConfig del plugin (Recomendado)" |
+| reply-language-2 | 2026-11-24 | When the language is missing, the agent asks it, replies in it for that session, and tells the owner to save it in the plugin's row of `/config`. The agent does not write `pluginConfigs` in the owner's `settings.json`, whose format the documentation does not describe. Chosen over the agent writing it. | Andres Frei | Chose "Vos, en /config (Recomendado)" |
+| reply-language-3 | 2026-11-24 | The language is asked once, not at every session with it empty: an empty value after that answer still means following the language the owner writes in. When the record of the question is lost, it is asked again. Chosen over an empty value always asking. | Andres Frei | "preguntar una sola vez, pero va a pasar que en algun momento se pierde y si el usuario en algun momento pide guardar cierto idioma, hay que guardarlo ahí" |
+| reply-language-4 | 2026-11-24 | When the owner asks to save a language, the agent tells them the plugin's row of `/config` where to write it, as reply-language-2 says; it does not write the setting itself. | Andres Frei | Chose "Te guía a /config (Recomendado)" |
+| reply-language-5 | 2026-11-24 | The spec of `reply-language` is accepted as written. | Andres Frei | Chose "Aceptar (Recomendado)" |
