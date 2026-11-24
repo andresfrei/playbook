@@ -8,6 +8,7 @@
 - `claude plugin validate .`
 - A live check: `claude -p --plugin-dir plugins/playbook "<request>"` in a throwaway repository.
 - The live check of a skill that reads `docs/playbook/works/` includes a work in the format before `basics` (no `spec.md`) and a spec with no `Status:` line, as this repository holds both.
+- A script that derives a path from the project's folder is also run from the worktree `~/dev/playbook-main`.
 
 ## Conventions
 
