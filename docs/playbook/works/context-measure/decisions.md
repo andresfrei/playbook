@@ -1,0 +1,7 @@
+# Decisions of the work context-measure
+
+| ID | Date | Decision | Who decided | Their words |
+|----|------|----------|-------------|-------------|
+| context-measure-1 | 2026-11-24 | Open the work `context-measure`. The setup part of `audit` runs `claude -p "/context"` in its explorer, as it runs `/skill-doctor` (skill-usage-1), and the main session shows the load by category, so the owner no longer runs `/context` and pastes it. Chosen over a new agent on Haiku for measuring and over an agent of this repository only. Verified on 2026-11-24: `claude -p "/context"` prints the table without a prompt, also with `--model haiku`. | Andres Frei | "creo que para este repo seria bueno crear un agente que corra las herramientas de medicion de claudecode en hiku y se las pase al orquestador, esto ecvitaria tener que andar diciendome a mi ejecuta esto copia y pega"; then chose "En el auditor de setup (Recomendado)" |
+| context-measure-2 | 2026-11-24 | The agent `auditor` keeps no `model:` line and inherits the session's model: `/context` and `/skill-doctor` are local commands that call no model, and the wiki and tools parts judge (task-agents-5). Chosen over Haiku or Sonnet for the whole `auditor`. | Andres Frei | Chose "Dejarlo como está (Recomendado)" |
+| context-measure-3 | 2026-11-24 | The owner accepts the spec of `context-measure`: one unit, U1, the setup part of `audit` runs `claude -p "/context"` and the audit shows the table of categories in place of the advice to run `/context`. | Andres Frei | Chose "Aceptado como está (Recomendado)" |
