@@ -22,7 +22,7 @@ argument-hint: "[wiki|setup|tools]"
 
 ## Steps
 
-1. **First run.** When `docs/playbook/README.md` is missing, or has no line that starts with `Last audit:`, read [first-run.md](first-run.md) and do its steps first, in the main session, before any explorer. It writes files, so no explorer does it. After it, go on with step 2 for all three parts, whatever the argument, so that the adoption leaves the tools in order too.
+1. **First run.** When `docs/playbook/README.md` is missing, or has no line that starts with `Last audit:`, read [first-run.md](first-run.md) and do its steps first, in the main session, before any explorer. It writes files, so no explorer does it. After it, go on with step 2 for all three parts, whatever the argument, so that the adoption leaves the tools in order too (one-audit-11).
 2. **Explore.** Launch the `auditor` agent for each part chosen (one-audit-8): with no argument, the three in ONE message (wiki, setup, tools); with an argument, only that one. Each brief names the part, copies its steps from the part below, and asks for findings in this form: a finding between two sources with both quotes, each with file and line; a finding of one source with its quote, file and line, and the number or the limit. Wait until all of them have ended.
 3. **Cross.** Join the findings, remove duplicates, and keep the rest. When an explorer failed, say so, go on with the others' findings, and offer to run that part again.
 4. **Show.** One table with every finding: the part, the quote or quotes with file and line, the number or the limit, and your recommendation. Say why a finding is dropped; hide none. When nothing was found, say so in one line.
