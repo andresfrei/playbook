@@ -36,6 +36,10 @@ A Claude Code plugin, `playbook`, for Claude Code only (basics-3). It helps a pe
 | The check of the wiki | Run by `define`, `close`, `audit`, `audit-learning`, and on commit |
 | `userConfig` | The language of the replies, asked once when empty (reply-language-1, reply-language-3) |
 
+## Its documentation
+
+The root README opens with a block "For AI agents": what Playbook is, how to install it, its commands, what it writes, and a link to the reference. `docs/reference/` holds one page per skill, agent, and hook, and one per concept, reached from one index, and the plugin's README links that index; a test fails when a piece has no page or a page is not in the index (reference-docs-1). Upgrading from 4.x and the permission rules are pages of the reference, linked from the README (reference-docs-2).
+
 ## What it leaves to Claude Code
 
 Writing (the main session, or `builder` by the person's choice), memory (auto memory), one big mechanical change across many files (`/batch`; in `builder` mode the independent units of a spec may be built by `builder` agents at the same time, on the person's yes, builder-load-4), searching (Explore), cleaning old instructions (`/doctor prompt-audit`), and writing skills (`skill-creator`). The product depends on no MCP server (basics-7, basics-8).

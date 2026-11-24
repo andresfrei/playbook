@@ -12,7 +12,7 @@ Playbook is a Claude Code plugin that helps a person build software fast with Cl
 
 ## Open work
 
-- [reference-docs](works/reference-docs/spec.md): one reference page per piece and a README for agents. Next: close the work.
+None.
 
 Last audit: 2026-11-24, after work reply-language. Contradictions: 0 found, 0 resolved.
 
