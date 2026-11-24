@@ -2,7 +2,7 @@
 
 ## Checks
 
-- `sh tests/check-wiki_test.sh` and `sh tests/hooks_test.sh`
+- `sh tests/check-wiki_test.sh`, `sh tests/hooks_test.sh`, and `sh tests/startup-context_test.sh`
 - `sh plugins/playbook/scripts/check-wiki.sh docs/playbook`
 - `shellcheck plugins/playbook/hooks/*.sh plugins/playbook/scripts/*.sh tests/*.sh`
 - `claude plugin validate .`
