@@ -19,11 +19,12 @@ The product is not listed in Anthropic's plugin directory, which accepts command
 
 The project skill `.claude/skills/evaluate-cli-releases/` reads and writes this section when the owner asks to evaluate Claude Code (claude-code-versions-5).
 
-Last version evaluated: 2.1.330
+Last version evaluated: 2.1.331
 
 | Date | Versions read | Proposals | Where each went |
 |------|---------------|-----------|-----------------|
 | 2026-11-20 | 2.1.326 to 2.1.330 | None (claude-code-versions-12) | |
+| 2026-11-23 | 2.1.331 | None (claude-code-versions-12) | |
 
 ### Pending
 

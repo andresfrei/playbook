@@ -12,9 +12,9 @@ Playbook is a Claude Code plugin that helps a person build software fast with Cl
 
 ## Open work
 
-None. The last closed, [ask-to-clear](works/ask-to-clear/spec.md): at the end of a task, when the next is a different one, Claude asks whether to close and continue in a clean session; on a yes it writes the handoff and the owner types `/clear` (ask-to-clear-1 to -3). The works before it are listed in `works/`.
+None. The last closed, [one-audit](works/one-audit/spec.md).
 
-Last audit: 2026-11-22, after work builder-load. Contradictions: 5 found, 5 resolved.
+Last audit: 2026-11-24, after work one-audit. Contradictions: 1 found, 1 resolved.
 
 ## Pages
 
