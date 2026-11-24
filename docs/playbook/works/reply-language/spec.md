@@ -30,4 +30,4 @@ The plugin keeps the language of the replies in its `userConfig` option `languag
 
 | Unit | What | Check | State |
 |------|------|-------|-------|
-| U1 | Points 2 to 4 above, with their tests | The checks above | Pending |
+| U1 | Points 2 to 4 above, with their tests | The checks above | Done |

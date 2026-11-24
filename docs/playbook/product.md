@@ -34,7 +34,7 @@ A Claude Code plugin, `playbook`, for Claude Code only (basics-3). It helps a pe
 | `Explore.md` | A search agent on `haiku`, which the person copies to `~/.claude/agents/` to make searches cheaper (basics-7). Read-only as Claude Code's own Explore: no Write or Edit, and Bash kept for searching, held by its instruction (basics-22) |
 | A hook before delivery | Asks before push, pull request, merge, and release |
 | The check of the wiki | Run by `define`, `close`, `audit`, `audit-learning`, and on commit |
-| `userConfig` | The language of the replies |
+| `userConfig` | The language of the replies, asked once when empty (reply-language-1, reply-language-3) |
 
 ## What it leaves to Claude Code
 
