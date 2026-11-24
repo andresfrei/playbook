@@ -9,7 +9,7 @@
 
 Delivery default: one branch and one pull request per work (delivery-versioning-2).
 
-Versioning: the plugin's version in `plugins/playbook/.claude-plugin/plugin.json` only; after the merge of each work, `close` recommends whether it needs a tag and the owner decides (delivery-versioning-3, TD22, github-release-2). PATCH when a work only changes rules, skills, or the README text of the plugin; MINOR for a new skill, agent, hook, or script; removing or renaming a skill is MINOR, not MAJOR (audit-2026-11-24-7).
+Versioning: the plugin's version in `plugins/playbook/.claude-plugin/plugin.json` only; after the merge of each work, `close` recommends whether it needs a tag and the owner decides (delivery-versioning-3, TD22, github-release-2). PATCH when a work only changes rules, skills, the README text of the plugin, or the behaviour of an existing hook or script; MINOR for a new skill, agent, hook, or script; removing or renaming a skill is MINOR, not MAJOR (audit-2026-11-24-7, audit-2026-11-24-16).
 
 Install: `claude plugin marketplace add andresfrei/playbook`, then `claude plugin install playbook@playbook`. A marketplace added from a local clone loads the plugin in place: a change applies to the next session, or after `/reload-plugins`.
 
