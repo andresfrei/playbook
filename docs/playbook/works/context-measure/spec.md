@@ -33,4 +33,4 @@ And the line of `product.md` that says what the setup part reads.
 
 | Unit | What | Check | State |
 |------|------|-------|-------|
-| U1 | The setup part and the output of `audit` as above, and the line of `product.md` | The checks above | Pending |
+| U1 | The setup part and the output of `audit` as above, and the line of `product.md` | The checks above | Done |
