@@ -56,15 +56,20 @@ The main session, after the table, in step 5:
 
 ## Setup part
 
-The explorer runs `sh "${CLAUDE_PLUGIN_ROOT}/scripts/startup-context.sh"` in the project and reads the files it lists. Each finding says the level the script's table gives its piece: project, user, or plugin. For each piece it reports (one-audit-3, one-audit-5):
+The explorer runs `sh "${CLAUDE_PLUGIN_ROOT}/scripts/startup-context.sh"` in the project and reads the files it lists. It also runs `claude -p "/skill-doctor"` in the project, a command that reads, and reports the skills the report flags as loaded but never used, with no threshold of its own (one-audit-3). Each finding says the level the script's table gives its piece: project, user, or plugin. For each piece it reports (one-audit-3, one-audit-5):
 
 1. **Collisions between pieces**, with both quotes: an instruction that another file negates, a generated file whose source no longer exists, two memory lines that each say they are read first.
 2. **A limit of the documentation passed**, with the number: 200 lines per `CLAUDE.md`, 200 lines or 25KB of `MEMORY.md`, the session-start hook's budget. The playbook sets no threshold of its own.
 3. **Content that applies only sometimes**, with a proposal of the documentation's way to load it on demand: a skill, `paths:` in a rule, a `CLAUDE.md` in a subfolder, or a memory topic file.
+4. **Skills never used**, one finding per source of the report that has them (claude.ai sync, user, project, plugin), each listing the skills, their context cost, and the report's verdict line as the quote. The level follows the source: a plugin's skills are plugin, a project's are project, the rest are user (skill-usage-1, skill-usage-2).
+
+When the report fails, such as on Claude Code before v2.1.252 or in a session that skips feature flags, the explorer says so and the part goes on.
 
 These are not findings: a `[[link]]` in a memory file that matches no file (memory allows it), and an instruction of the project's `CLAUDE.md` that differs from a rule of the plugin when it is a delegation, as R6 says, since the project's rules win (audit-decided-1).
 
 The main session asks about each finding, one at a time, and applies the answer: a piece of the project changes on the owner's yes; a piece of the user's level is proposed for and changed only when the owner asks for it explicitly.
+
+For skills never used of the user, the project, or claude.ai sync, it proposes hiding them from this project's listing with the menu `/skills`, which writes `skillOverrides` to `.claude/settings.local.json`; the state `user-invocable-only` takes a skill out of the listing and keeps `/name`. For a plugin's skill it proposes `/plugin`, since plugin skills are not affected by `skillOverrides`. One finding at a time: hide all, pick which, or leave them; a "leave it" is recorded like any other (audit-decided-1).
 
 ## Tools part
 
@@ -82,5 +87,5 @@ The main session asks the owner about each collision, one at a time, and applies
 
 ## Output
 
-- The check's result, the one table of findings (contradictions, definitions missing, limits passed, on-demand proposals, tools that collide, servers that do not connect), a note for each part that failed, how the owner resolved each, what changed and in which file, the lines proposed, and the line "Last audit".
+- The check's result, the one table of findings (contradictions, definitions missing, limits passed, on-demand proposals, skills never used, tools that collide, servers that do not connect), a note for each part that failed, how the owner resolved each, what changed and in which file, the lines proposed, and the line "Last audit".
 - The advice to run `/context`.
