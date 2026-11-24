@@ -1,6 +1,6 @@
 # Spec of the work audit-decided
 
-Status: Accepted (audit-decided-3).
+Status: Accepted (audit-decided-3); U2 added (audit-decided-4).
 
 Delivery: one branch and one pull request per work (delivery-versioning-2).
 
@@ -15,6 +15,8 @@ In the skill `audit`:
 1. **Gotchas of the parts.** The setup part says these are not findings: a `[[link]]` of a memory file that matches no file (memory allows it), and an instruction of the project's `CLAUDE.md` that differs from a rule of the plugin when it is a delegation, as R6 says, since the project's rules win.
 2. **A "leave it" is a decision.** In step 5, when the owner leaves a finding as it is, record it as a decision, as the parts already record a split of jobs: in the open work's `decisions.md`, or in `docs/playbook/works/audit-<date>/decisions.md` when none is open. The decision quotes the finding with its file, as the explorer gave it.
 3. **Cross with what is decided.** In step 3, for each finding, search `docs/playbook/works/*/decisions.md` for a decision that already resolves it. When its quote is the same, the finding stays in the one table (one-audit-6) with "Already decided: <ID>" and is not asked. When the quote changed, it is a new finding.
+
+In the skills `close` and `release` (audit-decided-4): a proposal of a version names the number it gives next to its kind, such as "PATCH: 5.5.1" from 5.5.0.
 
 In the project's `CLAUDE.md`, under Conventions (audit-decided-2): "A work of the plugin changes only the plugin; findings about this repository's own setup (its memory, its audit answers) are resolved apart, by running the plugin, never as a unit of the work." The first draft of this spec mixed both, recording by hand the findings left on 2026-11-24.
 
@@ -35,3 +37,4 @@ In the project's `CLAUDE.md`, under Conventions (audit-decided-2): "A work of th
 | Unit | Result | Check | State |
 |------|--------|-------|-------|
 | U1 | The three changes in `audit`, and the line of `CLAUDE.md` | The check above, but for the live part, which runs after the merge | Done; live check pending after the merge |
+| U2 | `close` and `release` name the number next to the kind of version proposed | The check above | Done |

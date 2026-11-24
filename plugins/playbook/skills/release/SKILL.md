@@ -11,7 +11,7 @@ argument-hint: "[version]"
 ## Steps
 
 1. Find where the project declares its version, as the line `Versioning:` of `docs/playbook/technology.md` says (delivery-versioning-3), or else the manifest files of its technology. When the line says never, stop and tell the owner. Read the current version and the last tag with `git describe --tags --abbrev=0`.
-2. Take the version from `$ARGUMENTS`, or propose one by Semantic Versioning from the changes since the last tag: MAJOR breaks an existing use, MINOR adds, PATCH fixes. Ask the owner to confirm it.
+2. Take the version from `$ARGUMENTS`, or propose one by Semantic Versioning from the changes since the last tag: MAJOR breaks an existing use, MINOR adds, PATCH fixes. Name the number each kind gives from the current version next to it, such as "PATCH: 5.5.1" from 5.5.0 (audit-decided-4). Ask the owner to confirm it.
 3. On a branch, change the version in each file that declares it, and commit `chore: release <version>`.
 4. Draft the release notes: what changed, in a few lines per change, and for a MAJOR version how to move from the one before. Show them.
 5. Tell the owner the commands left, which are theirs to run or approve: push the branch, open and merge the pull request, then `git tag v<version>` on the merge, `git push origin v<version>`, and `gh release create v<version>` with the notes.
