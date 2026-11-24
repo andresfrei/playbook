@@ -32,4 +32,4 @@ In the skill `audit`, the setup part:
 
 | Unit | What | Check | State |
 |------|------|-------|-------|
-| U1 | The setup part of `audit` as above, and the line of `product.md` that says what the setup part reads | The checks above | Pending |
+| U1 | The setup part of `audit` as above, and the line of `product.md` that says what the setup part reads | The checks above | Done |
