@@ -7,6 +7,7 @@
 - `shellcheck plugins/playbook/hooks/*.sh plugins/playbook/scripts/*.sh tests/*.sh`
 - `claude plugin validate .`
 - A live check: `claude -p --plugin-dir plugins/playbook "<request>"` in a throwaway repository.
+- The live check writes the plugin's data to `~/.claude/plugins/data/playbook-inline/`, the owner's own; remove what it creates there.
 
 ## Conventions
 

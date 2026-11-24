@@ -12,7 +12,7 @@ Playbook is a Claude Code plugin that helps a person build software fast with Cl
 
 ## Open work
 
-Work [reply-language](works/reply-language/spec.md): the language of the replies, asked once when its setting is empty. Next: close.
+None.
 
 Last audit: 2026-11-24, after work skill-usage. Contradictions: 0 found, 0 resolved.
 
