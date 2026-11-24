@@ -12,7 +12,7 @@ Playbook is a Claude Code plugin that helps a person build software fast with Cl
 
 ## Open work
 
-Work in progress: [skill-overrides](works/skill-overrides/spec.md). Next: close the work.
+None.
 
 Last audit: 2026-11-24, after work reply-language. Contradictions: 0 found, 0 resolved.
 
