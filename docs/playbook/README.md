@@ -12,7 +12,7 @@ Playbook is a Claude Code plugin that helps a person build software fast with Cl
 
 ## Open work
 
-[one-audit](works/one-audit/spec.md): one skill, `audit`, replaces the two audit skills of the wiki and the tools and checks the whole setup of a project, the wiki, `CLAUDE.md`, rules, memory, skills, agents, and MCP servers, for collisions and for context cost by Claude Code's documentation (one-audit-1 to -11). U1 to U3 are built; next: close the work. The last closed, [ask-to-clear](works/ask-to-clear/spec.md).
+None. The last closed, [one-audit](works/one-audit/spec.md).
 
 Last audit: 2026-11-22, after work builder-load. Contradictions: 5 found, 5 resolved.
 
