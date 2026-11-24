@@ -2,6 +2,8 @@
 
 Status: Accepted (reply-language-5)
 
+Learned: 2026-11-24
+
 Delivery: one branch and one pull request per work (delivery-versioning-2).
 
 ## What and why

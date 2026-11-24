@@ -16,4 +16,5 @@
 - Do not install, move, or delete skills on the owner's machine until the owner asks for that step.
 - The owner's Claude loads the plugin from a worktree of local `main` at `~/dev/playbook-main`. The git hook `reference-transaction` in this clone's `.git/hooks/` checks out each new `main` there; after a change lands on `main`, recommend `/reload-plugins` in open sessions. When the hook says the worktree has local changes, or it is missing, recommend `git -C ~/dev/playbook-main checkout --detach main`.
 - A work of the plugin changes only the plugin; findings about this repository's own setup (its memory, its audit answers) are resolved apart, by running the plugin, never as a unit of the work (audit-decided-2).
+- An agent's model follows task-agents-5: `haiku` only for mechanical steps with fixed commands, `sonnet` for writing or a small change (as `builder`); an agent that judges keeps no `model:` line and inherits the session's model. Do not ask again (audit-2026-11-24-15).
 - When a decision removes a piece, a tool, or a path, run `git grep` for its name and update or delete each mention outside `docs/playbook/works/` in the same commit.
