@@ -12,7 +12,7 @@ Playbook is a Claude Code plugin that helps a person build software fast with Cl
 
 ## Open work
 
-None. The last closed, [skill-usage](works/skill-usage/spec.md): the setup part of `audit` runs `/skill-doctor` and reports the skills never used, one finding per source (skill-usage-1, -2); its live check, `/playbook:audit setup`, runs after the merge.
+Define a work for the language of replies, kept in a setting and asked when it is missing (the owner's request of 2026-11-24).
 
 Last audit: 2026-11-24, after work skill-usage. Contradictions: 0 found, 0 resolved.
 

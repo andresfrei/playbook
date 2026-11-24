@@ -23,12 +23,11 @@ argument-hint: "[wiki|setup|tools]"
 ## Steps
 
 1. **First run.** When `docs/playbook/README.md` is missing, or has no line that starts with `Last audit:`, read [first-run.md](first-run.md) and do its steps first, in the main session, before any explorer. It writes files, so no explorer does it. After it, go on with step 2 for all three parts, whatever the argument, so that the adoption leaves the tools in order too (one-audit-11).
-2. **Explore.** Launch the `auditor` agent for each part chosen (one-audit-8): with no argument, the three in ONE message (wiki, setup, tools); with an argument, only that one. Each brief names the part, copies its steps from the part below, and asks for findings in this form: a finding between two sources with both quotes, each with file and line; a finding of one source with its quote, file and line, and the number or the limit. Wait until all of them have ended.
+2. **Explore.** Launch the `auditor` agent for each part chosen (one-audit-8): with no argument, the three in ONE message (wiki, setup, tools); with an argument, only that one. Each brief names the part, copies its steps from the part below, and asks for findings in this form: a finding between two sources with both quotes, each with file and line; a finding of one source with its quote, file and line, and the number or the limit. The brief of the setup explorer also asks it to return the table of `/context` verbatim, apart from the findings: it is not a finding. Wait until all of them have ended.
 3. **Cross.** Join the findings, remove duplicates, and keep the rest. For each finding, search `docs/playbook/works/*/decisions.md` for a decision that already resolves it; the explorers do not read decisions, the main session crosses. When its quote is the same, the finding stays in the one table with "Already decided: <ID>" and is not asked; when the quote changed, it is a new finding (audit-decided-1). When an explorer failed, say so, go on with the others' findings, and offer to run that part again.
-4. **Show.** One table with every finding: the part, the quote or quotes with file and line, the number or the limit, and your recommendation. Say why a finding is dropped; hide none. A finding marked "Already decided" is shown, not asked. When nothing was found, say so in one line.
+4. **Show.** One table with every finding: the part, the quote or quotes with file and line, the number or the limit, and your recommendation. Say why a finding is dropped; hide none. A finding marked "Already decided" is shown, not asked. When nothing was found, say so in one line. After the table, when the setup part ran, show its table of categories from `/context`; when the setup part did not run, or its `/context` failed, advise the owner to run `/context` (context-measure-1).
 5. **Ask.** Resolve each finding with the owner, one at a time, as the part says. Skip those marked "Already decided". When the owner leaves a finding as it is, record it as a decision: in the open work's `decisions.md`, or in `docs/playbook/works/audit-<date>/decisions.md` when none is open; the decision quotes the finding with its file, as the explorer gave it (audit-decided-1).
 6. **Apply.** Make the light fixes, and the changes the owner said yes to. When the wiki part ran (no argument, `wiki`, or a first run), write in `docs/playbook/README.md` one line that starts with `Last audit:`, as `Last audit: <date>, after work <last closed work>. Contradictions: <found>, <resolved>.`, replacing the previous one, without asking. Run `sh "${CLAUDE_PLUGIN_ROOT}/scripts/check-wiki.sh" docs/playbook` again.
-7. **Close** by telling the owner to run `/context` for the real numbers.
 
 ## Wiki part
 
@@ -56,14 +55,14 @@ The main session, after the table, in step 5:
 
 ## Setup part
 
-The explorer runs `sh "${CLAUDE_PLUGIN_ROOT}/scripts/startup-context.sh"` in the project and reads the files it lists. It also runs `claude -p "/skill-doctor"` in the project, a command that reads, and reports the skills the report flags as loaded but never used, with no threshold of its own (one-audit-3). Each finding says the level the script's table gives its piece: project, user, or plugin. For each piece it reports (one-audit-3, one-audit-5):
+The explorer runs `sh "${CLAUDE_PLUGIN_ROOT}/scripts/startup-context.sh"` in the project and reads the files it lists. It also runs `claude -p "/skill-doctor"` in the project, a command that reads, and reports the skills the report flags as loaded but never used, with no threshold of its own (one-audit-3). It also runs `claude -p "/context"` in the project, a command that reads, and returns its table of categories (system prompt, tools, MCP, custom agents, memory files, skills) and its lists of memory files, skills, and custom agents with their tokens. These numbers are not findings: no threshold of its own (one-audit-3, context-measure-1). Each finding says the level the script's table gives its piece: project, user, or plugin. For each piece it reports (one-audit-3, one-audit-5):
 
 1. **Collisions between pieces**, with both quotes: an instruction that another file negates, a generated file whose source no longer exists, two memory lines that each say they are read first.
 2. **A limit of the documentation passed**, with the number: 200 lines per `CLAUDE.md`, 200 lines or 25KB of `MEMORY.md`, the session-start hook's budget. The playbook sets no threshold of its own.
 3. **Content that applies only sometimes**, with a proposal of the documentation's way to load it on demand: a skill, `paths:` in a rule, a `CLAUDE.md` in a subfolder, or a memory topic file.
 4. **Skills never used**, one finding per source of the report that has them (claude.ai sync, user, project, plugin), each listing the skills, their context cost, and the report's verdict line as the quote. The level follows the source: a plugin's skills are plugin, a project's are project, the rest are user (skill-usage-1, skill-usage-2).
 
-When the report fails, such as on Claude Code before v2.1.252 or in a session that skips feature flags, the explorer says so and the part goes on.
+When either report fails (`/skill-doctor` or `/context`), such as on Claude Code before v2.1.252 or in a session that skips feature flags, the explorer says so and the part goes on.
 
 These are not findings: a `[[link]]` in a memory file that matches no file (memory allows it), and an instruction of the project's `CLAUDE.md` that differs from a rule of the plugin when it is a delegation, as R6 says, since the project's rules win (audit-decided-1).
 
@@ -88,4 +87,4 @@ The main session asks the owner about each collision, one at a time, and applies
 ## Output
 
 - The check's result, the one table of findings (contradictions, definitions missing, limits passed, on-demand proposals, skills never used, tools that collide, servers that do not connect), a note for each part that failed, how the owner resolved each, what changed and in which file, the lines proposed, and the line "Last audit".
-- The advice to run `/context`.
+- The table of categories from `/context` when the setup part ran; otherwise the advice to run `/context`.
