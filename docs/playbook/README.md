@@ -12,7 +12,7 @@ Playbook is a Claude Code plugin that helps a person build software fast with Cl
 
 ## Open work
 
-[context-measure](works/context-measure/spec.md): the setup part of `audit` runs `claude -p "/context"` and the audit shows the load by category, so the owner no longer pastes `/context` (context-measure-1). Next: U1. Then define a work for the language of replies, kept in a setting and asked when it is missing (the owner's request of 2026-11-24).
+Define a work for the language of replies, kept in a setting and asked when it is missing (the owner's request of 2026-11-24).
 
 Last audit: 2026-11-24, after work skill-usage. Contradictions: 0 found, 0 resolved.
 
