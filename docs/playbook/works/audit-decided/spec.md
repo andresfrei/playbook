@@ -34,4 +34,4 @@ In the project's `CLAUDE.md`, under Conventions (audit-decided-2): "A work of th
 
 | Unit | Result | Check | State |
 |------|--------|-------|-------|
-| U1 | The three changes in `audit`, and the line of `CLAUDE.md` | The check above, but for the live part, which runs after the merge | Pending |
+| U1 | The three changes in `audit`, and the line of `CLAUDE.md` | The check above, but for the live part, which runs after the merge | Done; live check pending after the merge |
