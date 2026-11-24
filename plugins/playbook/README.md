@@ -11,14 +11,13 @@ claude plugin install playbook@playbook
 |-------|--------------|
 | `/playbook:define` | Interviews you until the change's spec can be written, with only the steps its type needs |
 | `/playbook:close` | Checks the build against the spec, has `reviewer` read a risky change, and proposes one line for each repeated mistake or answer |
-| `/playbook:audit-wiki` | On its first run, adopts the project: builds the wiki in `docs/playbook/` from what the project already holds. Then reads the wiki against the code and reports each contradiction for you to resolve; run it before a release |
-| `/playbook:audit-tools` | Checks the tools the repository has on (plugins, MCP servers, skills, agents, hooks) for collisions with the playbook, and suggests what to do with each; run it when you add or remove a tool |
+| `/playbook:audit` | On its first run, adopts the project: builds the wiki in `docs/playbook/` from what the project already holds. Then reads the wiki against the code and reports each contradiction for you to resolve, and checks the tools the repository has on (plugins, MCP servers, skills, agents, hooks) for collisions with the playbook, suggesting what to do with each. `wiki`, `setup`, or `tools` as an argument runs that part alone; run it before a release and when you add or remove a tool |
 | `/playbook:audit-learning` | Finds what repeats across two works (the same answer, correction, or procedure) and proposes a delegation, a rule, a skill, or an agent; `close` offers it when a work closes |
 | `/playbook:release` | Sets the version, commits, and drafts the notes; you push and publish |
 | `reviewer` | A read-only agent that checks a change against its spec, for correctness only |
 | `builder` | An agent on `sonnet` that builds one unit from a brief, used when the line `Build mode: builder` is set |
 | Rules | Loaded at session start, near 50 lines, with the project's `docs/playbook/README.md` |
-| Hooks | Ask before push, pull request, merge, and release; run the wiki check on commit; recommend `/playbook:audit-wiki` in a project not yet adopted |
+| Hooks | Ask before push, pull request, merge, and release; run the wiki check on commit; recommend `/playbook:audit` in a project not yet adopted |
 
 ## Build mode
 

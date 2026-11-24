@@ -25,7 +25,7 @@ It adds only what Claude Code does not already do. Writing stays in your session
    It asks one question at a time, cites what you already decided instead of asking again, checks each technology in its current documentation, and writes a spec with how to check it. You accept the spec once.
 2. **Build.** In your session, on the model you choose with `/model`; or, with the line `Build mode: builder` in `~/.claude/CLAUDE.md` or the project's `CLAUDE.local.md`, the agent `builder` on Sonnet builds each unit from a brief and your session verifies it with the tests and the diff. In that mode, units that do not depend on each other may be built at the same time, one `builder` each, when you say yes.
 3. **Close.** `/playbook:close` runs the spec's check, has a read-only `reviewer` read a risky change, and proposes one line for each mistake that happened twice, or each answer you gave twice: for `CLAUDE.md`, `.claude/rules/`, or a skill. You accept each line or not.
-4. **Audit**, when you adopt a project, before a release, or when `close` suggests it. `/playbook:audit-wiki` reads the wiki against the code and shows each contradiction with both quotes; you say which side is right. `/playbook:audit-tools` checks whether a tool your repository has on (a plugin, an MCP server, a skill) collides with this way of working, and suggests what to do; run it when you add or remove a tool. `/playbook:audit-learning` reads the decisions of the works not yet learned from, finds what repeats across two works, such as the same answer or the same correction, and proposes a delegation, a rule, a skill, or an agent; `close` offers it when a work closes.
+4. **Audit**, when you adopt a project, before a release, or when `close` suggests it. `/playbook:audit` reads the wiki against the code and shows each contradiction with both quotes; you say which side is right. It also checks whether a tool your repository has on (a plugin, an MCP server, a skill) collides with this way of working, and suggests what to do; `/playbook:audit wiki`, `setup`, or `tools` runs one part alone, such as `tools` when you add or remove a tool. `/playbook:audit-learning` reads the decisions of the works not yet learned from, finds what repeats across two works, such as the same answer or the same correction, and proposes a delegation, a rule, a skill, or an agent; `close` offers it when a work closes.
 5. **Release.** `/playbook:release` sets the version and drafts the notes. Pushing, opening or merging a pull request, and publishing a release always ask you first.
 
 Everything lives in `docs/playbook/`: the product, each work's spec, and its decisions with who decided and their words. Its `README.md` loads at the start of every session.
@@ -51,7 +51,7 @@ From your shell, `claude plugin install playbook@playbook` installs it for you i
 
 To get new versions, turn on auto-update: run `/plugin`, open the **Marketplaces** tab, select `playbook`, and turn auto-update on. Claude Code then installs each new version in the background and shows `Plugin updated: playbook · Run /reload-plugins to apply`; without the reload, the new version loads on the next launch. It is off by default for marketplaces other than Anthropic's, and a plugin cannot turn it on for you.
 
-Then start a new session in your project and run `/playbook:audit-wiki`. On its first run it adopts the project: it reads the documentation and rules the project already has, proposes how to order them, builds the wiki in `docs/playbook/`, cleans `CLAUDE.md`, and checks the repository's tools, asking you each choice. It starts from a clean git tree, so all it changes is one diff. Until a project is adopted, each session in its git repository recommends it.
+Then start a new session in your project and run `/playbook:audit`. On its first run it adopts the project: it reads the documentation and rules the project already has, proposes how to order them, builds the wiki in `docs/playbook/`, cleans `CLAUDE.md`, and checks the repository's tools, asking you each choice. It starts from a clean git tree, so all it changes is one diff. Until a project is adopted, each session in its git repository recommends it.
 
 To make searches cheaper, copy [`plugins/playbook/extras/Explore.md`](plugins/playbook/extras/Explore.md) to `~/.claude/agents/`.
 
@@ -82,7 +82,7 @@ claude plugin update playbook@playbook
 
 If `/playbook:init` turned them on for one repository only, run the two `uninstall` lines from that repository with `--scope local`.
 
-Then run `/playbook:audit-wiki` in each project. It moves the 4.x wiki in `docs/wiki/` into `docs/playbook/`, keeping every decision and the owner's words; the check reads those decisions in their 4.x format.
+Then run `/playbook:audit` in each project. It moves the 4.x wiki in `docs/wiki/` into `docs/playbook/`, keeping every decision and the owner's words; the check reads those decisions in their 4.x format.
 
 ## Documentation
 

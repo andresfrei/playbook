@@ -180,7 +180,7 @@ case $out in *'# The wiki: docs/playbook/README.md'*) ok "session start: from a 
 adopt() { CLAUDE_PROJECT_DIR=$1 sh "$hooks/adopt.sh"; }
 mkdir -p "$tmp/bare" && git -C "$tmp/bare" init -q
 out=$(adopt "$tmp/bare")
-case $out in *'"systemMessage":"No playbook wiki: run /playbook:audit-wiki'*) ok "adopt: no wiki" ;; *) bad "adopt: no wiki" "$out" ;; esac
+case $out in *'"systemMessage":"No playbook wiki: run /playbook:audit'*) ok "adopt: no wiki" ;; *) bad "adopt: no wiki" "$out" ;; esac
 
 out=$(adopt "$repo")
 case $out in *'"systemMessage":"This playbook wiki has no audit yet'*) ok "adopt: no audit yet" ;; *) bad "adopt: no audit yet" "$out" ;; esac

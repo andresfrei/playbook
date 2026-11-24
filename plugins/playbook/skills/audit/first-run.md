@@ -11,7 +11,7 @@ The first run adopts the project: it turns the knowledge the project already hol
 
 1. **Inventory.** List what the project knows. For a wide repository, use a search agent, so the files do not fill the conversation.
    - Inside the repository: the README files; `docs/`, a 4.x wiki in `docs/wiki/` among them; `CLAUDE.md`, nested ones too; `AGENTS.md`; `.claude/rules/` and `.claude/skills/`; records of decisions, such as `docs/adr/`; the rules or memory files of other coding tools.
-   - Outside it, to report only: `~/.claude/CLAUDE.md` and the auto memory index. Change nothing there.
+   - Outside it, to report only: `~/.claude/CLAUDE.md` and the auto memory index. Change nothing of the user's level; the project's auto memory changes on the owner's yes (one-audit-1, one-audit-5).
 2. **Propose the order.** Show one table: each file, what it holds, and what to do with it: keep, merge into another, move into the wiki (and to which page), or delete. Documentation for the software's users stays where it is. Ask the owner one topic at a time.
 3. **Build `docs/playbook/`.** When it already exists, as `define` creates it for a new project, keep its pages and decisions and add to them.
    - `README.md`: the product in two lines, the owner, the open work, and the pages.
@@ -30,4 +30,4 @@ The first run adopts the project: it turns the knowledge the project already hol
    Where a project rule contradicts the playbook's rules, ask which stands. The project's wins unless the owner changes it.
 5. Delete what the owner chose to delete, such as an old wiki whose content moved. Run `sh "${CLAUDE_PLUGIN_ROOT}/scripts/check-wiki.sh" docs/playbook` and fix what it lists.
 
-Then go on with step 1 of `SKILL.md`: the audit of the new wiki against the code.
+Then go on with step 1 of the wiki part in `SKILL.md`: the audit of the new wiki against the code.
