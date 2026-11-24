@@ -1,6 +1,6 @@
 # Spec of the work audit-decided
 
-Status: Accepted (audit-decided-3); U2 added (audit-decided-4).
+Status: Accepted (audit-decided-3); U2 added (audit-decided-4), U3 (audit-decided-5).
 
 Learned: 2026-11-24
 
@@ -19,6 +19,8 @@ In the skill `audit`:
 3. **Cross with what is decided.** In step 3, for each finding, search `docs/playbook/works/*/decisions.md` for a decision that already resolves it. When its quote is the same, the finding stays in the one table (one-audit-6) with "Already decided: <ID>" and is not asked. When the quote changed, it is a new finding.
 
 In the skills `close` and `release` (audit-decided-4): a proposal of a version names the number it gives next to its kind, such as "PATCH: 5.5.1" from 5.5.0.
+
+In the skill `audit-learning` (audit-decided-5): step 1 leaves out only the folders `audit-<YYYY-MM-DD>` of an audit, not every folder whose name starts with `audit-`; it had skipped the work `audit-decided`.
 
 In the project's `CLAUDE.md`, under Conventions (audit-decided-2): "A work of the plugin changes only the plugin; findings about this repository's own setup (its memory, its audit answers) are resolved apart, by running the plugin, never as a unit of the work." The first draft of this spec mixed both, recording by hand the findings left on 2026-11-24.
 
@@ -40,3 +42,4 @@ In the project's `CLAUDE.md`, under Conventions (audit-decided-2): "A work of th
 |------|--------|-------|-------|
 | U1 | The three changes in `audit`, and the line of `CLAUDE.md` | The check above, but for the live part, which runs after the merge | Done; live check pending after the merge |
 | U2 | `close` and `release` name the number next to the kind of version proposed | The check above | Done |
+| U3 | `audit-learning` leaves out only the folders `audit-<YYYY-MM-DD>` | The check above | Done |
