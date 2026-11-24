@@ -2,6 +2,8 @@
 
 Status: Accepted (one-audit-10).
 
+Learned: 2026-11-24
+
 Delivery: one branch and one pull request per work (delivery-versioning-2).
 
 ## What and why (one-audit-1, one-audit-2)

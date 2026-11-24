@@ -29,7 +29,7 @@ Do not use it for a small change with no work: run its tests and commit.
 5. Run `sh "${CLAUDE_PLUGIN_ROOT}/scripts/check-wiki.sh" docs/playbook` and fix what it lists.
 6. For the whole work, read the line "Last audit" in `docs/playbook/README.md`. When works closed since then, there is none, or you found a contradiction, offer in one line to run the skill `audit`, and run it on a yes (agent-runs-skills-1).
 7. For the whole work, offer in one line to run the skill `audit-learning`, which looks for what repeats across works, and run it on a yes (cross-work-learning-4).
-8. For the whole work, read the line `Versioning:` of `docs/playbook/technology.md` (delivery-versioning-3). When it says never, say so and recommend no version. When it says after several works together, recommend one only if the owner asked. Otherwise, or with no line, recommend whether the work needs a new version, MAJOR, MINOR, or PATCH by Semantic Versioning, and ask the owner. On a yes, run the skill `release` with that version (agent-runs-skills-1).
+8. For the whole work, read the line `Versioning:` of `docs/playbook/technology.md` (delivery-versioning-3). When it says never, say so and recommend no version. When it says after several works together, recommend one only if the owner asked. Otherwise, or with no line, recommend whether the work needs a new version, MAJOR, MINOR, or PATCH by Semantic Versioning, naming the number that kind gives from the current version (the manifest or last tag) next to it, such as "PATCH: 5.5.1" from 5.5.0 (audit-decided-4), and ask the owner. On a yes, run the skill `release` with that version (agent-runs-skills-1).
 
 ## Output
 

@@ -24,9 +24,9 @@ argument-hint: "[wiki|setup|tools]"
 
 1. **First run.** When `docs/playbook/README.md` is missing, or has no line that starts with `Last audit:`, read [first-run.md](first-run.md) and do its steps first, in the main session, before any explorer. It writes files, so no explorer does it. After it, go on with step 2 for all three parts, whatever the argument, so that the adoption leaves the tools in order too (one-audit-11).
 2. **Explore.** Launch the `auditor` agent for each part chosen (one-audit-8): with no argument, the three in ONE message (wiki, setup, tools); with an argument, only that one. Each brief names the part, copies its steps from the part below, and asks for findings in this form: a finding between two sources with both quotes, each with file and line; a finding of one source with its quote, file and line, and the number or the limit. Wait until all of them have ended.
-3. **Cross.** Join the findings, remove duplicates, and keep the rest. When an explorer failed, say so, go on with the others' findings, and offer to run that part again.
-4. **Show.** One table with every finding: the part, the quote or quotes with file and line, the number or the limit, and your recommendation. Say why a finding is dropped; hide none. When nothing was found, say so in one line.
-5. **Ask.** Resolve each finding with the owner, one at a time, as the part says.
+3. **Cross.** Join the findings, remove duplicates, and keep the rest. For each finding, search `docs/playbook/works/*/decisions.md` for a decision that already resolves it; the explorers do not read decisions, the main session crosses. When its quote is the same, the finding stays in the one table with "Already decided: <ID>" and is not asked; when the quote changed, it is a new finding (audit-decided-1). When an explorer failed, say so, go on with the others' findings, and offer to run that part again.
+4. **Show.** One table with every finding: the part, the quote or quotes with file and line, the number or the limit, and your recommendation. Say why a finding is dropped; hide none. A finding marked "Already decided" is shown, not asked. When nothing was found, say so in one line.
+5. **Ask.** Resolve each finding with the owner, one at a time, as the part says. Skip those marked "Already decided". When the owner leaves a finding as it is, record it as a decision: in the open work's `decisions.md`, or in `docs/playbook/works/audit-<date>/decisions.md` when none is open; the decision quotes the finding with its file, as the explorer gave it (audit-decided-1).
 6. **Apply.** Make the light fixes, and the changes the owner said yes to. When the wiki part ran (no argument, `wiki`, or a first run), write in `docs/playbook/README.md` one line that starts with `Last audit:`, as `Last audit: <date>, after work <last closed work>. Contradictions: <found>, <resolved>.`, replacing the previous one, without asking. Run `sh "${CLAUDE_PLUGIN_ROOT}/scripts/check-wiki.sh" docs/playbook` again.
 7. **Close** by telling the owner to run `/context` for the real numbers.
 
@@ -61,6 +61,8 @@ The explorer runs `sh "${CLAUDE_PLUGIN_ROOT}/scripts/startup-context.sh"` in the
 1. **Collisions between pieces**, with both quotes: an instruction that another file negates, a generated file whose source no longer exists, two memory lines that each say they are read first.
 2. **A limit of the documentation passed**, with the number: 200 lines per `CLAUDE.md`, 200 lines or 25KB of `MEMORY.md`, the session-start hook's budget. The playbook sets no threshold of its own.
 3. **Content that applies only sometimes**, with a proposal of the documentation's way to load it on demand: a skill, `paths:` in a rule, a `CLAUDE.md` in a subfolder, or a memory topic file.
+
+These are not findings: a `[[link]]` in a memory file that matches no file (memory allows it), and an instruction of the project's `CLAUDE.md` that differs from a rule of the plugin when it is a delegation, as R6 says, since the project's rules win (audit-decided-1).
 
 The main session asks about each finding, one at a time, and applies the answer: a piece of the project changes on the owner's yes; a piece of the user's level is proposed for and changed only when the owner asks for it explicitly.
 

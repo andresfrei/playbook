@@ -16,7 +16,7 @@ description: Find what repeats across the project's works, such as the same answ
 
 ## Steps
 
-1. List the works under `docs/playbook/works/` that have a `spec.md`, leaving out `audit-*`. A work is pending while its `spec.md` has no line `Learned:`. A work with no `spec.md`, in the older format, and `history/` are history: never pending, only searched with `git grep` (cross-work-learning-14). When none is pending, say so in one line and stop.
+1. List the works under `docs/playbook/works/` that have a `spec.md`, leaving out only the folders of an audit, named `audit-<YYYY-MM-DD>` such as `audit-2026-11-24` (audit-decided-5); a work whose name starts with `audit-` but is not a date, such as `audit-decided`, is a work like any other. A work is pending while its `spec.md` has no line `Learned:`. A work with no `spec.md`, in the older format, and `history/` are history: never pending, only searched with `git grep` (cross-work-learning-14). When none is pending, say so in one line and stop.
 2. Run a subagent to read, so the files stay out of the conversation; it does not see the conversation, so give it everything below. Brief:
    - Read in full the `decisions.md` of each pending work: list their paths.
    - Note the subjects they touch, then search the other works for them with `git grep -n -i "<subject>" -- docs/playbook/works`, reading only the lines it finds.
