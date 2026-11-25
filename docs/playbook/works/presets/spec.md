@@ -42,6 +42,6 @@ The wizard `permissions`, before its questions, lists the presets whose signal f
 
 | Unit | What | Check | State |
 |------|------|-------|-------|
-| 1 | A script `presets.sh` that saves, detects, applies, and records a preset, and its offline test | `sh tests/presets_test.sh`; `shellcheck` on both | Pending |
+| 1 | A script `presets.sh` that saves, detects, applies, and records a preset, and its offline test | `sh tests/presets_test.sh`; `shellcheck` on both | Done |
 | 2 | The skill `presets`, its page in `docs/reference/`, and the README tables | `sh tests/reference_test.sh`; `claude plugin validate .`; the live check of save and apply | Pending |
 | 3 | The wizard `permissions` detects and offers the presets that fit | The live check of the offer in the second repository | Pending |
