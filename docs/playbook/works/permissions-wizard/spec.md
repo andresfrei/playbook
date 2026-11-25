@@ -12,7 +12,7 @@ The owner wants to choose, in one guided place, what Claude may do in a project 
 
 A skill `permissions`, run as `/playbook:permissions` or offered once by `audit` when it adopts a project (permissions-wizard-4), asks the owner about four settings of Claude Code (permissions-wizard-2), one question at a time, each with a recommendation:
 
-1. **Attribution.** Whether Claude Code adds its line to commits, and to pull requests, each apart: `attribution` in `~/.claude/settings.json`; `false` when both are off.
+1. **Attribution.** Whether Claude Code adds its line to commits, and to pull requests, each apart: `attribution` in `~/.claude/settings.json`; `commit` and `pr` set to `""` when both are off, which every version reads (permissions-wizard-7).
 2. **Allow.** Narrow rules for the project's own commands, proposed from its files (`package.json`, `Makefile`, test scripts) and the checks of its `CLAUDE.md`; never bare `Bash` or `Bash(*)`.
 3. **Ask.** Rules before commands that destroy work: `git reset --hard`, `git clean`, `rm -rf`, and a forced push.
 4. **Deny.** Rules that keep Claude from reading or editing the project's secrets: `.env` files, keys, and a `secrets/` folder.

@@ -44,7 +44,8 @@ check "quotes and spaces literal" "$f" '.permissions.deny == ["Bash(npm run \"te
 f=$tmp/attr.json
 printf '{"outputStyle":"x"}' > "$f"
 sh "$script" attribution "$f" none
-check "attribution none" "$f" '.attribution == false and .outputStyle == "x"'
+check "attribution none" "$f" '.attribution == {"commit":"","pr":""} and .outputStyle == "x"'
+printf '{"attribution":false}' > "$f"
 sh "$script" attribution "$f" commit
 check "commit on attribution false" "$f" '.attribution == {"commit":""}'
 sh "$script" attribution "$f" pr

@@ -7,7 +7,8 @@
 #     Adds each RULE to .permissions.<kind> of FILE, once (no duplicates, order
 #     kept, existing rules first). Creates permissions and the array if missing.
 #   sh settings-write.sh attribution FILE none|commit|pr
-#     none   sets .attribution = false (hides both the commit trailer and PR line)
+#     none   sets .attribution.commit and .attribution.pr = "" (hides both; works
+#            on every version, unlike .attribution = false)
 #     commit sets .attribution.commit = "" (hides the commit trailer only)
 #     pr     sets .attribution.pr = ""     (hides the PR line only)
 #     For commit and pr, a non-object .attribution becomes an object first; an
@@ -79,7 +80,7 @@ case $cmd in
     ;;
   attribution)
     case $value in
-      none) filter='.attribution = false' ;;
+      none) filter='.attribution = (if (.attribution | type) == "object" then .attribution else {} end) | .attribution.commit = "" | .attribution.pr = ""' ;;
       commit) filter='.attribution = (if (.attribution | type) == "object" then .attribution else {} end) | .attribution.commit = ""' ;;
       pr) filter='.attribution = (if (.attribution | type) == "object" then .attribution else {} end) | .attribution.pr = ""' ;;
     esac
