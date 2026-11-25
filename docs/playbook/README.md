@@ -12,7 +12,7 @@ Playbook is a Claude Code plugin that helps a person build software fast with Cl
 
 ## Open work
 
-None.
+Open work: [permissions-wizard](works/permissions-wizard/spec.md), a wizard that sets attribution and permission rules (permissions-wizard-1). Next step: build unit 1, `settings-write.sh` and its test.
 
 Last audit: 2026-11-24, after work reference-docs. Contradictions: 1 found, 1 resolved.
 
