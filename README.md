@@ -12,7 +12,7 @@
 - Playbook is a Claude Code plugin: it defines each change with the owner before code, records decisions in the owner's words, and proposes rules from repeated mistakes.
 - Install: `/plugin marketplace add andresfrei/playbook`, then `/plugin install playbook@playbook`.
 - Commands: `/playbook:define`, `/playbook:close`, `/playbook:audit`, `/playbook:audit-learning`, `/playbook:release`, `/playbook:permissions`, `/playbook:presets`.
-- It writes `docs/playbook/` in the project, and lines it proposes for `CLAUDE.md`, `.claude/rules/`, or a skill, which the owner accepts or not.
+- It writes `docs/playbook/` in the project, and lines it proposes for `CLAUDE.md`, `.claude/rules/`, or a skill, which the owner accepts or not. On the owner's yes, `permissions` writes permission rules to the project's `.claude/settings.json` and attribution to `~/.claude/settings.json`; `presets` keeps presets and their registry in `~/.claude/playbook/`, and applying one writes its rules to `.claude/settings.json` and copies its skills and agents into `.claude/skills/` and `.claude/agents/`.
 - The source is `plugins/playbook/`. Each piece has a page in [docs/reference/README.md](docs/reference/README.md).
 
 ## What it is

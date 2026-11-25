@@ -14,7 +14,7 @@ Playbook is a Claude Code plugin that helps a person build software fast with Cl
 
 None.
 
-Last audit: 2026-11-25, after work permissions-wizard. Contradictions: 1 found, 1 resolved.
+Last audit: 2026-11-25, after work presets. Contradictions: 2 found, 2 resolved.
 
 ## Pages
 

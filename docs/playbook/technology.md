@@ -25,7 +25,7 @@ Last version evaluated: 2.1.332
 | Date | Versions read | Proposals | Where each went |
 |------|---------------|-----------|-----------------|
 | 2026-11-20 | 2.1.326 to 2.1.330 | None (claude-code-versions-12) | |
-| 2026-11-23 | 2.1.331 | None (claude-code-versions-12) | |
+| 2026-11-23 | 2.1.331 | None | |
 | 2026-11-25 | 2.1.332 | 2: check the `computer-use` skill override; check the `sonnet` alias of `builder` on Bedrock | computer-use: dropped; sonnet alias: dropped |
 
 ### Pending
