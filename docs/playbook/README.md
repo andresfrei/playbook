@@ -12,7 +12,7 @@ Playbook is a Claude Code plugin that helps a person build software fast with Cl
 
 ## Open work
 
-[presets](works/presets/spec.md): presets per stack, saved by the owner and applied to a project (presets-9). Next: unit 3, the wizard `permissions` detects and offers the presets that fit.
+[presets](works/presets/spec.md): presets per stack, saved by the owner and applied to a project (presets-9). Next: close the work with `close`.
 
 Last audit: 2026-11-25, after work permissions-wizard. Contradictions: 1 found, 1 resolved.
 

@@ -9,7 +9,7 @@ One page per piece of the Playbook plugin: what it is, when it runs, what it rea
 - [audit](audit.md): adopts a project on its first run, then reports contradictions, limits passed, and tool collisions.
 - [audit-learning](audit-learning.md): finds what repeats across works and proposes a delegation, rule, skill, or agent.
 - [release](release.md): sets the version, commits, and drafts release notes; the owner publishes.
-- [permissions](permissions.md): asks about attribution and permission rules, and writes the accepted ones to Claude Code's settings.
+- [permissions](permissions.md): offers the presets that fit, asks about attribution and permission rules, and writes the accepted ones to Claude Code's settings.
 - [presets](presets.md): saves a preset from a project and applies it to another of the same stack: rules, skills, and agents.
 
 ## Agents

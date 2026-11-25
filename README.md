@@ -70,7 +70,7 @@ To get new versions, turn on auto-update: run `/plugin`, open the **Marketplaces
 ## Reference
 
 - [Reference index](docs/reference/README.md): one page per skill, agent, hook, and concept.
-- [Permissions](docs/reference/permissions.md): `/playbook:permissions`, a wizard for attribution and allow, ask, and deny rules.
+- [Permissions](docs/reference/permissions.md): `/playbook:permissions`, a wizard that offers the presets that fit, then asks about attribution and allow, ask, and deny rules.
 - [Presets](docs/reference/presets.md): `/playbook:presets`, saves a preset from a project and applies it to another of the same stack.
 - [Upgrade from version 4](docs/reference/upgrade-from-4.md): moving from version 4 to 5.
 - To make searches cheaper, copy [`plugins/playbook/extras/Explore.md`](plugins/playbook/extras/Explore.md) to `~/.claude/agents/`; see [sessions](docs/reference/sessions.md).
