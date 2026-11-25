@@ -9,6 +9,7 @@ One page per piece of the Playbook plugin: what it is, when it runs, what it rea
 - [audit](audit.md): adopts a project on its first run, then reports contradictions, limits passed, and tool collisions.
 - [audit-learning](audit-learning.md): finds what repeats across works and proposes a delegation, rule, skill, or agent.
 - [release](release.md): sets the version, commits, and drafts release notes; the owner publishes.
+- [permissions](permissions.md): asks about attribution and permission rules, and writes the accepted ones to Claude Code's settings.
 
 ## Agents
 
@@ -29,5 +30,4 @@ One page per piece of the Playbook plugin: what it is, when it runs, what it rea
 - [wiki](wiki.md): the `docs/playbook/` folder a project gets, and its check.
 - [build-mode](build-mode.md): who builds each unit, `main` or `builder`.
 - [sessions](sessions.md): why sessions are short.
-- [permissions](permissions.md): deny and ask rules to add to a project.
 - [upgrade-from-4](upgrade-from-4.md): moving from 4.x to 5.
