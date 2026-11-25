@@ -37,6 +37,6 @@ A script `plugins/playbook/scripts/settings-write.sh` does the writing (permissi
 
 | Unit | What | Check | State |
 |------|------|-------|-------|
-| 1 | `settings-write.sh` and its test | `sh tests/settings-write_test.sh`; `shellcheck` on both | Pending |
+| 1 | `settings-write.sh` and its test | `sh tests/settings-write_test.sh`; `shellcheck` on both | Done |
 | 2 | The skill `permissions`, its page in `docs/reference/` (from `permissions.md`), and the README tables | `sh tests/reference_test.sh`; `claude plugin validate .`; the live check | Pending |
 | 3 | `audit` offers the wizard once when it adopts a project | Live check: adopting a throwaway repository offers it; a second audit does not | Pending |
