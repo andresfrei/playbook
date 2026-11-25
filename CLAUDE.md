@@ -2,7 +2,7 @@
 
 ## Checks
 
-- `sh tests/check-wiki_test.sh`, `sh tests/hooks_test.sh`, `sh tests/startup-context_test.sh`, `sh tests/reference_test.sh`, and `sh tests/settings-write_test.sh`
+- Every test: `for t in tests/*_test.sh; do sh "$t" || echo "FAIL $t"; done`
 - `sh plugins/playbook/scripts/check-wiki.sh docs/playbook`
 - `shellcheck plugins/playbook/hooks/*.sh plugins/playbook/scripts/*.sh tests/*.sh`
 - `claude plugin validate .`

@@ -2,6 +2,8 @@
 
 Status: Accepted (permissions-wizard-6)
 
+Learned: 2026-11-25
+
 Delivery: one branch and one pull request per work (delivery-versioning-2).
 
 ## What and why

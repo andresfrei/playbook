@@ -3,8 +3,8 @@
 | Need | Technology | Why | Decision |
 |------|------------|-----|----------|
 | Run inside the person's agent | A Claude Code plugin, `playbook`, published from this repository's marketplace | Claude Code only; one plugin, since no user takes half of it | TD1, basics-3, basics-9 |
-| Hooks and checks | Plain shell, with no extra tool | A person who installs the plugin installs nothing else, except `jq` for the skill `permissions` | audit-2026-11-25-1 |
-| Writing Claude Code's settings | `jq`, used by `settings-write.sh` for the skill `permissions` only; without it the skill writes nothing | Adds rules without duplicating or removing any, atomically, with an offline test | permissions-wizard-5 |
+| Hooks and checks | Plain shell, with no extra tool | A person who installs the plugin installs nothing else, except `jq` for the skills `permissions` and `presets` | audit-2026-11-25-1, presets-6 |
+| Writing Claude Code's settings | `jq`, used by `settings-write.sh` for the skills `permissions` and `presets`, and by `presets.sh`; without it the skill writes nothing | Adds rules without duplicating or removing any, atomically, with an offline test | permissions-wizard-5, presets-6 |
 | Versions | Semantic Versioning in the plugin's `plugin.json` only, a tag `v<version>` per release, and a release on GitHub titled `playbook <version>` | Users know what changed; a MAJOR version says how to move from the one before | TD22, github-release-1 |
 | Close of a work | The agent recommends whether it needs a version and which one, and asks the owner | | github-release-2 |
 
@@ -25,7 +25,7 @@ Last version evaluated: 2.1.332
 | Date | Versions read | Proposals | Where each went |
 |------|---------------|-----------|-----------------|
 | 2026-11-20 | 2.1.326 to 2.1.330 | None (claude-code-versions-12) | |
-| 2026-11-23 | 2.1.331 | None (claude-code-versions-12) | |
+| 2026-11-23 | 2.1.331 | None | |
 | 2026-11-25 | 2.1.332 | 2: check the `computer-use` skill override; check the `sonnet` alias of `builder` on Bedrock | computer-use: dropped; sonnet alias: dropped |
 
 ### Pending
