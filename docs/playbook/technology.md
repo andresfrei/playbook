@@ -3,7 +3,8 @@
 | Need | Technology | Why | Decision |
 |------|------------|-----|----------|
 | Run inside the person's agent | A Claude Code plugin, `playbook`, published from this repository's marketplace | Claude Code only; one plugin, since no user takes half of it | TD1, basics-3, basics-9 |
-| Hooks and checks | Plain shell, with no extra tool | A person who installs the plugin installs nothing else | TD2 |
+| Hooks and checks | Plain shell, with no extra tool | A person who installs the plugin installs nothing else, except `jq` for the skill `permissions` | audit-2026-11-25-1 |
+| Writing Claude Code's settings | `jq`, used by `settings-write.sh` for the skill `permissions` only; without it the skill writes nothing | Adds rules without duplicating or removing any, atomically, with an offline test | permissions-wizard-5 |
 | Versions | Semantic Versioning in the plugin's `plugin.json` only, a tag `v<version>` per release, and a release on GitHub titled `playbook <version>` | Users know what changed; a MAJOR version says how to move from the one before | TD22, github-release-1 |
 | Close of a work | The agent recommends whether it needs a version and which one, and asks the owner | | github-release-2 |
 

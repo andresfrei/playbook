@@ -28,6 +28,7 @@ argument-hint: "[wiki|setup|tools]"
 4. **Show.** One table with every finding: the part, the quote or quotes with file and line, the number or the limit, and your recommendation. Say why a finding is dropped; hide none. A finding marked "Already decided" is shown, not asked. When nothing was found, say so in one line. After the table, when the setup part ran, show its table of categories from `/context`; when the setup part did not run, or its `/context` failed, advise the owner to run `/context` (context-measure-1).
 5. **Ask.** Resolve each finding with the owner, one at a time, as the part says. Skip those marked "Already decided". When the owner leaves a finding as it is, record it as a decision: in the open work's `decisions.md`, or in `docs/playbook/works/audit-<date>/decisions.md` when none is open; the decision quotes the finding with its file, as the explorer gave it (audit-decided-1).
 6. **Apply.** Make the light fixes, and the changes the owner said yes to. When the wiki part ran (no argument, `wiki`, or a first run), write in `docs/playbook/README.md` one line that starts with `Last audit:`, as `Last audit: <date>, after work <last closed work>. Contradictions: <found>, <resolved>.`, replacing the previous one, without asking. Run `sh "${CLAUDE_PLUGIN_ROOT}/scripts/check-wiki.sh" docs/playbook` again.
+   On a first run, after writing the line "Last audit", offer the permissions wizard once with `AskUserQuestion`: run `/playbook:permissions` now (recommended), or not. On a yes, follow the skill `permissions`. Later audits do not offer it: the first run happens only once, since it writes the "Last audit" line (permissions-wizard-4).
 
 ## Wiki part
 
@@ -88,3 +89,4 @@ The main session asks the owner about each collision, one at a time, and applies
 
 - The check's result, the one table of findings (contradictions, definitions missing, limits passed, on-demand proposals, skills never used, tools that collide, servers that do not connect), a note for each part that failed, how the owner resolved each, what changed and in which file, the lines proposed, and the line "Last audit".
 - The table of categories from `/context` when the setup part ran; otherwise the advice to run `/context`.
+- A first run ends with the offer of the permissions wizard and the owner's answer.
