@@ -17,3 +17,4 @@
 - The owner's Claude loads the plugin from a worktree of local `main` at `~/dev/playbook-main`. The git hook `reference-transaction` in this clone's `.git/hooks/` checks out each new `main` there; after a change lands on `main`, recommend `/reload-plugins` in open sessions. When the hook says the worktree has local changes, or it is missing, recommend `git -C ~/dev/playbook-main checkout --detach main`.
 - A work of the plugin changes only the plugin; findings about this repository's own setup (its memory, its audit answers) are resolved apart, by running the plugin, never as a unit of the work (audit-decided-2).
 - When a decision removes a piece, a tool, or a path, run `git grep` for its name and update or delete each mention outside `docs/playbook/works/` in the same commit.
+- The lines of open ideas in the project's `MEMORY.md` stay; the audit does not ask about them (audit-2026-11-24-19, audit-2026-11-25-4).
