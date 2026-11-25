@@ -22,6 +22,7 @@ The skill `/playbook:audit` audits what sets up Claude in a project. On its firs
 - A decision for each answer the owner gives, in the open work's `decisions.md` or in `docs/playbook/works/audit-<date>/decisions.md`.
 - Light fixes (such as a broken link) and each change the owner says yes to.
 - When the wiki part ran, the line `Last audit:` in `docs/playbook/README.md`, without asking.
+- The first run ends by offering the [permissions](permissions.md) wizard once; later audits do not.
 - It changes nothing at the user's level (such as `~/.claude/CLAUDE.md`) unless the owner asks for it explicitly.
 
 ## What it asks the owner
@@ -33,6 +34,6 @@ The skill `/playbook:audit` audits what sets up Claude in a project. On its firs
 
 - [auditor](auditor.md), the agent that explores each part.
 - [adopt](adopt.md), the hook that recommends it, and [close](close.md) and [define](define.md), which offer it.
-- [wiki](wiki.md), [rules](rules.md), and [audit-learning](audit-learning.md).
+- [wiki](wiki.md), [rules](rules.md), [audit-learning](audit-learning.md), and [permissions](permissions.md).
 
 Source: [plugins/playbook/skills/audit/SKILL.md](../../plugins/playbook/skills/audit/SKILL.md), [first-run.md](../../plugins/playbook/skills/audit/first-run.md)
