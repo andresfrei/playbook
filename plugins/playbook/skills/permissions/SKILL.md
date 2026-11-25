@@ -16,7 +16,7 @@ description: A wizard that asks the owner, one question at a time, about attribu
    - **Ask.** `Bash(git reset --hard*)`, `Bash(git clean *)`, `Bash(rm -rf *)`, `Bash(rm -fr *)`, and the forced push variants `Bash(git push -f*)`, `Bash(git push * -f*)`, `Bash(git push *--force*)`.
    - **Deny.** `Read(./.env)`, `Read(./.env.*)`, `Read(./secrets/**)`, and the `Edit(...)` rules for the same paths; key files such as `*.pem` or `*.key` only when the project has them. Keep it that narrow.
 2. Before writing, show each line and the file it goes to (permissions-wizard-3). Write only what the owner accepted, with `sh "${CLAUDE_PLUGIN_ROOT}/scripts/settings-write.sh"`:
-   - Rules, to the project's `.claude/settings.json`: `rule .claude/settings.json allow|ask|deny RULE...`.
+   - Rules, to the project's `.claude/settings.json`, anchored at the repository's root so a `cd` in the session does not change the file: `rule "$(git rev-parse --show-toplevel)/.claude/settings.json" allow|ask|deny RULE...`.
    - Attribution, to `~/.claude/settings.json`: `attribution ~/.claude/settings.json none|commit|pr`.
 3. Never remove or edit an existing rule. Write no `defaultMode` or other setting.
 
