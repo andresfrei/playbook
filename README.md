@@ -11,7 +11,7 @@
 
 - Playbook is a Claude Code plugin: it defines each change with the owner before code, records decisions in the owner's words, and proposes rules from repeated mistakes.
 - Install: `/plugin marketplace add andresfrei/playbook`, then `/plugin install playbook@playbook`.
-- Commands: `/playbook:define`, `/playbook:close`, `/playbook:audit`, `/playbook:audit-learning`, `/playbook:release`, `/playbook:permissions`.
+- Commands: `/playbook:define`, `/playbook:close`, `/playbook:audit`, `/playbook:audit-learning`, `/playbook:release`, `/playbook:permissions`, `/playbook:presets`.
 - It writes `docs/playbook/` in the project, and lines it proposes for `CLAUDE.md`, `.claude/rules/`, or a skill, which the owner accepts or not.
 - The source is `plugins/playbook/`. Each piece has a page in [docs/reference/README.md](docs/reference/README.md).
 
@@ -59,7 +59,7 @@ The installer asks where to turn it on:
 
 From your shell, `claude plugin install playbook@playbook` installs it for you in every project; add `--scope project` or `--scope local` to choose another.
 
-The `/playbook:permissions` wizard needs `jq` on your PATH.
+The `/playbook:permissions` wizard and `/playbook:presets` need `jq` on your PATH.
 
 Then start a new session in your project and run [`/playbook:audit`](docs/reference/audit.md). On its first run it adopts the project: it reads the documentation and rules the project already has, proposes how to order them, builds the wiki in `docs/playbook/`, cleans `CLAUDE.md`, and checks the repository's tools, asking you each choice. It starts from a clean git tree, so all it changes is one diff. Until a project is adopted, each session in its git repository recommends it ([adopt](docs/reference/adopt.md)).
 
@@ -71,6 +71,7 @@ To get new versions, turn on auto-update: run `/plugin`, open the **Marketplaces
 
 - [Reference index](docs/reference/README.md): one page per skill, agent, hook, and concept.
 - [Permissions](docs/reference/permissions.md): `/playbook:permissions`, a wizard for attribution and allow, ask, and deny rules.
+- [Presets](docs/reference/presets.md): `/playbook:presets`, saves a preset from a project and applies it to another of the same stack.
 - [Upgrade from version 4](docs/reference/upgrade-from-4.md): moving from version 4 to 5.
 - To make searches cheaper, copy [`plugins/playbook/extras/Explore.md`](plugins/playbook/extras/Explore.md) to `~/.claude/agents/`; see [sessions](docs/reference/sessions.md).
 
