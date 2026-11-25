@@ -177,6 +177,31 @@ sh "$script" apply links "$tmp/dstl" || bad "apply links"
 if [ -z "$(find "$PLAYBOOK_HOME/presets/links" -type l)" ]; then ok "saved preset has no symlinks"; else bad "saved preset has no symlinks"; fi
 if [ -z "$(find "$tmp/dstl/.claude" -type l)" ] && [ "$(cat "$tmp/dstl/.claude/skills/linked/f.txt")" = out ] && [ "$(cat "$tmp/dstl/.claude/skills/withlink/ref.txt")" = ofile ] && [ "$(cat "$tmp/dstl/.claude/agents/ag.md")" = ag ]; then ok "applied copy has real files only"; else bad "applied copy has real files only"; fi
 
+# A folder where the agent's file goes is a conflict, even holding an equal file.
+d7=$tmp/agdir
+mkdir -p "$d7/.claude/agents/cf.md"
+cp "$p/agents/cf.md" "$d7/.claude/agents/cf.md/cf.md"
+watch=$d7
+refused "folder at an agent's place refused" apply cloudflare "$d7"
+watch=
+
+# A symlinked .claude is refused, and its target is left untouched.
+d8=$tmp/clink
+mkdir -p "$d8" "$tmp/elsewhere"
+ln -s "$tmp/elsewhere" "$d8/.claude"
+watch=$tmp/elsewhere
+refused "symlinked .claude refused" apply cloudflare "$d8"
+watch=
+
+# A damaged rules.json is refused before anything is written.
+sh "$script" save dmg "$src" signal wrangler.toml allow X skill deploy || bad "save dmg runs"
+printf '{"allow":["X"],"ask":"x","deny":[]}\n' > "$PLAYBOOK_HOME/presets/dmg/rules.json"
+d9=$tmp/dmgp
+mkdir -p "$d9"
+watch=$d9
+refused "damaged rules refused, nothing written" apply dmg "$d9"
+watch=
+
 # A dangling symlink at a destination is a conflict.
 d4=$tmp/dang
 mkdir -p "$d4/.claude/skills"

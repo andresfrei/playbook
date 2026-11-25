@@ -155,6 +155,11 @@ $2"
       jq -e 'type == "object"' "$reg" >/dev/null 2>&1 || die "$reg is not valid JSON with an object at the top level"
     fi
 
+    # A destination counts as the same only when it is a real folder or file,
+    # not a symlink, with the preset's content; anything else is a conflict.
+    same_skill() { [ -d "$2" ] && [ ! -L "$2" ] && diff -r -q "$1" "$2" >/dev/null 2>&1; }
+    same_agent() { [ -f "$2" ] && [ ! -L "$2" ] && cmp -s "$1" "$2"; }
+
     # Conflicts first; nothing is written when there is one.
     conflicts=
     for s in "$src"/skills/*/; do
@@ -163,7 +168,7 @@ $2"
       s=${s##*/}
       dest=$proj/.claude/skills/$s
       [ -e "$dest" ] || [ -L "$dest" ] || continue
-      diff -r -q "$src/skills/$s" "$dest" >/dev/null 2>&1 && continue
+      same_skill "$src/skills/$s" "$dest" && continue
       case "$over
 " in *"
 skill:$s
@@ -176,7 +181,7 @@ skill:$s
       a=${a%.md}
       dest=$proj/.claude/agents/$a.md
       [ -e "$dest" ] || [ -L "$dest" ] || continue
-      diff -r -q "$src/agents/$a.md" "$dest" >/dev/null 2>&1 && continue
+      same_agent "$src/agents/$a.md" "$dest" && continue
       case "$over
 " in *"
 agent:$a
@@ -192,9 +197,12 @@ agent:$a
 
     # Preconditions: everything that could fail is checked before the first write.
     for d in "$proj/.claude" "$proj/.claude/skills" "$proj/.claude/agents"; do
-      [ -d "$d" ] || { [ ! -e "$d" ] && [ ! -L "$d" ]; } || die "$d is not a folder; nothing was written"
+      [ ! -L "$d" ] || die "$d is a symlink; nothing was written"
+      [ -d "$d" ] || [ ! -e "$d" ] || die "$d is not a folder; nothing was written"
     done
     settings=$proj/.claude/settings.json
+    jq -e 'type == "object" and all(.allow, .ask, .deny; (. // []) | type == "array" and all(.[]; type == "string"))' "$src/rules.json" >/dev/null 2>&1 \
+      || die "rules.json of '$name' is damaged (each of allow, ask, deny must be a list of strings); nothing was written"
     anyrules=0
     for kind in allow ask deny; do
       n=$(jq -r --arg k "$kind" '.[$k] | length' "$src/rules.json") || die "cannot read rules of '$name'"
@@ -237,7 +245,7 @@ agent:$a
       s=${s%/}
       s=${s##*/}
       dest=$proj/.claude/skills/$s
-      if [ -e "$dest" ] && diff -r -q "$src/skills/$s" "$dest" >/dev/null 2>&1; then continue; fi
+      if same_skill "$src/skills/$s" "$dest"; then continue; fi
       mkdir -p "$proj/.claude/skills" || die "cannot create $proj/.claude/skills"
       stmp=$(mktemp -d "$proj/.claude/skills/.presets-tmp.XXXXXX") || die "cannot create a temporary folder in $proj/.claude/skills"
       cp -RL "$src/skills/$s" "$stmp/skill" || die "cannot copy skill '$s'"
@@ -249,7 +257,7 @@ agent:$a
       [ -f "$a" ] || continue
       a=${a##*/}
       dest=$proj/.claude/agents/$a
-      if [ -e "$dest" ] && cmp -s "$src/agents/$a" "$dest"; then continue; fi
+      if same_agent "$src/agents/$a" "$dest"; then continue; fi
       mkdir -p "$proj/.claude/agents" || die "cannot create $proj/.claude/agents"
       atmp=$(mktemp "$proj/.claude/agents/.presets-tmp.XXXXXX") || die "cannot create a temporary file in $proj/.claude/agents"
       cp -L "$src/agents/$a" "$atmp" || die "cannot copy agent '$a'"

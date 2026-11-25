@@ -30,7 +30,7 @@ The skill `/playbook:presets` saves a preset from the current project and applie
 
 ## Connects to
 
-- [permissions](permissions.md), the wizard that will offer the presets that fit, using `presets.sh detect`.
+- [permissions](permissions.md), the wizard that offers the presets that fit, using `presets.sh detect`.
 - `settings-write.sh`, which adds the rules without duplicating.
 
 Source: [plugins/playbook/skills/presets/SKILL.md](../../plugins/playbook/skills/presets/SKILL.md), [plugins/playbook/scripts/presets.sh](../../plugins/playbook/scripts/presets.sh), and [plugins/playbook/scripts/settings-write.sh](../../plugins/playbook/scripts/settings-write.sh)

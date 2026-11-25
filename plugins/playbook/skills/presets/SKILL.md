@@ -9,7 +9,7 @@ description: Saves a preset (signal files, permission rules, skills, and agents)
 
 ## Steps
 
-0. Check `jq` is on PATH (`command -v jq`). When it is missing, say so and stop, writing nothing. Get the project's root with `root=$(git rev-parse --show-toplevel)`. Ask the owner whether to save or apply, unless the request says it.
+0. Check `jq` is on PATH (`command -v jq`). When it is missing, say so and stop, writing nothing. Get the project's root with `root=$(git rev-parse --show-toplevel 2>/dev/null || pwd)`. Ask the owner whether to save or apply, unless the request says it.
 1. **Save** (presets-6). Ask the preset's name when not given.
    - Read the rules of `$root/.claude/settings.json` (allow, ask, deny), the folders of `$root/.claude/skills/`, and the files of `$root/.claude/agents/`. Propose those that belong to the stack, plus the signal files that reveal it, such as `wrangler.toml` (presets-7).
    - The owner confirms each kind with AskUserQuestion, one question at a time, the recommended option first; `multiSelect` is fine to confirm a list. At least one signal file is needed.
