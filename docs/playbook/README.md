@@ -18,7 +18,7 @@ Pending after the release of dialog-learning: run `/playbook:audit-learning` wit
 
 To define next: the work `driven-mode`, playbook knows when another session drives it, as a bot of playbot, and asks in text (dialog-learning-5).
 
-Last audit: 2026-11-26, after work presets. Contradictions: 0 found, 0 resolved.
+Last audit: 2026-11-28, after work dialog-learning. Contradictions: 1 found, 1 resolved.
 
 ## Pages
 
