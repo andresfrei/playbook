@@ -14,7 +14,7 @@ Playbook is a Claude Code plugin that helps a person build software fast with Cl
 
 Open work: [dialog-learning](works/dialog-learning/spec.md), every question dialog names its type in its header, a hook keeps each answer on the owner's machine, and `audit-learning` reads the answers by type to propose a delegation, a corrected recommendation, or a fact for the wiki (dialog-learning-6).
 
-Next step: build the unit learn of dialog-learning with `builder`, which wires `audit-learning` to `scripts/import-dialogs.sh` and `scripts/dialog-table.sh` (its optional TYPES_FILE takes the subagent's classification of untyped questions); the units import and table are built, and Claude Code deletes the owner's oldest transcripts from 2026-12-04, so the first run of `learn` should import before then.
+Next step: close the work dialog-learning with `close`; its five units are built, and the live check of the unit learn passed on 2026-11-28 (import, classification by reading in batches, the table, the delegation for Session proposed and none for Delivery or Remote). The hook writes into the installed plugin's data folder only after a release, so the first run of `/playbook:audit-learning` with the installed plugin should import before 2026-12-04, when Claude Code starts deleting the owner's oldest transcripts.
 
 To define after it: the work `driven-mode`, playbook knows when another session drives it, as a bot of playbot, and asks in text (dialog-learning-5).
 
