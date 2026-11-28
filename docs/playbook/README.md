@@ -12,13 +12,11 @@ Playbook is a Claude Code plugin that helps a person build software fast with Cl
 
 ## Open work
 
-None.
+Open work: [driven-mode](works/driven-mode/spec.md), playbook knows when another session drives it and asks in text (driven-mode-1). Next step: build the unit driven with `builder`.
 
 Pending after the release of dialog-learning: run `/playbook:audit-learning` with the installed plugin before 2026-12-04, when Claude Code starts deleting the owner's oldest transcripts, so its first run imports them.
 
-To define next: the work `driven-mode`, playbook knows when another session drives it, as a bot of playbot, and asks in text (dialog-learning-5).
-
-Last audit: 2026-11-28, after work dialog-learning. Contradictions: 1 found, 1 resolved.
+Last audit: 2026-11-28, after work dialog-learning. Contradictions: 0 found, 0 resolved.
 
 ## Pages
 
