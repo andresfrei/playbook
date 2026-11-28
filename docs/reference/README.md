@@ -24,6 +24,7 @@ One page per piece of the Playbook plugin: what it is, when it runs, what it rea
 - [adopt](adopt.md): recommends the audit in a project that is not yet adopted.
 - [ask](ask.md): asks before a push, pull request, merge, or release.
 - [commit-check](commit-check.md): stops a commit when the wiki check fails.
+- [capture](capture.md): stores each answered dialog on the machine, one line per dialog.
 
 ## Concepts
 

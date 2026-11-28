@@ -59,7 +59,7 @@ The installer asks where to turn it on:
 
 From your shell, `claude plugin install playbook@playbook` installs it for you in every project; add `--scope project` or `--scope local` to choose another.
 
-The `/playbook:permissions` wizard and `/playbook:presets` need `jq` on your PATH.
+The `/playbook:permissions` wizard, `/playbook:presets`, and the reading of answered dialogs in `/playbook:audit-learning` need `jq` on your PATH.
 
 Then start a new session in your project and run [`/playbook:audit`](docs/reference/audit.md). On its first run it adopts the project: it reads the documentation and rules the project already has, proposes how to order them, builds the wiki in `docs/playbook/`, cleans `CLAUDE.md`, and checks the repository's tools, asking you each choice. It starts from a clean git tree, so all it changes is one diff. Until a project is adopted, each session in its git repository recommends it ([adopt](docs/reference/adopt.md)).
 

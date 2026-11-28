@@ -211,4 +211,29 @@ mkdir -p "$tmp/nogit"
 out=$(adopt "$tmp/nogit")
 [ -z "$out" ] && ok "adopt: not a repository, silent" || bad "adopt: not a repository" "$out"
 
+# capture: one line per answered dialog in the data folder.
+fixture='{"session_id":"s","cwd":"/x","hook_event_name":"PostToolUse","tool_name":"AskUserQuestion","tool_input":{"questions":[{"question":"Q?","header":"Session","options":[{"label":"Sí"},{"label":"No"}]}]},"tool_response":{"answers":{"Q?":"Sí"}}}'
+pretty='{
+  "session_id": "s",
+  "tool_name": "AskUserQuestion",
+  "tool_response": {
+    "answers": {"Q?": "Sí"}
+  }
+}'
+data=$tmp/data
+out=$(printf '%s' "$fixture" | CLAUDE_PLUGIN_DATA=$data sh "$hooks/capture.sh"); rc=$?
+[ -z "$out" ] && [ "$rc" -eq 0 ] && ok "capture: silent, exit 0" || bad "capture: silent" "$rc $out"
+[ "$(wc -l < "$data/dialogs.jsonl")" -eq 1 ] && ok "capture: one line" || bad "capture: one line" "$(cat "$data/dialogs.jsonl")"
+line=$(cat "$data/dialogs.jsonl")
+case $line in '{"time":"'[0-9][0-9][0-9][0-9]-*Z'","input":'"$fixture"'}') ok "capture: time and input" ;; *) bad "capture: time and input" "$line" ;; esac
+printf '%s' "$pretty" | CLAUDE_PLUGIN_DATA=$data sh "$hooks/capture.sh"; rc=$?
+[ "$rc" -eq 0 ] && [ "$(wc -l < "$data/dialogs.jsonl")" -eq 2 ] && ok "capture: two runs, two lines, multi-line input" || bad "capture: two runs" "$rc"
+printf '%s' "$pretty" | CLAUDE_PLUGIN_DATA='' sh "$hooks/capture.sh"; rc=$?
+[ "$rc" -eq 0 ] && [ "$(wc -l < "$data/dialogs.jsonl")" -eq 2 ] && ok "capture: empty data folder variable, nothing written" || bad "capture: empty variable" "$rc"
+(cd "$tmp" && printf '%s' "$fixture" | env -u CLAUDE_PLUGIN_DATA sh "$hooks/capture.sh"); rc=$?
+[ "$rc" -eq 0 ] && [ ! -e "$tmp/dialogs.jsonl" ] && ok "capture: no data folder, nothing written" || bad "capture: no data folder" "$rc"
+printf 'x' > "$tmp/afile"
+out=$(printf '%s' "$fixture" | CLAUDE_PLUGIN_DATA=$tmp/afile/sub sh "$hooks/capture.sh" 2>&1); rc=$?
+[ "$rc" -eq 0 ] && [ -z "$out" ] && ok "capture: unwritable folder, exit 0" || bad "capture: unwritable folder" "$rc $out"
+
 exit $failed

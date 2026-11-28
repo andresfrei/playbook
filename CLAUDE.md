@@ -18,3 +18,4 @@
 - A work of the plugin changes only the plugin; findings about this repository's own setup (its memory, its audit answers) are resolved apart, by running the plugin, never as a unit of the work (audit-decided-2).
 - When a decision removes a piece, a tool, or a path, run `git grep` for its name and update or delete each mention outside `docs/playbook/works/` in the same commit.
 - The lines of open ideas in the project's `MEMORY.md` stay; the audit does not ask about them (audit-2026-11-24-19, audit-2026-11-25-4).
+- A rare loss in the plugin's files on the owner's machine when two sessions write at the same moment is accepted when the fix would change how they are stored: record it as a decision and the code's comment, do not ask (presets-10, dialog-learning-8, dialog-learning-9).
