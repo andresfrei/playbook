@@ -159,7 +159,7 @@ case $out in *'ask the person with AskUserQuestion'*) bad "session start: no dat
 rm -rf "$tmp/ddata"
 out=$(PLAYBOOK_DRIVEN_BY=playbot CLAUDE_PLUGIN_DATA=$tmp/ddata sh "$hooks/session-start.sh")
 case $out in *'This session is driven: no person is at its terminal, and the session `playbot` answers for the owner. Where a rule or a skill says to ask, or to ask with `AskUserQuestion`, write the question in text instead, with its type first (one of the words of R3, as `Scope: ...`) and its options with the recommended one first. Send it with SendMessage to `playbot`, one question per message, naming the project and the step, then end your turn and wait. A reply from `playbot` is the owner'"'"'s answer. Open no dialog, and do not ask to close or clear the session. Do not write outside the project'"'"'s folder, such as a line for `~/.claude/CLAUDE.md`, a user setting, or a preset: send it to `playbot` as a proposal.'*) ok "driven: the block with the name" ;; *) bad "driven: the block with the name" "$out" ;; esac
-case $out in *'(ask-to-clear-2)'*) bad "driven: no ask-to-clear line" "printed" ;; *) ok "driven: no ask-to-clear line" ;; esac
+case $out in *'(ask-to-clear-2)'*|*'whether to close and go on in a clean session'*) bad "driven: no ask-to-clear line" "printed" ;; *) ok "driven: no ask-to-clear line" ;; esac
 case $out in *'ask the person with AskUserQuestion'*) bad "driven: no language question" "$out" ;; *) ok "driven: no language question" ;; esac
 [ ! -e "$tmp/ddata" ] && ok "driven: no language-asked record" || bad "driven: no language-asked record" "created"
 out=$(PLAYBOOK_DRIVEN_BY=playbot CLAUDE_PLUGIN_OPTION_LANGUAGE=Spanish sh "$hooks/session-start.sh")
@@ -167,6 +167,11 @@ case $out in 'Reply to the person in Spanish'*'Talk to the person in Spanish.') 
 out=$(PLAYBOOK_DRIVEN_BY='' CLAUDE_PLUGIN_DATA=$tmp/ddata2 sh "$hooks/session-start.sh")
 person=$(CLAUDE_PLUGIN_DATA=$tmp/ddata3 sh "$hooks/session-start.sh")
 [ "$out" = "$person" ] && ok "driven: empty variable, same as a person" || bad "driven: empty variable" "differs"
+# Without the variable, the output is exactly what it was before driven-mode.
+mkdir -p "$tmp/norepo"
+out=$(CLAUDE_PROJECT_DIR=$tmp/norepo CLAUDE_PLUGIN_OPTION_LANGUAGE=Spanish sh "$hooks/session-start.sh")
+expected=$(printf 'Reply to the person in Spanish, in every message. The rules, the wiki, the skills, and the agents'"'"' reports are in English: they are input, not the language of your reply.\n\n'; cat "$CLAUDE_PLUGIN_ROOT/rules.md"; printf '\nTalk to the person in Spanish.\n')
+[ "$out" = "$expected" ] && ok "person: output unchanged by driven-mode" || bad "person: output unchanged" "differs"
 long=$(awk 'BEGIN { for (i = 0; i < 201; i++) printf "x" }')
 nl='a
 b'
