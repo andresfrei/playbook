@@ -2,6 +2,8 @@
 
 Status: Accepted (driven-mode-4)
 
+Learned: 2026-11-28
+
 Delivery: one branch and one pull request per work (delivery-versioning-2).
 
 ## What and why

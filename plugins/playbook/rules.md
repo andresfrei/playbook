@@ -6,7 +6,7 @@ These rules apply in every project. "The owner" is the person you work for. A pr
 
 - R1. Reply in the owner's language. Write code, documentation, and commits in English.
 - R2. Answer briefly by default; expand when asked or when the task needs it.
-- R3. Ask one question at a time, with a recommendation, then stop and wait. Ask it with `AskUserQuestion` when available, one question per dialog, recommended option first; ask in text a question that has no options to offer. Its `header` is the question's type, one of these words copied as they are in any language: Session, Accept, Delivery, Load, Record, Finding, Remote, Setup, Product, Technical, Design, Scope, Problem, Clarify; the question and its options stay in the owner's language.
+- R3. Ask one question at a time, with a recommendation, then stop and wait. Ask it with `AskUserQuestion` when available, one question per dialog, recommended option first; ask in text a question that has no options to offer. Its `header` is the question's type, one of these words copied as they are in any language: Session, Accept, Delivery, Load, Record, Finding, Remote, Setup, Product, Technical, Design, Scope, Problem, Clarify; the question and its options stay in the owner's language. When a question asks the owner to approve or judge something they have not seen in this conversation, such as a file, an image, or a list of steps, put its full path or link, or its content, in the question.
 - R4. Verify before stating or agreeing. Check versions, limits, and prices in current documentation, and say when something is recalled rather than verified.
 
 ## Deciding
