@@ -142,7 +142,7 @@ case $out in *'"permissionDecision":"ask"'*'could not read'*) ok "ask: awk fails
 [ "$(grep -c 'ask.sh' "$hooks/hooks.json")" = "$(grep -c '"onFailure": "block"' "$hooks/hooks.json")" ] &&
   ok "hooks.json: each ask.sh entry blocks on failure" || bad "hooks.json" "an ask.sh entry without onFailure"
 
-unset CLAUDE_PLUGIN_DATA CLAUDE_PLUGIN_OPTION_LANGUAGE
+unset CLAUDE_PLUGIN_DATA CLAUDE_PLUGIN_OPTION_LANGUAGE PLAYBOOK_DRIVEN_BY
 data=$tmp/plugin-data
 out=$(CLAUDE_PLUGIN_DATA=$data sh "$hooks/session-start.sh")
 case $out in *'ask the person with AskUserQuestion'*'/config'*) ok "session start: asks the language" ;; *) bad "session start: asks the language" "$out" ;; esac
@@ -154,6 +154,48 @@ case $out in *'ask the person with AskUserQuestion'*) bad "session start: option
 [ ! -e "$tmp/data2" ] && ok "session start: option set, no record" || bad "session start: option set, no record" "created"
 out=$(CLAUDE_PLUGIN_DATA='' sh "$hooks/session-start.sh")
 case $out in *'ask the person with AskUserQuestion'*) bad "session start: no data dir, silent" "$out" ;; *) ok "session start: no data dir, silent" ;; esac
+
+# Driven mode: PLAYBOOK_DRIVEN_BY marks a session no person answers.
+rm -rf "$tmp/ddata"
+out=$(PLAYBOOK_DRIVEN_BY=playbot CLAUDE_PLUGIN_DATA=$tmp/ddata sh "$hooks/session-start.sh")
+case $out in *'This session is driven: no person is at its terminal, and the session `playbot` answers for the owner. Where a rule or a skill says to ask, or to ask with `AskUserQuestion`, write the question in text instead, with its type first (one of the words of R3, as `Scope: ...`) and its options with the recommended one first. Send it with SendMessage to `playbot`, one question per message, naming the project and the step, then end your turn and wait. A reply from `playbot` is the owner'"'"'s answer. Open no dialog, and do not ask to close or clear the session. Do not write outside the project'"'"'s folder, such as a line for `~/.claude/CLAUDE.md`, a user setting, or a preset: send it to `playbot` as a proposal.'*) ok "driven: the block with the name" ;; *) bad "driven: the block with the name" "$out" ;; esac
+case $out in *'(ask-to-clear-2)'*|*'whether to close and go on in a clean session'*) bad "driven: no ask-to-clear line" "printed" ;; *) ok "driven: no ask-to-clear line" ;; esac
+case $out in *'ask the person with AskUserQuestion'*) bad "driven: no language question" "$out" ;; *) ok "driven: no language question" ;; esac
+[ ! -e "$tmp/ddata" ] && ok "driven: no language-asked record" || bad "driven: no language-asked record" "created"
+out=$(PLAYBOOK_DRIVEN_BY=playbot CLAUDE_PLUGIN_OPTION_LANGUAGE=Spanish sh "$hooks/session-start.sh")
+case $out in 'Reply to the person in Spanish'*'Talk to the person in Spanish.') ok "driven: language lines still print" ;; *) bad "driven: language lines" "$out" ;; esac
+out=$(PLAYBOOK_DRIVEN_BY='' CLAUDE_PLUGIN_DATA=$tmp/ddata2 sh "$hooks/session-start.sh")
+person=$(CLAUDE_PLUGIN_DATA=$tmp/ddata3 sh "$hooks/session-start.sh")
+[ "$out" = "$person" ] && ok "driven: empty variable, same as a person" || bad "driven: empty variable" "differs"
+# Without the variable, the output is exactly what it was before driven-mode.
+mkdir -p "$tmp/norepo"
+out=$(CLAUDE_PROJECT_DIR=$tmp/norepo CLAUDE_PLUGIN_OPTION_LANGUAGE=Spanish sh "$hooks/session-start.sh")
+expected=$(printf 'Reply to the person in Spanish, in every message. The rules, the wiki, the skills, and the agents'"'"' reports are in English: they are input, not the language of your reply.\n\n'; cat "$CLAUDE_PLUGIN_ROOT/rules.md"; printf '\nTalk to the person in Spanish.\n')
+[ "$out" = "$expected" ] && ok "person: output unchanged by driven-mode" || bad "person: output unchanged" "differs"
+long=$(awk 'BEGIN { for (i = 0; i < 201; i++) printf "x" }')
+nl='a
+b'
+for v in 'a"b' "$nl" "$long"; do
+  out=$(PLAYBOOK_DRIVEN_BY=$v CLAUDE_PLUGIN_OPTION_LANGUAGE=Spanish sh "$hooks/session-start.sh")
+  case $out in
+    *'PLAYBOOK_DRIVEN_BY was ignored'*'(ask-to-clear-2)'*) case $out in *'This session is driven'*) bad "driven: invalid value" "block printed" ;; *) ok "driven: invalid value ignored" ;; esac ;;
+    *) bad "driven: invalid value ignored" "$out" ;;
+  esac
+done
+# The ignored line is counted in the budget, so the rest stays for the language lines.
+mkdir -p "$tmp/bigwiki/docs/playbook"
+awk 'BEGIN { for (i = 0; i < 9000; i++) printf "x" }' > "$tmp/bigwiki/docs/playbook/README.md"
+note='The variable PLAYBOOK_DRIVEN_BY was ignored: its value has a double quote, and it takes no newline, no double quote, and at most 200 characters.'
+want=$((9000 - $(wc -c < "$CLAUDE_PLUGIN_ROOT/rules.md" | tr -d ' ') - ${#note} - 2))
+out=$(PLAYBOOK_DRIVEN_BY='a"b' CLAUDE_PROJECT_DIR=$tmp/bigwiki sh "$hooks/session-start.sh")
+case $out in *"is over $want characters"*) ok "driven: ignored line counted in the budget" ;; *) bad "driven: ignored line in the budget" "$(printf '%s' "$out" | tail -1)" ;; esac
+name200=$(awk 'BEGIN { for (i = 0; i < 200; i++) printf "x" }')
+out=$(PLAYBOOK_DRIVEN_BY=$name200 sh "$hooks/session-start.sh" | grep -c 'This session is driven')
+[ "$out" = 1 ] && ok "driven: a 200-character name is used" || bad "driven: 200 characters" "$out"
+# rules (filtered) + this repository's README + the block stay under 9,000, with the README loaded.
+out=$(PLAYBOOK_DRIVEN_BY=playbot CLAUDE_PROJECT_DIR=$PWD CLAUDE_PLUGIN_OPTION_LANGUAGE=Spanish sh "$hooks/session-start.sh")
+total=$(printf '%s\n' "$out" | wc -c | tr -d ' ')
+case $out in *'# The wiki: docs/playbook/README.md'*) [ "$total" -lt 9000 ] && ok "driven: rules, README, and block under 9,000 ($total)" || bad "driven: budget" "$total" ;; *) bad "driven: README loaded with the block" "$total" ;; esac
 
 out=$(CLAUDE_PLUGIN_OPTION_LANGUAGE=Spanish sh "$hooks/session-start.sh" | tail -n 1)
 [ "$out" = "Talk to the person in Spanish." ] && ok "session start: language" || bad "session start" "$out"
