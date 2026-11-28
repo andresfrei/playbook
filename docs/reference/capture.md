@@ -17,7 +17,7 @@ The hook `capture` stores each dialog the owner answers, so the plugin can learn
 
 ## The import
 
-- `sh plugins/playbook/scripts/import-dialogs.sh [PROJECTS_DIR]` fills `dialogs.jsonl` with the dialogs answered before the hook existed. It runs once, by hand.
+- `sh plugins/playbook/scripts/import-dialogs.sh [PROJECTS_DIR]` fills `dialogs.jsonl` with the dialogs answered before the hook existed. `audit-learning` runs it on its first run (dialog-learning-6): every run that reads the transcript folder writes the marker `imported` in the data folder, so it runs once.
 - It reads every `*.jsonl` under `PROJECTS_DIR` (default `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects`) and takes the lines that are an answered `AskUserQuestion` (a `toolUseResult` with `questions` and `answers`). Anything else is ignored.
 - It appends, in time order, one line per dialog in the same file and shape as the hook's, with `"origin":"import"`; a line with no `origin` is from the hook. It skips every `tool_use_id` already in the file, so a second run adds none. It prints how many it imported and how many were already present.
 - The transcript format "is internal to Claude Code and changes between versions" (sessions.md). When transcripts exist and none holds an answered dialog, it says so on stderr, writes nothing, and exits 1. It also exits 1 with no transcripts, with no `jq`, or with no `CLAUDE_PLUGIN_DATA`.

@@ -36,6 +36,7 @@ export CLAUDE_PLUGIN_DATA
 
 out=$(sh "$script" "$proj" 2>"$tmp/err"); rc=$?
 when "first run exits 0" [ "$rc" -eq 0 ]
+when "first run writes the marker" [ -s "$data/imported" ]
 when "summary line" [ "$out" = "imported 2 dialogs, 1 already present" ]
 f=$data/dialogs.jsonl
 when "three lines in the file" [ "$(wc -l < "$f" | tr -d ' ')" = 3 ]
@@ -58,11 +59,16 @@ before=$(cksum < "$f")
 if sh "$script" "$empty" 2>"$tmp/err" >/dev/null; then bad "no dialog exits 1"; else ok "no dialog exits 1"; fi
 when "no dialog names the internal format" grep -q internal "$tmp/err"
 when "no dialog leaves the file" [ "$before" = "$(cksum < "$f")" ]
+CLAUDE_PLUGIN_DATA=$tmp/nodlg sh "$script" "$empty" >/dev/null 2>&1
+when "no dialog still writes the marker" [ -s "$tmp/nodlg/imported" ]
 
 # No transcripts at all.
 mkdir "$tmp/none"
 if sh "$script" "$tmp/none" 2>"$tmp/err" >/dev/null; then bad "no transcripts exits 1"; else when "no transcripts exits 1" [ -s "$tmp/err" ]; fi
 if sh "$script" "$tmp/missing" 2>/dev/null >/dev/null; then bad "missing folder exits 1"; else ok "missing folder exits 1"; fi
+
+CLAUDE_PLUGIN_DATA=$tmp/nofolder sh "$script" "$tmp/missing" >/dev/null 2>&1
+when "missing folder still writes the marker" [ -s "$tmp/nofolder/imported" ]
 
 # Unset or empty data folder.
 if env -u CLAUDE_PLUGIN_DATA sh "$script" "$proj" 2>/dev/null >/dev/null; then bad "unset data exits 1"; else ok "unset data exits 1"; fi

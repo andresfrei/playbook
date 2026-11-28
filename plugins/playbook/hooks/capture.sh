@@ -3,7 +3,8 @@
 # It appends one line to $CLAUDE_PLUGIN_DATA/dialogs.jsonl: the UTC time and the
 # hook's input as it arrived, with raw newlines removed (in valid JSON they are
 # only whitespace). It parses nothing. With no data folder it writes nothing.
-# It always exits 0 and prints nothing, so it never blocks an answer.
+# It always exits 0 and prints nothing, so it never blocks an answer. Two
+# sessions answering at the same moment may interleave a long line (dialog-learning-8).
 dir=${CLAUDE_PLUGIN_DATA:-}
 if [ -n "$dir" ] && mkdir -p "$dir" 2>/dev/null; then
   input=$(tr -d '\n\r')

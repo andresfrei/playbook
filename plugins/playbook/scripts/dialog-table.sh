@@ -18,13 +18,16 @@
 # One row per question. Its type is its header when it is one of the fourteen
 # words, else the TYPES_FILE word for that id and question, else "untyped".
 # "First option": the answer equals options[0].label; otherwise it "departed".
-# "Own words": the answer is no option label (for multiSelect, not made of labels).
+# "Own words": the answer is no option label (for multiSelect, not made only of
+# labels, commas, and spaces; a label may hold a comma).
 #
 # Output, plain text, in this order:
 #   1. "Answered dialogs, every project" and a markdown table
 #      | Type | Asked | First option | Projects |
 #      the fourteen types in order, then untyped; rows with Asked > 0 only;
-#      First option is a rounded percent, Projects the distinct cwd count.
+#      First option is a rounded percent; Projects counts the distinct cwd
+#      values that are under no other cwd of the row, so a subfolder or a
+#      worktree inside a project is that project.
 #      The counts cover every project in the file.
 #   2. "Own-words answers in PROJECT_DIR: N"
 #   3. "Departures in PROJECT_DIR" (PROJECT_DIR only, in time order), each:
@@ -79,14 +82,14 @@ jq -r -s --arg dir "$dir" --slurpfile typed "$tmp/types" '
       | . as $q
       | ([.options[]? | select(type == "object") | .label | strings]) as $labels
       | $answers[$q.question] as $a
-      | ($a | split(",") | map(gsub("^\\s+|\\s+$"; ""))) as $parts
+      | (reduce ($labels | sort_by(-length) | .[]) as $l ($a; split($l) | join(""))
+         | test("^[\\s,]*$")) as $madeoflabels
       | {time: $time, cwd: $cwd, id: $id, question: $q.question,
          header: (if ($q.header | type) == "string" then $q.header else "" end),
          labels: $labels, answer: $a,
          first: (($labels | length) > 0 and $a == $labels[0]),
          own: (($labels | index($a)) == null
-               and (($q.multiSelect == true | not)
-                    or ($parts | all(. as $p | $labels | index($p) != null) | not)))}
+               and (($q.multiSelect == true | not) or ($madeoflabels | not)))}
       | .header as $h
       | .type = (if ($words | index($h)) != null then $h
                  else ($tmap[.id + "\u0000" + .question] // "untyped") end)
@@ -100,7 +103,7 @@ jq -r -s --arg dir "$dir" --slurpfile typed "$tmp/types" '
     ( $order[] as $t
       | [$rows[] | select(.type == $t)] as $r
       | select(($r | length) > 0)
-      | "| \($t) | \($r | length) | \((($r | map(select(.first)) | length) * 100 / ($r | length) + 0.5 | floor))% | \($r | map(.cwd) | unique | length) |" ),
+      | "| \($t) | \($r | length) | \((($r | map(select(.first)) | length) * 100 / ($r | length) + 0.5 | floor))% | \($r | map(.cwd) | unique | . as $c | map(select(. as $x | $c | any(. as $p | $p != $x and ($x | startswith($p + "/"))) | not)) | length) |" ),
     "",
     "Own-words answers in \($dir): \([$rows[] | select(.in and .own)] | length)",
     "",

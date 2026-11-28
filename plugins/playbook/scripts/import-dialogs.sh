@@ -31,6 +31,9 @@ out=$CLAUDE_PLUGIN_DATA/dialogs.jsonl
 tmp=$(mktemp -d) || die "cannot create a temporary folder"
 trap 'rm -rf "$tmp"' EXIT
 
+mkdir -p "$CLAUDE_PLUGIN_DATA" || die "cannot create '$CLAUDE_PLUGIN_DATA'"
+date -u +%Y-%m-%dT%H:%M:%SZ > "$CLAUDE_PLUGIN_DATA/imported" || die "cannot write the marker"
+
 [ -d "$dir" ] || die "no transcripts: '$dir' is not a folder"
 find "$dir" -type f -name '*.jsonl' > "$tmp/files" 2>/dev/null
 total=$(wc -l < "$tmp/files" | tr -d ' ')
@@ -75,7 +78,6 @@ imported=$(jq -r '.new | length' "$tmp/result")
 present=$(jq -r '.present' "$tmp/result")
 
 if [ "$imported" -gt 0 ]; then
-  mkdir -p "$CLAUDE_PLUGIN_DATA" || die "cannot create '$CLAUDE_PLUGIN_DATA'"
   jq -c '.new[]' "$tmp/result" >> "$out" || die "cannot write '$out'"
 fi
 

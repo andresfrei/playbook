@@ -106,6 +106,28 @@ line 2026-11-01T01:00:00Z "" /p/b a1 "$(q 'Go on?' Session Yes No)" '"Go on?":"Y
 out=$(CLAUDE_PLUGIN_DATA=$tmp/g sh "$script" /p/b 2>/dev/null)
 hasnt "no untyped block when none" "Untyped questions"
 
+# A subfolder or worktree inside a project is that project; a sibling prefix is not.
+h=$tmp/h/dialogs.jsonl
+mkdir -p "$tmp/h"
+{
+  line 2026-11-01T01:00:00Z "" /u/app a1 "$(q 'Go on?' Session Yes No)" '"Go on?":"Yes"'
+  line 2026-11-01T02:00:00Z "" /u/app/web a2 "$(q 'Go on?' Session Yes No)" '"Go on?":"Yes"'
+  line 2026-11-01T03:00:00Z "" /u/app/.claude/worktrees/x a3 "$(q 'Go on?' Session Yes No)" '"Go on?":"Yes"'
+  line 2026-11-01T04:00:00Z "" /u/apps a4 "$(q 'Go on?' Session Yes No)" '"Go on?":"Yes"'
+} > "$h"
+out=$(CLAUDE_PLUGIN_DATA=$tmp/h sh "$script" /u/app 2>/dev/null)
+has "subfolders and worktrees count as one project" "| Session | 4 | 100% | 2 |"
+
+# A multiSelect whose chosen label holds a comma is made of labels, not own words.
+k=$tmp/k/dialogs.jsonl
+mkdir -p "$tmp/k"
+{
+  line 2026-11-01T01:00:00Z "" /p/k c1 "$(q 'Checks?' Setup 'Tests, lint' Build true)" '"Checks?":"Tests, lint, Build"'
+  line 2026-11-01T02:00:00Z "" /p/k c2 "$(q 'Checks?' Setup 'Tests, lint' Build true)" '"Checks?":"Tests, docs"'
+} > "$k"
+out=$(CLAUDE_PLUGIN_DATA=$tmp/k sh "$script" /p/k 2>/dev/null)
+has "a label with a comma is not own words" "Own-words answers in /p/k: 1"
+
 # Errors.
 if sh "$script" 2>"$tmp/err" >/dev/null; then bad "no PROJECT_DIR exits 1"; else when "no PROJECT_DIR exits 1" [ -s "$tmp/err" ]; fi
 if env -u CLAUDE_PLUGIN_DATA sh "$script" /p/b 2>"$tmp/err" >/dev/null; then bad "unset data exits 1"; else when "unset data exits 1" [ -s "$tmp/err" ]; fi
