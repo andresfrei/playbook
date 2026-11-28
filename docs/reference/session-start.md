@@ -11,6 +11,7 @@ The hook `session-start` loads the playbook's rules, and the project's wiki READ
 - `rules.md` of the plugin, see [rules](rules.md).
 - `docs/playbook/README.md` at the root of the git repository, also when the session starts in a subfolder; without a git repository, the session's folder.
 - The plugin option `language`, and the record `language-asked` in the plugin's data folder.
+- The environment variable `PLAYBOOK_DRIVEN_BY`, see Driven session below.
 
 ## What it writes
 
@@ -20,6 +21,13 @@ The hook `session-start` loads the playbook's rules, and the project's wiki READ
   3. The wiki README, headed "The wiki: docs/playbook/README.md". The rules and the README must fit together in 9,000 characters, under the 10,000-character cap of hook output; when the README is too long, the hook prints a line asking Claude to read it first and shorten it instead.
   4. Again the line to talk in the chosen language, when the option is set.
 - It writes no project file. The only file it creates is the `language-asked` record.
+
+## Driven session
+
+- A launcher marks a session that no person answers with `PLAYBOOK_DRIVEN_BY=<session name>`, in its environment or in the `env` of a settings file passed with `--settings`.
+- The hook then prints the rules without the line of `ask-to-clear-2`, followed by a block: ask in text with the type first, send each question with SendMessage to that session, end the turn, open no dialog, and send as a proposal what would be written outside the project. It asks no language and creates no `language-asked` record; the lines of the option `language` still print. The README budget counts the block.
+- A value with a newline, a double quote, or over 200 characters is ignored: the hook prints the rules for a person and one line saying so.
+- Unset or empty, nothing changes.
 
 ## What it asks the owner
 

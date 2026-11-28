@@ -49,4 +49,4 @@ The check covers four things:
 
 | Unit | What it delivers | Check | Status |
 |------|------------------|-------|--------|
-| driven | `session-start.sh` reads `PLAYBOOK_DRIVEN_BY` and prints the block in place of the dialog rules. The tests, `product.md`, the reference page, and the plugin's README follow. | The work's check above. | Pending |
+| driven | `session-start.sh` reads `PLAYBOOK_DRIVEN_BY` and prints the block in place of the dialog rules. The tests, `product.md`, the reference page, and the plugin's README follow. | The work's check above. | Done |

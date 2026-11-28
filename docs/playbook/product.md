@@ -37,6 +37,7 @@ A Claude Code plugin, `playbook`, for Claude Code only (basics-3). It helps a pe
 | A hook before delivery | Asks before push, pull request, merge, and release |
 | `capture` | A `PostToolUse` hook on `AskUserQuestion` that appends each answered dialog, as it arrives, to `dialogs.jsonl` in the plugin's data folder; it parses nothing and never blocks an answer (dialog-learning-2, dialog-learning-6) |
 | The check of the wiki | Run by `define`, `close`, `audit`, `audit-learning`, and on commit |
+| `PLAYBOOK_DRIVEN_BY` | A variable a launcher sets, `PLAYBOOK_DRIVEN_BY=<session name>`, in its environment or in the `env` of a settings file passed with `--settings`, to mark a session no person answers. The session-start hook then prints the rules without the question to clear, and a block that sends each question in text to that session with SendMessage; it asks no language. A value with a newline, a double quote, or over 200 characters is ignored (dialog-learning-5, driven-mode-2, driven-mode-4) |
 | `userConfig` | The language of the replies, asked once when empty (reply-language-1, reply-language-3) |
 
 ## Its documentation
