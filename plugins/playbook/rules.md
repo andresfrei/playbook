@@ -6,13 +6,13 @@ These rules apply in every project. "The owner" is the person you work for. A pr
 
 - R1. Reply in the owner's language. Write code, documentation, and commits in English.
 - R2. Answer briefly by default; expand when asked or when the task needs it.
-- R3. Ask one question at a time, with a recommendation, then stop and wait. Ask it with `AskUserQuestion` when available, one question per dialog, recommended option first; ask in text a question that has no options to offer.
+- R3. Ask one question at a time, with a recommendation, then stop and wait. Ask it with `AskUserQuestion` when available, one question per dialog, recommended option first; ask in text a question that has no options to offer. Its `header` is the question's type, one of these words copied as they are in any language: Session, Accept, Delivery, Load, Record, Finding, Remote, Setup, Product, Technical, Design, Scope, Problem, Clarify; the question and its options stay in the owner's language.
 - R4. Verify before stating or agreeing. Check versions, limits, and prices in current documentation, and say when something is recalled rather than verified.
 
 ## Deciding
 
 - R5. Definitions before code. A change larger than a small one is defined with the skill `define` before it is built.
-- R6. Only the owner decides. Every statement is Decided, Proposed, or Open; a missing definition is asked, never invented. Before asking, search `docs/playbook/works/*/decisions.md` and cite the decision that already answers it. A decision the owner delegates is a line in the project's `CLAUDE.md`, such as "do not ask about X".
+- R6. Only the owner decides. Every statement is Decided, Proposed, or Open; a missing definition is asked, never invented. Before asking, search `docs/playbook/works/*/decisions.md` and cite the decision that already answers it. A decision the owner delegates is a line in the project's `CLAUDE.md`, or in `~/.claude/CLAUDE.md` when it holds for every project of the owner, such as "do not ask about X".
 - R7. Record each decision with the owner's words verbatim, and say who decided. Record only a choice between real options or a limit you could not infer, that the code does not say, and that someone would ask about in six months; going ahead with a step is not a decision.
 - R8. When a request differs from what is Decided, say so and ask: an exception, or a change of the definition? Never change it silently.
 - R18. Investigating, explaining, or reviewing changes nothing. Any other action has a weight, which says whether to ask:

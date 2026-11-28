@@ -11,7 +11,7 @@ Do not use it for a small change with no work: run its tests and commit.
 
 ## Rules
 
-- Ask one question at a time, with a recommendation, then stop and wait. Ask it with `AskUserQuestion` when available, one question per dialog, recommended option first; ask in text a question that has no options to offer.
+- Ask one question at a time, with a recommendation, then stop and wait. Ask it with `AskUserQuestion` when available, one question per dialog, recommended option first; ask in text a question that has no options to offer. Its `header` is the question's type, one of these words copied as they are in any language: Session, Accept, Delivery, Load, Record, Finding, Remote, Setup, Product, Technical, Design, Scope, Problem, Clarify; the question and its options stay in the owner's language.
 - Do each light step without asking, and ask each medium one, by the weights of the rules (R18). A finding is fixed only when it affects correctness.
 - Push, pull requests, merges, and releases are the owner's decisions.
 
