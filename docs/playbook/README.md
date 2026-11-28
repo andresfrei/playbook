@@ -16,7 +16,7 @@ None.
 
 Pending after the release of dialog-learning: run `/playbook:audit-learning` with the installed plugin before 2026-12-04, when Claude Code starts deleting the owner's oldest transcripts, so its first run imports them.
 
-Last audit: 2026-11-28, after work dialog-learning. Contradictions: 0 found, 0 resolved.
+Last audit: 2026-11-28, after work driven-mode. Contradictions: 1 found, 1 resolved.
 
 ## Pages
 

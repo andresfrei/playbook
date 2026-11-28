@@ -182,6 +182,13 @@ for v in 'a"b' "$nl" "$long"; do
     *) bad "driven: invalid value ignored" "$out" ;;
   esac
 done
+# The ignored line is counted in the budget, so the rest stays for the language lines.
+mkdir -p "$tmp/bigwiki/docs/playbook"
+awk 'BEGIN { for (i = 0; i < 9000; i++) printf "x" }' > "$tmp/bigwiki/docs/playbook/README.md"
+note='The variable PLAYBOOK_DRIVEN_BY was ignored: its value has a double quote, and it takes no newline, no double quote, and at most 200 characters.'
+want=$((9000 - $(wc -c < "$CLAUDE_PLUGIN_ROOT/rules.md" | tr -d ' ') - ${#note} - 2))
+out=$(PLAYBOOK_DRIVEN_BY='a"b' CLAUDE_PROJECT_DIR=$tmp/bigwiki sh "$hooks/session-start.sh")
+case $out in *"is over $want characters"*) ok "driven: ignored line counted in the budget" ;; *) bad "driven: ignored line in the budget" "$(printf '%s' "$out" | tail -1)" ;; esac
 name200=$(awk 'BEGIN { for (i = 0; i < 200; i++) printf "x" }')
 out=$(PLAYBOOK_DRIVEN_BY=$name200 sh "$hooks/session-start.sh" | grep -c 'This session is driven')
 [ "$out" = 1 ] && ok "driven: a 200-character name is used" || bad "driven: 200 characters" "$out"

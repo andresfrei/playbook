@@ -40,9 +40,12 @@ if [ -n "$driven" ]; then
   printf '%s\n' "$printed"
   size=$(printf '%s\n' "$printed" | wc -c | tr -d ' ')
 else
-  [ -n "$ignored" ] && printf 'The variable PLAYBOOK_DRIVEN_BY was ignored: its value has %s, and it takes no newline, no double quote, and at most 200 characters.\n\n' "$ignored"
+  note=
+  [ -n "$ignored" ] && note=$(printf 'The variable PLAYBOOK_DRIVEN_BY was ignored: its value has %s, and it takes no newline, no double quote, and at most 200 characters.' "$ignored")
+  # The note is counted in the budget, so the rest stays for the language lines.
+  [ -n "$note" ] && printf '%s\n\n' "$note"
   cat "$rules"
-  size=$(wc -c < "$rules" | tr -d ' ')
+  size=$(( $(wc -c < "$rules" | tr -d ' ') + ${#note} + 2 * (${#note} > 0) ))
 fi
 # The wiki lives at the root of the repository, also for a session started in
 # one of its folders.
